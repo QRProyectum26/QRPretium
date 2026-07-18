@@ -1,12 +1,13 @@
 {
   "name": "qrpretium-backend",
   "version": "1.0.0",
-  "description": "Servidor backend para el sistema QR-Pretium",
+  "description": "Backend para QRPretium con NocoBase y PostgreSQL",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "express": "4.21.2"
+    "@nocobase/server": "^1.3.0",
+    "dotenv": "^16.4.5"
   }
 }
