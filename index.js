@@ -1,11 +1,36 @@
-const express = require('express');
-const app = express();
-const PORT = process.env.PORT || 10000;
+const { Application } = require('@nocobase/server');
 
-app.get('/', (req, res) => {
-  res.send('¡Servidor de QRPretium encendido y funcionando con éxito! 🚀');
-});
+async function startServer() {
+  console.log("Iniciando la configuración de NocoBase...");
 
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en el puerto ${PORT}`);
-});
+  // Creamos la aplicación apuntando a tu base de datos PostgreSQL de Neon
+  const app = new Application({
+    database: {
+      dialect: 'postgres',
+      url: process.env.DATABASE_URL,
+      dialectOptions: {
+        ssl: {
+          rejectUnauthorized: false // Requerido para conexiones seguras con Neon
+        }
+      }
+    }
+  });
+
+  try {
+    // Instalamos NocoBase (crea las tablas iniciales de administración)
+    console.log("Instalando tablas del sistema en Neon.tech...");
+    await app.install({
+      clean: false, // Evita borrar datos si el servidor se reinicia
+    });
+
+    // Encendemos el servidor en el puerto que nos da Render
+    const port = process.env.PORT || 10000;
+    await app.listen(port);
+    console.log(`¡NocoBase está vivo y corriendo en el puerto ${port}! 🚀`);
+  } catch (error) {
+    console.error("Error al iniciar NocoBase:", error);
+    process.exit(1);
+  }
+}
+
+startServer();
