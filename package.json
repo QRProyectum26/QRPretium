@@ -1,0 +1,15 @@
+JSON
+
+
+{
+  "name": "qrpretium-backend",
+  "version": "1.0.0",
+  "description": "Servidor backend para el sistema QR-Pretium",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "4.21.2"
+  }
+}
