@@ -9,4 +9,11 @@ const app = new Application({
 
 const port = process.env.PORT || 10000;
 
-app.runAsCLI();
+// Cambiamos el runAsCLI por el arranque directo del servidor
+app.start({
+  port: parseInt(port)
+}).then(() => {
+  console.log(`🚀 Servidor de NocoBase encendido en el puerto ${port}`);
+}).catch((err) => {
+  console.error('❌ Error al encender NocoBase:', err);
+});
