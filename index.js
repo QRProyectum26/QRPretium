@@ -10,16 +10,19 @@ const app = new Application({
 
 const port = process.env.PORT || 10000;
 
-// Inicializamos NocoBase primero
-app.parse().then(async () => {
-  await app.load();
+// Creamos el servidor HTTP y lo ponemos a escuchar INMEDIATAMENTE
+const server = http.createServer(app.callback());
+
+server.listen(port, () => {
+  console.log(`🚀 Puerto ${port} abierto exitosamente para Render`);
   
-  // Creamos el servidor HTTP nativo usando el callback de la app
-  const server = http.createServer(app.callback());
-  
-  server.listen(port, () => {
-    console.log(`🚀 Servidor de NocoBase escuchando firmemente en el puerto ${port}`);
-  });
-}).catch((err) => {
-  console.error('❌ Error en el ciclo de vida de NocoBase:', err);
+  // Una vez que el puerto está asegurado, inicializamos NocoBase de fondo
+  app.parse()
+    .then(async () => {
+      await app.load();
+      console.log('🤖 NocoBase se ha inicializado y cargado correctamente.');
+    })
+    .catch((err) => {
+      console.error('❌ Error inicializando NocoBase:', err);
+    });
 });
