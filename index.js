@@ -5,7 +5,8 @@ const http = require('http');
 console.log("Paso 2: Leyendo variable de base de datos...");
 console.log("¿Existe DATABASE_URL?:", process.env.DATABASE_URL ? "Sí" : "No, está vacía");
 
-console.log("Paso 3: Creando la aplicación NocoBase...");
+console.log("Paso 3: Creando la aplicación NocoBase con plugins básicos...");
+// Agregamos la configuración para que cargue los plugins por defecto (incluido el admin)
 const app = new Application({
   database: {
     dialect: 'postgres',
@@ -17,6 +18,12 @@ const app = new Application({
       }
     }
   },
+  // Esto le dice a NocoBase que cargue el preset de aplicaciones estándar
+  plugins: [
+    '@nocobase/plugin-client',
+    '@nocobase/plugin-auth',
+    '@nocobase/plugin-users'
+  ]
 });
 
 console.log("Paso 4: Configurando el servidor...");
@@ -29,9 +36,8 @@ server.listen(port, async () => {
   
   console.log("Paso 6: Inicializando e iniciando NocoBase...");
   try {
-    // Usamos el método correcto para levantar NocoBase
     await app.start();
-    console.log("✅ NocoBase se ha iniciado y conectado correctamente.");
+    console.log("✅ NocoBase se ha iniciado y conectado correctamente con la interfaz activa.");
   } catch (error) {
     console.error("❌ Error al iniciar NocoBase:", error);
   }
