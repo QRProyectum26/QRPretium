@@ -7,6 +7,8 @@
   },
   "dependencies": {
     "@nocobase/server": "latest",
+    "@nocobase/database": "latest",
+    "execa": "^5.1.1",
     "pg": "^8.11.5"
   }
 }
