@@ -24,17 +24,15 @@ const port = process.env.PORT || 10000;
 const server = http.createServer(app.callback());
 
 console.log("Paso 5: Abriendo el puerto para Render...");
-server.listen(port, () => {
+server.listen(port, async () => {
   console.log(`🚀 Puerto ${port} abierto exitosamente para Render`);
   
-  console.log("Paso 6: Inicializando NocoBase de fondo...");
-  app.parse()
-    .then(async () => {
-      console.log("Paso 7: Cargando módulos de NocoBase...");
-      await app.load();
-      console.log('🤖 NocoBase se ha inicializado y cargado correctamente.');
-    })
-    .catch((err) => {
-      console.error('❌ Error inicializando NocoBase:', err);
-    });
+  console.log("Paso 6: Inicializando e iniciando NocoBase...");
+  try {
+    // Usamos el método correcto para levantar NocoBase
+    await app.start();
+    console.log("✅ NocoBase se ha iniciado y conectado correctamente.");
+  } catch (error) {
+    console.error("❌ Error al iniciar NocoBase:", error);
+  }
 });
