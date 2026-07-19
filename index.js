@@ -1,3 +1,12 @@
-// El inicio ahora lo maneja el CLI de NocoBase automáticamente.
-// Dejamos este archivo listo por si necesitamos inyectar configuraciones personalizadas luego.
-console.log("Iniciando contenedor QRPretium con NocoBase nativo...");
+const { Application } = require('@nocobase/server');
+
+const app = new Application({
+  database: {
+    dialect: 'postgres',
+    url: process.env.DATABASE_URL || 'postgres://localhost:5432/nocobase',
+  },
+});
+
+const port = process.env.PORT || 10000;
+
+app.runAsCLI();
