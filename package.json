@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "nocobase build",
-    "start": "nocobase start"
+    "build": "npx nocobase build",
+    "start": "npx nocobase start"
   },
   "dependencies": {
     "@nocobase/server": "latest",
