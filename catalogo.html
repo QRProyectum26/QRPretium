@@ -1,6 +1,3 @@
-HTML
-
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -69,12 +66,16 @@ HTML
             }
 
             try {
-                // 1. Cargar Datos del Comercio
-                let { data: comercio } = await supabaseClient
-                    .from('COMERCIOS')
-                    .select('*')
-                    .or(`CUIT.eq.${cuitParam},cuit.eq.${cuitParam}`)
-                    .maybeSingle();
+                // 1. Cargar Datos del Comercio (Primero CUIT en mayúsculas, luego fallback)
+                let comercio = null;
+                
+                let res1 = await supabaseClient.from('COMERCIOS').select('*').eq('CUIT', cuitParam).maybeSingle();
+                if (res1.data) {
+                    comercio = res1.data;
+                } else {
+                    let res2 = await supabaseClient.from('COMERCIOS').select('*').eq('cuit', cuitParam).maybeSingle();
+                    if (res2.data) comercio = res2.data;
+                }
 
                 if (!comercio) {
                     mostrarError("No se encontró el comercio solicitado.");
@@ -90,10 +91,15 @@ HTML
                 }
 
                 // 2. Cargar Productos del Comercio
-                let { data: productos } = await supabaseClient
-                    .from('ARTICULOS')
-                    .select('*')
-                    .or(`CUIT.eq.${cuitParam},cuit.eq.${cuitParam}`);
+                let productos = null;
+
+                let prodRes1 = await supabaseClient.from('ARTICULOS').select('*').eq('CUIT', cuitParam);
+                if (prodRes1.data && prodRes1.data.length > 0) {
+                    productos = prodRes1.data;
+                } else {
+                    let prodRes2 = await supabaseClient.from('ARTICULOS').select('*').eq('cuit', cuitParam);
+                    if (prodRes2.data) productos = prodRes2.data;
+                }
 
                 if (!productos || productos.length === 0) {
                     mostrarError("Este comercio aún no tiene artículos cargados.");
@@ -121,8 +127,8 @@ HTML
             lista.forEach(item => {
                 // Mapeo de campos requeridos (soporta mayúsculas y minúsculas)
                 const codigo = item.CODIGO || item.codigo || '';
-                const articulo = item.ARTICULO || item.articulo || item.NOMBRE || item.nombre || 'Artículo sin título';
-                const descripcion = item.DESCRIPCION || item.descripcion || '';
+                const articulo = item.ARTICULO || item.articulo || item.NOMBRE || item.nombre || item.DESCRIPCION || item.descripcion || 'Artículo sin título';
+                const descripcion = (item.ARTICULO || item.articulo || item.NOMBRE || item.nombre) ? (item.DESCRIPCION || item.descripcion || '') : '';
                 const disponibilidad = item.DISPONIBILIDAD || item.disponibilidad || '';
                 const precio = item.PRECIO || item.precio || 0;
                 const promocion = item.PROMOCION || item.promocion || '';
@@ -181,3 +187,4 @@ HTML
     </script>
 </body>
 </html>
+      
