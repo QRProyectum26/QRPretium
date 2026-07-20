@@ -30,7 +30,7 @@
                     class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-600 text-sm">
             </div>
 
-            <div id="errorLogin" class="text-red-600 text-xs text-center font-bold hidden p-2 bg-red-50 rounded-lg border border-red-200"></div>
+            <div id="errorLogin" class="text-red-600 text-xs text-center font-bold hidden p-3 bg-red-50 rounded-lg border border-red-200 leading-relaxed"></div>
 
             <button type="submit" id="btnIngresar" 
                 class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-xl shadow-md transition duration-200 text-sm">
@@ -39,10 +39,9 @@
         </form>
     </div>
 
-    <!-- SECCIÓN 2: PANEL DE ADMINISTRACIÓN (OCULTO HASTA INICIAR SESIÓN) -->
+    <!-- SECCIÓN 2: PANEL DE ADMINISTRACIÓN -->
     <div id="seccionPanel" class="hidden">
 
-        <!-- Encabezado con Nombre de Comercio, CUIT y selector de Color -->
         <header id="headerAdmin" class="text-white p-6 shadow-lg rounded-b-2xl transition-colors duration-300" style="background-color: #334155;">
             <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
                 <div class="text-center md:text-left">
@@ -50,7 +49,6 @@
                     <p id="adminCuitComercio" class="text-xs text-slate-200 font-medium mt-1">CUIT: -</p>
                 </div>
 
-                <!-- Modificar Color de la Franja -->
                 <div class="flex items-center space-x-3 bg-black/20 p-2.5 rounded-xl backdrop-blur-sm border border-white/10">
                     <label for="inputColor" class="text-xs font-bold text-white uppercase">Color de Franja:</label>
                     <input type="color" id="inputColor" value="#334155" onchange="guardarColor(this.value)" class="h-8 w-12 rounded cursor-pointer border-0 bg-transparent">
@@ -67,7 +65,6 @@
 
         <main class="max-w-4xl mx-auto px-4 mt-6">
 
-            <!-- Formulario para Agregar / Editar Artículo -->
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 mb-6">
                 <h2 id="tituloFormArticulo" class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
                     <span>➕</span> Agregar Nuevo Artículo
@@ -117,7 +114,6 @@
                 </form>
             </div>
 
-            <!-- Tabla de Artículos Cargados -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
                 <div class="p-4 border-b border-gray-100 flex justify-between items-center">
                     <h3 class="font-bold text-slate-800 text-sm">Artículos Publicados</h3>
@@ -137,7 +133,6 @@
                             </tr>
                         </thead>
                         <tbody id="tbodyArticulos" class="divide-y divide-gray-100">
-                            <!-- Se renderizarán aquí -->
                         </tbody>
                     </table>
                 </div>
@@ -156,7 +151,15 @@
         let cuitLimpioActual = '';
         let articulosLista = [];
 
-        // 1. INICIAR SESIÓN FLEXIBLE
+        // Función para extraer cualquier variante de una propiedad en un objeto
+        function obtenerValorObjeto(obj, listaClaves) {
+            if (!obj) return '';
+            const claveEncontrada = Object.keys(obj).find(k => 
+                listaClaves.some(l => l.toLowerCase() === k.toLowerCase())
+            );
+            return claveEncontrada ? obj[claveEncontrada] : '';
+        }
+
         async function iniciarSesion(e) {
             e.preventDefault();
             const cuitIngresado = document.getElementById('loginCuit').value.trim();
@@ -164,57 +167,66 @@
             const divError = document.getElementById('errorLogin');
             divError.classList.add('hidden');
 
-            // Limpiar CUIT de guiones, puntos y espacios
             const cuitLimpio = cuitIngresado.replace(/[-.\s]/g, '');
 
             try {
-                // Consultar la tabla COMERCIOS completa para buscar sin importar mayúsculas/minúsculas en columnas
                 let { data: comercios, error } = await supabaseClient.from('COMERCIOS').select('*');
 
                 if (error) {
-                    throw error;
-                }
-
-                // Buscar coincidencia de CUIT en cualquier columna posible
-                let comercio = comercios.find(c => {
-                    const valCuit = (c.CUIT || c.cuit || c.Cuit || c.cuit_comercio || '').toString().replace(/[-.\s]/g, '');
-                    return valCuit === cuitLimpio || valCuit === cuitIngresado;
-                });
-
-                if (!comercio) {
-                    divError.innerText = `No se encontró el CUIT "${cuitIngresado}" en la tabla COMERCIOS.`;
+                    divError.innerText = `Error Supabase: ${error.message}`;
                     divError.classList.remove('hidden');
                     return;
                 }
 
-                // Obtener contraseña almacenada si existe
-                const passDB = (comercio.password || comercio.PASSWORD || comercio.clave || comercio.CLAVE || '').toString().trim();
+                if (!comercios || comercios.length === 0) {
+                    divError.innerText = "La tabla COMERCIOS está vacía en Supabase.";
+                    divError.classList.remove('hidden');
+                    return;
+                }
 
-                // Validar contraseña (si existe columna en la base de datos)
+                // Buscar coincidencia exacta o flexible en los CUITs
+                let comercio = comercios.find(c => {
+                    const rawCuit = String(obtenerValorObjeto(c, ['cuit', 'CUIT', 'Cuit', 'cuit_comercio']));
+                    const valCuitLimpio = rawCuit.replace(/[-.\s]/g, '');
+                    return valCuitLimpio === cuitLimpio || rawCuit === cuitIngresado || valCuitLimpio.includes(cuitLimpio);
+                });
+
+                if (!comercio) {
+                    const cuitsRegistrados = comercios.map(c => {
+                        const val = obtenerValorObjeto(c, ['cuit', 'CUIT', 'Cuit', 'cuit_comercio']);
+                        return val ? `"${val}"` : 'Sin CUIT';
+                    }).join(', ');
+
+                    divError.innerText = `No se encontró el CUIT "${cuitIngresado}". Los CUITs cargados en Supabase son: [${cuitsRegistrados}].`;
+                    divError.classList.remove('hidden');
+                    return;
+                }
+
+                const passDB = String(obtenerValorObjeto(comercio, ['password', 'PASSWORD', 'clave', 'CLAVE', 'contrasena', 'CONTRASENA'])).trim();
+
                 if (passDB && passDB !== passIngresada) {
-                    divError.innerText = "La contraseña es incorrecta.";
+                    divError.innerText = "La contraseña ingresada no coincide.";
                     divError.classList.remove('hidden');
                     return;
                 }
 
                 comercioActual = comercio;
-                cuitLimpioActual = (comercio.CUIT || comercio.cuit || cuitLimpio).toString().trim();
+                cuitLimpioActual = String(obtenerValorObjeto(comercio, ['cuit', 'CUIT', 'Cuit', 'cuit_comercio'])).trim();
                 cargarPanel();
 
             } catch (err) {
                 console.error("Error en login:", err);
-                divError.innerText = "Ocurrió un error al conectar con Supabase.";
+                divError.innerText = "Ocurrió un error inesperado al validar la información.";
                 divError.classList.remove('hidden');
             }
         }
 
-        // 2. CARGAR PANEL DE CONTROL
         async function cargarPanel() {
             document.getElementById('seccionLogin').classList.add('hidden');
             document.getElementById('seccionPanel').classList.remove('hidden');
 
-            const nombre = comercioActual.NOMBRE || comercioActual.nombre || comercioActual.Nombre || 'Mi Comercio';
-            const color = comercioActual.color || comercioActual.COLOR || comercioActual.color_hex || '#334155';
+            const nombre = obtenerValorObjeto(comercioActual, ['nombre', 'NOMBRE', 'Nombre']) || 'Mi Comercio';
+            const color = obtenerValorObjeto(comercioActual, ['color', 'COLOR', 'color_hex']) || '#334155';
 
             document.getElementById('adminNombreComercio').innerText = nombre;
             document.getElementById('adminCuitComercio').innerText = `CUIT: ${cuitLimpioActual}`;
@@ -224,15 +236,14 @@
             await cargarArticulos();
         }
 
-        // 3. CARGAR ARTÍCULOS DESDE SUPABASE
         async function cargarArticulos() {
             let { data: todos, error } = await supabaseClient.from('ARTICULOS').select('*');
 
             if (!error && todos) {
-                // Filtrar de forma flexible por CUIT
+                const cuitComparar = cuitLimpioActual.replace(/[-.\s]/g, '');
                 articulosLista = todos.filter(a => {
-                    const valCuit = (a.CUIT || a.cuit || a.Cuit || '').toString().replace(/[-.\s]/g, '');
-                    return valCuit === cuitLimpioActual.replace(/[-.\s]/g, '');
+                    const rawCuit = String(obtenerValorObjeto(a, ['cuit', 'CUIT', 'Cuit', 'cuit_comercio']));
+                    return rawCuit.replace(/[-.\s]/g, '') === cuitComparar;
                 });
                 renderizarTabla();
             }
@@ -244,17 +255,17 @@
             tbody.innerHTML = '';
 
             if (articulosLista.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-400">No hay artículos cargados todavía.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-400">No hay artículos cargados para este CUIT.</td></tr>`;
                 return;
             }
 
             articulosLista.forEach(item => {
                 const id = item.id || item.ID;
-                const cod = item.CODIGO || item.codigo || '-';
-                const art = item.ARTICULO || item.articulo || item.NOMBRE || item.nombre || '-';
-                const disp = item.DISPONIBILIDAD || item.disponibilidad || '-';
-                const precio = item.PRECIO || item.precio || 0;
-                const promo = item.PROMOCION || item.promocion || '-';
+                const cod = obtenerValorObjeto(item, ['codigo', 'CODIGO']) || '-';
+                const art = obtenerValorObjeto(item, ['articulo', 'ARTICULO', 'nombre', 'NOMBRE']) || '-';
+                const disp = obtenerValorObjeto(item, ['disponibilidad', 'DISPONIBILIDAD']) || '-';
+                const precio = obtenerValorObjeto(item, ['precio', 'PRECIO']) || 0;
+                const promo = obtenerValorObjeto(item, ['promocion', 'PROMOCION']) || '-';
 
                 tbody.innerHTML += `
                     <tr class="hover:bg-gray-50 transition">
@@ -272,12 +283,20 @@
             });
         }
 
-        // 4. GUARDAR / EDITAR ARTÍCULO
         async function guardarArticulo(e) {
             e.preventDefault();
             const id = document.getElementById('artId').value;
 
+            // Determinar los nombres de campos exactos según el comercio cargado
             const datos = {
+                codigo: document.getElementById('artCodigo').value.trim(),
+                articulo: document.getElementById('artNombre').value.trim(),
+                descripcion: document.getElementById('artDescripcion').value.trim(),
+                disponibilidad: document.getElementById('artDisponibilidad').value.trim(),
+                precio: parseFloat(document.getElementById('artPrecio').value) || 0,
+                promocion: document.getElementById('artPromocion').value.trim(),
+                cuit: cuitLimpioActual,
+                // Duplicación por compatibilidad si la tabla usa mayúsculas
                 CODIGO: document.getElementById('artCodigo').value.trim(),
                 ARTICULO: document.getElementById('artNombre').value.trim(),
                 DESCRIPCION: document.getElementById('artDescripcion').value.trim(),
@@ -302,12 +321,12 @@
             if (!item) return;
 
             document.getElementById('artId').value = id;
-            document.getElementById('artCodigo').value = item.CODIGO || item.codigo || '';
-            document.getElementById('artNombre').value = item.ARTICULO || item.articulo || item.NOMBRE || item.nombre || '';
-            document.getElementById('artDescripcion').value = item.DESCRIPCION || item.descripcion || '';
-            document.getElementById('artDisponibilidad').value = item.DISPONIBILIDAD || item.disponibilidad || '';
-            document.getElementById('artPrecio').value = item.PRECIO || item.precio || 0;
-            document.getElementById('artPromocion').value = item.PROMOCION || item.promocion || '';
+            document.getElementById('artCodigo').value = obtenerValorObjeto(item, ['codigo', 'CODIGO']);
+            document.getElementById('artNombre').value = obtenerValorObjeto(item, ['articulo', 'ARTICULO', 'nombre', 'NOMBRE']);
+            document.getElementById('artDescripcion').value = obtenerValorObjeto(item, ['descripcion', 'DESCRIPCION']);
+            document.getElementById('artDisponibilidad').value = obtenerValorObjeto(item, ['disponibilidad', 'DISPONIBILIDAD']);
+            document.getElementById('artPrecio').value = obtenerValorObjeto(item, ['precio', 'PRECIO']);
+            document.getElementById('artPromocion').value = obtenerValorObjeto(item, ['promocion', 'PROMOCION']);
 
             document.getElementById('tituloFormArticulo').innerText = "✏️ Editar Artículo";
             document.getElementById('btnCancelar').classList.remove('hidden');
@@ -334,7 +353,6 @@
             }
         }
 
-        // 5. GUARDAR COLOR
         async function guardarColor(nuevoColor) {
             document.getElementById('headerAdmin').style.backgroundColor = nuevoColor;
             const idComercio = comercioActual.id || comercioActual.ID;
@@ -342,7 +360,7 @@
             if (idComercio) {
                 await supabaseClient.from('COMERCIOS').update({ color: nuevoColor }).eq('id', idComercio);
             } else {
-                await supabaseClient.from('COMERCIOS').update({ color: nuevoColor }).eq('CUIT', cuitLimpioActual);
+                await supabaseClient.from('COMERCIOS').update({ color: nuevoColor }).eq('cuit', cuitLimpioActual);
             }
         }
 
