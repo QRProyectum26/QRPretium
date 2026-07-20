@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - QRPretium</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 min-h-screen pb-12">
+
+    <!-- SECCIÓN 1: LOGIN -->
+    <div id="seccionLogin" class="max-w-md mx-auto mt-16 p-6 bg-white rounded-2xl shadow-xl border border-gray-200">
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-black text-slate-800 tracking-tight">QRPretium Admin</h1>
+            <p class="text-xs text-gray-500 mt-1">Ingresá tus credenciales para gestionar tu catálogo</p>
+        </div>
+
+        <form onsubmit="iniciarSesion(event)" class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">CUIT del Comercio</label>
+                <input type="text" id="loginCuit" required placeholder="Ej: 20081802204" 
+                    class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-600 text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Contraseña</label>
+                <input type="password" id="loginPassword" required placeholder="••••••••" 
+                    class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-600 text-sm">
+            </div>
+
+            <div id="errorLogin" class="text-red-600 text-xs text-center font-bold hidden"></div>
+
+            <button type="submit" id="btnIngresar" 
+                class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-xl shadow-md transition duration-200 text-sm">
+                Iniciar Sesión
+            </button>
+        </form>
+    </div>
+
+    <!-- SECCIÓN 2: PANEL DE ADMINISTRACIÓN (OCULTO HASTA INICIAR SESIÓN) -->
+    <div id="seccionPanel" class="hidden">
+
+        <!-- Encabezado con Nombre de Comercio, CUIT y selector de Color -->
+        <header id="headerAdmin" class="text-white p-6 shadow-lg rounded-b-2xl transition-colors duration-300" style="background-color: #334155;">
+            <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="text-center md:text-left">
+                    <h1 id="adminNombreComercio" class="text-2xl font-extrabold uppercase tracking-wide">Cargando...</h1>
+                    <p id="adminCuitComercio" class="text-xs text-slate-200 font-medium mt-1">CUIT: -</p>
+                </div>
+
+                <!-- Modificar Color de la Franja -->
+                <div class="flex items-center space-x-3 bg-black/20 p-2.5 rounded-xl backdrop-blur-sm border border-white/10">
+                    <label for="inputColor" class="text-xs font-bold text-white uppercase">Color de Franja:</label>
+                    <input type="color" id="inputColor" value="#334155" onchange="guardarColor(this.value)" class="h-8 w-12 rounded cursor-pointer border-0 bg-transparent">
+                    <button onclick="guardarColor(document.getElementById('inputColor').value)" class="text-xs bg-white text-slate-800 font-bold px-3 py-1.5 rounded-lg shadow hover:bg-gray-100">
+                        Guardar
+                    </button>
+                </div>
+
+                <button onclick="cerrarSesion()" class="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-lg shadow">
+                    Cerrar Sesión
+                </button>
+            </div>
+        </header>
+
+        <main class="max-w-4xl mx-auto px-4 mt-6">
+
+            <!-- Botón / Formulario para Agregar Nuevo Artículo -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 mb-6">
+                <h2 id="tituloFormArticulo" class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span>➕</span> Agregar Nuevo Artículo
+                </h2>
+
+                <form onsubmit="guardarArticulo(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <input type="hidden" id="artId">
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Código</label>
+                        <input type="text" id="artCodigo" placeholder="Ej: 006" required class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Artículo / Nombre</label>
+                        <input type="text" id="artNombre" placeholder="Ej: TIRANTES 2x4" required class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Descripción</label>
+                        <input type="text" id="artDescripcion" placeholder="Ej: Madera semidura tratada" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Disponibilidad</label>
+                        <input type="text" id="artDisponibilidad" placeholder="Ej: 50 BULTOS" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Precio ($)</label>
+                        <input type="number" step="0.01" id="artPrecio" placeholder="Ej: 15000" required class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Promoción</label>
+                        <input type="text" id="artPromocion" placeholder="Ej: 10% OFF EFECTIVO" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+                    </div>
+
+                    <div class="md:col-span-2 lg:col-span-3 flex justify-end gap-2 mt-2">
+                        <button type="button" onclick="limpiarFormulario()" id="btnCancelar" class="hidden px-4 py-2 bg-gray-200 text-gray-700 font-bold rounded-xl text-sm">
+                            Cancelar
+                        </button>
+                        <button type="submit" id="btnGuardarArt" class="px-6 py-2 bg-slate-800 text-white font-bold rounded-xl text-sm hover:bg-slate-900 shadow">
+                            Guardar Artículo
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tabla de Artículos Cárgados -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+                    <h3 class="font-bold text-slate-800 text-sm">Artículos Publicados</h3>
+                    <span id="cantArticulos" class="text-xs font-bold bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full">0 productos</span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-gray-50 text-gray-500 uppercase text-[10px] tracking-wider font-extrabold border-b">
+                            <tr>
+                                <th class="p-3">Código</th>
+                                <th class="p-3">Artículo</th>
+                                <th class="p-3">Disponibilidad</th>
+                                <th class="p-3">Precio</th>
+                                <th class="p-3">Promoción</th>
+                                <th class="p-3 text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyArticulos" class="divide-y divide-gray-100">
+                            <!-- Se renderizarán aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
+        
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let comercioActual = null;
+        let articulosLista = [];
+
+        // 1. INICIAR SESIÓN
+        async function iniciarSesion(e) {
+            e.preventDefault();
+            const cuit = document.getElementById('loginCuit').value.trim();
+            const pass = document.getElementById('loginPassword').value.trim();
+            const divError = document.getElementById('errorLogin');
+            divError.classList.add('hidden');
+
+            try {
+                let { data: comercio, error } = await supabaseClient
+                    .from('COMERCIOS')
+                    .select('*')
+                    .or(`CUIT.eq.${cuit},cuit.eq.${cuit}`)
+                    .maybeSingle();
+
+                if (error || !comercio) {
+                    divError.innerText = "No se encontró ningún comercio con este CUIT.";
+                    divError.classList.remove('hidden');
+                    return;
+                }
+
+                // Verificar Contraseña (buscando en 'password', 'clave', 'PASSWORD' o 'CLAVE')
+                const passDB = comercio.password || comercio.clave || comercio.PASSWORD || comercio.CLAVE;
+                
+                if (passDB && passDB !== pass) {
+                    divError.innerText = "Contraseña incorrecta.";
+                    divError.classList.remove('hidden');
+                    return;
+                }
+
+                comercioActual = comercio;
+                cargarPanel();
+
+            } catch (err) {
+                console.error(err);
+                divError.innerText = "Error al intentar iniciar sesión.";
+                divError.classList.remove('hidden');
+            }
+        }
+
+        // 2. CARGAR PANEL DE CONTROL
+        async function cargarPanel() {
+            document.getElementById('seccionLogin').classList.add('hidden');
+            document.getElementById('seccionPanel').classList.remove('hidden');
+
+            const nombre = comercioActual.NOMBRE || comercioActual.nombre || 'Mi Comercio';
+            const cuit = comercioActual.CUIT || comercioActual.cuit || '';
+            const color = comercioActual.color || comercioActual.COLOR || comercioActual.color_hex || '#334155';
+
+            document.getElementById('adminNombreComercio').innerText = nombre;
+            document.getElementById('adminCuitComercio').innerText = `CUIT: ${cuit}`;
+            document.getElementById('headerAdmin').style.backgroundColor = color;
+            document.getElementById('inputColor').value = color;
+
+            await cargarArticulos();
+        }
+
+        // 3. CARGAR ARTÍCULOS DESDE SUPABASE
+        async function cargarArticulos() {
+            const cuit = comercioActual.CUIT || comercioActual.cuit;
+            let { data, error } = await supabaseClient
+                .from('ARTICULOS')
+                .select('*')
+                .or(`CUIT.eq.${cuit},cuit.eq.${cuit}`);
+
+            if (!error && data) {
+                articulosLista = data;
+                renderizarTabla();
+            }
+        }
+
+        function renderizarTabla() {
+            const tbody = document.getElementById('tbodyArticulos');
+            document.getElementById('cantArticulos').innerText = `${articulosLista.length} productos`;
+            tbody.innerHTML = '';
+
+            if (articulosLista.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-400">No hay artículos cargados todavía.</td></tr>`;
+                return;
+            }
+
+            articulosLista.forEach(item => {
+                const id = item.id || item.ID;
+                const cod = item.CODIGO || item.codigo || '-';
+                const art = item.ARTICULO || item.articulo || item.NOMBRE || item.nombre || '-';
+                const disp = item.DISPONIBILIDAD || item.disponibilidad || '-';
+                const precio = item.PRECIO || item.precio || 0;
+                const promo = item.PROMOCION || item.promocion || '-';
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="p-3 font-mono font-bold text-slate-800">${cod}</td>
+                        <td class="p-3 font-semibold text-gray-900 uppercase">${art}</td>
+                        <td class="p-3 text-xs text-gray-600">${disp}</td>
+                        <td class="p-3 font-black text-slate-800">$${Number(precio).toLocaleString('es-AR')}</td>
+                        <td class="p-3 text-xs text-amber-700 font-bold">${promo !== '-' ? '🔥 ' + promo : '-'}</td>
+                        <td class="p-3 text-right space-x-1">
+                            <button onclick="prepararEdicion(${id})" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-bold text-xs">✏️ Editar</button>
+                            <button onclick="eliminarArticulo(${id})" class="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded font-bold text-xs">🗑️ Borrar</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // 4. GUARDAR / EDITAR ARTÍCULO
+        async function guardarArticulo(e) {
+            e.preventDefault();
+            const id = document.getElementById('artId').value;
+            const cuitVal = comercioActual.CUIT || comercioActual.cuit;
+
+            const datos = {
+                CODIGO: document.getElementById('artCodigo').value.trim(),
+                ARTICULO: document.getElementById('artNombre').value.trim(),
+                DESCRIPCION: document.getElementById('artDescripcion').value.trim(),
+                DISPONIBILIDAD: document.getElementById('artDisponibilidad').value.trim(),
+                PRECIO: parseFloat(document.getElementById('artPrecio').value) || 0,
+                PROMOCION: document.getElementById('artPromocion').value.trim(),
+                CUIT: cuitVal
+            };
+
+            if (id) {
+                // Editar
+                await supabaseClient.from('ARTICULOS').update(datos).eq('id', id);
+            } else {
+                // Insertar Nuevo
+                await supabaseClient.from('ARTICULOS').insert([datos]);
+            }
+
+            limpiarFormulario();
+            await cargarArticulos();
+        }
+
+        function prepararEdicion(id) {
+            const item = articulosLista.find(a => (a.id || a.ID) == id);
+            if (!item) return;
+
+            document.getElementById('artId').value = id;
+            document.getElementById('artCodigo').value = item.CODIGO || item.codigo || '';
+            document.getElementById('artNombre').value = item.ARTICULO || item.articulo || item.NOMBRE || item.nombre || '';
+            document.getElementById('artDescripcion').value = item.DESCRIPCION || item.descripcion || '';
+            document.getElementById('artDisponibilidad').value = item.DISPONIBILIDAD || item.disponibilidad || '';
+            document.getElementById('artPrecio').value = item.PRECIO || item.precio || 0;
+            document.getElementById('artPromocion').value = item.PROMOCION || item.promocion || '';
+
+            document.getElementById('tituloFormArticulo').innerText = "✏️ Editar Artículo";
+            document.getElementById('btnCancelar').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function limpiarFormulario() {
+            document.getElementById('artId').value = '';
+            document.getElementById('artCodigo').value = '';
+            document.getElementById('artNombre').value = '';
+            document.getElementById('artDescripcion').value = '';
+            document.getElementById('artDisponibilidad').value = '';
+            document.getElementById('artPrecio').value = '';
+            document.getElementById('artPromocion').value = '';
+
+            document.getElementById('tituloFormArticulo').innerText = "➕ Agregar Nuevo Artículo";
+            document.getElementById('btnCancelar').classList.add('hidden');
+        }
+
+        async function eliminarArticulo(id) {
+            if (confirm("¿Estás seguro de que deseas borrar este artículo?")) {
+                await supabaseClient.from('ARTICULOS').delete().eq('id', id);
+                await cargarArticulos();
+            }
+        }
+
+        // 5. GUARDAR COLOR DE FRANJA EN SUPABASE
+        async function guardarColor(nuevoColor) {
+            document.getElementById('headerAdmin').style.backgroundColor = nuevoColor;
+            const idComercio = comercioActual.id || comercioActual.ID;
+
+            if (idComercio) {
+                await supabaseClient.from('COMERCIOS').update({ color: nuevoColor }).eq('id', idComercio);
+            } else {
+                const cuit = comercioActual.CUIT || comercioActual.cuit;
+                await supabaseClient.from('COMERCIOS').update({ color: nuevoColor }).eq('CUIT', cuit);
+            }
+        }
+
+        function cerrarSesion() {
+            comercioActual = null;
+            document.getElementById('seccionPanel').classList.add('hidden');
+            document.getElementById('seccionLogin').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
