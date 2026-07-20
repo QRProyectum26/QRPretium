@@ -1,36 +1,41 @@
+HTML
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catálogo de Productos - QRPretium</title>
-    <!-- Tailwind CSS para el diseño -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-gray-50 text-gray-800 min-h-screen pb-10">
+<body class="bg-gray-100 text-gray-800 min-h-screen pb-10">
 
-    <!-- Encabezado / Logo del Comercio -->
-    <header id="headerComercio" class="bg-indigo-600 text-white p-6 shadow-md text-center rounded-b-2xl">
-        <div id="logoContainer" class="mb-3 hidden">
-            <img id="imgLogo" src="" alt="Logo Comercio" class="h-16 mx-auto rounded-full bg-white p-1 shadow">
+    <!-- Encabezado / Logo del Comercio (Verde Vivo) -->
+    <header id="headerComercio" class="bg-emerald-600 text-white p-5 shadow-lg rounded-b-2xl">
+        <div class="max-w-xl mx-auto flex items-center justify-center space-x-3">
+            <!-- Logo o Ícono por defecto al lado del Nombre -->
+            <div id="logoContainer" class="flex-shrink-0">
+                <img id="imgLogo" src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Logo Comercio" class="h-12 w-12 rounded-full bg-white p-1 shadow-md object-cover border border-emerald-200">
+            </div>
+            <div class="text-left">
+                <h1 id="nombreComercio" class="text-xl font-extrabold uppercase tracking-wide leading-tight">Cargando comercio...</h1>
+                <p class="text-xs text-emerald-100 font-medium">Catálogo Oficial de Productos</p>
+            </div>
         </div>
-        <h1 id="nombreComercio" class="text-2xl font-bold tracking-tight">Cargando comercio...</h1>
-        <p class="text-xs text-indigo-100 mt-1">Catálogo oficial de productos</p>
     </header>
 
     <!-- Contenido Principal -->
-    <main class="max-w-md mx-auto px-4 mt-6">
+    <main class="max-w-xl mx-auto px-4 mt-5">
 
         <!-- Buscador de Productos -->
-        <div class="mb-6">
-            <div class="relative">
-                <input type="text" id="inputBuscar" onkeyup="filtrarProductos()" placeholder="Buscar producto..." 
-                    class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
-                <svg class="w-5 h-5 text-gray-400 absolute left-3 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
+        <div class="mb-5">
+            <div class="relative shadow-sm rounded-xl">
+                <input type="text" id="inputBuscar" onkeyup="filtrarProductos()" placeholder="🔍 Buscar por código, artículo o descripción..." 
+                    class="w-full pl-4 pr-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm bg-white">
             </div>
         </div>
 
@@ -46,9 +51,7 @@
 
     </main>
 
-    <!-- Script de Inicialización y Lógica Supabase -->
     <script>
-        // Credenciales de Supabase
         const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
         
@@ -56,7 +59,6 @@
 
         let productosGlobales = [];
 
-        // Obtener el CUIT desde los parámetros de la URL (?cuit=20081802204)
         const urlParams = new URLSearchParams(window.location.search);
         const cuitParam = urlParams.get('cuit');
 
@@ -67,22 +69,12 @@
             }
 
             try {
-                // 1. Cargar Datos del Comercio (Buscando tanto en CUIT como cuit)
-                let { data: comercio, error: errorComercio } = await supabaseClient
+                // 1. Cargar Datos del Comercio
+                let { data: comercio } = await supabaseClient
                     .from('COMERCIOS')
                     .select('*')
-                    .eq('CUIT', cuitParam)
+                    .or(`CUIT.eq.${cuitParam},cuit.eq.${cuitParam}`)
                     .maybeSingle();
-
-                if (!comercio) {
-                    // Intento de búsqueda fallback en minúscula
-                    let { data: comercioAlt } = await supabaseClient
-                        .from('COMERCIOS')
-                        .select('*')
-                        .eq('cuit', cuitParam)
-                        .maybeSingle();
-                    comercio = comercioAlt;
-                }
 
                 if (!comercio) {
                     mostrarError("No se encontró el comercio solicitado.");
@@ -93,24 +85,15 @@
                 document.getElementById('nombreComercio').innerText = comercio.NOMBRE || comercio.nombre || 'Mi Comercio';
                 
                 const logoUrl = comercio.LOGO || comercio.logo;
-                if (logoUrl) {
+                if (logoUrl && logoUrl.trim() !== '') {
                     document.getElementById('imgLogo').src = logoUrl;
-                    document.getElementById('logoContainer').classList.remove('hidden');
                 }
 
                 // 2. Cargar Productos del Comercio
-                let { data: productos, error: errorProductos } = await supabaseClient
+                let { data: productos } = await supabaseClient
                     .from('ARTICULOS')
                     .select('*')
-                    .eq('CUIT', cuitParam);
-
-                if (!productos || productos.length === 0) {
-                    let { data: productosAlt } = await supabaseClient
-                        .from('ARTICULOS')
-                        .select('*')
-                        .eq('cuit', cuitParam);
-                    productos = productosAlt;
-                }
+                    .or(`CUIT.eq.${cuitParam},cuit.eq.${cuitParam}`);
 
                 if (!productos || productos.length === 0) {
                     mostrarError("Este comercio aún no tiene artículos cargados.");
@@ -136,19 +119,40 @@
             }
 
             lista.forEach(item => {
-                const nombre = item.NOMBRE || item.nombre || 'Producto sin nombre';
-                const precio = item.PRECIO || item.precio || 0;
-                const imagen = item.IMAGEN || item.imagen || 'https://via.placeholder.com/150?text=Sin+Imagen';
+                // Mapeo de campos requeridos (soporta mayúsculas y minúsculas)
+                const codigo = item.CODIGO || item.codigo || '';
+                const articulo = item.ARTICULO || item.articulo || item.NOMBRE || item.nombre || 'Artículo sin título';
                 const descripcion = item.DESCRIPCION || item.descripcion || '';
+                const disponibilidad = item.DISPONIBILIDAD || item.disponibilidad || '';
+                const precio = item.PRECIO || item.precio || 0;
+                const promocion = item.PROMOCION || item.promocion || '';
 
                 const tarjeta = `
-                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center space-x-4">
-                        <img src="${imagen}" alt="${nombre}" class="w-20 h-20 object-cover rounded-xl bg-gray-100 flex-shrink-0">
-                        <div class="flex-1">
-                            <h3 class="font-bold text-gray-800 text-base leading-snug">${nombre}</h3>
-                            ${descripcion ? `<p class="text-xs text-gray-500 mt-0.5 line-clamp-2">${descripcion}</p>` : ''}
-                            <p class="text-indigo-600 font-extrabold text-lg mt-1">$${Number(precio).toLocaleString('es-AR')}</p>
+                    <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200 relative overflow-hidden">
+                        
+                        <!-- 1. CÓDIGO & DISPONIBILIDAD (Fila Superior) -->
+                        <div class="flex justify-between items-center text-xs mb-2 pb-2 border-b border-gray-100">
+                            ${codigo ? `<span class="bg-gray-100 text-gray-700 font-mono font-bold px-2 py-0.5 rounded">CÓD: ${codigo}</span>` : '<span></span>'}
+                            ${disponibilidad ? `<span class="bg-emerald-50 text-emerald-700 font-semibold px-2 py-0.5 rounded-full border border-emerald-200">📦 ${disponibilidad}</span>` : ''}
                         </div>
+
+                        <!-- 2. ARTÍCULO (Título Principal) -->
+                        <h3 class="font-extrabold text-gray-900 text-base leading-tight uppercase">${articulo}</h3>
+
+                        <!-- 3. DESCRIPCIÓN -->
+                        ${descripcion ? `<p class="text-xs text-gray-600 mt-1 leading-relaxed">${descripcion}</p>` : ''}
+
+                        <!-- 4. PRECIO & PROMOCIÓN (Fila Inferior) -->
+                        <div class="mt-3 pt-2 border-t border-gray-100 flex items-end justify-between">
+                            <div>
+                                ${promocion ? `<span class="inline-block bg-amber-100 text-amber-800 font-bold text-[10px] px-2 py-0.5 rounded uppercase tracking-wider mb-1">🔥 ${promocion}</span>` : ''}
+                                <p class="text-[10px] text-gray-400 uppercase font-semibold">Precio final</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-emerald-700 font-black text-2xl">$${Number(precio).toLocaleString('es-AR')}</span>
+                            </div>
+                        </div>
+
                     </div>
                 `;
                 contenedor.innerHTML += tarjeta;
@@ -158,9 +162,10 @@
         function filtrarProductos() {
             const busqueda = document.getElementById('inputBuscar').value.toLowerCase();
             const filtrados = productosGlobales.filter(prod => {
-                const nombre = (prod.NOMBRE || prod.nombre || '').toLowerCase();
+                const cod = (prod.CODIGO || prod.codigo || '').toString().toLowerCase();
+                const art = (prod.ARTICULO || prod.articulo || prod.NOMBRE || prod.nombre || '').toLowerCase();
                 const desc = (prod.DESCRIPCION || prod.descripcion || '').toLowerCase();
-                return nombre.includes(busqueda) || desc.includes(busqueda);
+                return cod.includes(busqueda) || art.includes(busqueda) || desc.includes(busqueda);
             });
             renderizarProductos(filtrados);
         }
@@ -172,7 +177,6 @@
             divEstado.classList.remove('hidden');
         }
 
-        // Ejecutar carga al iniciar
         window.onload = cargarDatos;
     </script>
 </body>
