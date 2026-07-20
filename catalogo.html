@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo Digital</title>
+    <!-- Tailwind CSS para diseño moderno -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SDK de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-50 min-h-screen text-gray-800">
+
+    <!-- Cabecera del Comercio -->
+    <header class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="max-w-md mx-auto px-4 py-4 flex items-center space-x-4">
+            <!-- Logo del Comercio -->
+            <img id="logoComercio" src="https://via.placeholder.com/64" alt="Logo" class="w-16 h-16 rounded-full object-cover border shadow-sm">
+            <div>
+                <h1 id="nombreComercio" class="text-xl font-bold text-gray-900">Cargando comercio...</h1>
+                <p class="text-sm text-gray-500">Catálogo oficial de productos</p>
+            </div>
+        </div>
+        <!-- Buscador rápido -->
+        <div class="max-w-md mx-auto px-4 pb-4">
+            <input type="text" id="buscador" placeholder="Buscar productos..." class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        </div>
+    </header>
+
+    <!-- Lista de Artículos -->
+    <main class="max-w-md mx-auto p-4">
+        <div id="listaArticulos" class="grid grid-cols-1 gap-4">
+            <!-- Los productos se cargarán dinámicamente aquí -->
+            <p class="text-center text-gray-500 py-8">Cargando artículos...</p>
+        </div>
+    </main>
+
+    <!-- Script de conexión y lógica -->
+    <script>
+        // REEMPLAZA ESTOS DOS VALORES CON TUS CREDENCIALES DE SUPABASE
+        const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Obtenemos el CUIT del comercio desde la URL (Ejemplo: catalogo.html?cuit=20123456789)
+        const urlParams = new URLSearchParams(window.location.search);
+        const cuitComercio = urlParams.get('cuit');
+
+        let todosLosArticulos = [];
+
+        async function cargarDatosComercio() {
+            if (!cuitComercio) {
+                document.getElementById('nombreComercio').innerText = "Comercio no especificado";
+                document.getElementById('listaArticulos').innerHTML = '<p class="text-center text-red-500 py-8">Por favor, escanea un código QR válido con un CUIT.</p>';
+                return;
+            }
+
+            // 1. Buscar datos del comercio
+            const { data: comercio, error: errorComercio } = await supabaseClient
+                .from('COMERCIOS')
+                .select('*')
+                .eq('cuit', cuitComercio)
+                .single();
+
+            if (errorComercio || !comercio) {
+                document.getElementById('nombreComercio').innerText = "Comercio no encontrado";
+                document.getElementById('listaArticulos').innerHTML = '<p class="text-center text-gray-500 py-8">No se encontró el comercio solicitado.</p>';
+                return;
+            }
+
+            // Mostrar logo y CUIT/nombre
+            document.getElementById('nombreComercio').innerText = `Comercio ${comercio.cuit}`;
+            if (comercio.logo) {
+                document.getElementById('logoComercio').src = comercio.logo;
+            }
+
+            // 2. Buscar artículos de este comercio
+            const { data: articulos, error: errorArticulos } = await supabaseClient
+                .from('ARTICULOS')
+                .select('*')
+                .eq('cuit', cuitComercio);
+
+            if (errorArticulos) {
+                console.error("Error al cargar artículos:", errorArticulos);
+                return;
+            }
+
+            todosLosArticulos = articulos || [];
+            mostrarArticulos(todosLosArticulos);
+        }
+
+        function mostrarArticulos(articulos) {
+            const contenedor = document.getElementById('listaArticulos');
+            contenedor.innerHTML = '';
+
+            if (articulos.length === 0) {
+                contenedor.innerHTML = '<p class="text-center text-gray-500 py-8">Este comercio aún no tiene artículos cargados.</p>';
+                return;
+            }
+
+            articulos.forEach(item => {
+                const tarjeta = `
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden flex border border-gray-100">
+                        <img src="${item.imagen || 'https://via.placeholder.com/100'}" alt="${item.nombre}" class="w-28 h-28 object-cover">
+                        <div class="p-4 flex flex-col justify-between flex-grow">
+                            <div>
+                                <h2 class="font-semibold text-gray-800">${item.nombre}</h2>
+                                <p class="text-xs text-gray-500 mt-1 line-clamp-2">${item.descripcion || ''}</p>
+                            </div>
+                            <span class="text-indigo-600 font-bold mt-2">$${item.precio}</span>
+                        </div>
+                    </div>
+                `;
+                contenedor.innerHTML += tarjeta;
+            });
+        }
+
+        // Buscador en vivo
+        document.getElementById('buscador').addEventListener('input', (e) => {
+            const texto = e.target.value.toLowerCase();
+            const filtrados = todosLosArticulos.filter(item => 
+                item.nombre.toLowerCase().includes(texto) || 
+                (item.descripcion && item.descripcion.toLowerCase().includes(texto))
+            );
+            mostrarArticulos(filtrados);
+        });
+
+        cargarDatosComercio();
+    </script>
+</body>
+</html>
