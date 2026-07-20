@@ -1,3 +1,6 @@
+HTML
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -141,10 +144,10 @@
                 const tarjeta = `
                     <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200 relative overflow-hidden">
                         
-                        <!-- 1. CÓDIGO & DISPONIBILIDAD -->
-                        <div class="flex justify-between items-center text-xs mb-2 pb-2 border-b border-gray-100">
-                            ${codigo ? `<span class="bg-gray-100 text-gray-700 font-mono font-bold px-2 py-0.5 rounded">CÓD: ${codigo}</span>` : '<span></span>'}
-                            ${disponibilidad ? `<span class="bg-slate-100 text-slate-800 font-semibold px-2 py-0.5 rounded-full border border-slate-200">📦 ${disponibilidad}</span>` : ''}
+                        <!-- 1. CÓDIGO (Más grande) & DISPONIBILIDAD -->
+                        <div class="flex justify-between items-center mb-2 pb-2 border-b border-gray-100">
+                            ${codigo ? `<span class="bg-gray-100 text-gray-800 font-mono font-extrabold text-sm px-2.5 py-1 rounded border border-gray-300">CÓD: ${codigo}</span>` : '<span></span>'}
+                            ${disponibilidad ? `<span class="bg-slate-100 text-slate-800 font-semibold text-xs px-2 py-0.5 rounded-full border border-slate-200">📦 ${disponibilidad}</span>` : ''}
                         </div>
 
                         <!-- 2. ARTÍCULO -->
