@@ -26,11 +26,11 @@
             </div>
             <div>
                 <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Contraseña</label>
-                <input type="password" id="loginPassword" required placeholder="••••••••" 
+                <input type="password" id="loginPassword" placeholder="••••••••" 
                     class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-600 text-sm">
             </div>
 
-            <div id="errorLogin" class="text-red-600 text-xs text-center font-bold hidden"></div>
+            <div id="errorLogin" class="text-red-600 text-xs text-center font-bold hidden p-2 bg-red-50 rounded-lg border border-red-200"></div>
 
             <button type="submit" id="btnIngresar" 
                 class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-xl shadow-md transition duration-200 text-sm">
@@ -67,7 +67,7 @@
 
         <main class="max-w-4xl mx-auto px-4 mt-6">
 
-            <!-- Botón / Formulario para Agregar Nuevo Artículo -->
+            <!-- Formulario para Agregar / Editar Artículo -->
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 mb-6">
                 <h2 id="tituloFormArticulo" class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
                     <span>➕</span> Agregar Nuevo Artículo
@@ -117,7 +117,7 @@
                 </form>
             </div>
 
-            <!-- Tabla de Artículos Cárgados -->
+            <!-- Tabla de Artículos Cargados -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
                 <div class="p-4 border-b border-gray-100 flex justify-between items-center">
                     <h3 class="font-bold text-slate-800 text-sm">Artículos Publicados</h3>
@@ -153,44 +153,57 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let comercioActual = null;
+        let cuitLimpioActual = '';
         let articulosLista = [];
 
-        // 1. INICIAR SESIÓN
+        // 1. INICIAR SESIÓN FLEXIBLE
         async function iniciarSesion(e) {
             e.preventDefault();
-            const cuit = document.getElementById('loginCuit').value.trim();
-            const pass = document.getElementById('loginPassword').value.trim();
+            const cuitIngresado = document.getElementById('loginCuit').value.trim();
+            const passIngresada = document.getElementById('loginPassword').value.trim();
             const divError = document.getElementById('errorLogin');
             divError.classList.add('hidden');
 
-            try {
-                let { data: comercio, error } = await supabaseClient
-                    .from('COMERCIOS')
-                    .select('*')
-                    .or(`CUIT.eq.${cuit},cuit.eq.${cuit}`)
-                    .maybeSingle();
+            // Limpiar CUIT de guiones, puntos y espacios
+            const cuitLimpio = cuitIngresado.replace(/[-.\s]/g, '');
 
-                if (error || !comercio) {
-                    divError.innerText = "No se encontró ningún comercio con este CUIT.";
+            try {
+                // Consultar la tabla COMERCIOS completa para buscar sin importar mayúsculas/minúsculas en columnas
+                let { data: comercios, error } = await supabaseClient.from('COMERCIOS').select('*');
+
+                if (error) {
+                    throw error;
+                }
+
+                // Buscar coincidencia de CUIT en cualquier columna posible
+                let comercio = comercios.find(c => {
+                    const valCuit = (c.CUIT || c.cuit || c.Cuit || c.cuit_comercio || '').toString().replace(/[-.\s]/g, '');
+                    return valCuit === cuitLimpio || valCuit === cuitIngresado;
+                });
+
+                if (!comercio) {
+                    divError.innerText = `No se encontró el CUIT "${cuitIngresado}" en la tabla COMERCIOS.`;
                     divError.classList.remove('hidden');
                     return;
                 }
 
-                // Verificar Contraseña (buscando en 'password', 'clave', 'PASSWORD' o 'CLAVE')
-                const passDB = comercio.password || comercio.clave || comercio.PASSWORD || comercio.CLAVE;
-                
-                if (passDB && passDB !== pass) {
-                    divError.innerText = "Contraseña incorrecta.";
+                // Obtener contraseña almacenada si existe
+                const passDB = (comercio.password || comercio.PASSWORD || comercio.clave || comercio.CLAVE || '').toString().trim();
+
+                // Validar contraseña (si existe columna en la base de datos)
+                if (passDB && passDB !== passIngresada) {
+                    divError.innerText = "La contraseña es incorrecta.";
                     divError.classList.remove('hidden');
                     return;
                 }
 
                 comercioActual = comercio;
+                cuitLimpioActual = (comercio.CUIT || comercio.cuit || cuitLimpio).toString().trim();
                 cargarPanel();
 
             } catch (err) {
-                console.error(err);
-                divError.innerText = "Error al intentar iniciar sesión.";
+                console.error("Error en login:", err);
+                divError.innerText = "Ocurrió un error al conectar con Supabase.";
                 divError.classList.remove('hidden');
             }
         }
@@ -200,12 +213,11 @@
             document.getElementById('seccionLogin').classList.add('hidden');
             document.getElementById('seccionPanel').classList.remove('hidden');
 
-            const nombre = comercioActual.NOMBRE || comercioActual.nombre || 'Mi Comercio';
-            const cuit = comercioActual.CUIT || comercioActual.cuit || '';
+            const nombre = comercioActual.NOMBRE || comercioActual.nombre || comercioActual.Nombre || 'Mi Comercio';
             const color = comercioActual.color || comercioActual.COLOR || comercioActual.color_hex || '#334155';
 
             document.getElementById('adminNombreComercio').innerText = nombre;
-            document.getElementById('adminCuitComercio').innerText = `CUIT: ${cuit}`;
+            document.getElementById('adminCuitComercio').innerText = `CUIT: ${cuitLimpioActual}`;
             document.getElementById('headerAdmin').style.backgroundColor = color;
             document.getElementById('inputColor').value = color;
 
@@ -214,14 +226,14 @@
 
         // 3. CARGAR ARTÍCULOS DESDE SUPABASE
         async function cargarArticulos() {
-            const cuit = comercioActual.CUIT || comercioActual.cuit;
-            let { data, error } = await supabaseClient
-                .from('ARTICULOS')
-                .select('*')
-                .or(`CUIT.eq.${cuit},cuit.eq.${cuit}`);
+            let { data: todos, error } = await supabaseClient.from('ARTICULOS').select('*');
 
-            if (!error && data) {
-                articulosLista = data;
+            if (!error && todos) {
+                // Filtrar de forma flexible por CUIT
+                articulosLista = todos.filter(a => {
+                    const valCuit = (a.CUIT || a.cuit || a.Cuit || '').toString().replace(/[-.\s]/g, '');
+                    return valCuit === cuitLimpioActual.replace(/[-.\s]/g, '');
+                });
                 renderizarTabla();
             }
         }
@@ -264,7 +276,6 @@
         async function guardarArticulo(e) {
             e.preventDefault();
             const id = document.getElementById('artId').value;
-            const cuitVal = comercioActual.CUIT || comercioActual.cuit;
 
             const datos = {
                 CODIGO: document.getElementById('artCodigo').value.trim(),
@@ -273,14 +284,12 @@
                 DISPONIBILIDAD: document.getElementById('artDisponibilidad').value.trim(),
                 PRECIO: parseFloat(document.getElementById('artPrecio').value) || 0,
                 PROMOCION: document.getElementById('artPromocion').value.trim(),
-                CUIT: cuitVal
+                CUIT: cuitLimpioActual
             };
 
             if (id) {
-                // Editar
                 await supabaseClient.from('ARTICULOS').update(datos).eq('id', id);
             } else {
-                // Insertar Nuevo
                 await supabaseClient.from('ARTICULOS').insert([datos]);
             }
 
@@ -325,7 +334,7 @@
             }
         }
 
-        // 5. GUARDAR COLOR DE FRANJA EN SUPABASE
+        // 5. GUARDAR COLOR
         async function guardarColor(nuevoColor) {
             document.getElementById('headerAdmin').style.backgroundColor = nuevoColor;
             const idComercio = comercioActual.id || comercioActual.ID;
@@ -333,8 +342,7 @@
             if (idComercio) {
                 await supabaseClient.from('COMERCIOS').update({ color: nuevoColor }).eq('id', idComercio);
             } else {
-                const cuit = comercioActual.CUIT || comercioActual.cuit;
-                await supabaseClient.from('COMERCIOS').update({ color: nuevoColor }).eq('CUIT', cuit);
+                await supabaseClient.from('COMERCIOS').update({ color: nuevoColor }).eq('CUIT', cuitLimpioActual);
             }
         }
 
