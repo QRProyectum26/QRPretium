@@ -152,6 +152,7 @@
         let comercioActual = null;
         let cuitLimpioActual = '';
         let articulosLista = [];
+        let nombreTablaArticulos = 'ARTICULOS'; // Nombre por defecto
 
         function obtenerValorObjeto(obj, listaClaves) {
             if (!obj) return '';
@@ -238,8 +239,16 @@
         }
 
         async function cargarArticulos() {
+            // Intentamos detectar exactamente qué tabla existe
             let res = await supabaseClient.from('ARTICULOS').select('*');
-            if (res.error) res = await supabaseClient.from('articulos').select('*');
+            if (!res.error) {
+                nombreTablaArticulos = 'ARTICULOS';
+            } else {
+                res = await supabaseClient.from('articulos').select('*');
+                if (!res.error) {
+                    nombreTablaArticulos = 'articulos';
+                }
+            }
 
             if (!res.error && res.data) {
                 const cuitComparar = cuitLimpioActual.replace(/[-.\s]/g, '');
@@ -248,6 +257,8 @@
                     return rawCuit.replace(/[-.\s]/g, '') === cuitComparar;
                 });
                 renderizarTabla();
+            } else if (res.error) {
+                console.error("Error al cargar artículos:", res.error);
             }
         }
 
@@ -300,47 +311,45 @@
             const prec = parseFloat(document.getElementById('artPrecio').value) || 0;
             const prom = document.getElementById('artPromocion').value.trim();
 
-            // Variantes de nombres de campos para asegurar compatibilidad con la BD
-            const variantesDatos = [
-                { CODIGO: cod, ARTICULO: nom, DESCRIPCION: desc, DISPONIBILIDAD: disp, PRECIO: prec, PROMOCION: prom, CUIT: cuitLimpioActual },
-                { codigo: cod, articulo: nom, descripcion: desc, disponibilidad: disp, precio: prec, promocion: prom, cuit: cuitLimpioActual },
-                { codigo: cod, nombre: nom, descripcion: desc, disponibilidad: disp, precio: prec, promocion: prom, cuit: cuitLimpioActual },
-                { CODIGO: cod, NOMBRE: nom, DESCRIPCION: desc, DISPONIBILIDAD: disp, PRECIO: prec, PROMOCION: prom, CUIT: cuitLimpioActual }
-            ];
+            // Armamos la estructura utilizando el nombre detectado en cargarArticulos()
+            const datos = {
+                CODIGO: cod,
+                codigo: cod,
+                ARTICULO: nom,
+                articulo: nom,
+                DESCRIPCION: desc,
+                descripcion: desc,
+                DISPONIBILIDAD: disp,
+                disponibilidad: disp,
+                PRECIO: prec,
+                precio: prec,
+                PROMOCION: prom,
+                promocion: prom,
+                CUIT: cuitLimpioActual,
+                cuit: cuitLimpioActual
+            };
 
-            const tablasIntento = ['ARTICULOS', 'articulos'];
-            let errorGuardado = null;
-            let exito = false;
-
-            for (const tabla of tablasIntento) {
-                for (const datos of variantesDatos) {
-                    let res;
-                    if (id) {
-                        res = await supabaseClient.from(tabla).update(datos).eq('id', id);
-                    } else {
-                        res = await supabaseClient.from(tabla).insert([datos]);
-                    }
-
-                    if (!res.error) {
-                        exito = true;
-                        break;
-                    } else {
-                        errorGuardado = res.error;
-                    }
+            // Filtramos únicamente la tabla detectada
+            let res;
+            if (id) {
+                res = await supabaseClient.from(nombreTablaArticulos).update(datos).eq('id', id);
+                if (res.error) {
+                    res = await supabaseClient.from(nombreTablaArticulos).update(datos).eq('ID', id);
                 }
-                if (exito) break;
+            } else {
+                res = await supabaseClient.from(nombreTablaArticulos).insert([datos]);
             }
 
             btnGuardar.disabled = false;
             btnGuardar.innerText = "Guardar Artículo";
 
-            if (exito) {
+            if (!res.error) {
                 mostrarMensaje(id ? "✅ Artículo actualizado correctamente." : "✅ Nuevo artículo guardado con éxito.");
                 limpiarFormulario();
                 await cargarArticulos();
             } else {
-                console.error("Error al guardar:", errorGuardado);
-                mostrarMensaje(`Error al guardar: ${errorGuardado.message}`, true);
+                console.error("Error al guardar:", res.error);
+                mostrarMensaje(`Error al guardar: ${res.error.message}`, true);
             }
         }
 
@@ -376,8 +385,8 @@
 
         async function eliminarArticulo(id) {
             if (confirm("¿Estás seguro de que deseas borrar este artículo?")) {
-                let res = await supabaseClient.from('ARTICULOS').delete().eq('id', id);
-                if (res.error) res = await supabaseClient.from('articulos').delete().eq('id', id);
+                let res = await supabaseClient.from(nombreTablaArticulos).delete().eq('id', id);
+                if (res.error) res = await supabaseClient.from(nombreTablaArticulos).delete().eq('ID', id);
 
                 if (res.error) {
                     mostrarMensaje(`Error al borrar: ${res.error.message}`, true);
@@ -392,10 +401,9 @@
             document.getElementById('headerAdmin').style.backgroundColor = nuevoColor;
             const idComercio = comercioActual.id || comercioActual.ID;
 
-            if (idComercio) {
-                await supabaseClient.from('COMERCIOS').update({ color: nuevoColor }).eq('id', idComercio);
-            } else {
-                await supabaseClient.from('COMERCIOS').update({ color: nuevoColor }).eq('cuit', cuitLimpioActual);
+            let res = await supabaseClient.from('COMERCIOS').update({ color: nuevoColor, COLOR: nuevoColor }).eq('id', idComercio);
+            if (res.error) {
+                await supabaseClient.from('comercios').update({ color: nuevoColor, COLOR: nuevoColor }).eq('id', idComercio);
             }
         }
 
