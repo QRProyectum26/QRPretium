@@ -70,6 +70,8 @@
                     <span>➕</span> Agregar Nuevo Artículo
                 </h2>
 
+                <div id="mensajeEstado" class="hidden mb-4 p-3 text-xs font-bold rounded-xl text-center leading-relaxed"></div>
+
                 <form onsubmit="guardarArticulo(event)" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     <input type="hidden" id="artId">
 
@@ -151,13 +153,22 @@
         let cuitLimpioActual = '';
         let articulosLista = [];
 
-        // Función para extraer cualquier variante de una propiedad en un objeto
         function obtenerValorObjeto(obj, listaClaves) {
             if (!obj) return '';
             const claveEncontrada = Object.keys(obj).find(k => 
                 listaClaves.some(l => l.toLowerCase() === k.toLowerCase())
             );
             return claveEncontrada ? obj[claveEncontrada] : '';
+        }
+
+        function mostrarMensaje(texto, esError = false) {
+            const div = document.getElementById('mensajeEstado');
+            div.innerText = texto;
+            div.className = `mb-4 p-3 text-xs font-bold rounded-xl text-center leading-relaxed ${
+                esError ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+            }`;
+            div.classList.remove('hidden');
+            setTimeout(() => div.classList.add('hidden'), 5000);
         }
 
         async function iniciarSesion(e) {
@@ -170,21 +181,18 @@
             const cuitLimpio = cuitIngresado.replace(/[-.\s]/g, '');
 
             try {
-                let { data: comercios, error } = await supabaseClient.from('COMERCIOS').select('*');
+                let res = await supabaseClient.from('COMERCIOS').select('*');
+                if (res.error || !res.data || res.data.length === 0) {
+                    res = await supabaseClient.from('comercios').select('*');
+                }
 
-                if (error) {
-                    divError.innerText = `Error Supabase: ${error.message}`;
+                if (res.error) {
+                    divError.innerText = `Error Supabase (${res.error.code}): ${res.error.message}`;
                     divError.classList.remove('hidden');
                     return;
                 }
 
-                if (!comercios || comercios.length === 0) {
-                    divError.innerText = "La tabla COMERCIOS está vacía en Supabase.";
-                    divError.classList.remove('hidden');
-                    return;
-                }
-
-                // Buscar coincidencia exacta o flexible en los CUITs
+                const comercios = res.data;
                 let comercio = comercios.find(c => {
                     const rawCuit = String(obtenerValorObjeto(c, ['cuit', 'CUIT', 'Cuit', 'cuit_comercio']));
                     const valCuitLimpio = rawCuit.replace(/[-.\s]/g, '');
@@ -192,18 +200,13 @@
                 });
 
                 if (!comercio) {
-                    const cuitsRegistrados = comercios.map(c => {
-                        const val = obtenerValorObjeto(c, ['cuit', 'CUIT', 'Cuit', 'cuit_comercio']);
-                        return val ? `"${val}"` : 'Sin CUIT';
-                    }).join(', ');
-
-                    divError.innerText = `No se encontró el CUIT "${cuitIngresado}". Los CUITs cargados en Supabase son: [${cuitsRegistrados}].`;
+                    const cuitsRegistrados = comercios.map(c => `"${obtenerValorObjeto(c, ['cuit', 'CUIT'])}"`).join(', ');
+                    divError.innerText = `No se encontró el CUIT "${cuitIngresado}". Registrados: [${cuitsRegistrados}].`;
                     divError.classList.remove('hidden');
                     return;
                 }
 
-                const passDB = String(obtenerValorObjeto(comercio, ['password', 'PASSWORD', 'clave', 'CLAVE', 'contrasena', 'CONTRASENA'])).trim();
-
+                const passDB = String(obtenerValorObjeto(comercio, ['password', 'PASSWORD', 'clave', 'CLAVE', 'contrasena'])).trim();
                 if (passDB && passDB !== passIngresada) {
                     divError.innerText = "La contraseña ingresada no coincide.";
                     divError.classList.remove('hidden');
@@ -211,12 +214,12 @@
                 }
 
                 comercioActual = comercio;
-                cuitLimpioActual = String(obtenerValorObjeto(comercio, ['cuit', 'CUIT', 'Cuit', 'cuit_comercio'])).trim();
+                cuitLimpioActual = String(obtenerValorObjeto(comercio, ['cuit', 'CUIT'])).trim();
                 cargarPanel();
 
             } catch (err) {
-                console.error("Error en login:", err);
-                divError.innerText = "Ocurrió un error inesperado al validar la información.";
+                console.error(err);
+                divError.innerText = "Error inesperado al validar la información.";
                 divError.classList.remove('hidden');
             }
         }
@@ -225,8 +228,8 @@
             document.getElementById('seccionLogin').classList.add('hidden');
             document.getElementById('seccionPanel').classList.remove('hidden');
 
-            const nombre = obtenerValorObjeto(comercioActual, ['nombre', 'NOMBRE', 'Nombre']) || 'Mi Comercio';
-            const color = obtenerValorObjeto(comercioActual, ['color', 'COLOR', 'color_hex']) || '#334155';
+            const nombre = obtenerValorObjeto(comercioActual, ['nombre', 'NOMBRE']) || 'Mi Comercio';
+            const color = obtenerValorObjeto(comercioActual, ['color', 'COLOR']) || '#334155';
 
             document.getElementById('adminNombreComercio').innerText = nombre;
             document.getElementById('adminCuitComercio').innerText = `CUIT: ${cuitLimpioActual}`;
@@ -237,12 +240,13 @@
         }
 
         async function cargarArticulos() {
-            let { data: todos, error } = await supabaseClient.from('ARTICULOS').select('*');
+            let res = await supabaseClient.from('ARTICULOS').select('*');
+            if (res.error) res = await supabaseClient.from('articulos').select('*');
 
-            if (!error && todos) {
+            if (!res.error && res.data) {
                 const cuitComparar = cuitLimpioActual.replace(/[-.\s]/g, '');
-                articulosLista = todos.filter(a => {
-                    const rawCuit = String(obtenerValorObjeto(a, ['cuit', 'CUIT', 'Cuit', 'cuit_comercio']));
+                articulosLista = res.data.filter(a => {
+                    const rawCuit = String(obtenerValorObjeto(a, ['cuit', 'CUIT']));
                     return rawCuit.replace(/[-.\s]/g, '') === cuitComparar;
                 });
                 renderizarTabla();
@@ -285,35 +289,48 @@
 
         async function guardarArticulo(e) {
             e.preventDefault();
+            const btnGuardar = document.getElementById('btnGuardarArt');
+            btnGuardar.disabled = true;
+            btnGuardar.innerText = "Guardando...";
+
             const id = document.getElementById('artId').value;
 
-            // Determinar los nombres de campos exactos según el comercio cargado
-            const datos = {
+            // Datos estructurados estrictamente en minúsculas para Postgres / Supabase
+            const datosGuardar = {
                 codigo: document.getElementById('artCodigo').value.trim(),
                 articulo: document.getElementById('artNombre').value.trim(),
                 descripcion: document.getElementById('artDescripcion').value.trim(),
                 disponibilidad: document.getElementById('artDisponibilidad').value.trim(),
                 precio: parseFloat(document.getElementById('artPrecio').value) || 0,
                 promocion: document.getElementById('artPromocion').value.trim(),
-                cuit: cuitLimpioActual,
-                // Duplicación por compatibilidad si la tabla usa mayúsculas
-                CODIGO: document.getElementById('artCodigo').value.trim(),
-                ARTICULO: document.getElementById('artNombre').value.trim(),
-                DESCRIPCION: document.getElementById('artDescripcion').value.trim(),
-                DISPONIBILIDAD: document.getElementById('artDisponibilidad').value.trim(),
-                PRECIO: parseFloat(document.getElementById('artPrecio').value) || 0,
-                PROMOCION: document.getElementById('artPromocion').value.trim(),
-                CUIT: cuitLimpioActual
+                cuit: cuitLimpioActual
             };
 
+            let errorGuardado = null;
+
             if (id) {
-                await supabaseClient.from('ARTICULOS').update(datos).eq('id', id);
+                // Actualizar producto
+                let res = await supabaseClient.from('ARTICULOS').update(datosGuardar).eq('id', id);
+                if (res.error) res = await supabaseClient.from('articulos').update(datosGuardar).eq('id', id);
+                errorGuardado = res.error;
             } else {
-                await supabaseClient.from('ARTICULOS').insert([datos]);
+                // Insertar producto nuevo
+                let res = await supabaseClient.from('ARTICULOS').insert([datosGuardar]);
+                if (res.error) res = await supabaseClient.from('articulos').insert([datosGuardar]);
+                errorGuardado = res.error;
             }
 
-            limpiarFormulario();
-            await cargarArticulos();
+            btnGuardar.disabled = false;
+            btnGuardar.innerText = "Guardar Artículo";
+
+            if (errorGuardado) {
+                console.error("Error al guardar:", errorGuardado);
+                mostrarMensaje(`Error al guardar: ${errorGuardado.message}`, true);
+            } else {
+                mostrarMensaje(id ? "✅ Artículo actualizado correctamente." : "✅ Nuevo artículo guardado con éxito.");
+                limpiarFormulario();
+                await cargarArticulos();
+            }
         }
 
         function prepararEdicion(id) {
@@ -348,8 +365,15 @@
 
         async function eliminarArticulo(id) {
             if (confirm("¿Estás seguro de que deseas borrar este artículo?")) {
-                await supabaseClient.from('ARTICULOS').delete().eq('id', id);
-                await cargarArticulos();
+                let res = await supabaseClient.from('ARTICULOS').delete().eq('id', id);
+                if (res.error) res = await supabaseClient.from('articulos').delete().eq('id', id);
+
+                if (res.error) {
+                    mostrarMensaje(`Error al borrar: ${res.error.message}`, true);
+                } else {
+                    mostrarMensaje("🗑️ Artículo eliminado.");
+                    await cargarArticulos();
+                }
             }
         }
 
