@@ -152,6 +152,7 @@
         let comercioActual = null;
         let cuitLimpioActual = '';
         let articulosLista = [];
+        let columnasDetectadas = [];
 
         function obtenerValorObjeto(obj, listaClaves) {
             if (!obj) return '';
@@ -181,8 +182,9 @@
             const cuitLimpio = cuitIngresado.replace(/[-.\s]/g, '');
 
             try {
-                // Consultamos directamente la tabla COMERCIOS
-                let res = await supabaseClient.from('COMERCIOS').select('*');
+                // Forzamos comillas dobles para consultar la tabla en MAYÚSCULAS exacta
+                let res = await supabaseClient.from('"COMERCIOS"').select('*');
+                if (res.error) res = await supabaseClient.from('COMERCIOS').select('*');
                 if (res.error) res = await supabaseClient.from('comercios').select('*');
 
                 if (res.error) {
@@ -239,10 +241,16 @@
         }
 
         async function cargarArticulos() {
-            let res = await supabaseClient.from('ARTICULOS').select('*');
+            // Se realiza la consulta con comillas dobles explícitas
+            let res = await supabaseClient.from('"ARTICULOS"').select('*');
+            if (res.error) res = await supabaseClient.from('ARTICULOS').select('*');
             if (res.error) res = await supabaseClient.from('articulos').select('*');
 
             if (!res.error && res.data) {
+                if (res.data.length > 0) {
+                    columnasDetectadas = Object.keys(res.data[0]);
+                }
+
                 const cuitComparar = cuitLimpioActual.replace(/[-.\s]/g, '');
                 articulosLista = res.data.filter(a => {
                     const rawCuit = String(obtenerValorObjeto(a, ['cuit', 'CUIT']));
@@ -288,6 +296,22 @@
             });
         }
 
+        function mapearColumna(nombreBuscado) {
+            if (columnasDetectadas.length > 0) {
+                const encontrada = columnasDetectadas.find(c => c.toLowerCase() === nombreBuscado.toLowerCase());
+                if (encontrada) return encontrada;
+            }
+            return nombreBuscado.toLowerCase();
+        }
+
+        async function ejecutarGuardado(tabla, datos, id, campoId) {
+            if (id) {
+                return await supabaseClient.from(tabla).update(datos).eq(campoId, id);
+            } else {
+                return await supabaseClient.from(tabla).insert([datos]);
+            }
+        }
+
         async function guardarArticulo(e) {
             e.preventDefault();
             const btnGuardar = document.getElementById('btnGuardarArt');
@@ -303,29 +327,28 @@
             const prec = parseFloat(document.getElementById('artPrecio').value) || 0;
             const prom = document.getElementById('artPromocion').value.trim();
 
-            // Enviamos exactamente la estructura con nombres de columnas en minúscula y mayúscula 
-            // asegurando que 'cuit' (que es el nombre exacto de la columna en tu BD) vaya impecable.
-            const datos = {
-                cuit: cuitLimpioActual,
-                codigo: cod,
-                articulo: nom,
-                descripcion: desc,
-                disponibilidad: disp,
-                precio: prec,
-                promocion: prom
-            };
+            const datos = {};
+            datos[mapearColumna('cuit')] = cuitLimpioActual;
+            datos[mapearColumna('codigo')] = cod;
+            datos[mapearColumna('articulo')] = nom;
+            datos[mapearColumna('descripcion')] = desc;
+            datos[mapearColumna('disponibilidad')] = disp;
+            datos[mapearColumna('precio')] = prec;
+            datos[mapearColumna('promocion')] = prom;
 
-            let res;
-            if (id) {
-                res = await supabaseClient.from('ARTICULOS').update(datos).eq('id', id);
-                if (res.error) {
-                    res = await supabaseClient.from('articulos').update(datos).eq('id', id);
-                }
-            } else {
-                res = await supabaseClient.from('ARTICULOS').insert([datos]);
-                if (res.error) {
-                    res = await supabaseClient.from('articulos').insert([datos]);
-                }
+            const campoId = mapearColumna('id');
+
+            // Intento 1: Nombre con comillas dobles
+            let res = await ejecutarGuardado('"ARTICULOS"', datos, id, campoId);
+            
+            // Intento 2: Nombre en mayúsculas simple
+            if (res.error) {
+                res = await ejecutarGuardado('ARTICULOS', datos, id, campoId);
+            }
+            
+            // Intento 3: Nombre en minúsculas
+            if (res.error) {
+                res = await ejecutarGuardado('articulos', datos, id, campoId);
             }
 
             btnGuardar.disabled = false;
@@ -373,8 +396,10 @@
 
         async function eliminarArticulo(id) {
             if (confirm("¿Estás seguro de que deseas borrar este artículo?")) {
-                let res = await supabaseClient.from('ARTICULOS').delete().eq('id', id);
-                if (res.error) res = await supabaseClient.from('articulos').delete().eq('id', id);
+                const campoId = mapearColumna('id');
+                let res = await supabaseClient.from('"ARTICULOS"').delete().eq(campoId, id);
+                if (res.error) res = await supabaseClient.from('ARTICULOS').delete().eq(campoId, id);
+                if (res.error) res = await supabaseClient.from('articulos').delete().eq(campoId, id);
 
                 if (res.error) {
                     mostrarMensaje(`Error al borrar: ${res.error.message}`, true);
@@ -389,10 +414,9 @@
             document.getElementById('headerAdmin').style.backgroundColor = nuevoColor;
             const idComercio = comercioActual.id || comercioActual.ID;
 
-            let res = await supabaseClient.from('COMERCIOS').update({ color: nuevoColor }).eq('id', idComercio);
-            if (res.error) {
-                await supabaseClient.from('comercios').update({ color: nuevoColor }).eq('id', idComercio);
-            }
+            let res = await supabaseClient.from('"COMERCIOS"').update({ color: nuevoColor }).eq('id', idComercio);
+            if (res.error) res = await supabaseClient.from('COMERCIOS').update({ color: nuevoColor }).eq('id', idComercio);
+            if (res.error) res = await supabaseClient.from('comercios').update({ color: nuevoColor }).eq('id', idComercio);
         }
 
         function cerrarSesion() {
