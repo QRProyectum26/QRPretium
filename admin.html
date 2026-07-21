@@ -46,7 +46,7 @@
             <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
                 <div class="text-center md:text-left">
                     <h1 id="adminNombreComercio" class="text-2xl font-extrabold uppercase tracking-wide">Cargando...</h1>
-                    <p id="adminCuitComercio" class="text-xs text-slate-200 font-medium mt-1">cuit: -</p>
+                    <p id="adminCuitComercio" class="text-xs text-slate-200 font-medium mt-1">CUIT: -</p>
                 </div>
 
                 <div class="flex items-center space-x-3 bg-black/20 p-2.5 rounded-xl backdrop-blur-sm border border-white/10">
@@ -152,7 +152,6 @@
         let comercioActual = null;
         let cuitLimpioActual = '';
         let articulosLista = [];
-        let nombreTablaArticulos = 'ARTICULOS'; // Nombre por defecto
 
         function obtenerValorObjeto(obj, listaClaves) {
             if (!obj) return '';
@@ -182,6 +181,7 @@
             const cuitLimpio = cuitIngresado.replace(/[-.\s]/g, '');
 
             try {
+                // Consultamos directamente la tabla COMERCIOS
                 let res = await supabaseClient.from('COMERCIOS').select('*');
                 if (res.error) res = await supabaseClient.from('comercios').select('*');
 
@@ -193,7 +193,7 @@
 
                 const comercios = res.data;
                 let comercio = comercios.find(c => {
-                    const rawCuit = String(obtenerValorObjeto(c, ['cuit', 'CUIT', 'Cuit', 'cuit_comercio']));
+                    const rawCuit = String(obtenerValorObjeto(c, ['cuit', 'CUIT', 'cuit_comercio']));
                     const valCuitLimpio = rawCuit.replace(/[-.\s]/g, '');
                     return valCuitLimpio === cuitLimpio || rawCuit === cuitIngresado || valCuitLimpio.includes(cuitLimpio);
                 });
@@ -239,16 +239,8 @@
         }
 
         async function cargarArticulos() {
-            // Intentamos detectar exactamente qué tabla existe
             let res = await supabaseClient.from('ARTICULOS').select('*');
-            if (!res.error) {
-                nombreTablaArticulos = 'ARTICULOS';
-            } else {
-                res = await supabaseClient.from('articulos').select('*');
-                if (!res.error) {
-                    nombreTablaArticulos = 'articulos';
-                }
-            }
+            if (res.error) res = await supabaseClient.from('articulos').select('*');
 
             if (!res.error && res.data) {
                 const cuitComparar = cuitLimpioActual.replace(/[-.\s]/g, '');
@@ -311,33 +303,29 @@
             const prec = parseFloat(document.getElementById('artPrecio').value) || 0;
             const prom = document.getElementById('artPromocion').value.trim();
 
-            // Armamos la estructura utilizando el nombre detectado en cargarArticulos()
+            // Enviamos exactamente la estructura con nombres de columnas en minúscula y mayúscula 
+            // asegurando que 'cuit' (que es el nombre exacto de la columna en tu BD) vaya impecable.
             const datos = {
-                CODIGO: cod,
+                cuit: cuitLimpioActual,
                 codigo: cod,
-                ARTICULO: nom,
                 articulo: nom,
-                DESCRIPCION: desc,
                 descripcion: desc,
-                DISPONIBILIDAD: disp,
                 disponibilidad: disp,
-                PRECIO: prec,
                 precio: prec,
-                PROMOCION: prom,
-                promocion: prom,
-                CUIT: cuitLimpioActual,
-                cuit: cuitLimpioActual
+                promocion: prom
             };
 
-            // Filtramos únicamente la tabla detectada
             let res;
             if (id) {
-                res = await supabaseClient.from(nombreTablaArticulos).update(datos).eq('id', id);
+                res = await supabaseClient.from('ARTICULOS').update(datos).eq('id', id);
                 if (res.error) {
-                    res = await supabaseClient.from(nombreTablaArticulos).update(datos).eq('ID', id);
+                    res = await supabaseClient.from('articulos').update(datos).eq('id', id);
                 }
             } else {
-                res = await supabaseClient.from(nombreTablaArticulos).insert([datos]);
+                res = await supabaseClient.from('ARTICULOS').insert([datos]);
+                if (res.error) {
+                    res = await supabaseClient.from('articulos').insert([datos]);
+                }
             }
 
             btnGuardar.disabled = false;
@@ -385,8 +373,8 @@
 
         async function eliminarArticulo(id) {
             if (confirm("¿Estás seguro de que deseas borrar este artículo?")) {
-                let res = await supabaseClient.from(nombreTablaArticulos).delete().eq('id', id);
-                if (res.error) res = await supabaseClient.from(nombreTablaArticulos).delete().eq('ID', id);
+                let res = await supabaseClient.from('ARTICULOS').delete().eq('id', id);
+                if (res.error) res = await supabaseClient.from('articulos').delete().eq('id', id);
 
                 if (res.error) {
                     mostrarMensaje(`Error al borrar: ${res.error.message}`, true);
@@ -401,9 +389,9 @@
             document.getElementById('headerAdmin').style.backgroundColor = nuevoColor;
             const idComercio = comercioActual.id || comercioActual.ID;
 
-            let res = await supabaseClient.from('COMERCIOS').update({ color: nuevoColor, COLOR: nuevoColor }).eq('id', idComercio);
+            let res = await supabaseClient.from('COMERCIOS').update({ color: nuevoColor }).eq('id', idComercio);
             if (res.error) {
-                await supabaseClient.from('comercios').update({ color: nuevoColor, COLOR: nuevoColor }).eq('id', idComercio);
+                await supabaseClient.from('comercios').update({ color: nuevoColor }).eq('id', idComercio);
             }
         }
 
