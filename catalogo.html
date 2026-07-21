@@ -103,7 +103,6 @@
                 if (prodRes1.data && prodRes1.data.length > 0) {
                     productos = prodRes1.data;
                 } else {
-                    // Si el CUIT en articulos está guardado en formato numérico o con columna CUIT
                     let prodRes2 = await supabaseClient.from('articulos').select('*').eq('CUIT', cuitParam);
                     if (prodRes2.data && prodRes2.data.length > 0) {
                         productos = prodRes2.data;
@@ -145,9 +144,9 @@
                     <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200 relative overflow-hidden">
                         
                         <!-- 1. CÓDIGO & DISPONIBILIDAD -->
-                        <div class="flex justify-between items-center mb-3 pb-2 border-b border-gray-100">
+                        <div class="flex justify-between items-center mb-3 pb-2 border-b border-gray-100 gap-2">
                             ${codigo ? `<span class="bg-slate-800 text-white font-mono font-black text-base px-3 py-1 rounded-lg shadow-sm">CÓD: ${codigo}</span>` : '<span></span>'}
-                            ${disponibilidad ? `<span class="bg-slate-100 text-slate-800 font-semibold text-xs px-2 py-1 rounded-full border border-slate-200">📦 ${disponibilidad}</span>` : ''}
+                            ${disponibilidad ? `<span class="bg-slate-100 text-slate-800 font-medium text-xs px-2.5 py-1 rounded-full border border-slate-200 text-right"><span class="font-bold text-gray-500 uppercase text-[10px]">Disponibilidad:</span> 📦 ${disponibilidad}</span>` : ''}
                         </div>
 
                         <!-- 2. ARTÍCULO -->
@@ -156,15 +155,23 @@
                         <!-- 3. DESCRIPCIÓN -->
                         ${descripcion ? `<p class="text-xs text-gray-600 mt-1 leading-relaxed">${descripcion}</p>` : ''}
 
-                        <!-- 4. PRECIO & PROMOCIÓN -->
-                        <div class="mt-3 pt-2 border-t border-gray-100 flex items-end justify-between">
-                            <div>
-                                ${promocion ? `<span class="inline-block bg-amber-100 text-amber-800 font-bold text-[10px] px-2 py-0.5 rounded uppercase tracking-wider mb-1">🔥 ${promocion}</span>` : ''}
-                                <p class="text-[10px] text-gray-400 uppercase font-semibold">Precio final</p>
+                        <!-- 4. PRECIO & PROMOCIÓN (Promoción debajo de Precio Final) -->
+                        <div class="mt-3 pt-2 border-t border-gray-100 flex flex-col space-y-1.5">
+                            <div class="flex items-end justify-between">
+                                <div>
+                                    <p class="text-[10px] text-gray-400 uppercase font-semibold">Precio final</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-slate-800 font-black text-2xl">$${Number(precio).toLocaleString('es-AR')}</span>
+                                </div>
                             </div>
-                            <div class="text-right">
-                                <span class="text-slate-800 font-black text-2xl">$${Number(precio).toLocaleString('es-AR')}</span>
-                            </div>
+                            ${promocion ? `
+                                <div>
+                                    <span class="inline-block bg-amber-100 text-amber-800 font-bold text-[11px] px-2.5 py-1 rounded-lg uppercase tracking-wider w-full text-center border border-amber-200/60">
+                                        🔥 ${promocion}
+                                    </span>
+                                </div>
+                            ` : ''}
                         </div>
 
                     </div>
