@@ -57,7 +57,7 @@
         let productosGlobales = [];
 
         const urlParams = new URLSearchParams(window.location.search);
-        const cuitParam = urlParams.get('cuit');
+        const cuitParam = urlParams.get('cuit') ? urlParams.get('cuit').trim() : null;
 
         async function cargarDatos() {
             if (!cuitParam) {
@@ -66,14 +66,14 @@
             }
 
             try {
-                // 1. Cargar Datos del Comercio
+                // 1. Cargar Datos del Comercio (Tabla 'comercios' en minúsculas)
                 let comercio = null;
                 
-                let res1 = await supabaseClient.from('COMERCIOS').select('*').eq('CUIT', cuitParam).maybeSingle();
+                let res1 = await supabaseClient.from('comercios').select('*').eq('cuit', cuitParam).maybeSingle();
                 if (res1.data) {
                     comercio = res1.data;
                 } else {
-                    let res2 = await supabaseClient.from('COMERCIOS').select('*').eq('cuit', cuitParam).maybeSingle();
+                    let res2 = await supabaseClient.from('comercios').select('*').eq('CUIT', cuitParam).maybeSingle();
                     if (res2.data) comercio = res2.data;
                 }
 
@@ -83,28 +83,31 @@
                 }
 
                 // Renderizar datos del comercio
-                document.getElementById('nombreComercio').innerText = comercio.NOMBRE || comercio.nombre || 'Mi Comercio';
+                document.getElementById('nombreComercio').innerText = comercio.nombre || comercio.NOMBRE || 'Mi Comercio';
                 
-                // Aplicar color personalizado si existe en la base de datos, o mantener Gris Pizarra por defecto
-                const colorPersonalizado = comercio.COLOR || comercio.color || comercio.COLOR_HEX || comercio.color_hex;
+                // Aplicar color personalizado si existe
+                const colorPersonalizado = comercio.color || comercio.COLOR || comercio.color_hex || comercio.COLOR_HEX;
                 if (colorPersonalizado) {
                     document.getElementById('headerComercio').style.backgroundColor = colorPersonalizado;
                 }
 
-                const logoUrl = comercio.LOGO || comercio.logo;
+                const logoUrl = comercio.logo || comercio.LOGO;
                 if (logoUrl && logoUrl.trim() !== '') {
                     document.getElementById('imgLogo').src = logoUrl;
                 }
 
-                // 2. Cargar Productos del Comercio
+                // 2. Cargar Productos del Comercio (Tabla 'articulos' en minúsculas)
                 let productos = null;
 
-                let prodRes1 = await supabaseClient.from('ARTICULOS').select('*').eq('CUIT', cuitParam);
+                let prodRes1 = await supabaseClient.from('articulos').select('*').eq('cuit', cuitParam);
                 if (prodRes1.data && prodRes1.data.length > 0) {
                     productos = prodRes1.data;
                 } else {
-                    let prodRes2 = await supabaseClient.from('ARTICULOS').select('*').eq('cuit', cuitParam);
-                    if (prodRes2.data) productos = prodRes2.data;
+                    // Si el CUIT en articulos está guardado en formato numérico o con columna CUIT
+                    let prodRes2 = await supabaseClient.from('articulos').select('*').eq('CUIT', cuitParam);
+                    if (prodRes2.data && prodRes2.data.length > 0) {
+                        productos = prodRes2.data;
+                    }
                 }
 
                 if (!productos || productos.length === 0) {
@@ -131,17 +134,17 @@
             }
 
             lista.forEach(item => {
-                const codigo = item.CODIGO || item.codigo || '';
-                const articulo = item.ARTICULO || item.articulo || item.NOMBRE || item.nombre || item.DESCRIPCION || item.descripcion || 'Artículo sin título';
-                const descripcion = (item.ARTICULO || item.articulo || item.NOMBRE || item.nombre) ? (item.DESCRIPCION || item.descripcion || '') : '';
-                const disponibilidad = item.DISPONIBILIDAD || item.disponibilidad || '';
-                const precio = item.PRECIO || item.precio || 0;
-                const promocion = item.PROMOCION || item.promocion || '';
+                const codigo = item.codigo || item.CODIGO || '';
+                const articulo = item.articulo || item.ARTICULO || item.nombre || item.NOMBRE || item.descripcion || item.DESCRIPCION || 'Artículo sin título';
+                const descripcion = (item.articulo || item.ARTICULO || item.nombre || item.NOMBRE) ? (item.descripcion || item.DESCRIPCION || '') : '';
+                const disponibilidad = item.disponibilidad || item.DISPONIBILIDAD || '';
+                const precio = item.precio || item.PRECIO || 0;
+                const promocion = item.promocion || item.PROMOCION || '';
 
                 const tarjeta = `
                     <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200 relative overflow-hidden">
                         
-                        <!-- 1. CÓDIGO (EXTRA GRANDE Y DESTACADO) & DISPONIBILIDAD -->
+                        <!-- 1. CÓDIGO & DISPONIBILIDAD -->
                         <div class="flex justify-between items-center mb-3 pb-2 border-b border-gray-100">
                             ${codigo ? `<span class="bg-slate-800 text-white font-mono font-black text-base px-3 py-1 rounded-lg shadow-sm">CÓD: ${codigo}</span>` : '<span></span>'}
                             ${disponibilidad ? `<span class="bg-slate-100 text-slate-800 font-semibold text-xs px-2 py-1 rounded-full border border-slate-200">📦 ${disponibilidad}</span>` : ''}
@@ -173,9 +176,9 @@
         function filtrarProductos() {
             const busqueda = document.getElementById('inputBuscar').value.toLowerCase();
             const filtrados = productosGlobales.filter(prod => {
-                const cod = (prod.CODIGO || prod.codigo || '').toString().toLowerCase();
-                const art = (prod.ARTICULO || prod.articulo || prod.NOMBRE || prod.nombre || '').toLowerCase();
-                const desc = (prod.DESCRIPCION || prod.descripcion || '').toLowerCase();
+                const cod = (prod.codigo || prod.CODIGO || '').toString().toLowerCase();
+                const art = (prod.articulo || prod.ARTICULO || prod.nombre || prod.NOMBRE || '').toLowerCase();
+                const desc = (prod.descripcion || prod.DESCRIPCION || '').toLowerCase();
                 return cod.includes(busqueda) || art.includes(busqueda) || desc.includes(busqueda);
             });
             renderizarProductos(filtrados);
