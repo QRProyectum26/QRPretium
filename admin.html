@@ -181,10 +181,7 @@
             const cuitLimpio = cuitIngresado.replace(/[-.\s]/g, '');
 
             try {
-                let res = await supabaseClient.from('COMERCIOS').select('*');
-                if (res.error || !res.data || res.data.length === 0) {
-                    res = await supabaseClient.from('comercios').select('*');
-                }
+                const res = await supabaseClient.from('COMERCIOS').select('*');
 
                 if (res.error) {
                     divError.innerText = `Error Supabase (${res.error.code}): ${res.error.message}`;
@@ -240,8 +237,7 @@
         }
 
         async function cargarArticulos() {
-            let res = await supabaseClient.from('ARTICULOS').select('*');
-            if (res.error) res = await supabaseClient.from('articulos').select('*');
+            const res = await supabaseClient.from('ARTICULOS').select('*');
 
             if (!res.error && res.data) {
                 const cuitComparar = cuitLimpioActual.replace(/[-.\s]/g, '');
@@ -295,7 +291,6 @@
 
             const id = document.getElementById('artId').value;
 
-            // Datos estructurados estrictamente en minúsculas para Postgres / Supabase
             const datosGuardar = {
                 codigo: document.getElementById('artCodigo').value.trim(),
                 articulo: document.getElementById('artNombre').value.trim(),
@@ -309,14 +304,10 @@
             let errorGuardado = null;
 
             if (id) {
-                // Actualizar producto
-                let res = await supabaseClient.from('ARTICULOS').update(datosGuardar).eq('id', id);
-                if (res.error) res = await supabaseClient.from('articulos').update(datosGuardar).eq('id', id);
+                const res = await supabaseClient.from('ARTICULOS').update(datosGuardar).eq('id', id);
                 errorGuardado = res.error;
             } else {
-                // Insertar producto nuevo
-                let res = await supabaseClient.from('ARTICULOS').insert([datosGuardar]);
-                if (res.error) res = await supabaseClient.from('articulos').insert([datosGuardar]);
+                const res = await supabaseClient.from('ARTICULOS').insert([datosGuardar]);
                 errorGuardado = res.error;
             }
 
@@ -365,8 +356,7 @@
 
         async function eliminarArticulo(id) {
             if (confirm("¿Estás seguro de que deseas borrar este artículo?")) {
-                let res = await supabaseClient.from('ARTICULOS').delete().eq('id', id);
-                if (res.error) res = await supabaseClient.from('articulos').delete().eq('id', id);
+                const res = await supabaseClient.from('ARTICULOS').delete().eq('id', id);
 
                 if (res.error) {
                     mostrarMensaje(`Error al borrar: ${res.error.message}`, true);
