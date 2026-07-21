@@ -181,7 +181,8 @@
             const cuitLimpio = cuitIngresado.replace(/[-.\s]/g, '');
 
             try {
-                const res = await supabaseClient.from('COMERCIOS').select('*');
+                let res = await supabaseClient.from('COMERCIOS').select('*');
+                if (res.error) res = await supabaseClient.from('comercios').select('*');
 
                 if (res.error) {
                     divError.innerText = `Error Supabase (${res.error.code}): ${res.error.message}`;
@@ -236,64 +237,112 @@
             await cargarArticulos();
         }
 
-       
+        async function cargarArticulos() {
+            let res = await supabaseClient.from('ARTICULOS').select('*');
+            if (res.error) res = await supabaseClient.from('articulos').select('*');
+
+            if (!res.error && res.data) {
+                const cuitComparar = cuitLimpioActual.replace(/[-.\s]/g, '');
+                articulosLista = res.data.filter(a => {
+                    const rawCuit = String(obtenerValorObjeto(a, ['cuit', 'CUIT']));
+                    return rawCuit.replace(/[-.\s]/g, '') === cuitComparar;
+                });
+                renderizarTabla();
+            }
+        }
+
+        function renderizarTabla() {
+            const tbody = document.getElementById('tbodyArticulos');
+            document.getElementById('cantArticulos').innerText = `${articulosLista.length} productos`;
+            tbody.innerHTML = '';
+
+            if (articulosLista.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-400">No hay artículos cargados para este CUIT.</td></tr>`;
+                return;
+            }
+
+            articulosLista.forEach(item => {
+                const id = item.id || item.ID;
+                const cod = obtenerValorObjeto(item, ['codigo', 'CODIGO']) || '-';
+                const art = obtenerValorObjeto(item, ['articulo', 'ARTICULO', 'nombre', 'NOMBRE']) || '-';
+                const disp = obtenerValorObjeto(item, ['disponibilidad', 'DISPONIBILIDAD']) || '-';
+                const precio = obtenerValorObjeto(item, ['precio', 'PRECIO']) || 0;
+                const promo = obtenerValorObjeto(item, ['promocion', 'PROMOCION']) || '-';
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="p-3 font-mono font-bold text-slate-800">${cod}</td>
+                        <td class="p-3 font-semibold text-gray-900 uppercase">${art}</td>
+                        <td class="p-3 text-xs text-gray-600">${disp}</td>
+                        <td class="p-3 font-black text-slate-800">$${Number(precio).toLocaleString('es-AR')}</td>
+                        <td class="p-3 text-xs text-amber-700 font-bold">${promo !== '-' ? '🔥 ' + promo : '-'}</td>
+                        <td class="p-3 text-right space-x-1">
+                            <button onclick="prepararEdicion(${id})" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-bold text-xs">✏️ Editar</button>
+                            <button onclick="eliminarArticulo(${id})" class="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded font-bold text-xs">🗑️ Borrar</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
 
         async function guardarArticulo(e) {
-    e.preventDefault();
-    const btnGuardar = document.getElementById('btnGuardarArt');
-    btnGuardar.disabled = true;
-    btnGuardar.innerText = "Guardando...";
+            e.preventDefault();
+            const btnGuardar = document.getElementById('btnGuardarArt');
+            btnGuardar.disabled = true;
+            btnGuardar.innerText = "Guardando...";
 
-    const id = document.getElementById('artId').value;
+            const id = document.getElementById('artId').value;
 
-    const cod = document.getElementById('artCodigo').value.trim();
-    const nom = document.getElementById('artNombre').value.trim();
-    const desc = document.getElementById('artDescripcion').value.trim();
-    const disp = document.getElementById('artDisponibilidad').value.trim();
-    const prec = parseFloat(document.getElementById('artPrecio').value) || 0;
-    const prom = document.getElementById('artPromocion').value.trim();
+            const cod = document.getElementById('artCodigo').value.trim();
+            const nom = document.getElementById('artNombre').value.trim();
+            const desc = document.getElementById('artDescripcion').value.trim();
+            const disp = document.getElementById('artDisponibilidad').value.trim();
+            const prec = parseFloat(document.getElementById('artPrecio').value) || 0;
+            const prom = document.getElementById('artPromocion').value.trim();
 
-    // Probamos primero con los nombres de columnas habituales en mayúsculas/minúsculas
-    const variantesDatos = [
-        // Intento 1: Nombres en mayúsculas
-        { CODIGO: cod, ARTICULO: nom, DESCRIPCION: desc, DISPONIBILIDAD: disp, PRECIO: prec, PROMOCION: prom, CUIT: cuitLimpioActual },
-        // Intento 2: Nombres en minúsculas
-        { codigo: cod, articulo: nom, descripcion: desc, disponibilidad: disp, precio: prec, promocion: prom, cuit: cuitLimpioActual },
-        // Intento 3: Variante con 'nombre'
-        { codigo: cod, nombre: nom, descripcion: desc, disponibilidad: disp, precio: prec, promocion: prom, cuit: cuitLimpioActual }
-    ];
+            // Variantes de nombres de campos para asegurar compatibilidad con la BD
+            const variantesDatos = [
+                { CODIGO: cod, ARTICULO: nom, DESCRIPCION: desc, DISPONIBILIDAD: disp, PRECIO: prec, PROMOCION: prom, CUIT: cuitLimpioActual },
+                { codigo: cod, articulo: nom, descripcion: desc, disponibilidad: disp, precio: prec, promocion: prom, cuit: cuitLimpioActual },
+                { codigo: cod, nombre: nom, descripcion: desc, disponibilidad: disp, precio: prec, promocion: prom, cuit: cuitLimpioActual },
+                { CODIGO: cod, NOMBRE: nom, DESCRIPCION: desc, DISPONIBILIDAD: disp, PRECIO: prec, PROMOCION: prom, CUIT: cuitLimpioActual }
+            ];
 
-    let errorGuardado = null;
-    let exito = false;
+            const tablasIntento = ['ARTICULOS', 'articulos'];
+            let errorGuardado = null;
+            let exito = false;
 
-    for (const datos of variantesDatos) {
-        let res;
-        if (id) {
-            res = await supabaseClient.from('ARTICULOS').update(datos).eq('id', id);
-        } else {
-            res = await supabaseClient.from('ARTICULOS').insert([datos]);
+            for (const tabla of tablasIntento) {
+                for (const datos of variantesDatos) {
+                    let res;
+                    if (id) {
+                        res = await supabaseClient.from(tabla).update(datos).eq('id', id);
+                    } else {
+                        res = await supabaseClient.from(tabla).insert([datos]);
+                    }
+
+                    if (!res.error) {
+                        exito = true;
+                        break;
+                    } else {
+                        errorGuardado = res.error;
+                    }
+                }
+                if (exito) break;
+            }
+
+            btnGuardar.disabled = false;
+            btnGuardar.innerText = "Guardar Artículo";
+
+            if (exito) {
+                mostrarMensaje(id ? "✅ Artículo actualizado correctamente." : "✅ Nuevo artículo guardado con éxito.");
+                limpiarFormulario();
+                await cargarArticulos();
+            } else {
+                console.error("Error al guardar:", errorGuardado);
+                mostrarMensaje(`Error al guardar: ${errorGuardado.message}`, true);
+            }
         }
-
-        if (!res.error) {
-            exito = true;
-            break; // Guardó con éxito
-        } else {
-            errorGuardado = res.error;
-        }
-    }
-
-    btnGuardar.disabled = false;
-    btnGuardar.innerText = "Guardar Artículo";
-
-    if (exito) {
-        mostrarMensaje(id ? "✅ Artículo actualizado correctamente." : "✅ Nuevo artículo guardado con éxito.");
-        limpiarFormulario();
-        await cargarArticulos();
-    } else {
-        console.error("Error al guardar:", errorGuardado);
-        mostrarMensaje(`Error al guardar: ${errorGuardado.message}`, true);
-    }
-}
 
         function prepararEdicion(id) {
             const item = articulosLista.find(a => (a.id || a.ID) == id);
@@ -327,7 +376,8 @@
 
         async function eliminarArticulo(id) {
             if (confirm("¿Estás seguro de que deseas borrar este artículo?")) {
-                const res = await supabaseClient.from('ARTICULOS').delete().eq('id', id);
+                let res = await supabaseClient.from('ARTICULOS').delete().eq('id', id);
+                if (res.error) res = await supabaseClient.from('articulos').delete().eq('id', id);
 
                 if (res.error) {
                     mostrarMensaje(`Error al borrar: ${res.error.message}`, true);
