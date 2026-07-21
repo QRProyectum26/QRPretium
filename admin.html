@@ -6,8 +6,6 @@
     <title>Panel de Administración - QRPretium</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Supabase JS Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen pb-12">
 
@@ -150,8 +148,8 @@
         let comercioActual = null;
         let cuitLimpioActual = '';
         let articulosLista = [];
+        let esquemaColumnas = [];
 
-        // Función REST directa para saltear la conversión a minúsculas del cliente Supabase
         async function consultarSupabase(endpoint, opciones = {}) {
             const url = `${SUPABASE_URL}/rest/v1/${endpoint}`;
             const headers = {
@@ -159,13 +157,15 @@
                 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
                 'Content-Type': 'application/json',
                 'Prefer': 'return=representation',
+                'Accept-Profile': 'public',
+                'Content-Profile': 'public',
                 ...(opciones.headers || {})
             };
 
             const respuesta = await fetch(url, { ...opciones, headers });
             if (!respuesta.ok) {
                 const errorData = await respuesta.json().catch(() => ({ message: respuesta.statusText }));
-                throw new Error(errorData.message || 'Error en la petición');
+                throw new Error(errorData.message || `Error status ${respuesta.status}`);
             }
             return await respuesta.json().catch(() => []);
         }
@@ -260,6 +260,10 @@
                     data = await consultarSupabase('articulos?select=*');
                 }
 
+                if (data.length > 0) {
+                    esquemaColumnas = Object.keys(data[0]);
+                }
+
                 const cuitComparar = cuitLimpioActual.replace(/[-.\s]/g, '');
                 articulosLista = data.filter(a => {
                     const rawCuit = String(obtenerValorObjeto(a, ['cuit', 'CUIT']));
@@ -305,6 +309,14 @@
             });
         }
 
+        function obtenerClaveColumna(nombreStandard) {
+            if (esquemaColumnas.length > 0) {
+                const encontrada = esquemaColumnas.find(c => c.toLowerCase() === nombreStandard.toLowerCase());
+                if (encontrada) return encontrada;
+            }
+            return nombreStandard;
+        }
+
         async function guardarArticulo(e) {
             e.preventDefault();
             const btnGuardar = document.getElementById('btnGuardarArt');
@@ -313,30 +325,51 @@
 
             const id = document.getElementById('artId').value;
 
-            const datos = {
-                cuit: cuitLimpioActual,
-                codigo: document.getElementById('artCodigo').value.trim(),
-                articulo: document.getElementById('artNombre').value.trim(),
-                descripcion: document.getElementById('artDescripcion').value.trim(),
-                disponibilidad: document.getElementById('artDisponibilidad').value.trim(),
-                precio: parseFloat(document.getElementById('artPrecio').value) || 0,
-                promocion: document.getElementById('artPromocion').value.trim()
-            };
+            // Construcción adaptable de datos
+            const payload = {};
+            payload[obtenerClaveColumna('cuit')] = cuitLimpioActual;
+            payload[obtenerClaveColumna('codigo')] = document.getElementById('artCodigo').value.trim();
+            payload[obtenerClaveColumna('articulo')] = document.getElementById('artNombre').value.trim();
+            payload[obtenerClaveColumna('descripcion')] = document.getElementById('artDescripcion').value.trim();
+            payload[obtenerClaveColumna('disponibilidad')] = document.getElementById('artDisponibilidad').value.trim();
+            payload[obtenerClaveColumna('precio')] = parseFloat(document.getElementById('artPrecio').value) || 0;
+            payload[obtenerClaveColumna('promocion')] = document.getElementById('artPromocion').value.trim();
+
+            const campoId = obtenerClaveColumna('id');
 
             try {
                 let metodo = id ? 'PATCH' : 'POST';
-                let query = id ? `?id=eq.${id}` : '';
+                let queryId = id ? `?${campoId}=eq.${id}` : '';
 
+                let guardadoExitoso = false;
+                let ultimoError = null;
+
+                // Intento 1: Tabla 'ARTICULOS' (Mayúsculas)
                 try {
-                    await consultarSupabase(`ARTICULOS${query}`, {
+                    await consultarSupabase(`ARTICULOS${queryId}`, {
                         method: metodo,
-                        body: JSON.stringify(datos)
+                        body: JSON.stringify(payload)
                     });
-                } catch (errMayus) {
-                    await consultarSupabase(`articulos${query}`, {
-                        method: metodo,
-                        body: JSON.stringify(datos)
-                    });
+                    guardadoExitoso = true;
+                } catch (err1) {
+                    ultimoError = err1;
+                }
+
+                // Intento 2: Tabla 'articulos' (Minúsculas)
+                if (!guardadoExitoso) {
+                    try {
+                        await consultarSupabase(`articulos${queryId}`, {
+                            method: metodo,
+                            body: JSON.stringify(payload)
+                        });
+                        guardadoExitoso = true;
+                    } catch (err2) {
+                        ultimoError = err2;
+                    }
+                }
+
+                if (!guardadoExitoso) {
+                    throw ultimoError;
                 }
 
                 mostrarMensaje(id ? "✅ Artículo actualizado correctamente." : "✅ Nuevo artículo guardado con éxito.");
@@ -383,11 +416,12 @@
 
         async function eliminarArticulo(id) {
             if (confirm("¿Estás seguro de que deseas borrar este artículo?")) {
+                const campoId = obtenerClaveColumna('id');
                 try {
                     try {
-                        await consultarSupabase(`ARTICULOS?id=eq.${id}`, { method: 'DELETE' });
+                        await consultarSupabase(`ARTICULOS?${campoId}=eq.${id}`, { method: 'DELETE' });
                     } catch (e) {
-                        await consultarSupabase(`articulos?id=eq.${id}`, { method: 'DELETE' });
+                        await consultarSupabase(`articulos?${campoId}=eq.${id}`, { method: 'DELETE' });
                     }
                     mostrarMensaje("🗑️ Artículo eliminado.");
                     await cargarArticulos();
@@ -400,14 +434,15 @@
         async function guardarColor(nuevoColor) {
             document.getElementById('headerAdmin').style.backgroundColor = nuevoColor;
             const idComercio = comercioActual.id || comercioActual.ID;
+            const campoId = obtenerClaveColumna('id');
 
             try {
-                await consultarSupabase(`COMERCIOS?id=eq.${idComercio}`, {
+                await consultarSupabase(`COMERCIOS?${campoId}=eq.${idComercio}`, {
                     method: 'PATCH',
                     body: JSON.stringify({ color: nuevoColor })
                 });
             } catch (e) {
-                await consultarSupabase(`comercios?id=eq.${idComercio}`, {
+                await consultarSupabase(`comercios?${campoId}=eq.${idComercio}`, {
                     method: 'PATCH',
                     body: JSON.stringify({ color: nuevoColor })
                 });
