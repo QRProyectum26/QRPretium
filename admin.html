@@ -63,6 +63,18 @@
 
         <main class="max-w-4xl mx-auto px-4 mt-6">
 
+            <!-- BANNER DE CUPO Y PLAN (NUEVO) -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 mb-6">
+                <div class="flex justify-between items-center mb-2">
+                    <span id="nombrePlan" class="text-xs font-extrabold uppercase tracking-wider text-slate-700">Plan STANDARD</span>
+                    <span id="textoCupo" class="text-xs font-bold text-gray-500">0 de 24 artículos</span>
+                </div>
+                <div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                    <div id="barraProgreso" class="bg-slate-700 h-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- FORMULARIO DE ARTÍCULO -->
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 mb-6">
                 <h2 id="tituloFormArticulo" class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
                     <span>➕</span> Agregar Nuevo Artículo
@@ -114,6 +126,7 @@
                 </form>
             </div>
 
+            <!-- TABLA DE PRODUCTOS -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
                 <div class="p-4 border-b border-gray-100 flex justify-between items-center">
                     <h3 class="font-bold text-slate-800 text-sm">Artículos Publicados</h3>
@@ -269,9 +282,65 @@
                     const rawCuit = String(obtenerValorObjeto(a, ['cuit', 'CUIT']));
                     return rawCuit.replace(/[-.\s]/g, '') === cuitComparar;
                 });
+
                 renderizarTabla();
+
+                let planComercio = 'standard';
+                try {
+                    let datosComercio = await consultarSupabase(`comercios?select=plan&cuit=eq.${cuitComparar}`);
+                    if (datosComercio && datosComercio.length > 0) {
+                        planComercio = datosComercio[0].plan || datosComercio[0].PLAN || 'standard';
+                    }
+                } catch (errPlan) {
+                    console.warn("No se pudo obtener el plan del comercio, usando 'standard':", errPlan);
+                }
+
+                actualizarIndicadorCupo(planComercio, articulosLista.length);
+
             } catch (err) {
                 console.error("Error al cargar artículos:", err);
+            }
+        }
+
+        function actualizarIndicadorCupo(planComercio, totalGuardados) {
+            const plan = (planComercio || 'standard').toLowerCase();
+            
+            const limites = {
+                'standard': 24,
+                'power': 72,
+                'premium': 2400
+            };
+
+            const limiteMax = limites[plan] || 24;
+            const porcentaje = Math.min((totalGuardados / limiteMax) * 100, 100);
+
+            const elemPlan = document.getElementById('nombrePlan');
+            const elemCupo = document.getElementById('textoCupo');
+            const barra = document.getElementById('barraProgreso');
+
+            if (elemPlan) elemPlan.innerText = `Plan ${plan.toUpperCase()}`;
+            if (elemCupo) elemCupo.innerText = `${totalGuardados} de ${limiteMax} artículos`;
+            
+            if (barra) {
+                barra.style.width = `${porcentaje}%`;
+                if (totalGuardados >= limiteMax) {
+                    barra.className = "bg-red-500 h-full transition-all duration-300";
+                } else if (porcentaje >= 80) {
+                    barra.className = "bg-amber-500 h-full transition-all duration-300";
+                } else {
+                    barra.className = "bg-slate-700 h-full transition-all duration-300";
+                }
+            }
+
+            const btnGuardar = document.getElementById('btnGuardarArt'); 
+            if (btnGuardar) {
+                if (totalGuardados >= limiteMax) {
+                    btnGuardar.disabled = true;
+                    btnGuardar.classList.add('opacity-50', 'cursor-not-allowed');
+                } else {
+                    btnGuardar.disabled = false;
+                    btnGuardar.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
             }
         }
 
@@ -325,7 +394,6 @@
 
             const id = document.getElementById('artId').value;
 
-            // Construcción adaptable de datos
             const payload = {};
             payload[obtenerClaveColumna('cuit')] = cuitLimpioActual;
             payload[obtenerClaveColumna('codigo')] = document.getElementById('artCodigo').value.trim();
@@ -344,7 +412,6 @@
                 let guardadoExitoso = false;
                 let ultimoError = null;
 
-                // Intento 1: Tabla 'ARTICULOS' (Mayúsculas)
                 try {
                     await consultarSupabase(`ARTICULOS${queryId}`, {
                         method: metodo,
@@ -355,7 +422,6 @@
                     ultimoError = err1;
                 }
 
-                // Intento 2: Tabla 'articulos' (Minúsculas)
                 if (!guardadoExitoso) {
                     try {
                         await consultarSupabase(`articulos${queryId}`, {
