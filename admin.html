@@ -236,6 +236,8 @@
             await cargarArticulos();
         }
 
+       
+
         async function guardarArticulo(e) {
     e.preventDefault();
     const btnGuardar = document.getElementById('btnGuardarArt');
@@ -244,96 +246,54 @@
 
     const id = document.getElementById('artId').value;
 
-    // Datos del formulario
-    const datosGuardar = {
-        codigo: document.getElementById('artCodigo').value.trim(),
-        articulo: document.getElementById('artNombre').value.trim(),
-        descripcion: document.getElementById('artDescripcion').value.trim(),
-        disponibilidad: document.getElementById('artDisponibilidad').value.trim(),
-        precio: parseFloat(document.getElementById('artPrecio').value) || 0,
-        promocion: document.getElementById('artPromocion').value.trim(),
-        cuit: cuitLimpioActual
-    };
+    const cod = document.getElementById('artCodigo').value.trim();
+    const nom = document.getElementById('artNombre').value.trim();
+    const desc = document.getElementById('artDescripcion').value.trim();
+    const disp = document.getElementById('artDisponibilidad').value.trim();
+    const prec = parseFloat(document.getElementById('artPrecio').value) || 0;
+    const prom = document.getElementById('artPromocion').value.trim();
+
+    // Probamos primero con los nombres de columnas habituales en mayúsculas/minúsculas
+    const variantesDatos = [
+        // Intento 1: Nombres en mayúsculas
+        { CODIGO: cod, ARTICULO: nom, DESCRIPCION: desc, DISPONIBILIDAD: disp, PRECIO: prec, PROMOCION: prom, CUIT: cuitLimpioActual },
+        // Intento 2: Nombres en minúsculas
+        { codigo: cod, articulo: nom, descripcion: desc, disponibilidad: disp, precio: prec, promocion: prom, cuit: cuitLimpioActual },
+        // Intento 3: Variante con 'nombre'
+        { codigo: cod, nombre: nom, descripcion: desc, disponibilidad: disp, precio: prec, promocion: prom, cuit: cuitLimpioActual }
+    ];
 
     let errorGuardado = null;
+    let exito = false;
 
-    try {
+    for (const datos of variantesDatos) {
+        let res;
         if (id) {
-            // Intenta actualizar en 'ARTICULOS' (Mayúsculas)
-            let res = await supabaseClient.from('ARTICULOS').update(datosGuardar).eq('id', id);
-            
-            // Si da error de tabla no encontrada, intenta en 'articulos' (Minúsculas)
-            if (res.error && res.error.message.includes('Could not find the table')) {
-                res = await supabaseClient.from('articulos').update(datosGuardar).eq('id', id);
-            }
-            errorGuardado = res.error;
+            res = await supabaseClient.from('ARTICULOS').update(datos).eq('id', id);
         } else {
-            // Intenta insertar en 'ARTICULOS' (Mayúsculas)
-            let res = await supabaseClient.from('ARTICULOS').insert([datosGuardar]);
-            
-            // Si da error de tabla no encontrada, intenta en 'articulos' (Minúsculas)
-            if (res.error && res.error.message.includes('Could not find the table')) {
-                res = await supabaseClient.from('articulos').insert([datosGuardar]);
-            }
+            res = await supabaseClient.from('ARTICULOS').insert([datos]);
+        }
+
+        if (!res.error) {
+            exito = true;
+            break; // Guardó con éxito
+        } else {
             errorGuardado = res.error;
         }
-    } catch (err) {
-        errorGuardado = err;
     }
 
     btnGuardar.disabled = false;
     btnGuardar.innerText = "Guardar Artículo";
 
-    if (errorGuardado) {
-        console.error("Error detallado al guardar:", errorGuardado);
-        mostrarMensaje(`Error al guardar: ${errorGuardado.message || errorGuardado}`, true);
-    } else {
+    if (exito) {
         mostrarMensaje(id ? "✅ Artículo actualizado correctamente." : "✅ Nuevo artículo guardado con éxito.");
         limpiarFormulario();
         await cargarArticulos();
+    } else {
+        console.error("Error al guardar:", errorGuardado);
+        mostrarMensaje(`Error al guardar: ${errorGuardado.message}`, true);
     }
 }
-
-        async function guardarArticulo(e) {
-            e.preventDefault();
-            const btnGuardar = document.getElementById('btnGuardarArt');
-            btnGuardar.disabled = true;
-            btnGuardar.innerText = "Guardando...";
-
-            const id = document.getElementById('artId').value;
-
-            const datosGuardar = {
-                codigo: document.getElementById('artCodigo').value.trim(),
-                articulo: document.getElementById('artNombre').value.trim(),
-                descripcion: document.getElementById('artDescripcion').value.trim(),
-                disponibilidad: document.getElementById('artDisponibilidad').value.trim(),
-                precio: parseFloat(document.getElementById('artPrecio').value) || 0,
-                promocion: document.getElementById('artPromocion').value.trim(),
-                cuit: cuitLimpioActual
-            };
-
-            let errorGuardado = null;
-
-            if (id) {
-                const res = await supabaseClient.from('ARTICULOS').update(datosGuardar).eq('id', id);
-                errorGuardado = res.error;
-            } else {
-                const res = await supabaseClient.from('ARTICULOS').insert([datosGuardar]);
-                errorGuardado = res.error;
-            }
-
-            btnGuardar.disabled = false;
-            btnGuardar.innerText = "Guardar Artículo";
-
-            if (errorGuardado) {
-                console.error("Error al guardar:", errorGuardado);
-                mostrarMensaje(`Error al guardar: ${errorGuardado.message}`, true);
-            } else {
-                mostrarMensaje(id ? "✅ Artículo actualizado correctamente." : "✅ Nuevo artículo guardado con éxito.");
-                limpiarFormulario();
-                await cargarArticulos();
-            }
-        }
 
         function prepararEdicion(id) {
             const item = articulosLista.find(a => (a.id || a.ID) == id);
