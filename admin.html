@@ -146,13 +146,29 @@
     <script>
         const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
-        
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let comercioActual = null;
         let cuitLimpioActual = '';
         let articulosLista = [];
-        let columnasDetectadas = [];
+
+        // Función REST directa para saltear la conversión a minúsculas del cliente Supabase
+        async function consultarSupabase(endpoint, opciones = {}) {
+            const url = `${SUPABASE_URL}/rest/v1/${endpoint}`;
+            const headers = {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=representation',
+                ...(opciones.headers || {})
+            };
+
+            const respuesta = await fetch(url, { ...opciones, headers });
+            if (!respuesta.ok) {
+                const errorData = await respuesta.json().catch(() => ({ message: respuesta.statusText }));
+                throw new Error(errorData.message || 'Error en la petición');
+            }
+            return await respuesta.json().catch(() => []);
+        }
 
         function obtenerValorObjeto(obj, listaClaves) {
             if (!obj) return '';
@@ -182,18 +198,13 @@
             const cuitLimpio = cuitIngresado.replace(/[-.\s]/g, '');
 
             try {
-                // Forzamos comillas dobles para consultar la tabla en MAYÚSCULAS exacta
-                let res = await supabaseClient.from('"COMERCIOS"').select('*');
-                if (res.error) res = await supabaseClient.from('COMERCIOS').select('*');
-                if (res.error) res = await supabaseClient.from('comercios').select('*');
-
-                if (res.error) {
-                    divError.innerText = `Error Supabase (${res.error.code}): ${res.error.message}`;
-                    divError.classList.remove('hidden');
-                    return;
+                let comercios = [];
+                try {
+                    comercios = await consultarSupabase('COMERCIOS?select=*');
+                } catch (e) {
+                    comercios = await consultarSupabase('comercios?select=*');
                 }
 
-                const comercios = res.data;
                 let comercio = comercios.find(c => {
                     const rawCuit = String(obtenerValorObjeto(c, ['cuit', 'CUIT', 'cuit_comercio']));
                     const valCuitLimpio = rawCuit.replace(/[-.\s]/g, '');
@@ -220,7 +231,7 @@
 
             } catch (err) {
                 console.error(err);
-                divError.innerText = "Error inesperado al validar la información.";
+                divError.innerText = `Error al conectar: ${err.message}`;
                 divError.classList.remove('hidden');
             }
         }
@@ -241,24 +252,22 @@
         }
 
         async function cargarArticulos() {
-            // Se realiza la consulta con comillas dobles explícitas
-            let res = await supabaseClient.from('"ARTICULOS"').select('*');
-            if (res.error) res = await supabaseClient.from('ARTICULOS').select('*');
-            if (res.error) res = await supabaseClient.from('articulos').select('*');
-
-            if (!res.error && res.data) {
-                if (res.data.length > 0) {
-                    columnasDetectadas = Object.keys(res.data[0]);
+            try {
+                let data = [];
+                try {
+                    data = await consultarSupabase('ARTICULOS?select=*');
+                } catch (e) {
+                    data = await consultarSupabase('articulos?select=*');
                 }
 
                 const cuitComparar = cuitLimpioActual.replace(/[-.\s]/g, '');
-                articulosLista = res.data.filter(a => {
+                articulosLista = data.filter(a => {
                     const rawCuit = String(obtenerValorObjeto(a, ['cuit', 'CUIT']));
                     return rawCuit.replace(/[-.\s]/g, '') === cuitComparar;
                 });
                 renderizarTabla();
-            } else if (res.error) {
-                console.error("Error al cargar artículos:", res.error);
+            } catch (err) {
+                console.error("Error al cargar artículos:", err);
             }
         }
 
@@ -296,22 +305,6 @@
             });
         }
 
-        function mapearColumna(nombreBuscado) {
-            if (columnasDetectadas.length > 0) {
-                const encontrada = columnasDetectadas.find(c => c.toLowerCase() === nombreBuscado.toLowerCase());
-                if (encontrada) return encontrada;
-            }
-            return nombreBuscado.toLowerCase();
-        }
-
-        async function ejecutarGuardado(tabla, datos, id, campoId) {
-            if (id) {
-                return await supabaseClient.from(tabla).update(datos).eq(campoId, id);
-            } else {
-                return await supabaseClient.from(tabla).insert([datos]);
-            }
-        }
-
         async function guardarArticulo(e) {
             e.preventDefault();
             const btnGuardar = document.getElementById('btnGuardarArt');
@@ -320,47 +313,41 @@
 
             const id = document.getElementById('artId').value;
 
-            const cod = document.getElementById('artCodigo').value.trim();
-            const nom = document.getElementById('artNombre').value.trim();
-            const desc = document.getElementById('artDescripcion').value.trim();
-            const disp = document.getElementById('artDisponibilidad').value.trim();
-            const prec = parseFloat(document.getElementById('artPrecio').value) || 0;
-            const prom = document.getElementById('artPromocion').value.trim();
+            const datos = {
+                cuit: cuitLimpioActual,
+                codigo: document.getElementById('artCodigo').value.trim(),
+                articulo: document.getElementById('artNombre').value.trim(),
+                descripcion: document.getElementById('artDescripcion').value.trim(),
+                disponibilidad: document.getElementById('artDisponibilidad').value.trim(),
+                precio: parseFloat(document.getElementById('artPrecio').value) || 0,
+                promocion: document.getElementById('artPromocion').value.trim()
+            };
 
-            const datos = {};
-            datos[mapearColumna('cuit')] = cuitLimpioActual;
-            datos[mapearColumna('codigo')] = cod;
-            datos[mapearColumna('articulo')] = nom;
-            datos[mapearColumna('descripcion')] = desc;
-            datos[mapearColumna('disponibilidad')] = disp;
-            datos[mapearColumna('precio')] = prec;
-            datos[mapearColumna('promocion')] = prom;
+            try {
+                let metodo = id ? 'PATCH' : 'POST';
+                let query = id ? `?id=eq.${id}` : '';
 
-            const campoId = mapearColumna('id');
+                try {
+                    await consultarSupabase(`ARTICULOS${query}`, {
+                        method: metodo,
+                        body: JSON.stringify(datos)
+                    });
+                } catch (errMayus) {
+                    await consultarSupabase(`articulos${query}`, {
+                        method: metodo,
+                        body: JSON.stringify(datos)
+                    });
+                }
 
-            // Intento 1: Nombre con comillas dobles
-            let res = await ejecutarGuardado('"ARTICULOS"', datos, id, campoId);
-            
-            // Intento 2: Nombre en mayúsculas simple
-            if (res.error) {
-                res = await ejecutarGuardado('ARTICULOS', datos, id, campoId);
-            }
-            
-            // Intento 3: Nombre en minúsculas
-            if (res.error) {
-                res = await ejecutarGuardado('articulos', datos, id, campoId);
-            }
-
-            btnGuardar.disabled = false;
-            btnGuardar.innerText = "Guardar Artículo";
-
-            if (!res.error) {
                 mostrarMensaje(id ? "✅ Artículo actualizado correctamente." : "✅ Nuevo artículo guardado con éxito.");
                 limpiarFormulario();
                 await cargarArticulos();
-            } else {
-                console.error("Error al guardar:", res.error);
-                mostrarMensaje(`Error al guardar: ${res.error.message}`, true);
+            } catch (err) {
+                console.error("Error al guardar:", err);
+                mostrarMensaje(`Error al guardar: ${err.message}`, true);
+            } finally {
+                btnGuardar.disabled = false;
+                btnGuardar.innerText = "Guardar Artículo";
             }
         }
 
@@ -396,16 +383,16 @@
 
         async function eliminarArticulo(id) {
             if (confirm("¿Estás seguro de que deseas borrar este artículo?")) {
-                const campoId = mapearColumna('id');
-                let res = await supabaseClient.from('"ARTICULOS"').delete().eq(campoId, id);
-                if (res.error) res = await supabaseClient.from('ARTICULOS').delete().eq(campoId, id);
-                if (res.error) res = await supabaseClient.from('articulos').delete().eq(campoId, id);
-
-                if (res.error) {
-                    mostrarMensaje(`Error al borrar: ${res.error.message}`, true);
-                } else {
+                try {
+                    try {
+                        await consultarSupabase(`ARTICULOS?id=eq.${id}`, { method: 'DELETE' });
+                    } catch (e) {
+                        await consultarSupabase(`articulos?id=eq.${id}`, { method: 'DELETE' });
+                    }
                     mostrarMensaje("🗑️ Artículo eliminado.");
                     await cargarArticulos();
+                } catch (err) {
+                    mostrarMensaje(`Error al borrar: ${err.message}`, true);
                 }
             }
         }
@@ -414,9 +401,17 @@
             document.getElementById('headerAdmin').style.backgroundColor = nuevoColor;
             const idComercio = comercioActual.id || comercioActual.ID;
 
-            let res = await supabaseClient.from('"COMERCIOS"').update({ color: nuevoColor }).eq('id', idComercio);
-            if (res.error) res = await supabaseClient.from('COMERCIOS').update({ color: nuevoColor }).eq('id', idComercio);
-            if (res.error) res = await supabaseClient.from('comercios').update({ color: nuevoColor }).eq('id', idComercio);
+            try {
+                await consultarSupabase(`COMERCIOS?id=eq.${idComercio}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ color: nuevoColor })
+                });
+            } catch (e) {
+                await consultarSupabase(`comercios?id=eq.${idComercio}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ color: nuevoColor })
+                });
+            }
         }
 
         function cerrarSesion() {
