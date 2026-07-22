@@ -28,6 +28,11 @@
       color: #94A3B8; /* Gris */
       -webkit-text-stroke: 1px #FFFFFF; /* Borde blanco */
     }
+    /* Estilo para el cartel flotante sobre la imagen */
+    .cartel-flotante {
+      background-color: rgba(30, 41, 59, 0.9); /* pizarra/90 */
+      backdrop-filter: blur(8px);
+    }
   </style>
 </head>
 <body class="bg-pizarraOscura text-slate-100 font-sans antialiased selection:bg-naranja selection:text-white">
@@ -111,26 +116,27 @@
         </div>
       </div>
 
-      <!-- MOCKUP IMAGEN VIDRIERA + CHICA ESCANEANDO QR -->
+      <!-- MOCKUP IMAGEN VIDRIERA (ACTUALIZADA) -->
       <div class="relative">
         <div class="relative rounded-2xl p-2 bg-pizarra border border-slate-700 shadow-2xl overflow-hidden">
           <div class="relative h-96 rounded-xl overflow-hidden group">
-            <!-- Imagen real de vidriera con chica escaneando QR y productos con cartelitos -->
-            <img src="https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?auto=format&fit=crop&w=800&q=80" alt="Chica escaneando QR en vidriera de comercio" class="w-full h-full object-cover object-center transform group-hover:scale-105 transition duration-500">
+            <!-- Imagen de fondo de la vidriera -->
+            <img src="imgindex1.png" alt="Vidriera de comercio con productos y mujer escaneando QR" class="w-full h-full object-cover object-center transform group-hover:scale-105 transition duration-500">
             
             <!-- Capa protectora oscura sobre la foto -->
             <div class="absolute inset-0 bg-gradient-to-t from-pizarraOscura via-pizarraOscura/30 to-transparent"></div>
             
-            <!-- Superposición explicativa -->
-            <div class="absolute bottom-4 left-4 right-4 p-4 bg-pizarra/90 backdrop-blur-md rounded-xl border border-slate-700 text-left">
-              <div class="flex items-center gap-3">
-                <div class="p-2.5 bg-naranja text-white rounded-lg shadow">
-                  <i class="fa-solid fa-qrcode text-xl"></i>
-                </div>
-                <div>
-                  <p class="text-xs font-bold text-verdeVivo uppercase tracking-wider">Escaneo instantáneo en vidriera</p>
-                  <p class="text-xs text-slate-200">Productos con código en exhibición + consulta inmediata al cliente.</p>
-                </div>
+            <!-- Cartel flotante explicativo -->
+            <div class="absolute cartel-flotante bottom-6 left-1/2 -translate-x-1/2 w-[90%] p-6 rounded-2xl border border-slate-700 shadow-xl">
+              <div class="text-center">
+                <h3 class="text-xl font-extrabold text-white mb-2">QRPretium:<br> Escaneo instantáneo de tu vidriera.</h3>
+                <p class="text-slate-200 text-sm mb-4 leading-relaxed">
+                  Muestra instantáneamente tus precios y productos a los clientes.
+                </p>
+                <button class="bg-naranja hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-xl transition shadow-md">
+                  EMPEZAR AHORA
+                </button>
+                <p class="text-slate-400 text-xs mt-3">Sin aplicaciones. Sin esperas.</p>
               </div>
             </div>
           </div>
