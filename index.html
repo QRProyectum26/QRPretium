@@ -27,13 +27,38 @@
   <!-- 1. HEADER / NAVEGACIÓN -->
   <header class="sticky top-0 z-50 bg-pizarra/90 backdrop-blur-md border-b border-slate-700/50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-      <!-- LOGO PROVISORIO (Sustituible por el isotipo/logo definitivo) -->
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-naranja to-verdeVivo flex items-center justify-center font-bold text-xl text-white shadow-lg">
-          Q
+      <!-- LOGO INSTITUCIONAL QRPRETIUM (SVG Vectorial) -->
+      <a href="#" class="flex items-center gap-3 group">
+        <!-- Isotipo SVG -->
+        <svg class="w-10 h-10 transition-transform duration-300 group-hover:scale-105" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Fondo suave con gradiente -->
+          <rect width="100" height="100" rx="24" fill="#1E293B"/>
+          <rect x="2" y="2" width="96" height="96" rx="22" stroke="#334155" stroke-width="4"/>
+          
+          <!-- Esquinas del Marco QR -->
+          <path d="M28 28H44V44H28V28Z" fill="#F97316"/>
+          <path d="M32 32H40V40H32V32Z" fill="#1E293B"/>
+          <path d="M56 28H72V44H56V28Z" fill="#F97316"/>
+          <path d="M60 32H68V40H60V32Z" fill="#1E293B"/>
+          <path d="M28 56H44V72H28V56Z" fill="#F97316"/>
+          <path d="M32 60H40V68H32V60Z" fill="#1E293B"/>
+
+          <!-- Módulo de datos QR en diagonal -->
+          <rect x="48" y="48" width="8" height="8" rx="2" fill="#34D399"/>
+          <rect x="60" y="48" width="8" height="8" rx="2" fill="#F97316"/>
+          <rect x="48" y="60" width="8" height="8" rx="2" fill="#F97316"/>
+
+          <!-- Destello / Chispa IA -->
+          <path d="M72 58C72 65 75 68 82 68C75 68 72 71 72 78C72 71 69 68 62 68C69 68 72 65 72 58Z" fill="#10B981"/>
+          <path d="M54 22C54 25 55 26 58 26C55 26 54 27 54 30C54 27 53 26 50 26C53 26 54 25 54 22Z" fill="#10B981"/>
+        </svg>
+
+        <!-- Tipografía del Nombre -->
+        <div class="flex items-baseline font-sans">
+          <span class="text-2xl font-black tracking-tight text-white">QR</span>
+          <span class="text-2xl font-light tracking-tight text-naranja">Pretium</span>
         </div>
-        <span class="text-2xl font-extrabold tracking-tight">QR<span class="text-naranja">Pretium</span></span>
-      </div>
+      </a>
 
       <!-- Menú Desktop -->
       <nav class="hidden md:flex gap-8 text-sm font-medium text-slate-300">
