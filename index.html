@@ -13,6 +13,7 @@
           colors: {
             pizarra: '#1E293B',
             pizarraOscura: '#0F172A',
+            pizarraClaro: '#334155',
             naranja: '#F97316',
             verdeVivo: '#10B981',
           }
@@ -21,29 +22,36 @@
     }
   </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Efecto de borde blanco para las letras QR */
+    .texto-qr-borde {
+      color: #94A3B8; /* Gris */
+      -webkit-text-stroke: 1px #FFFFFF; /* Borde blanco */
+    }
+  </style>
 </head>
 <body class="bg-pizarraOscura text-slate-100 font-sans antialiased selection:bg-naranja selection:text-white">
 
   <!-- 1. HEADER / NAVEGACIÓN -->
   <header class="sticky top-0 z-50 bg-pizarra/90 backdrop-blur-md border-b border-slate-700/50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-      <!-- LOGO INSTITUCIONAL QRPRETIUM (SVG Vectorial) -->
+      
+      <!-- LOGO INSTITUCIONAL QRPRETIUM (SVG Vectorial Modificado) -->
       <a href="#" class="flex items-center gap-3 group">
-        <!-- Isotipo SVG -->
         <svg class="w-10 h-10 transition-transform duration-300 group-hover:scale-105" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <!-- Fondo suave con gradiente -->
+          <!-- Fondo gris con BORDE NARANJA -->
           <rect width="100" height="100" rx="24" fill="#1E293B"/>
-          <rect x="2" y="2" width="96" height="96" rx="22" stroke="#334155" stroke-width="4"/>
+          <rect x="2" y="2" width="96" height="96" rx="22" stroke="#F97316" stroke-width="5"/>
           
-          <!-- Esquinas del Marco QR -->
-          <path d="M28 28H44V44H28V28Z" fill="#F97316"/>
+          <!-- Esquinas del Marco QR en COLOR GRIS -->
+          <path d="M28 28H44V44H28V28Z" fill="#64748B"/>
           <path d="M32 32H40V40H32V32Z" fill="#1E293B"/>
-          <path d="M56 28H72V44H56V28Z" fill="#F97316"/>
+          <path d="M56 28H72V44H56V28Z" fill="#64748B"/>
           <path d="M60 32H68V40H60V32Z" fill="#1E293B"/>
-          <path d="M28 56H44V72H28V56Z" fill="#F97316"/>
+          <path d="M28 56H44V72H28V56Z" fill="#64748B"/>
           <path d="M32 60H40V68H32V60Z" fill="#1E293B"/>
 
-          <!-- Módulo de datos QR en diagonal -->
+          <!-- Módulo de datos QR -->
           <rect x="48" y="48" width="8" height="8" rx="2" fill="#34D399"/>
           <rect x="60" y="48" width="8" height="8" rx="2" fill="#F97316"/>
           <rect x="48" y="60" width="8" height="8" rx="2" fill="#F97316"/>
@@ -53,25 +61,27 @@
           <path d="M54 22C54 25 55 26 58 26C55 26 54 27 54 30C54 27 53 26 50 26C53 26 54 25 54 22Z" fill="#10B981"/>
         </svg>
 
-        <!-- Tipografía del Nombre -->
+        <!-- Tipografía del Nombre: QR en Gris con Borde Blanco + Pretium en Naranja -->
         <div class="flex items-baseline font-sans">
-          <span class="text-2xl font-black tracking-tight text-white">QR</span>
+          <span class="text-2xl font-black tracking-tight texto-qr-borde mr-0.5">QR</span>
           <span class="text-2xl font-light tracking-tight text-naranja">Pretium</span>
         </div>
       </a>
 
       <!-- Menú Desktop -->
-      <nav class="hidden md:flex gap-8 text-sm font-medium text-slate-300">
+      <nav class="hidden md:flex gap-7 text-sm font-medium text-slate-300">
         <a href="#que-es" class="hover:text-verdeVivo transition">¿Qué es?</a>
         <a href="#soluciones" class="hover:text-verdeVivo transition">Soluciones</a>
         <a href="#asistente-ia" class="hover:text-verdeVivo transition">Asistente IA</a>
         <a href="#seguridad" class="hover:text-verdeVivo transition">Seguridad</a>
         <a href="#planes" class="hover:text-verdeVivo transition">Planes</a>
+        <!-- LINK INSTITUCIONAL NUEVO -->
+        <a href="institucional.html" class="text-naranja hover:underline transition font-semibold">Institucional</a>
       </nav>
 
-      <!-- Botón Ingreso Admin -->
-      <a href="admin.html" class="bg-naranja hover:bg-orange-600 text-white font-semibold px-5 py-2.5 rounded-xl transition shadow-md hover:shadow-naranja/20">
-        Acceso Comercios <i class="fa-solid fa-arrow-right-to-bracket ml-2"></i>
+      <!-- Botón Ingreso Admin (Abre en nueva pestaña) -->
+      <a href="admin.html" target="_blank" rel="noopener noreferrer" class="bg-naranja hover:bg-orange-600 text-white font-semibold px-5 py-2.5 rounded-xl transition shadow-md hover:shadow-naranja/20">
+        Acceso Comercios <i class="fa-solid fa-arrow-up-right-from-square ml-1 text-xs"></i>
       </a>
     </div>
   </header>
@@ -80,7 +90,8 @@
   <section class="relative py-20 lg:py-28 overflow-hidden">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
       <div>
-        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-verdeVivo/10 text-verdeVivo border border-verdeVivo/20 mb-6">
+        <!-- Etiqueta con fondo Gris Pizarra -->
+        <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-pizarra text-verdeVivo border border-slate-700 shadow-sm mb-6">
           <i class="fa-solid fa-sparkles"></i> Vidriera Digital & Asistente Interactivo
         </span>
         <h1 class="text-4xl sm:text-5xl font-black text-white leading-tight tracking-tight mb-6">
@@ -94,24 +105,33 @@
           <a href="app.html" target="_blank" class="bg-verdeVivo hover:bg-emerald-600 text-slate-950 font-bold px-6 py-3.5 rounded-xl transition shadow-lg shadow-verdeVivo/20 flex items-center gap-2">
             <i class="fa-solid fa-mobile-screen-button"></i> Probar Catálogo Demo
           </a>
-          <a href="#contacto" class="bg-slate-800 hover:bg-slate-700 text-white font-semibold px-6 py-3.5 rounded-xl border border-slate-700 transition flex items-center gap-2">
+          <a href="#contacto" class="bg-pizarra hover:bg-slate-700 text-white font-semibold px-6 py-3.5 rounded-xl border border-slate-700 transition flex items-center gap-2">
             <i class="fa-solid fa-calendar-check text-naranja"></i> Solicitar Visita
           </a>
         </div>
       </div>
 
-      <!-- MOCKUP VIDRIERA + QR -->
+      <!-- MOCKUP IMAGEN VIDRIERA + CHICA ESCANEANDO QR -->
       <div class="relative">
-        <div class="relative bg-slate-800 rounded-2xl p-4 border border-slate-700 shadow-2xl">
-          <div class="relative h-80 rounded-xl overflow-hidden bg-slate-900 border border-slate-700/80 flex items-center justify-center text-center p-6">
-            <!-- Representación visual de Vidriera -->
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/60 to-transparent"></div>
-            <div class="relative z-10">
-              <div class="inline-block p-4 bg-white rounded-2xl shadow-xl mb-3 border-2 border-verdeVivo">
-                <i class="fa-solid fa-qrcode text-6xl text-slate-900"></i>
+        <div class="relative rounded-2xl p-2 bg-pizarra border border-slate-700 shadow-2xl overflow-hidden">
+          <div class="relative h-96 rounded-xl overflow-hidden group">
+            <!-- Imagen real de vidriera con chica escaneando QR y productos con cartelitos -->
+            <img src="https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?auto=format&fit=crop&w=800&q=80" alt="Chica escaneando QR en vidriera de comercio" class="w-full h-full object-cover object-center transform group-hover:scale-105 transition duration-500">
+            
+            <!-- Capa protectora oscura sobre la foto -->
+            <div class="absolute inset-0 bg-gradient-to-t from-pizarraOscura via-pizarraOscura/30 to-transparent"></div>
+            
+            <!-- Superposición explicativa -->
+            <div class="absolute bottom-4 left-4 right-4 p-4 bg-pizarra/90 backdrop-blur-md rounded-xl border border-slate-700 text-left">
+              <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-naranja text-white rounded-lg shadow">
+                  <i class="fa-solid fa-qrcode text-xl"></i>
+                </div>
+                <div>
+                  <p class="text-xs font-bold text-verdeVivo uppercase tracking-wider">Escaneo instantáneo en vidriera</p>
+                  <p class="text-xs text-slate-200">Productos con código en exhibición + consulta inmediata al cliente.</p>
+                </div>
               </div>
-              <p class="text-xs uppercase font-bold tracking-widest text-verdeVivo mb-1">Código QR en Vidriera</p>
-              <p class="text-sm text-slate-300">Escaneá para ver precios y consultar al Asistente IA</p>
             </div>
           </div>
         </div>
@@ -218,7 +238,7 @@
     </div>
   </section>
 
-  <!-- 6. TABLA DE PLANES -->
+  <!-- 6. TABLA DE PLANES CON CUADRO DE VALORES -->
   <section id="planes" class="py-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center max-w-3xl mx-auto mb-16">
@@ -230,9 +250,16 @@
         <!-- Plan Standard -->
         <div class="bg-pizarra p-8 rounded-2xl border border-slate-800 flex flex-col justify-between">
           <div>
-            <h3 class="text-xl font-bold text-white mb-2">Standard</h3>
-            <p class="text-slate-400 text-xs mb-6">Ideal para comercios que se inician en la vidriera digital.</p>
-            <ul class="space-y-3 text-sm text-slate-300 mb-8">
+            <h3 class="text-xl font-bold text-white mb-1">Standard</h3>
+            <p class="text-slate-400 text-xs mb-4">Ideal para comercios que se inician.</p>
+            
+            <!-- CUADRO DE VALOR ACTUALIZABLE -->
+            <div class="my-4 p-4 bg-slate-900/80 rounded-xl border border-slate-700/80 text-center">
+              <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Suscripción Mensual</span>
+              <div class="text-3xl font-black text-white mt-1">$15.000 <span class="text-xs text-slate-400 font-normal">/mes</span></div>
+            </div>
+
+            <ul class="space-y-3 text-sm text-slate-300 mb-8 mt-6">
               <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Catálogo QR ilimitado</li>
               <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Panel Admin de precios</li>
               <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> **Asistente IA por Voz**</li>
@@ -246,9 +273,16 @@
         <div class="bg-pizarra p-8 rounded-2xl border-2 border-naranja relative flex flex-col justify-between shadow-xl shadow-naranja/10">
           <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-naranja text-white font-bold text-xs px-3 py-1 rounded-full uppercase tracking-wider">Más Popular</span>
           <div>
-            <h3 class="text-xl font-bold text-white mb-2">Power 🚀</h3>
-            <p class="text-slate-400 text-xs mb-6">Para comercios con alto movimiento de productos.</p>
-            <ul class="space-y-3 text-sm text-slate-300 mb-8">
+            <h3 class="text-xl font-bold text-white mb-1">Power 🚀</h3>
+            <p class="text-slate-400 text-xs mb-4">Para comercios con alto movimiento.</p>
+            
+            <!-- CUADRO DE VALOR ACTUALIZABLE -->
+            <div class="my-4 p-4 bg-slate-900/90 rounded-xl border border-naranja/40 text-center">
+              <span class="text-xs font-semibold text-naranja uppercase tracking-wider block">Suscripción Mensual</span>
+              <div class="text-3xl font-black text-white mt-1">$28.000 <span class="text-xs text-slate-400 font-normal">/mes</span></div>
+            </div>
+
+            <ul class="space-y-3 text-sm text-slate-300 mb-8 mt-6">
               <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Todo lo del plan Standard</li>
               <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Hasta 3 sucursales</li>
               <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> **Asistente IA Avanzado**</li>
@@ -262,9 +296,16 @@
         <!-- Plan Premium -->
         <div class="bg-pizarra p-8 rounded-2xl border border-slate-800 flex flex-col justify-between">
           <div>
-            <h3 class="text-xl font-bold text-white mb-2">Premium 💎</h3>
-            <p class="text-slate-400 text-xs mb-6">Solución integral para cadenas y franquicias.</p>
-            <ul class="space-y-3 text-sm text-slate-300 mb-8">
+            <h3 class="text-xl font-bold text-white mb-1">Premium 💎</h3>
+            <p class="text-slate-400 text-xs mb-4">Solución para cadenas y franquicias.</p>
+            
+            <!-- CUADRO DE VALOR ACTUALIZABLE -->
+            <div class="my-4 p-4 bg-slate-900/80 rounded-xl border border-slate-700/80 text-center">
+              <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Suscripción Mensual</span>
+              <div class="text-3xl font-black text-white mt-1">$45.000 <span class="text-xs text-slate-400 font-normal">/mes</span></div>
+            </div>
+
+            <ul class="space-y-3 text-sm text-slate-300 mb-8 mt-6">
               <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Multi-sucursal ilimitado</li>
               <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> **IA Personalizada a medida**</li>
               <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Soporte Prioritario 24/7</li>
@@ -285,28 +326,27 @@
         <p class="text-slate-400 text-sm">Completá el formulario y un asesor se pondrá en contacto con tu comercio.</p>
       </div>
 
-      <form class="space-y-4 bg-pizarra p-8 rounded-2xl border border-slate-800">
+      <!-- FORMULARIO CONFIGURADO PARA RECEPCIÓN DE EMAILS -->
+      <form action="https://formsubmit.co/tuemail@ejemplo.com" method="POST" class="space-y-4 bg-pizarra p-8 rounded-2xl border border-slate-800">
         <div class="grid md:grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-semibold text-slate-300 mb-2">Nombre Completo</label>
-            <input type="text" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo" placeholder="Tu nombre">
+            <input type="text" name="nombre" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo" placeholder="Tu nombre">
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-300 mb-2">Nombre del Comercio</label>
-            <input type="text" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo" placeholder="Ej. Vinoteca San Martín">
+            <input type="text" name="comercio" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo" placeholder="Ej. Vinoteca San Martín">
           </div>
         </div>
 
         <div class="grid md:grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-semibold text-slate-300 mb-2">Teléfono / WhatsApp</label>
-            <input type="tel" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo" placeholder="+54 11 ...">
+            <input type="tel" name="telefono" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo" placeholder="+54 11 ...">
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-300 mb-2">Rubro</label>
-
-```html
-            <select class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo">
+            <select name="rubro" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo">
               <option>Vinoteca / Bebidas</option>
               <option>Indumentaria / Calzado</option>
               <option>Tecnología / Electro</option>
@@ -318,7 +358,7 @@
 
         <div>
           <label class="block text-xs font-semibold text-slate-300 mb-2">¿Qué estás buscando?</label>
-          <select class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo">
+          <select name="interes" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo">
             <option>Quiero probar una demostración gratuita</option>
             <option>Solicitar la visita de un asesor a mi local</option>
             <option>Consulta sobre planes y contratación</option>
@@ -327,10 +367,10 @@
 
         <div>
           <label class="block text-xs font-semibold text-slate-300 mb-2">Mensaje o Dirección del Local</label>
-          <textarea rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo" placeholder="Escribí acá tu consulta o dirección..."></textarea>
+          <textarea name="mensaje" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo" placeholder="Escribí acá tu consulta o dirección..."></textarea>
         </div>
 
-        <button type="button" class="w-full bg-verdeVivo hover:bg-emerald-600 text-slate-950 font-bold py-3.5 rounded-xl transition shadow-lg shadow-verdeVivo/20">
+        <button type="submit" class="w-full bg-verdeVivo hover:bg-emerald-600 text-slate-950 font-bold py-3.5 rounded-xl transition shadow-lg shadow-verdeVivo/20">
           Enviar Consulta
         </button>
       </form>
