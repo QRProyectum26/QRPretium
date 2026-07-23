@@ -36,7 +36,7 @@ export default async function handler(req, res) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                model: 'gpt-[MODELO]',
+                model: 'gpt-4o-mini',
                 messages: [
                     { role: 'system', content: promptSystem },
                     { role: 'user', content: consulta }
@@ -47,6 +47,12 @@ export default async function handler(req, res) {
         });
 
         const data = await response.json();
+
+        if (!response.ok) {
+            console.error("Error devuelto por OpenAI:", data);
+            return res.status(500).json({ error: data.error?.message || "Error al procesar con OpenAI" });
+        }
+
         const textoRespuesta = data.choices[0].message.content;
 
         return res.status(200).json({ respuesta: textoRespuesta });
