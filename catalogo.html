@@ -19,18 +19,21 @@
                 <div id="logoContainer" class="flex-shrink-0">
                     <img id="imgLogo" src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Logo Comercio" class="h-12 w-12 rounded-full bg-white p-1 shadow-md object-cover border border-slate-400">
                 </div>
+                
+                <!-- AQUÍ SE APLICÓ EL CAMBIO DEL BOTÓN RECEPTOR / REDUCIDO -->
                 <div class="text-left">
                     <div class="flex items-center space-x-2">
                         <h1 id="nombreComercio" class="text-xl font-extrabold uppercase tracking-wide leading-tight">Cargando comercio...</h1>
                         
-                        <!-- BOTÓN "+" VERDE DESTACADO -->
+                        <!-- BOTÓN "+" VERDE REDUCIDO AL TAMAÑO DE LA LETRA -->
                         <button onclick="abrirModalInfo()" title="Ver información del comercio" 
-                            class="bg-emerald-500 hover:bg-emerald-600 text-white font-black w-7 h-7 rounded-full flex items-center justify-center shadow-md transform active:scale-95 transition-all text-lg leading-none border border-emerald-400">
+                            class="bg-emerald-500 hover:bg-emerald-600 text-white font-black w-5 h-5 rounded-full flex items-center justify-center shadow-sm transform active:scale-95 transition-all text-xs leading-none border border-emerald-400 flex-shrink-0">
                             +
                         </button>
                     </div>
                     <p class="text-xs text-slate-200 font-medium">Catálogo Oficial de Productos</p>
                 </div>
+
             </div>
         </div>
     </header>
