@@ -11,21 +11,19 @@
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen pb-10">
 
-    <!-- Encabezado / Logo del Comercio (Gris Pizarra por defecto #334155) -->
+    <!-- Encabezado / Logo del Comercio -->
     <header id="headerComercio" class="text-white p-5 shadow-lg rounded-b-2xl transition-colors duration-300" style="background-color: #334155;">
         <div class="max-w-xl mx-auto flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <!-- Logo o Ícono por defecto al lado del Nombre -->
                 <div id="logoContainer" class="flex-shrink-0">
                     <img id="imgLogo" src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Logo Comercio" class="h-12 w-12 rounded-full bg-white p-1 shadow-md object-cover border border-slate-400">
                 </div>
                 
-                <!-- AQUÍ SE APLICÓ EL CAMBIO DEL BOTÓN RECEPTOR / REDUCIDO -->
                 <div class="text-left">
                     <div class="flex items-center space-x-2">
                         <h1 id="nombreComercio" class="text-xl font-extrabold uppercase tracking-wide leading-tight">Cargando comercio...</h1>
                         
-                        <!-- BOTÓN "+" VERDE REDUCIDO AL TAMAÑO DE LA LETRA -->
+                        <!-- BOTÓN "+" MODAL INFO -->
                         <button onclick="abrirModalInfo()" title="Ver información del comercio" 
                             class="bg-emerald-500 hover:bg-emerald-600 text-white font-black w-5 h-5 rounded-full flex items-center justify-center shadow-sm transform active:scale-95 transition-all text-base leading-none border border-emerald-400 flex-shrink-0">
                             +
@@ -33,7 +31,6 @@
                     </div>
                     <p class="text-xs text-slate-200 font-medium">Catálogo Oficial de Productos</p>
                 </div>
-
             </div>
         </div>
     </header>
@@ -41,11 +38,58 @@
     <!-- Contenido Principal -->
     <main class="max-w-xl mx-auto px-4 mt-5">
 
-        <!-- Buscador de Productos -->
-        <div class="mb-5">
-            <div class="relative shadow-sm rounded-xl">
+        <!-- Buscador de Productos + Botón Asistente IA -->
+        <div class="mb-5 flex items-center gap-2">
+            <div class="relative shadow-sm rounded-xl flex-1">
                 <input type="text" id="inputBuscar" onkeyup="filtrarProductos()" placeholder="🔍 Buscar por código, artículo o descripción..." 
                     class="w-full pl-4 pr-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-600 text-sm bg-white">
+            </div>
+
+            <!-- BOTÓN IA CON MICRÓFONO Y SOMBRERO -->
+            <button id="btnIaVoz" onclick="activarAsistenteVoz()" title="Consultar a la IA por Voz"
+                class="bg-indigo-600 hover:bg-indigo-700 text-white p-3 rounded-xl shadow-md flex items-center justify-center transition-transform active:scale-95 border border-indigo-400 flex-shrink-0 relative">
+                <!-- Ícono de Micrófono con Sombrero de Mago / Asistente (SVG) -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <!-- Sombrero -->
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 2L9 7h6l-3-5zM6 8h12v2H6z" />
+                    <!-- Micrófono -->
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m-4 0h8m-4-8a3 3 0 01-3-3V9a3 3 0 116 0v2a3 3 0 01-3 3z" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Ventana Modal de Chat del Asistente IA -->
+        <div id="modalIaChat" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+            <div class="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl max-w-lg w-full h-[80vh] sm:h-[600px] flex flex-col overflow-hidden">
+                
+                <!-- Encabezado Modal IA -->
+                <div class="p-4 bg-indigo-700 text-white flex justify-between items-center">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-2xl">🧙‍♂️</span>
+                        <div>
+                            <h3 class="font-bold text-sm">Asistente Virtual del Comercio</h3>
+                            <p id="estadoIa" class="text-xs text-indigo-200">Presiona el micrófono para hablar</p>
+                        </div>
+                    </div>
+                    <button onclick="cerrarModalIa()" class="text-indigo-200 hover:text-white text-xl font-bold">✕</button>
+                </div>
+
+                <!-- Historial de Mensajes -->
+                <div id="chatHistorial" class="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-50 text-xs">
+                    <div class="bg-indigo-100 text-indigo-900 p-3 rounded-xl max-w-[85%] border border-indigo-200">
+                        ¡Hola! Soy tu asistente. Puedes hacerme preguntas sobre los productos del catálogo por voz. ¿En qué te puedo ayudar hoy?
+                    </div>
+                </div>
+
+                <!-- Control de Grabación de Voz -->
+                <div class="p-4 border-t border-gray-200 bg-white flex flex-col items-center space-y-2">
+                    <button id="btnEscuchar" onclick="alternarEscucha()" 
+                        class="w-16 h-16 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full flex items-center justify-center shadow-lg transform active:scale-95 transition-all">
+                        <span id="iconoMic" class="text-2xl">🎙️</span>
+                    </button>
+                    <span id="lblEstadoEscucha" class="text-xs font-semibold text-gray-500">Toca para hablar</span>
+                </div>
+
             </div>
         </div>
 
@@ -55,34 +99,20 @@
         </div>
 
         <!-- Lista de Productos -->
-        <div id="listaProductos" class="space-y-4">
-            <!-- Los productos se cargarán aquí dinámicamente -->
-        </div>
+        <div id="listaProductos" class="space-y-4"></div>
 
     </main>
 
     <!-- POP-UP / MODAL DE INFORMACIÓN DEL COMERCIO -->
-    <div id="modalInfo" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden transition-opacity duration-300">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden transform transition-all border border-gray-100">
-            
-            <!-- Franja Header Gris Pizarra (#334155) -->
+    <div id="modalInfo" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden border border-gray-100">
             <div class="p-5 text-white relative" style="background-color: #334155;">
-                <button onclick="cerrarModalInfo()" class="absolute top-4 right-4 text-slate-300 hover:text-white text-xl font-bold bg-slate-700/50 w-8 h-8 rounded-full flex items-center justify-center">
-                    ✕
-                </button>
+                <button onclick="cerrarModalInfo()" class="absolute top-4 right-4 text-slate-300 hover:text-white text-xl font-bold bg-slate-700/50 w-8 h-8 rounded-full flex items-center justify-center">✕</button>
                 <p class="text-xs font-semibold text-emerald-400 uppercase tracking-widest mb-1">Información del Local</p>
-                
-                <!-- Nombre del comercio -->
                 <h2 id="modalNombreComercio" class="text-xl font-black uppercase tracking-wide pr-6 leading-tight">Comercio</h2>
-                
-                <!-- LÍNEA DE SEPARACIÓN EN NARANJA -->
                 <div class="w-full h-1 bg-orange-500 rounded-full mt-3"></div>
             </div>
-
-            <!-- Cuerpo del Modal con los Datos -->
             <div class="p-5 space-y-4 text-sm text-gray-700">
-                
-                <!-- Horarios de Atención -->
                 <div class="flex items-start space-x-3 bg-amber-50/80 p-3 rounded-xl border border-amber-200/60">
                     <span class="text-xl">🕒</span>
                     <div>
@@ -90,20 +120,14 @@
                         <p id="modalHorarios" class="text-gray-700 font-medium mt-0.5">No especificados</p>
                     </div>
                 </div>
-
-                <!-- Dirección -->
                 <div class="flex items-start space-x-3 bg-slate-50 p-3 rounded-xl border border-slate-200/60">
                     <span class="text-xl">📍</span>
                     <div class="w-full">
                         <h4 class="font-bold text-slate-900 text-xs uppercase">Dirección</h4>
                         <p id="modalDireccion" class="text-gray-700 font-medium mt-0.5">No especificada</p>
-                        <a id="linkMapa" href="#" target="_blank" class="inline-block text-xs font-bold text-slate-700 hover:text-slate-900 underline mt-1.5 hidden">
-                            📍 Ver en Google Maps →
-                        </a>
+                        <a id="linkMapa" href="#" target="_blank" class="inline-block text-xs font-bold text-slate-700 hover:text-slate-900 underline mt-1.5 hidden">📍 Ver en Google Maps →</a>
                     </div>
                 </div>
-
-                <!-- Teléfono / WhatsApp -->
                 <div class="flex items-start space-x-3 bg-slate-50 p-3 rounded-xl border border-slate-200/60">
                     <span class="text-xl">📞</span>
                     <div class="w-full">
@@ -114,27 +138,22 @@
                         </a>
                     </div>
                 </div>
-
             </div>
-
-            <!-- Pie del Modal -->
             <div class="bg-gray-50 px-5 py-3 text-center border-t border-gray-100">
-                <button onclick="cerrarModalInfo()" class="w-full py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-xl text-xs transition">
-                    Cerrar
-                </button>
+                <button onclick="cerrarModalInfo()" class="w-full py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-xl text-xs transition">Cerrar</button>
             </div>
-
         </div>
     </div>
 
     <script>
         const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
-        
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let productosGlobales = [];
         let datosComercioGlobal = null;
+        let reconocedorVoz = null;
+        let estaEscuchando = false;
 
         const urlParams = new URLSearchParams(window.location.search);
         const cuitParam = urlParams.get('cuit') ? urlParams.get('cuit').trim() : null;
@@ -146,13 +165,10 @@
             }
 
             try {
-                // 1. Cargar Datos del Comercio
                 let comercio = null;
-                
                 let res1 = await supabaseClient.from('comercios').select('*').eq('cuit', cuitParam).maybeSingle();
-                if (res1.data) {
-                    comercio = res1.data;
-                } else {
+                if (res1.data) comercio = res1.data;
+                else {
                     let res2 = await supabaseClient.from('comercios').select('*').eq('CUIT', cuitParam).maybeSingle();
                     if (res2.data) comercio = res2.data;
                 }
@@ -162,15 +178,11 @@
                     return;
                 }
 
-                // Guardar datos globalmente para el Pop-up
                 datosComercioGlobal = comercio;
-
-                // Renderizar datos del comercio en Header
                 const nombre = comercio.nombre || comercio.NOMBRE || 'Mi Comercio';
                 document.getElementById('nombreComercio').innerText = nombre;
                 document.getElementById('modalNombreComercio').innerText = nombre;
                 
-                // Aplicar color personalizado al Header si existe
                 const colorPersonalizado = comercio.color || comercio.COLOR || comercio.color_hex || comercio.COLOR_HEX;
                 if (colorPersonalizado) {
                     document.getElementById('headerComercio').style.backgroundColor = colorPersonalizado;
@@ -181,20 +193,14 @@
                     document.getElementById('imgLogo').src = logoUrl;
                 }
 
-                // Cargar los datos dentro del Pop-up Modal
                 configurarModalComercio(comercio);
 
-                // 2. Cargar Productos del Comercio
                 let productos = null;
-
                 let prodRes1 = await supabaseClient.from('articulos').select('*').eq('cuit', cuitParam);
-                if (prodRes1.data && prodRes1.data.length > 0) {
-                    productos = prodRes1.data;
-                } else {
+                if (prodRes1.data && prodRes1.data.length > 0) productos = prodRes1.data;
+                else {
                     let prodRes2 = await supabaseClient.from('articulos').select('*').eq('CUIT', cuitParam);
-                    if (prodRes2.data && prodRes2.data.length > 0) {
-                        productos = prodRes2.data;
-                    }
+                    if (prodRes2.data && prodRes2.data.length > 0) productos = prodRes2.data;
                 }
 
                 if (!productos || productos.length === 0) {
@@ -204,6 +210,7 @@
 
                 productosGlobales = productos;
                 renderizarProductos(productosGlobales);
+                inicializarReconocimientoVoz();
 
             } catch (err) {
                 console.error("Error al conectar con Supabase:", err);
@@ -212,11 +219,9 @@
         }
 
         function configurarModalComercio(com) {
-            // Horarios
             const horarios = com.horarios || com.HORARIOS || com.horario || com.HORARIO;
             if (horarios) document.getElementById('modalHorarios').innerText = horarios;
 
-            // Dirección y Google Maps
             const direccion = com.direccion || com.DIRECCION;
             if (direccion) {
                 document.getElementById('modalDireccion').innerText = direccion;
@@ -225,13 +230,9 @@
                 linkMapa.classList.remove('hidden');
             }
 
-            // Teléfono y WhatsApp
             const telefono = com.telefono || com.TELEFONO;
             const whatsapp = com.whatsapp || com.WHATSAPP || telefono;
-
-            if (telefono || whatsapp) {
-                document.getElementById('modalTelefono').innerText = whatsapp || telefono;
-            }
+            if (telefono || whatsapp) document.getElementById('modalTelefono').innerText = whatsapp || telefono;
 
             if (whatsapp) {
                 const numLimpio = whatsapp.replace(/[^0-9]/g, '');
@@ -241,13 +242,8 @@
             }
         }
 
-        function abrirModalInfo() {
-            document.getElementById('modalInfo').classList.remove('hidden');
-        }
-
-        function cerrarModalInfo() {
-            document.getElementById('modalInfo').classList.add('hidden');
-        }
+        function abrirModalInfo() { document.getElementById('modalInfo').classList.remove('hidden'); }
+        function cerrarModalInfo() { document.getElementById('modalInfo').classList.add('hidden'); }
 
         function renderizarProductos(lista) {
             const contenedor = document.getElementById('listaProductos');
@@ -268,38 +264,19 @@
 
                 const tarjeta = `
                     <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200 relative overflow-hidden">
-                        
-                        <!-- 1. CÓDIGO & DISPONIBILIDAD -->
                         <div class="flex justify-between items-center mb-3 pb-2 border-b border-gray-100 gap-2">
                             ${codigo ? `<span class="bg-slate-800 text-white font-mono font-black text-base px-3 py-1 rounded-lg shadow-sm">CÓD: ${codigo}</span>` : '<span></span>'}
                             ${disponibilidad ? `<span class="bg-slate-100 text-slate-800 font-medium text-xs px-2.5 py-1 rounded-full border border-slate-200 text-right"><span class="font-bold text-gray-500 uppercase text-[10px]">Disponibilidad:</span> 📦 ${disponibilidad}</span>` : ''}
                         </div>
-
-                        <!-- 2. ARTÍCULO -->
                         <h3 class="font-extrabold text-gray-900 text-lg leading-tight uppercase">${articulo}</h3>
-
-                        <!-- 3. DESCRIPCIÓN -->
                         ${descripcion ? `<p class="text-xs text-gray-600 mt-1 leading-relaxed">${descripcion}</p>` : ''}
-
-                        <!-- 4. PRECIO & PROMOCIÓN -->
                         <div class="mt-3 pt-2 border-t border-gray-100 flex flex-col space-y-1.5">
                             <div class="flex items-end justify-between">
-                                <div>
-                                    <p class="text-[10px] text-gray-400 uppercase font-semibold">Precio final</p>
-                                </div>
-                                <div class="text-right">
-                                    <span class="text-slate-800 font-black text-2xl">$${Number(precio).toLocaleString('es-AR')}</span>
-                                </div>
+                                <div><p class="text-[10px] text-gray-400 uppercase font-semibold">Precio final</p></div>
+                                <div class="text-right"><span class="text-slate-800 font-black text-2xl">$${Number(precio).toLocaleString('es-AR')}</span></div>
                             </div>
-                            ${promocion ? `
-                                <div>
-                                    <span class="inline-block bg-amber-100 text-amber-800 font-bold text-[11px] px-2.5 py-1 rounded-lg uppercase tracking-wider w-full text-center border border-amber-200/60">
-                                        🔥 ${promocion}
-                                    </span>
-                                </div>
-                            ` : ''}
+                            ${promocion ? `<div><span class="inline-block bg-amber-100 text-amber-800 font-bold text-[11px] px-2.5 py-1 rounded-lg uppercase tracking-wider w-full text-center border border-amber-200/60">🔥 ${promocion}</span></div>` : ''}
                         </div>
-
                     </div>
                 `;
                 contenedor.innerHTML += tarjeta;
@@ -322,6 +299,122 @@
             const divEstado = document.getElementById('mensajeEstado');
             document.getElementById('textoEstado').innerText = mensaje;
             divEstado.classList.remove('hidden');
+        }
+
+        /* --- LÓGICA DEL ASISTENTE DE IA Y RECONOCIMIENTO DE VOZ --- */
+
+        function activarAsistenteVoz() {
+            document.getElementById('modalIaChat').classList.remove('hidden');
+        }
+
+        function cerrarModalIa() {
+            document.getElementById('modalIaChat').classList.add('hidden');
+            if (estaEscuchando && reconocedorVoz) {
+                reconocedorVoz.stop();
+            }
+        }
+
+        function inicializarReconocimientoVoz() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                document.getElementById('lblEstadoEscucha').innerText = "Tu navegador no soporta reconocimiento de voz.";
+                return;
+            }
+
+            reconocedorVoz = new SpeechRecognition();
+            reconocedorVoz.lang = 'es-AR';
+            reconocedorVoz.continuous = false;
+            reconocedorVoz.interimResults = false;
+
+            reconocedorVoz.onstart = () => {
+                estaEscuchando = true;
+                document.getElementById('lblEstadoEscucha').innerText = "Escuchando... Habla ahora";
+                document.getElementById('btnEscuchar').classList.add('animate-pulse', 'bg-red-600');
+                document.getElementById('iconoMic').innerText = "🔴";
+            };
+
+            reconocedorVoz.onend = () => {
+                estaEscuchando = false;
+                document.getElementById('lblEstadoEscucha').innerText = "Toca para hablar";
+                document.getElementById('btnEscuchar').classList.remove('animate-pulse', 'bg-red-600');
+                document.getElementById('iconoMic').innerText = "🎙️";
+            };
+
+            reconocedorVoz.onresult = async (event) => {
+                const textoTranscrito = event.results[0][0].transcript;
+                agregarMensajeChat('usuario', textoTranscrito);
+                await procesarConsultaIa(textoTranscrito);
+            };
+
+            reconocedorVoz.onerror = (event) => {
+                console.error("Error de voz:", event.error);
+                document.getElementById('lblEstadoEscucha').innerText = "Error al escuchar. Inténtalo de nuevo.";
+            };
+        }
+
+        function alternarEscucha() {
+            if (!reconocedorVoz) {
+                alert("El reconocimiento de voz no está disponible en este navegador.");
+                return;
+            }
+            if (estaEscuchando) {
+                reconocedorVoz.stop();
+            } else {
+                reconocedorVoz.start();
+            }
+        }
+
+        function agregarMensajeChat(remitente, texto) {
+            const historial = document.getElementById('chatHistorial');
+            const div = document.createElement('div');
+
+            if (remitente === 'usuario') {
+                div.className = "bg-indigo-600 text-white p-3 rounded-xl max-w-[85%] ml-auto shadow-sm";
+            } else {
+                div.className = "bg-white text-gray-800 p-3 rounded-xl max-w-[85%] border border-gray-200 shadow-sm";
+            }
+
+            div.innerText = texto;
+            historial.appendChild(div);
+            historial.scrollTop = historial.scrollHeight;
+        }
+
+        async function procesarConsultaIa(consultaTexto) {
+            document.getElementById('estadoIa').innerText = "Procesando consulta con la IA...";
+            agregarMensajeChat('ia', "Pensando respuesta...");
+
+            try {
+                // LLAMADA A LA SERVERLESS FUNCTION (BACKEND)
+                const respuesta = await fetch('/api/asistente-ia', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        cuit: cuitParam,
+                        consulta: consultaTexto,
+                        productos: productosGlobales
+                    })
+                });
+
+                const data = await respuesta.json();
+                
+                // Remover el mensaje temporal "Pensando..."
+                const historial = document.getElementById('chatHistorial');
+                historial.removeChild(historial.lastChild);
+
+                if (data.respuesta) {
+                    agregarMensajeChat('ia', data.respuesta);
+                } else {
+                    agregarMensajeChat('ia', "No pude procesar tu solicitud en este momento. Intenta de nuevo.");
+                }
+
+            } catch (err) {
+                console.error("Error al consultar la IA:", err);
+                const historial = document.getElementById('chatHistorial');
+                if (historial.lastChild) historial.removeChild(historial.lastChild);
+                agregarMensajeChat('ia', "Ocurrió un error al comunicarme con el servidor.");
+            } finally {
+                document.getElementById('estadoIa').innerText = "Presiona el micrófono para hablar";
+            }
         }
 
         window.onload = cargarDatos;
