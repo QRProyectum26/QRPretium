@@ -47,7 +47,7 @@
                     class="w-full pl-4 pr-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-600 text-sm bg-white">
             </div>
 
-            <!-- NUEVO BOTÓN CON ÍCONO DODECAEDRO SVG REEMPLAZADO -->
+            <!-- BOTÓN CON ÍCONO DODECAEDRO SVG -->
             <button id="btnIaVoz" onclick="activarAsistenteVoz()" title="Consultar al Asistente por Voz"
                 class="h-14 w-14 bg-slate-900 hover:bg-slate-800 rounded-xl shadow-md flex items-center justify-center transition-transform active:scale-95 border border-slate-700 flex-shrink-0 relative overflow-hidden p-1">
                 <object type="image/svg+xml" data="icono_ia/icono_ia.svg" class="w-full h-full pointer-events-none"></object>
@@ -157,16 +157,20 @@
         const urlParams = new URLSearchParams(window.location.search);
         const cuitParam = urlParams.get('cuit') ? urlParams.get('cuit').trim() : null;
 
-        // Función para reproducir el saludo inicial al hacer clic en el dodecaedro
-        function reproducirSaludoInicial() {
-            const welcomeText = "Hola, ¿qué tal? ¿En qué puedo ayudarte?";
+        // Reproduce un texto mediante sintetizador de voz (Text-To-Speech)
+        function reproducirVoz(texto) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(welcomeText);
+                const utterance = new SpeechSynthesisUtterance(texto);
                 utterance.lang = 'es-AR';
                 utterance.rate = 1.0;
                 window.speechSynthesis.speak(utterance);
             }
+        }
+
+        // Función para reproducir el saludo inicial al hacer clic en el dodecaedro
+        function reproducirSaludoInicial() {
+            reproducirVoz("Hola, ¿qué tal? ¿En qué puedo ayudarte?");
         }
 
         async function cargarDatos() {
@@ -323,6 +327,9 @@
 
         function cerrarModalIa() {
             document.getElementById('modalIaChat').classList.add('hidden');
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
             if (estaEscuchando && reconocedorVoz) {
                 reconocedorVoz.stop();
             }
@@ -407,22 +414,29 @@
                 const data = await respuesta.json();
                 
                 const historial = document.getElementById('chatHistorial');
-                historial.removeChild(historial.lastChild);
+                if (historial.lastChild) historial.removeChild(historial.lastChild);
 
                 if (data.choices && data.choices.length > 0) {
                     const botReply = data.choices[0].message.content;
                     agregarMensajeChat('ia', botReply);
+                    reproducirVoz(botReply);
                 } else if (data.error) {
-                    agregarMensajeChat('ia', "Error: " + data.error);
+                    const errMsj = "Error: " + data.error;
+                    agregarMensajeChat('ia', errMsj);
+                    reproducirVoz("Ocurrió un error al procesar tu consulta.");
                 } else {
-                    agregarMensajeChat('ia', "No pude procesar tu solicitud en este momento. Por favor, intenta de nuevo.");
+                    const errDefault = "No pude procesar tu solicitud en este momento. Por favor, intenta de nuevo.";
+                    agregarMensajeChat('ia', errDefault);
+                    reproducirVoz(errDefault);
                 }
 
             } catch (err) {
                 console.error("Error al consultar la IA:", err);
                 const historial = document.getElementById('chatHistorial');
                 if (historial.lastChild) historial.removeChild(historial.lastChild);
-                agregarMensajeChat('ia', "Ocurrió un error al comunicarme con el servidor.");
+                const errConexion = "Ocurrió un error al comunicarme con el servidor.";
+                agregarMensajeChat('ia', errConexion);
+                reproducirVoz(errConexion);
             } finally {
                 document.getElementById('estadoIa').innerText = "Presiona el micrófono para hablar";
             }
