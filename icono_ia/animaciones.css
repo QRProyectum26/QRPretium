@@ -1,0 +1,58 @@
+/* animaciones.css - Estilos y efectos neón interactivos */
+
+#dodecaedro-svg {
+  max-width: 100%;
+  height: auto;
+  cursor: pointer;
+  filter: drop-shadow(0px 15px 25px rgba(0, 0, 0, 0.6));
+  transition: transform 0.4s ease;
+}
+
+#dodecaedro-svg:hover {
+  transform: scale(1.03);
+}
+
+/* Animación de leve flotación 3D */
+#dodecaedro-container {
+  transform-origin: center;
+  animation: floatDodecahedron 5s ease-in-out infinite;
+}
+
+@keyframes floatDodecahedron {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(1deg);
+  }
+}
+
+/* Respiración/Pulsación del Neón Frontal */
+.pulse-neon {
+  animation: pulseGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes pulseGlow {
+  from {
+    stroke-opacity: 0.7;
+    stroke-width: 10px;
+  }
+  to {
+    stroke-opacity: 1;
+    stroke-width: 14px;
+  }
+}
+
+/* Estado Activo cuando la IA está Procesando/Escuchando */
+.ia-listening #icon-mic {
+  animation: micPulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes micPulse {
+  from {
+    transform: translate(493px, 370px) scale(0.95);
+  }
+  to {
+    transform: translate(493px, 370px) scale(1.08);
+  }
+}
