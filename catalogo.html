@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- CSS Animaciones Dodecaedro IA -->
+    <link rel="stylesheet" href="icono_ia/animaciones.css">
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen pb-10">
 
@@ -29,7 +31,6 @@
                             +
                         </button>
                     </div>
-                    <!-- 1. CAMBIO: LEYENDA EN COLOR NARANJA -->
                     <p class="text-xs text-orange-400 font-semibold">Vidriera Inmersiva + IA</p>
                 </div>
             </div>
@@ -39,22 +40,17 @@
     <!-- Contenido Principal -->
     <main class="max-w-xl mx-auto px-4 mt-5">
 
-        <!-- Buscador de Productos + Botón Asistente IA -->
+        <!-- Buscador de Productos + Botón Dodecaedro IA -->
         <div class="mb-5 flex items-center gap-2">
             <div class="relative shadow-sm rounded-xl flex-1">
                 <input type="text" id="inputBuscar" onkeyup="filtrarProductos()" placeholder="🔍 Buscar por código, artículo o descripción..." 
                     class="w-full pl-4 pr-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-600 text-sm bg-white">
             </div>
 
-            <!-- BOTÓN IA AL LADO DE LA BÚSQUEDA (NARANJA) -->
+            <!-- NUEVO BOTÓN CON ÍCONO DODECAEDRO SVG REEMPLAZADO -->
             <button id="btnIaVoz" onclick="activarAsistenteVoz()" title="Consultar al Asistente por Voz"
-                class="bg-orange-500 hover:bg-orange-600 text-white p-3 rounded-xl shadow-md flex items-center justify-center transition-transform active:scale-95 border border-orange-400 flex-shrink-0 relative">
-                <!-- Ícono de Asistente / Robot -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2z" />
-                    <circle cx="9" cy="11" r="1" fill="currentColor" />
-                    <circle cx="15" cy="11" r="1" fill="currentColor" />
-                </svg>
+                class="h-14 w-14 bg-slate-900 hover:bg-slate-800 rounded-xl shadow-md flex items-center justify-center transition-transform active:scale-95 border border-slate-700 flex-shrink-0 relative overflow-hidden p-1">
+                <object type="image/svg+xml" data="icono_ia/icono_ia.svg" class="w-full h-full pointer-events-none"></object>
             </button>
         </div>
 
@@ -62,22 +58,22 @@
         <div id="modalIaChat" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
             <div class="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl max-w-lg w-full h-[80vh] sm:h-[600px] flex flex-col overflow-hidden">
                 
-                <!-- Encabezado Modal IA (NARANJA) -->
-                <div class="p-4 bg-orange-600 text-white flex justify-between items-center">
+                <!-- Encabezado Modal IA -->
+                <div class="p-4 bg-slate-800 text-white flex justify-between items-center border-b border-slate-700">
                     <div class="flex items-center space-x-2">
                         <span class="text-2xl">🤖</span>
                         <div>
                             <h3 class="font-bold text-sm">Asistente de Vidriera Inmersiva</h3>
-                            <p id="estadoIa" class="text-xs text-orange-100">Presiona el Micrófono para Hablar</p>
+                            <p id="estadoIa" class="text-xs text-slate-300">Presiona el Micrófono para Hablar</p>
                         </div>
                     </div>
-                    <button onclick="cerrarModalIa()" class="text-orange-200 hover:text-white text-xl font-bold">✕</button>
+                    <button onclick="cerrarModalIa()" class="text-slate-400 hover:text-white text-xl font-bold">✕</button>
                 </div>
 
                 <!-- Historial de Mensajes -->
                 <div id="chatHistorial" class="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-50 text-xs">
-                    <div class="bg-orange-50 text-orange-900 p-3 rounded-xl max-w-[85%] border border-orange-200">
-                        Hola, soy el asistente de esta vidriera inmersiva, en qué puedo ayudarte?
+                    <div class="bg-slate-200 text-slate-900 p-3 rounded-xl max-w-[85%] border border-slate-300">
+                        Hola, soy el asistente de esta vidriera inmersiva, ¿en qué puedo ayudarte?
                     </div>
                 </div>
 
@@ -109,12 +105,10 @@
             <div class="p-5 text-white relative" style="background-color: #334155;">
                 <button onclick="cerrarModalInfo()" class="absolute top-4 right-4 text-slate-300 hover:text-white text-xl font-bold bg-slate-700/50 w-8 h-8 rounded-full flex items-center justify-center">✕</button>
                 <p class="text-xs font-semibold text-emerald-400 uppercase tracking-widest mb-1">Información del Local</p>
-                <!-- 3. CAMBIO: NOMBRE DE COMERCIO MÁS GRANDE (text-2xl) -->
                 <h2 id="modalNombreComercio" class="text-2xl font-black uppercase tracking-wide pr-6 leading-tight">Comercio</h2>
                 <div class="w-full h-1 bg-orange-500 rounded-full mt-3"></div>
             </div>
             <div class="p-5 space-y-4 text-sm text-gray-700">
-                <!-- 3. CAMBIO: CUADRO DE HORARIOS EN NARANJA BAJITO -->
                 <div class="flex items-start space-x-3 bg-orange-50/90 p-3 rounded-xl border border-orange-200/80">
                     <span class="text-xl">🕒</span>
                     <div>
@@ -122,7 +116,6 @@
                         <p id="modalHorarios" class="text-gray-800 font-medium mt-0.5">No especificados</p>
                     </div>
                 </div>
-                <!-- 3. CAMBIO: DIRECCIÓN MANTIENE SOLO TÍTULO "DIRECCIÓN" -->
                 <div class="flex items-start space-x-3 bg-slate-50 p-3 rounded-xl border border-slate-200/60">
                     <span class="text-xl">📍</span>
                     <div class="w-full">
@@ -142,12 +135,14 @@
                     </div>
                 </div>
             </div>
-            <!-- 3. CAMBIO: LEYENDA CERRAR LIGERAMENTE MÁS GRANDE (text-sm py-2.5) -->
             <div class="bg-gray-50 px-5 py-3 text-center border-t border-gray-100">
                 <button onclick="cerrarModalInfo()" class="w-full py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-900 font-extrabold rounded-xl text-sm transition">Cerrar</button>
             </div>
         </div>
     </div>
+
+    <!-- JS de la animación e interacción del dodecaedro -->
+    <script src="icono_ia/interaccion.js"></script>
 
     <script>
         const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
@@ -158,39 +153,21 @@
         let datosComercioGlobal = null;
         let reconocedorVoz = null;
         let estaEscuchando = false;
-        let saludoReproducido = false;
 
         const urlParams = new URLSearchParams(window.location.search);
         const cuitParam = urlParams.get('cuit') ? urlParams.get('cuit').trim() : null;
 
-        // Función para reproducir el saludo inicial de forma segura
+        // Función para reproducir el saludo inicial al hacer clic en el dodecaedro
         function reproducirSaludoInicial() {
-            if (saludoReproducido) return;
-            
-            const welcomeText = "Hola que tal!, soy tu asistente en esta vidriera inmersiva, en qué puedo ayudarte?";
+            const welcomeText = "Hola, ¿qué tal? ¿En qué puedo ayudarte?";
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(welcomeText);
                 utterance.lang = 'es-AR';
                 utterance.rate = 1.0;
                 window.speechSynthesis.speak(utterance);
-                saludoReproducido = true;
             }
         }
-
-        // Intento automático al cargar y desbloqueo por interacción del usuario (móviles)
-        window.addEventListener('DOMContentLoaded', () => {
-            reproducirSaludoInicial();
-
-            const desbloquearAudio = () => {
-                reproducirSaludoInicial();
-                window.removeEventListener('click', desbloquearAudio);
-                window.removeEventListener('touchstart', desbloquearAudio);
-            };
-
-            window.addEventListener('click', desbloquearAudio);
-            window.addEventListener('touchstart', desbloquearAudio);
-        });
 
         async function cargarDatos() {
             if (!cuitParam) {
@@ -256,7 +233,6 @@
             const horarios = com.horarios || com.HORARIOS || com.horario || com.HORARIO;
             if (horarios) document.getElementById('modalHorarios').innerText = horarios;
 
-            // 3. CAMBIO: RASTREO DIRECCIÓN + CIUDAD PARA GOOGLE MAPS
             const direccion = com.direccion || com.DIRECCION;
             const ciudad = com.ciudad || com.CIUDAD || '';
             if (direccion) {
@@ -312,7 +288,6 @@
                                 <div><p class="text-[10px] text-gray-400 uppercase font-semibold">Precio final</p></div>
                                 <div class="text-right"><span class="text-slate-800 font-black text-2xl">$${Number(precio).toLocaleString('es-AR')}</span></div>
                             </div>
-                            <!-- 2. CAMBIO: BARRA DE PROMOCIÓN CON VERDE CLARO LEGIBLE DE DÍA Y DE NOCHE -->
                             ${promocion ? `<div><span class="inline-block bg-emerald-100 text-emerald-950 font-extrabold text-[11px] px-2.5 py-1 rounded-lg uppercase tracking-wider w-full text-center border border-emerald-300 shadow-sm">🔥 ${promocion}</span></div>` : ''}
                         </div>
                     </div>
@@ -342,6 +317,7 @@
         /* --- LÓGICA DEL ASISTENTE DE IA Y RECONOCIMIENTO DE VOZ --- */
 
         function activarAsistenteVoz() {
+            reproducirSaludoInicial();
             document.getElementById('modalIaChat').classList.remove('hidden');
         }
 
@@ -439,7 +415,7 @@
                 } else if (data.error) {
                     agregarMensajeChat('ia', "Error: " + data.error);
                 } else {
-                    agregarMensajeChat('ia', "No pude procesar tu solicitud en este momento. Por Favor, Intenta de nuevo.");
+                    agregarMensajeChat('ia', "No pude procesar tu solicitud en este momento. Por favor, intenta de nuevo.");
                 }
 
             } catch (err) {
