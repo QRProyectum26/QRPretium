@@ -1,1 +1,23 @@
+# Módulo Ícono IA Interactiva - Dodecaedro (qrpretium)
 
+Este directorio contiene los componentes vectoriales, de animación y lógica de interacción para el componente flotante de IA del archivo `catalogo.html`.
+
+## Contenido del directorio
+
+- `icono_ia.svg`: Estructura vectorial limpia en 3D isométrica del dodecaedro neón sin etiquetas explicativas externas.
+- `animaciones.css`: Estilos de iluminación neón, efectos glow y animación de respiración/flotación 3D.
+- `interaccion.js`: Módulo JavaScript que gestiona el reconocimiento de voz Web Speech API y la transmisión de comandos.
+
+## Integración en `catalogo.html`
+
+Para incluirlo en el catálogo, inserta el SVG e vincula sus recursos:
+
+```html
+<link rel="stylesheet" href="./icono_ia/animaciones.css">
+
+<!-- Contenedor del ícono -->
+<div id="contenedor-icono-ia">
+  <!-- Insertar contenido de icono_ia.svg -->
+</div>
+
+<script src="./icono_ia/interaccion.js"></script>
