@@ -1,6 +1,30 @@
-// interaccion.js - Control de captura de voz y conexiÛn con la API de IA
+// interaccion.js - Inyecta el SVG del dodecaedro en el DOM y controla
+// la captura de voz + conexi√≥n con la API de IA
 
 document.addEventListener("DOMContentLoaded", () => {
+  const wrapper = document.getElementById("dodecaedroWrapper");
+  if (!wrapper) {
+    console.error("No se encontr√≥ #dodecaedroWrapper en el HTML.");
+    return;
+  }
+
+  // Inyectamos el SVG como parte real del DOM (no <object>), para que
+  // getElementById y animaciones.css puedan alcanzar sus elementos.
+  fetch("icono_ia/icono_ia.svg")
+    .then((res) => {
+      if (!res.ok) throw new Error("No se pudo cargar icono_ia.svg (status " + res.status + ")");
+      return res.text();
+    })
+    .then((svgText) => {
+      wrapper.innerHTML = svgText;
+      inicializarDodecaedroIA();
+    })
+    .catch((err) => {
+      console.error("Error al inyectar el √≠cono del dodecaedro:", err);
+    });
+});
+
+function inicializarDodecaedroIA() {
   const iconMic = document.getElementById("icon-mic");
   const statusTitle = document.getElementById("status-text-title");
   const statusSub1 = document.getElementById("status-text-sub1");
@@ -10,7 +34,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let isListening = false;
   let recognition = null;
 
-  // Inicializar Web Speech API si est· disponible en el navegador
   if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     recognition = new SpeechRecognition();
@@ -29,17 +52,16 @@ document.addEventListener("DOMContentLoaded", () => {
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
       console.log("Comando recibido para qrpretium:", transcript);
-      
-      // Feedback visual de Èxito
+
       if (statusTitle) statusTitle.textContent = "PROCESADO";
       if (statusSub1) statusSub1.textContent = "ENVIANDO A";
       if (statusSub2) statusSub2.textContent = "CATALOGO.HTML";
-      
-      // AquÌ conectas tu llamada a la API de qrpretium enviando 'transcript'
+
+      // Aqu√≠ conect√°s tu llamada a la API de qrpretium enviando 'transcript'
     };
 
     recognition.onerror = (event) => {
-      console.error("Error en la interacciÛn por voz:", event.error);
+      console.error("Error en la interacci√≥n por voz:", event.error);
       if (statusTitle) statusTitle.textContent = "ERROR";
       if (statusSub1) statusSub1.textContent = "INTENTE";
       if (statusSub2) statusSub2.textContent = "NUEVAMENTE";
@@ -61,11 +83,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 2500);
   }
 
-  // Activar captura de voz haciendo clic en el dodecaedro/micrÛfono
   if (iconMic) {
-    iconMic.addEventListener("click", () => {
+    iconMic.addEventListener("click", (e) => {
+      e.stopPropagation(); // evita doble disparo si el bot√≥n padre tambi√©n tiene onclick
       if (!recognition) {
-        alert("El reconocimiento de voz no est· soportado en este navegador.");
+        alert("El reconocimiento de voz no est√° soportado en este navegador.");
         return;
       }
       if (!isListening) {
@@ -74,5 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
         recognition.stop();
       }
     });
+  } else {
+    console.warn("No se encontr√≥ #icon-mic dentro del SVG inyectado.");
   }
-});
+}
