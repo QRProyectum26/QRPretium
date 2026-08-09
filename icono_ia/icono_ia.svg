@@ -19,20 +19,19 @@
   </defs>
 
   <!--
-    Geometría real de un dodecaedro regular (20 vértices, 12 caras),
-    rotado y proyectado en perspectiva ortográfica. Se muestran solo
-    las 6 caras que miran hacia el espectador (backface culling), cada
-    una con su tono según el ángulo respecto de una luz virtual, para
-    que se lea como un sólido 3D real y no como una figura plana.
+    Geometría real de un dodecaedro regular proyectada en perspectiva
+    (igual que la versión anterior). Cambia únicamente la paleta:
+    caras en gris claro, biseles en naranja vivo, texto en tono oscuro
+    para mantener legibilidad sobre el gris claro.
   -->
   <g id="dodecaedro-container">
 
-    <polygon class="face" points="219.5,615.0 419.0,705.7 608.8,738.0 526.7,667.2 286.0,591.2" fill="#12161c" stroke="#0a0d11" stroke-width="3" stroke-linejoin="round" />
-    <polygon class="face" points="202.3,217.2 167.8,383.9 219.5,615.0 286.0,591.2 275.4,345.3" fill="#37404b" stroke="#0a0d11" stroke-width="3" stroke-linejoin="round" />
-    <polygon class="face" points="526.7,667.2 608.8,738.0 797.7,582.8 832.2,416.1 664.7,468.3" fill="#12161c" stroke="#0a0d11" stroke-width="3" stroke-linejoin="round" />
-    <polygon class="face" points="391.2,62.0 202.3,217.2 275.4,345.3 509.4,269.4 581.0,94.3" fill="#4e5a69" stroke="#0a0d11" stroke-width="3" stroke-linejoin="round" />
-    <polygon class="face" points="780.5,185.0 581.0,94.3 509.4,269.4 664.7,468.3 832.2,416.1" fill="#39424e" stroke="#0a0d11" stroke-width="3" stroke-linejoin="round" />
-    <polygon class="face" points="275.4,345.3 286.0,591.2 526.7,667.2 664.7,468.3 509.4,269.4" fill="#404a57" stroke="#0a0d11" stroke-width="3" stroke-linejoin="round" />
+    <polygon class="face" points="219.5,615.0 419.0,705.7 608.8,738.0 526.7,667.2 286.0,591.2" fill="#646c7a" stroke="#7d8694" stroke-width="2.5" stroke-linejoin="round" />
+    <polygon class="face" points="202.3,217.2 167.8,383.9 219.5,615.0 286.0,591.2 275.4,345.3" fill="#a3aab5" stroke="#7d8694" stroke-width="2.5" stroke-linejoin="round" />
+    <polygon class="face" points="526.7,667.2 608.8,738.0 797.7,582.8 832.2,416.1 664.7,468.3" fill="#646c7a" stroke="#7d8694" stroke-width="2.5" stroke-linejoin="round" />
+    <polygon class="face" points="391.2,62.0 202.3,217.2 275.4,345.3 509.4,269.4 581.0,94.3" fill="#cbd2db" stroke="#7d8694" stroke-width="2.5" stroke-linejoin="round" />
+    <polygon class="face" points="780.5,185.0 581.0,94.3 509.4,269.4 664.7,468.3 832.2,416.1" fill="#a6aeb9" stroke="#7d8694" stroke-width="2.5" stroke-linejoin="round" />
+    <polygon class="face" points="275.4,345.3 286.0,591.2 526.7,667.2 664.7,468.3 509.4,269.4" fill="#b2bac4" stroke="#7d8694" stroke-width="2.5" stroke-linejoin="round" />
 
     <g transform="translate(412.0,663.4) scale(0.85) translate(-412.0,-663.4)">
       <polygon class="neon-border" points="219.5,615.0 419.0,705.7 608.8,738.0 526.7,667.2 286.0,591.2" fill="none" stroke="#ff5500" stroke-width="5" stroke-linejoin="round" filter="url(#glow-orange)" />
@@ -60,13 +59,13 @@
       <path fill="none" stroke="#ffee00" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow-yellow)" d="M -22 5 C -8 15 -12 35 -26 40 M 22 5 C 8 15 12 35 26 40" />
     </g>
 
-    <!-- ÍCONO MICRÓFONO Y TEXTO (cara frontal, la más grande / de frente) -->
+    <!-- ÍCONO MICRÓFONO Y TEXTO (cara frontal) -->
     <g id="icon-mic" transform="translate(452.4, 468.3)">
       <rect x="-15" y="-32" width="30" height="46" rx="15" fill="#00ff66" filter="url(#glow-green)" />
       <path fill="none" stroke="#00ff66" stroke-width="5" stroke-linecap="round" filter="url(#glow-green)" d="M -26 0 A 26 26 0 0 0 26 0" />
       <path fill="none" stroke="#00ff66" stroke-width="5" stroke-linecap="round" filter="url(#glow-green)" d="M 0 26 L 0 42 M -14 42 L 14 42" />
-      <text x="0" y="70" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="17" fill="#ffffff" text-anchor="middle" letter-spacing="1.5">ESCUCHANDO</text>
-      <text x="0" y="88" font-family="'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="10" fill="#00ff66" text-anchor="middle" letter-spacing="1">MODO VOZ ACTIVADO</text>
+      <text x="0" y="70" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="17" fill="#1c2430" text-anchor="middle" letter-spacing="1.5">ESCUCHANDO</text>
+      <text x="0" y="88" font-family="'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="10" fill="#0b7a3a" text-anchor="middle" letter-spacing="1">MODO VOZ ACTIVADO</text>
     </g>
 
     <!-- ÍCONO ÉXITO / CHECK (cara izquierda) -->
