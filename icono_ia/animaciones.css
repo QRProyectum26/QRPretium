@@ -1,4 +1,4 @@
-/* animaciones.css - Estilos y efectos neÛn interactivos */
+/* animaciones.css - Estilos y efectos ne√≥n interactivos */
 
 #dodecaedro-svg {
   max-width: 100%;
@@ -7,17 +7,15 @@
   filter: drop-shadow(0px 15px 25px rgba(0, 0, 0, 0.6));
   transition: transform 0.4s ease;
 }
-
 #dodecaedro-svg:hover {
   transform: scale(1.03);
 }
 
-/* AnimaciÛn de leve flotaciÛn 3D */
+/* Animaci√≥n de leve flotaci√≥n 3D */
 #dodecaedro-container {
   transform-origin: center;
   animation: floatDodecahedron 5s ease-in-out infinite;
 }
-
 @keyframes floatDodecahedron {
   0%, 100% {
     transform: translateY(0px) rotate(0deg);
@@ -27,11 +25,10 @@
   }
 }
 
-/* RespiraciÛn/PulsaciÛn del NeÛn Frontal */
+/* Respiraci√≥n/Pulsaci√≥n del Ne√≥n Frontal */
 .pulse-neon {
   animation: pulseGlow 2s ease-in-out infinite alternate;
 }
-
 @keyframes pulseGlow {
   from {
     stroke-opacity: 0.7;
@@ -43,16 +40,16 @@
   }
 }
 
-/* Estado Activo cuando la IA est· Procesando/Escuchando */
+/* Estado Activo cuando la IA est√° Procesando/Escuchando
+   (posici√≥n actualizada a la cara frontal del dodecaedro 3D: 452.4, 468.3) */
 .ia-listening #icon-mic {
   animation: micPulse 1s ease-in-out infinite alternate;
 }
-
 @keyframes micPulse {
   from {
-    transform: translate(493px, 370px) scale(0.95);
+    transform: translate(452.4px, 468.3px) scale(0.95);
   }
   to {
-    transform: translate(493px, 370px) scale(1.08);
+    transform: translate(452.4px, 468.3px) scale(1.08);
   }
 }
