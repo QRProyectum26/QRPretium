@@ -10,7 +10,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Inyectamos el SVG como parte real del DOM (no <object>), para que
   // getElementById y animaciones.css puedan alcanzar sus elementos.
-  fetch("icono_ia/icono_ia.svg")
+  // El parámetro ?v=Date.now() evita que el navegador sirva una copia
+  // vieja cacheada del SVG mientras seguimos ajustando el diseño.
+  fetch("icono_ia/icono_ia.svg?v=" + Date.now())
     .then((res) => {
       if (!res.ok) throw new Error("No se pudo cargar icono_ia.svg (status " + res.status + ")");
       return res.text();
