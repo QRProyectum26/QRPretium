@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QRPretium - Vidriera Inteligente 24/7 & Asistente IA</title>
+  <title>Nosotros - QRPretium</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -23,16 +23,15 @@
   </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    /* Efecto de borde blanco para las letras QR */
     .texto-qr-borde {
-      color: #94A3B8; /* Gris */
-      -webkit-text-stroke: 1px #FFFFFF; /* Borde blanco */
+      color: #94A3B8;
+      -webkit-text-stroke: 1px #FFFFFF;
     }
   </style>
 </head>
 <body class="bg-pizarraOscura text-slate-100 font-sans antialiased selection:bg-naranja selection:text-white">
 
-  <!-- 1. HEADER / NAVEGACIÓN -->
+  <!-- HEADER / NAVEGACIÓN -->
   <header class="sticky top-0 z-50 bg-pizarra/90 backdrop-blur-md border-b border-slate-700/50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
       
@@ -65,12 +64,12 @@
 
       <!-- Menú Desktop -->
       <nav class="hidden md:flex gap-7 text-sm font-medium text-slate-300">
-        <a href="#que-es" class="hover:text-verdeVivo transition">¿Qué es?</a>
-        <a href="#soluciones" class="hover:text-verdeVivo transition">Soluciones</a>
-        <a href="#asistente-ia" class="hover:text-verdeVivo transition">Asistente IA</a>
-        <a href="#seguridad" class="hover:text-verdeVivo transition">Seguridad</a>
-        <a href="#planes" class="hover:text-verdeVivo transition">Planes</a>
-        <a href="nosotros.html" class="hover:text-verdeVivo transition">Nosotros</a>
+        <a href="index.html#que-es" class="hover:text-verdeVivo transition">¿Qué es?</a>
+        <a href="index.html#soluciones" class="hover:text-verdeVivo transition">Soluciones</a>
+        <a href="index.html#asistente-ia" class="hover:text-verdeVivo transition">Asistente IA</a>
+        <a href="index.html#seguridad" class="hover:text-verdeVivo transition">Seguridad</a>
+        <a href="index.html#planes" class="hover:text-verdeVivo transition">Planes</a>
+        <a href="nosotros.html" class="text-verdeVivo font-semibold transition">Nosotros</a>
       </nav>
 
       <!-- Botón Ingreso Admin -->
@@ -80,506 +79,114 @@
     </div>
   </header>
 
-  <!-- 2. HERO SECTION -->
-  <section class="relative py-16 lg:py-24 overflow-hidden">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
-      <div>
-        <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-pizarra text-verdeVivo border border-slate-700 shadow-sm mb-6">
-          <i class="fa-solid fa-sparkles"></i> Vidriera Digital & Asistente Interactivo IA
-        </span>
-        <h1 class="text-4xl sm:text-5xl font-black text-white leading-tight tracking-tight mb-6">
-          Transformá tu vidriera en una <span class="text-transparent bg-clip-text bg-gradient-to-r from-naranja to-verdeVivo">tienda inteligente 24/7/365.</span> <span class="text-white font-bold">VIDRIERA INMERSIVA + IA</span>
-        </h1>
-        <p class="text-slate-300 text-lg mb-8 leading-relaxed">
-          Precios y artículos actualizados al instante, catálogo interactivo sin carteles desactualizados y un Asistente IA que asesora a tus clientes directamente desde la vidriera !!.
-        </p>
-
-        <div class="flex flex-wrap gap-4 mb-8">
-          <a href="app.html" target="_blank" class="bg-verdeVivo hover:bg-emerald-600 text-slate-950 font-bold px-6 py-3.5 rounded-xl transition shadow-lg shadow-verdeVivo/20 flex items-center gap-2">
-            <i class="fa-solid fa-mobile-screen-button"></i> Probar Catálogo Demo
-          </a>
-          <a href="#solicitar-prueba" class="bg-pizarra hover:bg-slate-700 text-white font-semibold px-6 py-3.5 rounded-xl border border-slate-700 transition flex items-center gap-2">
-            <i class="fa-solid fa-calendar-check text-naranja"></i> Solicitar Prueba Gratis
-          </a>
-        </div>
-      </div>
-
-      <!-- MOCKUP IMAGEN VIDRIERA -->
-      <div class="relative">
-        <div class="relative rounded-2xl p-2 bg-pizarra border border-slate-700 shadow-2xl overflow-hidden">
-          <div class="relative h-96 rounded-xl overflow-hidden group">
-            <!-- Imagen de fondo de la vidriera -->
-            <img src="imgindex1.png" alt="Vidriera de comercio con productos y mujer escaneando QR" class="w-full h-full object-cover object-center transform group-hover:scale-105 transition duration-500">
-            
-            <!-- Cartel flotante con 40% de opacidad oscura para óptima lectura del texto -->
-            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 w-[95%] p-5 rounded-2xl border border-white/20 bg-slate-950/40 shadow-2xl drop-shadow-lg">
-              <div class="text-center">
-                <h3 class="text-xl font-extrabold text-white mb-2 [text-shadow:_0_2px_4px_rgba(0,0,0,0.9)]">
-                  QRPretium:<br> Escaneo Instantáneo de tu Vidriera Digital Inteligente !!.
-                </h3>
-                <p class="text-slate-100 text-sm mb-4 leading-relaxed font-medium [text-shadow:_0_1px_3px_rgba(0,0,0,0.9)]">
-                  Muestra automáticamente tus precios y productos a los clientes.
-                </p>
-                <a href="#solicitar-prueba" class="inline-block bg-naranja hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-xl transition shadow-lg transform hover:scale-105">
-                  EMPEZAR AHORA
-                </a>
-                <p class="text-slate-200 text-xs mt-3 font-medium [text-shadow:_0_1px_3px_rgba(0,0,0,0.9)]">Sin Aplicaciones. Sin Esperas !!.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+  <!-- HERO NOSOTROS -->
+  <section class="py-16 lg:py-20 bg-gradient-to-b from-pizarra to-pizarraOscura border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-pizarra text-verdeVivo border border-slate-700 shadow-sm mb-6">
+        <i class="fa-solid fa-building"></i> Sobre QRPretium
+      </span>
+      <h1 class="text-4xl sm:text-5xl font-black text-white leading-tight tracking-tight mb-6">
+        Innovando la interacción entre los <span class="text-naranja">comercios</span> y sus <span class="text-verdeVivo">clientes</span>
+      </h1>
+      <p class="text-slate-300 text-lg max-w-3xl mx-auto leading-relaxed">
+        QRPretium nace con el objetivo de revolucionar la exhibición de precios y la atención en vidrieras mediante tecnología accesible, Inteligencia Artificial interactiva y soluciones digitales en tiempo real.
+      </p>
     </div>
   </section>
 
-  <!-- 3. ¿QUÉ ES QRPRETIUM? Y SOLUCIONES -->
-  <section id="que-es" class="py-20 bg-pizarra/50 border-y border-slate-800">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center max-w-3xl mx-auto mb-16">
-        <h2 class="text-3xl font-extrabold text-white mb-4">La solución moderna y tecnológica para la exhibición de precios en vidriera</h2>
-        <p class="text-slate-400">Olvidate de imprimir o escribir cartelitos o tener precios desactualizados por inflación. Tu cliente escanea, busca y/o consulta por voz + Realidad Aumentada en tus artículos !!.</p>
-      </div>
-
-      <div class="grid md:grid-cols-3 gap-8" id="soluciones">
-        <div class="bg-pizarra p-8 rounded-2xl border border-slate-800 hover:border-slate-700 transition flex flex-col h-full">
-          <div class="w-12 h-12 bg-naranja/10 text-naranja rounded-xl flex items-center justify-center text-2xl mb-6">
-            <i class="fa-solid fa-bolt"></i>
-          </div>
-          <h3 class="text-xl font-bold text-white mb-3">Sincronización Inmediata</h3>
-          <p class="text-slate-400 text-sm leading-relaxed">Cambiás un valor del artículo fácilmente en el panel de administración desde tu celular y la vidriera digital se actualiza al instante !!.</p>
-        </div>
-
-        <div class="bg-pizarra p-8 rounded-2xl border border-slate-800 hover:border-slate-700 transition flex flex-col h-full">
-          <div class="w-12 h-12 bg-verdeVivo/10 text-verdeVivo rounded-xl flex items-center justify-center text-2xl mb-6">
-            <i class="fa-solid fa-microphone-lines"></i>
-          </div>
-          <h3 class="text-xl font-bold text-white mb-3">Atención por Voz e IA</h3>
-          <p class="text-slate-400 text-sm leading-relaxed">El cliente también interactúa hablando con el Agente Asistivo IA !. La IA comprende recomendaciones, responde dudas y lo asesora!.</p>
-        </div>
-
-        <div class="bg-pizarra p-8 rounded-2xl border border-slate-800 hover:border-slate-700 transition flex flex-col h-full">
-          <div class="w-12 h-12 bg-blue-500/10 text-blue-400 rounded-xl flex items-center justify-center text-2xl mb-6">
-            <i class="fa-solid fa-store"></i>
-          </div>
-          <h3 class="text-xl font-bold text-white mb-3">Multi Rubro</h3>
-          <p class="text-slate-400 text-sm leading-relaxed">Indumentaria, Vinotecas, Tech, Gastronomía, Perfumería, Farmacias, Ferreterías y Más !. Adaptable a cualquier tipo de Vidrieras y Catálogo.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 4. SECCIÓN DESTACADA: ASISTENTE IA -->
-  <section id="asistente-ia" class="py-20 relative">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
-      <div>
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-naranja/10 text-naranja border border-naranja/20 mb-4">
-          <i class="fa-solid fa-robot"></i> Asesor Virtual Integrado
-        </div>
-        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-6">
-          Un Agente Asistivo IA con personalidad que asesora a tus clientes desde la vidriera !!
-        </h2>
-        <p class="text-slate-300 mb-6 leading-relaxed">
-          Ubicado al alcance del pulgar en la pantalla, nuestro Agente Asistivo de IA responde preguntas complejas: <em>"¿Qué vino me recomendás para un regalo por menos de $10.000?"</em> , <em>"¿Tienen stock del código 104?"</em> o <em>"¿Qué celular me recomendás con buena cámara y memoria que salga menos de $300 mil pesos?"</em>.
-        </p>
-        <ul class="space-y-3 text-slate-300 font-medium">
-          <li class="flex items-center gap-3"><i class="fa-solid fa-check text-verdeVivo"></i> Disponible en todos los planes de QRPretium.</li>
-          <li class="flex items-center gap-3"><i class="fa-solid fa-check text-verdeVivo"></i> Reconocimiento de voz nativo en SmartPhone.</li>
-          <li class="flex items-center gap-3"><i class="fa-solid fa-check text-verdeVivo"></i> Búsqueda por código de artículo o nombre del producto.</li>
-        </ul>
-      </div>
-
-      <div class="bg-gradient-to-b from-pizarra to-slate-900 p-8 rounded-3xl border border-slate-800 text-center relative">
-        <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-slate-800 border-2 border-verdeVivo shadow-lg shadow-verdeVivo/20 flex items-center justify-center text-verdeVivo text-4xl">
-          <i class="fa-solid fa-microphone"></i>
-        </div>
-        <span class="inline-block px-3 py-1 bg-verdeVivo text-slate-950 font-bold text-xs rounded-full uppercase tracking-wider mb-2">AI Assistive Agent</span>
-        <p class="text-sm text-slate-400">"¡Hola! Bienvenido a Tienda X. ¿En qué puedo ayudarte hoy?"</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- 5. SEGURIDAD Y CARACTERÍSTICAS TÉCNICAS -->
-  <section id="seguridad" class="py-20 bg-pizarra/30 border-y border-slate-800">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center max-w-3xl mx-auto mb-16">
-        <h2 class="text-3xl font-extrabold text-white mb-4">Tecnología y Seguridad QRPretium</h2>
-        <p class="text-slate-400">Infraestructura blindada para garantizar continuidad operativa 24/7/365 en tu Vidriera Digital Inmersiva.</p>
-      </div>
-
-      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="p-6 bg-pizarra rounded-xl border border-slate-800 flex flex-col justify-between">
-          <div>
-            <i class="fa-solid fa-shield-halved text-verdeVivo text-2xl mb-4"></i>
-            <h4 class="text-lg font-bold text-white mb-2">Encriptación TLS/SSL</h4>
-            <p class="text-xs text-slate-400 leading-relaxed">Toda la transmisión de datos y consultas viaja cifrada de extremo a extremo. Tu Vidriera Digital Ultra Segura !!.</p>
-          </div>
-        </div>
-        <div class="p-6 bg-pizarra rounded-xl border border-slate-800 flex flex-col justify-between">
-          <div>
-            <i class="fa-solid fa-clock-rotate-left text-verdeVivo text-2xl mb-4"></i>
-            <h4 class="text-lg font-bold text-white mb-2">Alta Disponibilidad</h4>
-            <p class="text-xs text-slate-400 leading-relaxed">Plataforma distribuida ultra rápida para garantizar que tu Vidriera Digital nunca se caiga. Always-On !!.</p>
-          </div>
-        </div>
-        <div class="p-6 bg-pizarra rounded-xl border border-slate-800 flex flex-col justify-between">
-          <div>
-            <i class="fa-solid fa-database text-verdeVivo text-2xl mb-4"></i>
-            <h4 class="text-lg font-bold text-white mb-2">Protección de Datos</h4>
-            <p class="text-xs text-slate-400 leading-relaxed">Acceso seguro y autenticado para la gestión digital de artículos de tu negocio.</p>
-          </div>
-        </div>
-        <div class="p-6 bg-pizarra rounded-xl border border-slate-800 flex flex-col justify-between">
-          <div>
-            <i class="fa-solid fa-gauge-high text-verdeVivo text-2xl mb-4"></i>
-            <h4 class="text-lg font-bold text-white mb-2">Carga Ultra Rápida</h4>
-            <p class="text-xs text-slate-400 leading-relaxed">Optimizado para abrir al instante al escanear el cliente desde cualquier teléfono móvil. Fully Responsive !!.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 6. TABLA DE PLANES (CON SELECTOR DE PERÍODO MENSUAL) -->
-  <section id="planes" class="py-20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center max-w-3xl mx-auto mb-10">
-        <h2 class="text-3xl font-extrabold text-white mb-4">Planes diseñados para tu <span class="text-slate-400">Vidriera Inmersiva Inteligente</span></h2>
-        <p class="text-slate-400 mb-6">El valor mensual disminuye según la cantidad de meses contratados. Todos los precios expresados son de abono mensual.</p>
-        
-        <!-- SELECTOR DE PERÍODO DE CONTRATACIÓN -->
-        <div class="inline-flex items-center justify-center p-1 bg-pizarra rounded-2xl border border-slate-700 gap-1">
-          <button type="button" onclick="cambiarPeriodo(1)" id="btn-1m" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition bg-naranja text-white shadow-md">
-            1 Mes
-          </button>
-          <button type="button" onclick="cambiarPeriodo(3)" id="btn-3m" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition text-slate-300 hover:text-white">
-            3 Meses <span class="text-[10px] bg-verdeVivo/20 text-verdeVivo px-1.5 py-0.5 rounded ml-1 font-semibold">-10%</span>
-          </button>
-          <button type="button" onclick="cambiarPeriodo(6)" id="btn-6m" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition text-slate-300 hover:text-white">
-            6 Meses <span class="text-[10px] bg-verdeVivo/20 text-verdeVivo px-1.5 py-0.5 rounded ml-1 font-semibold">-20%</span>
-          </button>
-          <button type="button" onclick="cambiarPeriodo(12)" id="btn-12m" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition text-slate-300 hover:text-white">
-            12 Meses <span class="text-[10px] bg-verdeVivo/20 text-verdeVivo px-1.5 py-0.5 rounded ml-1 font-semibold">-30%</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="grid md:grid-cols-3 gap-8">
-        <!-- Plan Standard -->
-        <div class="bg-pizarra p-8 rounded-2xl border border-slate-800 flex flex-col justify-between h-full">
-          <div>
-            <h3 class="text-xl font-bold text-white mb-1">Standard</h3>
-            <p class="text-slate-400 text-xs mb-4">Ideal para el comercio Minorista/Retail.</p>
-            
-            <div class="my-4 p-4 bg-slate-900/80 rounded-xl border border-slate-700/80 text-center">
-              <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Abono Mensual</span>
-              <div class="text-3xl font-black text-white mt-1">
-                $<span id="precio-std">10.000</span> <span class="text-xs text-slate-400 font-normal">/mes</span>
-              </div>
-              <span id="sub-std" class="text-[11px] text-slate-500 mt-1 block font-medium">Facturación mensual</span>
-            </div>
-
-            <ul class="space-y-3 text-sm text-slate-300 mb-8 mt-6">
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Catálogo QR Vidriera hasta 35 artículos</li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Panel Admin de precios</li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> <strong>Asistente IA por Voz</strong></li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Soporte por Email</li>
-            </ul>
-          </div>
-          <a href="#solicitar-prueba" class="w-full text-center bg-slate-800 hover:bg-slate-700 text-white font-semibold py-3 rounded-xl transition border border-slate-700">Elegir Standard</a>
-        </div>
-
-        <!-- Plan Power -->
-        <div class="bg-pizarra p-8 rounded-2xl border-2 border-naranja relative flex flex-col justify-between h-full shadow-xl shadow-naranja/10">
-          <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-naranja text-white font-bold text-xs px-3 py-1 rounded-full uppercase tracking-wider">Más Popular</span>
-          <div>
-            <h3 class="text-xl font-bold text-white mb-1">Power 🚀</h3>
-            <p class="text-slate-400 text-xs mb-4">Para comercios Retail/Multisectorial.</p>
-            
-            <div class="my-4 p-4 bg-slate-900/90 rounded-xl border border-naranja/40 text-center">
-              <span class="text-xs font-semibold text-naranja uppercase tracking-wider block">Abono Mensual</span>
-              <div class="text-3xl font-black text-white mt-1">
-                $<span id="precio-pwr">25.000</span> <span class="text-xs text-slate-400 font-normal">/mes</span>
-              </div>
-              <span id="sub-pwr" class="text-[11px] text-naranja/80 mt-1 block font-medium">Facturación mensual</span>
-            </div>
-
-            <ul class="space-y-3 text-sm text-slate-300 mb-8 mt-6">
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Catálogo QR Vidriera hasta 350 artículos</li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Hasta 3 sucursales</li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> <strong>Asistente IA Avanzado</strong></li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Personalización de Marca</li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Reporte de consultas a la IA</li>
-            </ul>
-          </div>
-          <a href="#solicitar-prueba" class="w-full text-center bg-naranja hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-naranja/20">Elegir Power</a>
-        </div>
-
-        <!-- Plan Premium -->
-        <div class="bg-pizarra p-8 rounded-2xl border border-slate-800 flex flex-col justify-between h-full">
-          <div>
-            <h3 class="text-xl font-bold text-white mb-1">Premium 💎</h3>
-            <p class="text-slate-400 text-xs mb-4">Solución para Cadenas y Franquicias.</p>
-            
-            <div class="my-4 p-4 bg-slate-900/80 rounded-xl border border-slate-700/80 text-center">
-              <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Abono Mensual</span>
-              <div class="text-3xl font-black text-white mt-1">
-                $<span id="precio-prm">70.000</span> <span class="text-xs text-slate-400 font-normal">/mes</span>
-              </div>
-              <span id="sub-prm" class="text-[11px] text-slate-500 mt-1 block font-medium">Facturación mensual</span>
-            </div>
-
-            <ul class="space-y-3 text-sm text-slate-300 mb-8 mt-6">
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Catálogo QR Vidriera hasta 2800 artículos</li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> <strong>IA Personalizada a medida</strong></li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Soporte Prioritario 24/7</li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Integraciones a medida-Sectorización</li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Consulte Plan Multi-Sucursal !</li>
-            </ul>
-          </div>
-          <a href="#solicitar-prueba" class="w-full text-center bg-slate-800 hover:bg-slate-700 text-white font-semibold py-3 rounded-xl transition border border-slate-700">Elegir Premium</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- LÓGICA DE PRECIOS POR MESES CONTRATADOS -->
-  <script>
-    function cambiarPeriodo(meses) {
-      const btn1 = document.getElementById('btn-1m');
-      const btn3 = document.getElementById('btn-3m');
-      const btn6 = document.getElementById('btn-6m');
-      const btn12 = document.getElementById('btn-12m');
-
-      const precios = {
-        1:  { std: "10.000", pwr: "25.000", prm: "70.000", sub: "Facturación mensual" },
-        3:  { std: "9.000",  pwr: "22.500", prm: "63.000", sub: "Abonando 3 meses juntos" },
-        6:  { std: "8.000",  pwr: "20.000", prm: "56.000", sub: "Abonando 6 meses juntos" },
-        12: { std: "7.000",  pwr: "17.500", prm: "49.000", sub: "Abonando 12 meses juntos" }
-      };
-
-      // Reset de botones
-      [btn1, btn3, btn6, btn12].forEach(btn => {
-        btn.className = "px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition text-slate-300 hover:text-white";
-      });
-
-      // Activar botón seleccionado
-      const btnActivo = document.getElementById('btn-' + meses + 'm');
-      btnActivo.className = "px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition bg-naranja text-white shadow-md";
-
-      // Actualizar precios en pantalla
-      document.getElementById('precio-std').innerText = precios[meses].std;
-      document.getElementById('precio-pwr').innerText = precios[meses].pwr;
-      document.getElementById('precio-prm').innerText = precios[meses].prm;
-
-      document.getElementById('sub-std').innerText = precios[meses].sub;
-      document.getElementById('sub-pwr').innerText = precios[meses].sub;
-      document.getElementById('sub-prm').innerText = precios[meses].sub;
-    }
-  </script>
-
-  <!-- FRANJA DESTACADA DE PRUEBA GRATIS POR 10 DÍAS CON EXPLICATIVO Y FORMULARIO COMPLETO -->
-  <section id="solicitar-prueba" class="py-16 bg-gradient-to-r from-pizarra to-slate-900 border-y border-naranja/40 relative overflow-hidden">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+  <!-- DETALLES DE LA EMPRESA & DATOS DE CONTACTO -->
+  <section class="py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-start">
       
-      <!-- ENCABEZADO DE LA SECCIÓN CON IMAGEN AL COSTADO -->
-      <div class="flex flex-col md:flex-row items-center justify-between gap-8 mb-12">
-        <div class="text-center md:text-left md:w-2/3">
-          <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold bg-verdeVivo/10 text-verdeVivo border border-verdeVivo/30 mb-3 uppercase tracking-wider">
-            <i class="fa-solid fa-gift"></i> Prueba Gratuita Sin Compromiso
-          </span>
-          <h2 class="text-3xl sm:text-4xl font-black text-white mb-3">
-            Solicitar la <span class="text-naranja">Vidriera Inmersiva Inteligente</span> Completa de Prueba !
-          </h2>
-          <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
-            Experimentá el servicio con <strong>todas las funcionalidades habilitadas durante 10 días totalmente gratis</strong>. Una vez finalizada la prueba, si decidís continuar, podrás abonar mediante transferencia bancaria a la cuenta asignada.
-          </p>
+      <!-- DESCRIPCIÓN DE LA EMPRESA -->
+      <div class="space-y-6">
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Nuestra Misión</h2>
+        <p class="text-slate-300 leading-relaxed">
+          En un entorno comercial dinámico, los negocios necesitan herramientas ágiles para mantener informados a sus clientes las 24 horas del día. Eliminamos las barreras tradicionales del etiquetado manual y transformamos cualquier vidriera en un catálogo interactivo con asistencia inteligente por voz y búsqueda rápida.
+        </p>
+
+        <div class="grid sm:grid-cols-2 gap-4 pt-4">
+          <div class="bg-pizarra p-5 rounded-2xl border border-slate-800">
+            <i class="fa-solid fa-lightbulb text-naranja text-2xl mb-3"></i>
+            <h3 class="font-bold text-white mb-1">Innovación Continua</h3>
+            <p class="text-xs text-slate-400">Integración constante de tecnología e Inteligencia Artificial aplicada al Retail.</p>
+          </div>
+          <div class="bg-pizarra p-5 rounded-2xl border border-slate-800">
+            <i class="fa-solid fa-handshake text-verdeVivo text-2xl mb-3"></i>
+            <h3 class="font-bold text-white mb-1">Compromiso Comercial</h3>
+            <p class="text-xs text-slate-400">Plataforma estable, accesible e intuitiva para comerciantes de todos los rubros.</p>
+          </div>
         </div>
 
-        <!-- Muestra Cartel QR Vidriera al costado -->
-        <div class="text-center md:w-1/3 flex-shrink-0">
-          <img src="img/qrvidriera.png" alt="Muestra Cartel QR Vidriera 12.5x17.5" class="max-w-[200px] sm:max-w-xs mx-auto rounded-2xl shadow-2xl border border-slate-700">
-          <span class="block text-xs text-slate-400 mt-2">Medida del cartel físico: 12.5 x 17.5 cm</span>
-        </div>
-      </div>
+        <!-- DATOS DE CONTACTO Y DIRECCIÓN -->
+        <div class="bg-pizarra p-6 rounded-2xl border border-slate-800 space-y-4 pt-6 mt-8">
+          <h3 class="text-xl font-bold text-white border-b border-slate-700 pb-2">Información Institucional</h3>
+          
+          <div class="flex items-start gap-4 text-slate-300">
+            <div class="w-10 h-10 rounded-xl bg-naranja/10 text-naranja flex items-center justify-center flex-shrink-0 mt-1">
+              <i class="fa-solid fa-envelope"></i>
+            </div>
+            <div>
+              <span class="block text-xs text-slate-400 font-semibold uppercase tracking-wider">Correo Electrónico Directo</span>
+              <a href="mailto:clientes@qrpretium.com.ar" class="text-white hover:text-verdeVivo font-medium transition">clientes@qrpretium.com.ar</a>
+              <span class="block text-xs text-slate-400 mt-0.5">Contacto General: <a href="mailto:contacto@qrpretium.com.ar" class="text-slate-300 hover:text-verdeVivo">contacto@qrpretium.com.ar</a></span>
+            </div>
+          </div>
 
-      <!-- SUBAPARTADO 1: PASO A PASO DEL PROCESO DE PRUEBA -->
-      <div class="mb-14">
-        <h3 class="text-xl font-extrabold text-white text-center mb-6 flex items-center justify-center gap-2">
-          <i class="fa-solid fa-route text-naranja"></i> ¿Cómo funciona el proceso de prueba?
-        </h3>
-        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <!-- Paso 1 -->
-          <div class="bg-pizarra/80 p-5 rounded-2xl border border-slate-700/80 relative flex flex-col justify-between">
-            <div>
-              <span class="w-8 h-8 rounded-full bg-naranja text-white font-black text-xs flex items-center justify-center mb-3 shadow-md shadow-naranja/20">01</span>
-              <h4 class="text-sm font-bold text-white mb-1">Solicitud Inicial</h4>
-              <p class="text-xs text-slate-400 leading-relaxed">Completás el formulario de esta sección con los datos de tu comercio y contacto.</p>
+          <div class="flex items-start gap-4 text-slate-300">
+            <div class="w-10 h-10 rounded-xl bg-verdeVivo/10 text-verdeVivo flex items-center justify-center flex-shrink-0 mt-1">
+              <i class="fa-solid fa-location-dot"></i>
             </div>
-          </div>
-          <!-- Paso 2 -->
-          <div class="bg-pizarra/80 p-5 rounded-2xl border border-slate-700/80 relative flex flex-col justify-between">
             <div>
-              <span class="w-8 h-8 rounded-full bg-naranja text-white font-black text-xs flex items-center justify-center mb-3 shadow-md shadow-naranja/20">02</span>
-              <h4 class="text-sm font-bold text-white mb-1">Alta y Credenciales</h4>
-              <p class="text-xs text-slate-400 leading-relaxed">Generamos tu espacio, tu código QR personalizado y tus datos de acceso al Panel Admin. Envío por Mail de tu Cartel QR, más instructivos y contraseña de acceso.</p>
-            </div>
-          </div>
-          <!-- Paso 3 -->
-          <div class="bg-pizarra/80 p-5 rounded-2xl border border-slate-700/80 relative flex flex-col justify-between">
-            <div>
-              <span class="w-8 h-8 rounded-full bg-verdeVivo text-slate-950 font-black text-xs flex items-center justify-center mb-3 shadow-md shadow-verdeVivo/20">03</span>
-              <h4 class="text-sm font-bold text-white mb-1">10 Días Full 24/7</h4>
-              <p class="text-xs text-slate-400 leading-relaxed">Imprimís y colocás según instructivo el Archivo/Cartel QR. Ingresás a tu Panel, cargás tus artículos y probás el Asistente IA interactuando en vivo desde la vidriera.</p>
-            </div>
-          </div>
-          <!-- Paso 4 -->
-          <div class="bg-pizarra/80 p-5 rounded-2xl border border-slate-700/80 relative flex flex-col justify-between">
-            <div>
-              <span class="w-8 h-8 rounded-full bg-slate-700 text-slate-200 font-black text-xs flex items-center justify-center mb-3">04</span>
-              <h4 class="text-sm font-bold text-white mb-1">Continuidad Opcional</h4>
-              <p class="text-xs text-slate-400 leading-relaxed">Finalizados los 10 días, si elegís continuar, abonás vía transferencia bancaria. ¡Sin ataduras!</p>
+              <span class="block text-xs text-slate-400 font-semibold uppercase tracking-wider">Dirección Institucional / Comercial</span>
+              <p class="text-white font-medium">Lanús, Provincia de Buenos Aires, Argentina</p>
+              <span class="block text-xs text-slate-400 mt-0.5">Atención y cobertura a todo el país.</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- SUBAPARTADO 2: CARACTERÍSTICAS TÉCNICAS INCLUIDAS EN LA PRUEBA -->
-      <div class="mb-12 bg-slate-900/60 p-6 sm:p-8 rounded-3xl border border-slate-800">
-        <h3 class="text-lg font-bold text-white mb-4 text-center sm:text-left flex items-center justify-center sm:justify-start gap-2">
-          <i class="fa-solid fa-microchip text-verdeVivo"></i> Características técnicas incluidas en tu prueba:
-        </h3>
-        <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 text-xs text-slate-300">
-          <div class="flex items-start gap-2.5">
-            <i class="fa-solid fa-circle-check text-verdeVivo mt-0.5 text-sm"></i>
-            <span><strong>Panel Admin en vivo:</strong> Actualización instantánea de precios desde celular o PC.</span>
-          </div>
-          <div class="flex items-start gap-2.5">
-            <i class="fa-solid fa-circle-check text-verdeVivo mt-0.5 text-sm"></i>
-            <span><strong>Asistente IA por Voz:</strong> Motor NLP capacitado para responder dudas sobre tus productos.</span>
-          </div>
-          <div class="flex items-start gap-2.5">
-            <i class="fa-solid fa-circle-check text-verdeVivo mt-0.5 text-sm"></i>
-            <span><strong>Sin descargas:</strong> Formato WebApp ultra liviano. El cliente escanea y accede sin bajar apps.</span>
-          </div>
-          <div class="flex items-start gap-2.5">
-            <i class="fa-solid fa-circle-check text-verdeVivo mt-0.5 text-sm"></i>
-            <span><strong>Búsqueda avanzada:</strong> Búsqueda por código de artículo, palabras clave o consulta de voz.</span>
-          </div>
-          <div class="flex items-start gap-2.5">
-            <i class="fa-solid fa-circle-check text-verdeVivo mt-0.5 text-sm"></i>
-            <span><strong>Infraestructura SSL:</strong> Conexión encriptada de alta velocidad y 99.9% de uptime.</span>
-          </div>
-          <div class="flex items-start gap-2.5">
-            <i class="fa-solid fa-circle-check text-verdeVivo mt-0.5 text-sm"></i>
-            <span><strong>Soporte Directo:</strong> Asistencia técnica vía WhatsApp durante todo el período de prueba.</span>
-          </div>
-        </div>
-      </div>
+      <!-- FORMULARIO DE CONTACTO DIRECTO -->
+      <div class="bg-pizarra p-8 rounded-3xl border border-slate-700/80 shadow-2xl">
+        <h3 class="text-2xl font-bold text-white mb-2">Envianos tu consulta</h3>
+        <p class="text-xs text-slate-400 mb-6">Completa el formulario y nuestro equipo te responderá a la brevedad.</p>
 
-      <!-- FORMULARIO DE SOLICITUD DE PRUEBA -->
-      <form action="https://formsubmit.co/clientes@qrpretium.com.ar" method="POST" class="bg-pizarra/90 p-6 sm:p-8 rounded-3xl border border-slate-700/80 shadow-2xl space-y-4 backdrop-blur-sm">
-        
-        <!-- Campo oculto para identificar el tipo de solicitud -->
-        <input type="hidden" name="_subject" value="NUEVA SOLICITUD: Prueba Gratis 10 Días - Vidriera Digital">
-
-        <div class="grid md:grid-cols-2 gap-4">
+        <form action="https://formsubmit.co/clientes@qrpretium.com.ar" method="POST" class="space-y-4">
+          <input type="hidden" name="_subject" value="CONSULTA DESDE SECCIÓN NOSOTROS - QRPretium">
+          
           <div>
             <label class="block text-xs font-semibold text-slate-300 mb-1.5">Nombre y Apellido *</label>
-            <input type="text" name="nombre_responsable" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="Ej: Carlos Pérez">
+            <input type="text" name="nombre" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="Tu nombre completo">
           </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Nombre Fantasía del Comercio *</label>
-            <input type="text" name="nombre_comercio" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="Ej: Vinoteca San Martín">
-          </div>
-        </div>
 
-        <div class="grid md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Teléfono / WhatsApp *</label>
-            <input type="tel" name="telefono" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="Ej: 11 1234 5678">
-          </div>
           <div>
             <label class="block text-xs font-semibold text-slate-300 mb-1.5">Correo Electrónico *</label>
-            <input type="email" name="email" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="Ej: contacto@micomercio.com">
+            <input type="email" name="email" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="ejemplo@micomercio.com">
           </div>
-        </div>
 
-        <div class="grid md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Rubro Comercial *</label>
-            <select name="rubro" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition">
-              <option value="">Seleccioná tu rubro...</option>
-              <option value="Indumentaria y Calzado">Indumentaria y Calzado</option>
-              <option value="Vinoteca y Bebidas">Vinoteca y Bebidas</option>
-              <option value="Tecnología y Electrónica">Tecnología y Electrónica</option>
-              <option value="Gastronomía">Gastronomía</option>
-              <option value="Perfumería y Farmacia">Perfumería y Farmacia</option>
-              <option value="Ferretería y Bazar">Ferretería y Bazar</option>
-              <option value="Otro">Otro Rubro</option>
-            </select>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Teléfono de contacto</label>
+            <input type="tel" name="telefono" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="Ej: 11 1234 5678">
           </div>
+
           <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Comentarios adicionales o consultas (Opcional)</label>
-            <textarea name="mensaje" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="¿Querés contarnos cuántos artículos tenés o qué necesitás para tu vidriera?"></textarea>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Mensaje o Consulta *</label>
+            <textarea name="mensaje" rows="4" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="Escribí aquí tu mensaje..."></textarea>
           </div>
-        </div>
 
-        <button type="submit" class="w-full bg-verdeVivo hover:bg-emerald-600 text-slate-950 font-bold py-4 rounded-xl transition shadow-lg shadow-verdeVivo/20 text-base flex items-center justify-center gap-2">
-          <i class="fa-solid fa-paper-plane"></i> ACTIVAR MI PRUEBA GRATIS POR 10 DÍAS
-        </button>
-      </form>
-    </div>
-  </section>
-
-  <!-- SECCIÓN CONCEPTUAL: FAMILIA ESCANEANDO EN VIDRIERA -->
-  <section class="py-16 bg-pizarraOscura border-t border-slate-800">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="bg-pizarra rounded-3xl border border-slate-700/80 overflow-hidden shadow-2xl grid lg:grid-cols-2 items-center">
-        
-        <!-- IMAGEN CONCEPTUAL -->
-        <div class="relative h-72 sm:h-96 lg:h-full min-h-[320px] overflow-hidden group">
-          <img src="img/vidrierafamily.png" alt="Familia escaneando código QRPretium en vidriera de zapatillas" class="w-full h-full object-cover object-center transform group-hover:scale-105 transition duration-500">
-          <div class="absolute inset-0 bg-gradient-to-t from-pizarra via-transparent to-transparent opacity-60 lg:hidden"></div>
-        </div>
-
-        <!-- CONTENIDO Y EXPLICACIÓN -->
-        <div class="p-8 lg:p-12 space-y-6">
-          <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-verdeVivo/10 text-verdeVivo border border-verdeVivo/20">
-            <i class="fa-solid fa-users font-normal"></i> Experiencia Familiar 24/7
-          </span>
-
-          <h3 class="text-2xl sm:text-3xl font-black text-white leading-tight">
-            Consultá productos con <span class="text-naranja">códigos numéricos relacionales</span> sin entrar al local
-          </h3>
-
-          <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
-            Cada calzado o artículo en tu exhibición se vincula a un número simple (ej. <span class="text-verdeVivo font-mono font-bold">#101</span>, <span class="text-verdeVivo font-mono font-bold">#102</span>). Los clientes y sus familias escanean el QR principal de tu vidriera y consultan instantáneamente precios, talles disponibles y detalles técnicos usando el código o preguntándole directamente al <strong>Asistente IA por voz</strong>.
-          </p>
-
-          <ul class="space-y-2.5 text-xs sm:text-sm text-slate-300">
-            <li class="flex items-center gap-2.5">
-              <i class="fa-solid fa-circle-check text-verdeVivo"></i>
-              <span>Ideal para paseos nocturnos o cuando el local está cerrado.</span>
-            </li>
-            <li class="flex items-center gap-2.5">
-              <i class="fa-solid fa-circle-check text-verdeVivo"></i>
-              <span>Búsqueda directa por número de stand o modelo.</span>
-            </li>
-            <li class="flex items-center gap-2.5">
-              <i class="fa-solid fa-circle-check text-verdeVivo"></i>
-              <span>Asesoramiento instantáneo mediante IA conversacional.</span>
-            </li>
-          </ul>
-        </div>
-
+          <button type="submit" class="w-full bg-naranja hover:bg-orange-600 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-naranja/20 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-paper-plane"></i> Enviar Mensaje
+          </button>
+        </form>
       </div>
+
     </div>
   </section>
 
   <!-- FOOTER -->
   <footer class="bg-pizarra border-t border-slate-800 py-8 text-center text-xs text-slate-400">
     <div class="max-w-7xl mx-auto px-4 space-y-3">
-      <p>Contacto Institucional: <a href="mailto:contacto@qrpretium.com.ar" class="text-verdeVivo hover:underline">contacto@qrpretium.com.ar</a></p>
+      <p>Contacto Institucional: <a href="mailto:clientes@qrpretium.com.ar" class="text-verdeVivo hover:underline">clientes@qrpretium.com.ar</a></p>
       <p>© QRPretium - Todos los derechos reservados.</p>
     </div>
   </footer>
