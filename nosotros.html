@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nosotros - QRPretium</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            pizarra: '#1E293B',
+            pizarraOscura: '#0F172A',
+            pizarraClaro: '#334155',
+            naranja: '#F97316',
+            verdeVivo: '#10B981',
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .texto-qr-borde {
+      color: #94A3B8;
+      -webkit-text-stroke: 1px #FFFFFF;
+    }
+  </style>
+</head>
+<body class="bg-pizarraOscura text-slate-100 font-sans antialiased selection:bg-naranja selection:text-white min-h-screen flex flex-col justify-between">
+
+  <!-- HEADER CON BOTÓN DE RETORNO Y LOGO INSTITUCIONAL -->
+  <header class="sticky top-0 z-50 bg-pizarra/90 backdrop-blur-md border-b border-slate-700/50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- LOGO INSTITUCIONAL -->
+      <a href="index.html" class="flex items-center gap-3 group">
+        <svg class="w-10 h-10 transition-transform duration-300 group-hover:scale-105" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100" height="100" rx="24" fill="#1E293B"/>
+          <rect x="2" y="2" width="96" height="96" rx="22" stroke="#F97316" stroke-width="5"/>
+          
+          <path d="M28 28H44V44H28V28Z" fill="#64748B"/>
+          <path d="M32 32H40V40H32V32Z" fill="#1E293B"/>
+          <path d="M56 28H72V44H56V28Z" fill="#64748B"/>
+          <path d="M60 32H68V40H60V32Z" fill="#1E293B"/>
+          <path d="M28 56H44V72H28V56Z" fill="#64748B"/>
+          <path d="M32 60H40V68H32V60Z" fill="#1E293B"/>
+
+          <rect x="48" y="48" width="8" height="8" rx="2" fill="#34D399"/>
+          <rect x="60" y="48" width="8" height="8" rx="2" fill="#F97316"/>
+          <rect x="48" y="60" width="8" height="8" rx="2" fill="#F97316"/>
+
+          <path d="M72 58C72 65 75 68 82 68C75 68 72 71 72 78C72 71 69 68 62 68C69 68 72 65 72 58Z" fill="#10B981"/>
+          <path d="M54 22C54 25 55 26 58 26C55 26 54 27 54 30C54 27 53 26 50 26C53 26 54 25 54 22Z" fill="#10B981"/>
+        </svg>
+
+        <div class="flex items-baseline font-sans">
+          <span class="text-2xl font-black tracking-tight texto-qr-borde mr-0.5">QR</span>
+          <span class="text-2xl font-light tracking-tight text-naranja">Pretium</span>
+        </div>
+      </a>
+
+      <!-- LINK / BOTÓN VOLVER -->
+      <a href="index.html" class="bg-pizarra hover:bg-slate-700 text-white font-semibold px-4 py-2 rounded-xl border border-slate-700 transition flex items-center gap-2 text-sm">
+        <i class="fa-solid fa-arrow-left text-naranja"></i> Volver al Inicio
+      </a>
+
+    </div>
+  </header>
+
+  <!-- SECCIÓN PRINCIPAL: NOSOTROS -->
+  <main class="py-16 flex-grow">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- ENCABEZADO NOSOTROS -->
+      <div class="text-center mb-16">
+        <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-pizarra text-verdeVivo border border-slate-700 shadow-sm mb-4">
+          <i class="fa-solid fa-building"></i> Sobre QRPretium
+        </span>
+        <h1 class="text-3xl sm:text-5xl font-black text-white leading-tight tracking-tight mb-4">
+          Innovando la interacción entre los <span class="text-naranja">comercios</span> y sus <span class="text-verdeVivo">clientes</span>
+        </h1>
+        <p class="text-slate-300 text-base sm:text-lg max-w-3xl mx-auto leading-relaxed">
+          QRPretium nace con el objetivo de revolucionar la exhibición de precios y la atención en vidrieras mediante tecnología accesible, Inteligencia Artificial interactiva y soluciones digitales en tiempo real.
+        </p>
+      </div>
+
+      <!-- CONTENIDO NOSOTROS Y FORMULARIO DE CONTACTO -->
+      <div class="grid lg:grid-cols-2 gap-12 items-start">
+        
+        <!-- DESCRIPCIÓN DE LA EMPRESA Y DATOS -->
+        <div class="space-y-6">
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Nuestra Misión</h2>
+          <p class="text-slate-300 leading-relaxed">
+            En un entorno comercial dinámico, los negocios necesitan herramientas ágiles para mantener informados a sus clientes las 24 horas del día. Eliminamos las barreras tradicionales del etiquetado manual y transformamos cualquier vidriera en un catálogo interactivo con asistencia inteligente por voz y búsqueda rápida.
+          </p>
+
+          <div class="grid sm:grid-cols-2 gap-4 pt-4">
+            <div class="bg-pizarra p-5 rounded-2xl border border-slate-800">
+              <i class="fa-solid fa-lightbulb text-naranja text-2xl mb-3"></i>
+              <h3 class="font-bold text-white mb-1">Innovación Continua</h3>
+              <p class="text-xs text-slate-400">Integración constante de tecnología e Inteligencia Artificial aplicada al Retail.</p>
+            </div>
+            <div class="bg-pizarra p-5 rounded-2xl border border-slate-800">
+              <i class="fa-solid fa-handshake text-verdeVivo text-2xl mb-3"></i>
+              <h3 class="font-bold text-white mb-1">Compromiso Comercial</h3>
+              <p class="text-xs text-slate-400">Plataforma estable, accesible e intuitiva para comerciantes de todos los rubros.</p>
+            </div>
+          </div>
+
+          <!-- DATOS DE CONTACTO Y DIRECCIÓN -->
+          <div class="bg-pizarra p-6 rounded-2xl border border-slate-800 space-y-4 pt-6 mt-8">
+            <h3 class="text-xl font-bold text-white border-b border-slate-700 pb-2">Información Institucional</h3>
+            
+            <div class="flex items-start gap-4 text-slate-300">
+              <div class="w-10 h-10 rounded-xl bg-naranja/10 text-naranja flex items-center justify-center flex-shrink-0 mt-1">
+                <i class="fa-solid fa-envelope"></i>
+              </div>
+              <div>
+                <span class="block text-xs text-slate-400 font-semibold uppercase tracking-wider">Correo Electrónico Directo</span>
+                <a href="mailto:clientes@qrpretium.com.ar" class="text-white hover:text-verdeVivo font-medium transition">clientes@qrpretium.com.ar</a>
+                <span class="block text-xs text-slate-400 mt-0.5">Contacto General: <a href="mailto:contacto@qrpretium.com.ar" class="text-slate-300 hover:text-verdeVivo">contacto@qrpretium.com.ar</a></span>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4 text-slate-300">
+              <div class="w-10 h-10 rounded-xl bg-verdeVivo/10 text-verdeVivo flex items-center justify-center flex-shrink-0 mt-1">
+                <i class="fa-solid fa-location-dot"></i>
+              </div>
+              <div>
+                <span class="block text-xs text-slate-400 font-semibold uppercase tracking-wider">Dirección Institucional / Comercial</span>
+                <p class="text-white font-medium">Lanús, Provincia de Buenos Aires, Argentina</p>
+                <span class="block text-xs text-slate-400 mt-0.5">Atención y cobertura a todo el país.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FORMULARIO DE CONTACTO DIRECTO -->
+        <div class="bg-pizarra p-8 rounded-3xl border border-slate-700/80 shadow-2xl">
+          <h3 class="text-2xl font-bold text-white mb-2">Envianos tu consulta</h3>
+          <p class="text-xs text-slate-400 mb-6">Completa el formulario y nuestro equipo te responderá a la brevedad.</p>
+
+          <form action="https://formsubmit.co/clientes@qrpretium.com.ar" method="POST" class="space-y-4">
+            <input type="hidden" name="_subject" value="CONSULTA DESDE NOSOTROS - QRPretium">
+            
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1.5">Nombre y Apellido *</label>
+              <input type="text" name="nombre" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="Tu nombre completo">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1.5">Correo Electrónico *</label>
+              <input type="email" name="email" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="ejemplo@micomercio.com">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1.5">Teléfono de contacto</label>
+              <input type="tel" name="telefono" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="Ej: 11 1234 5678">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1.5">Mensaje o Consulta *</label>
+              <textarea name="mensaje" rows="4" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="Escribí aquí tu mensaje..."></textarea>
+            </div>
+
+            <button type="submit" class="w-full bg-naranja hover:bg-orange-600 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-naranja/20 flex items-center justify-center gap-2">
+              <i class="fa-solid fa-paper-plane"></i> Enviar Mensaje
+            </button>
+          </form>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-pizarra border-t border-slate-800 py-8 text-center text-xs text-slate-400">
+    <div class="max-w-7xl mx-auto px-4 space-y-3">
+      <p>Contacto Institucional: <a href="mailto:clientes@qrpretium.com.ar" class="text-verdeVivo hover:underline">clientes@qrpretium.com.ar</a></p>
+      <p>© QRPretium - Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
