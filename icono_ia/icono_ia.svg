@@ -8,21 +8,33 @@
       <feGaussianBlur stdDeviation="5" result="blur" />
       <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
     </filter>
-    <filter id="glow-yellow" x="-30%" y="-30%" width="160%" height="160%">
+    <filter id="glow-red" x="-30%" y="-30%" width="160%" height="160%">
       <feGaussianBlur stdDeviation="5" result="blur" />
       <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
     </filter>
-    <filter id="glow-red" x="-30%" y="-30%" width="160%" height="160%">
+    <filter id="glow-cyan" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="5" result="blur" />
+      <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+    <filter id="glow-blue" x="-30%" y="-30%" width="160%" height="160%">
       <feGaussianBlur stdDeviation="5" result="blur" />
       <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
     </filter>
   </defs>
 
   <!--
-    Geometría real de un dodecaedro regular proyectada en perspectiva
-    (igual que la versión anterior). Cambia únicamente la paleta:
-    caras en gris claro, biseles en naranja vivo, texto en tono oscuro
-    para mantener legibilidad sobre el gris claro.
+    Geometría real de un dodecaedro regular proyectada en perspectiva.
+    Cada símbolo usa transform="matrix(...)" con la transformación afín
+    EXACTA de su cara (derivada de la proyección 3D real, no una rotación
+    aproximada) — así queda orientado y escorzado igual que el pentágono
+    que lo contiene.
+    6 caras = 6 estados de la interacción con el asistente:
+      1) icon-mic     -> escuchando (cara frontal, canónica)
+      2) icon-brain   -> pensando / procesando (naranja vivo)
+      3) icon-check   -> encontró respuesta
+      4) icon-error   -> no encontró / error
+      5) icon-robot   -> respondiendo por voz (cyan, boca ecualizador)
+      6) icon-search  -> buscando detalle extendido del artículo (azul)
   -->
   <g id="dodecaedro-container">
 
@@ -52,30 +64,73 @@
       <polygon class="neon-border" points="275.4,345.3 286.0,591.2 526.7,667.2 664.7,468.3 509.4,269.4" fill="none" stroke="#ff5500" stroke-width="5" stroke-linejoin="round" filter="url(#glow-orange)" />
     </g>
 
-    <!-- ÍCONO MÓDULO IA / CEREBRO (cara superior, la más iluminada) -->
-    <g id="icon-brain" transform="translate(391.8, 197.6) rotate(-10) scale(0.42)">
-      <path fill="none" stroke="#ffee00" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow-yellow)" d="M -10 -45 C -35 -45 -55 -20 -40 10 C -58 25 -48 55 -20 60 C -30 78 -8 95 12 82 C 2 55 5 20 -10 -45 Z" />
-      <path fill="none" stroke="#ffee00" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow-yellow)" d="M 10 -45 C 35 -45 55 -20 40 10 C 58 25 48 55 20 60 C 30 78 8 95 -12 82 C -2 55 -5 20 10 -45 Z" />
-      <path fill="none" stroke="#ffee00" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow-yellow)" d="M -22 5 C -8 15 -12 35 -26 40 M 22 5 C 8 15 12 35 26 40" />
+    <!-- ÍCONO MÓDULO IA / CEREBRO -- pensando / procesando (naranja vivo)
+         cara Superior-Izquierda: matrix afín exacta de esa cara -->
+    <g id="icon-brain" transform="matrix(0.5539,0.3379,-0.7922,0.6164,391.9,197.6) scale(1.05) rotate(20)">
+      <path fill="none" stroke="#ff6a00" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow-orange)" d="M -10 -45 C -35 -45 -55 -20 -40 10 C -58 25 -48 55 -20 60 C -30 78 -8 95 12 82 C 2 55 5 20 -10 -45 Z" />
+      <path fill="none" stroke="#ff6a00" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow-orange)" d="M 10 -45 C 35 -45 55 -20 40 10 C 58 25 48 55 20 60 C 30 78 8 95 -12 82 C -2 55 -5 20 10 -45 Z" />
+      <path fill="none" stroke="#ff6a00" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow-orange)" d="M -22 5 C -8 15 -12 35 -26 40 M 22 5 C 8 15 12 35 26 40" />
+    </g>
+    <g transform="translate(274.2,256.0)">
+      <text x="0" y="0" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="18" fill="#7a2e00" text-anchor="middle" letter-spacing="1.5">PENSANDO</text>
     </g>
 
-    <!-- ÍCONO MICRÓFONO Y TEXTO (cara frontal) -->
+    <!-- ÍCONO MICRÓFONO -- escuchando (cara frontal, es la referencia canónica: sin matriz) -->
     <g id="icon-mic" transform="translate(452.4, 468.3)">
-      <rect x="-15" y="-32" width="30" height="46" rx="15" fill="#00ff66" filter="url(#glow-green)" />
-      <path fill="none" stroke="#00ff66" stroke-width="5" stroke-linecap="round" filter="url(#glow-green)" d="M -26 0 A 26 26 0 0 0 26 0" />
-      <path fill="none" stroke="#00ff66" stroke-width="5" stroke-linecap="round" filter="url(#glow-green)" d="M 0 26 L 0 42 M -14 42 L 14 42" />
-      <text x="0" y="70" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="17" fill="#1c2430" text-anchor="middle" letter-spacing="1.5">ESCUCHANDO</text>
-      <text x="0" y="88" font-family="'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="10" fill="#0b7a3a" text-anchor="middle" letter-spacing="1">MODO VOZ ACTIVADO</text>
+      <g transform="scale(1.3) rotate(17)">
+        <rect x="-15" y="-32" width="30" height="46" rx="15" fill="#00ff66" filter="url(#glow-green)" />
+        <path fill="none" stroke="#00ff66" stroke-width="5" stroke-linecap="round" filter="url(#glow-green)" d="M -26 0 A 26 26 0 0 0 26 0" />
+        <path fill="none" stroke="#00ff66" stroke-width="5" stroke-linecap="round" filter="url(#glow-green)" d="M 0 26 L 0 42 M -14 42 L 14 42" />
+        <text x="0" y="70" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="16" fill="#1c2430" text-anchor="middle" letter-spacing="1.5">ESCUCHANDO</text>
+        <text x="0" y="88" font-family="'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="9" fill="#0b7a3a" text-anchor="middle" letter-spacing="1">MODO VOZ ACTIVADO</text>
+      </g>
     </g>
 
-    <!-- ÍCONO ÉXITO / CHECK (cara izquierda) -->
-    <g id="icon-check" transform="translate(230.2, 430.5) rotate(-8) scale(0.85)">
+    <!-- ÍCONO ÉXITO / CHECK -- encontró respuesta (cara Izquierda) -->
+    <g id="icon-check" transform="matrix(0.2629,0.7567,-0.1519,0.6451,230.2,430.5) scale(1.35) rotate(-35)">
       <path fill="none" stroke="#00ff66" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow-green)" d="M -16 0 L -3 13 L 23 -13" />
     </g>
+    <g transform="translate(229.4,446.4) rotate(-20)">
+      <text x="0" y="20" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="18" fill="#0b7a3a" text-anchor="middle" letter-spacing="1.5">OK</text>
+    </g>
 
-    <!-- ÍCONO ERROR / X (cara derecha) -->
-    <g id="icon-error" transform="translate(686.0, 574.5) rotate(6) scale(0.85)">
+    <!-- ÍCONO ERROR / X -- no encontró respuesta (cara Derecha) -->
+    <g id="icon-error" transform="matrix(0.6886,-0.7461,0.3043,0.3202,686.0,574.5) scale(1.35)">
       <path fill="none" stroke="#ff3344" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow-red)" d="M -14 -14 L 14 14 M 14 -14 L -14 14" />
+    </g>
+    <g transform="translate(686.0,574.5) rotate(41)">
+      <text x="0" y="90" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="18" fill="#8a1620" text-anchor="middle" letter-spacing="1.5">ERROR</text>
+    </g>
+
+    <!-- ÍCONO ROBOT -- respondiendo por voz, boca tipo ecualizador (cyan)
+         cara Superior-Derecha: matrix afín exacta de esa cara -->
+    <g id="icon-robot" transform="matrix(-0.0417,0.8559,-0.8096,-0.4059,673.6,286.6) scale(0.95) scale(1,-1)">
+      <rect x="-28" y="-32" width="56" height="58" rx="14" fill="none" stroke="#22d3ee" stroke-width="6" filter="url(#glow-cyan)" />
+      <line x1="0" y1="-32" x2="0" y2="-46" stroke="#22d3ee" stroke-width="5" stroke-linecap="round" filter="url(#glow-cyan)" />
+      <circle cx="0" cy="-48" r="5" fill="#22d3ee" filter="url(#glow-cyan)" />
+      <circle cx="-13" cy="-8" r="5" fill="#22d3ee" filter="url(#glow-cyan)" />
+      <circle cx="13" cy="-8" r="5" fill="#22d3ee" filter="url(#glow-cyan)" />
+      <line x1="-16" y1="14" x2="-16" y2="4" stroke="#22d3ee" stroke-width="6" stroke-linecap="round" filter="url(#glow-cyan)" />
+      <line x1="-5" y1="18" x2="-5" y2="0" stroke="#22d3ee" stroke-width="6" stroke-linecap="round" filter="url(#glow-cyan)" />
+      <line x1="6" y1="14" x2="6" y2="4" stroke="#22d3ee" stroke-width="6" stroke-linecap="round" filter="url(#glow-cyan)" />
+      <line x1="17" y1="18" x2="17" y2="0" stroke="#22d3ee" stroke-width="6" stroke-linecap="round" filter="url(#glow-cyan)" />
+    </g>
+    <g transform="translate(708.2,304.0)">
+      <text x="0" y="0" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="18" fill="#0e7490" text-anchor="middle" letter-spacing="2">VOZ</text>
+    </g>
+
+    <!-- ÍCONO FICHA + LUPA -- buscando detalle extendido del artículo (azul), más chico
+         cara Inferior: matrix afín exacta de esa cara -->
+    <g id="icon-search" transform="matrix(0.5400,0.0178,0.7880,0.3682,412.0,663.4) scale(0.85)">
+      <rect x="-24" y="-30" width="36" height="48" rx="4" fill="none" stroke="#3b82f6" stroke-width="6" stroke-linejoin="round" filter="url(#glow-blue)" />
+      <line x1="-17" y1="-15" x2="4" y2="-15" stroke="#3b82f6" stroke-width="5" stroke-linecap="round" filter="url(#glow-blue)" />
+      <line x1="-17" y1="-3" x2="4" y2="-3" stroke="#3b82f6" stroke-width="5" stroke-linecap="round" filter="url(#glow-blue)" />
+      <line x1="-17" y1="9" x2="-3" y2="9" stroke="#3b82f6" stroke-width="5" stroke-linecap="round" filter="url(#glow-blue)" />
+      <circle cx="15" cy="19" r="11" fill="none" stroke="#3b82f6" stroke-width="5" filter="url(#glow-blue)" />
+      <line x1="23" y1="27" x2="33" y2="37" stroke="#3b82f6" stroke-width="6" stroke-linecap="round" filter="url(#glow-blue)" />
+    </g>
+    <g transform="translate(435.4,674.4) rotate(10)">
+      <text x="0" y="20" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="18" fill="#1e3a8a" text-anchor="middle" letter-spacing="1.5">BUSCANDO</text>
     </g>
 
   </g>
