@@ -104,7 +104,7 @@
 
     <!-- ÍCONO ROBOT — respondiendo por voz, boca tipo ecualizador (cyan)
          cara Superior-Derecha: matrix afín exacta de esa cara -->
-    <g id="icon-robot" transform="matrix(-0.0417,0.8559,-0.8096,-0.4059,673.6,286.6) scale(0.98) scale(1,-1)">
+    <g id="icon-robot" transform="matrix(-0.0417,0.8559,-0.8096,-0.4059,673.6,286.6) scale(0.98) scale(1,-1)rotate(-53)">
       <rect x="-28" y="-32" width="56" height="58" rx="14" fill="none" stroke="#22d3ee" stroke-width="6" filter="url(#glow-cyan)" />
       <line x1="0" y1="-32" x2="0" y2="-46" stroke="#22d3ee" stroke-width="5" stroke-linecap="round" filter="url(#glow-cyan)" />
       <circle cx="0" cy="-48" r="5" fill="#22d3ee" filter="url(#glow-cyan)" />
@@ -115,7 +115,7 @@
       <line x1="6" y1="14" x2="6" y2="4" stroke="#22d3ee" stroke-width="6" stroke-linecap="round" filter="url(#glow-cyan)" />
       <line x1="17" y1="18" x2="17" y2="0" stroke="#22d3ee" stroke-width="6" stroke-linecap="round" filter="url(#glow-cyan)" />
     </g>
-    <g transform="translate(695.6,286.6) rotate(-15)">
+    <g transform="translate(690.5,286.6) rotate(-17)">
       <text x="0" y="90" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="18" fill="#0e7490" text-anchor="middle" letter-spacing="2">VOZ</text>
     </g>
 
