@@ -49,7 +49,7 @@
 
             <!-- BOTÓN CON ÍCONO DODECAEDRO SVG (inyectado inline por interaccion.js, ya no <object>) -->
             <button id="btnIaVoz" onclick="activarAsistenteVoz()" title="Consultar al Asistente por Voz"
-                class="h-24 w-24 p-2 bg-emerald-500 hover:bg-emerald-600 rounded-full shadow-md flex items-center justify-center transition-transform active:scale-95 border-2 border-orange-500 flex-shrink-0 relative overflow-hidden">
+                class="h-24 w-24 p-2 cosmic-bg rounded-full shadow-md flex items-center justify-center transition-transform active:scale-95 border-2 border-orange-500 flex-shrink-0 relative overflow-hidden">
                 <div id="dodecaedroWrapper" class="w-full h-full"></div>
             </button>
         </div>
@@ -157,13 +157,26 @@
         const urlParams = new URLSearchParams(window.location.search);
         const cuitParam = urlParams.get('cuit') ? urlParams.get('cuit').trim() : null;
 
-        // Reproduce un texto mediante sintetizador de voz (Text-To-Speech)
-        function reproducirVoz(texto) {
+        // Reproduce un texto mediante sintetizador de voz (Text-To-Speech).
+        // caraFinal: qué cara del dodecaedro mostrar cuando termina de hablar
+        // ('check', 'error', o 'mic' por defecto).
+        function reproducirVoz(texto, caraFinal) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(texto);
                 utterance.lang = 'es-AR';
                 utterance.rate = 1.0;
+                utterance.onstart = () => {
+                    if (window.mostrarCaraDodecaedro) window.mostrarCaraDodecaedro('voz');
+                };
+                utterance.onend = () => {
+                    if (!window.mostrarCaraDodecaedro) return;
+                    const final = caraFinal || 'mic';
+                    window.mostrarCaraDodecaedro(final);
+                    if (final !== 'mic') {
+                        setTimeout(() => window.mostrarCaraDodecaedro('mic'), 2000);
+                    }
+                };
                 window.speechSynthesis.speak(utterance);
             }
         }
@@ -403,6 +416,7 @@
         async function procesarConsultaIa(consultaTexto) {
             document.getElementById('estadoIa').innerText = "Procesando consulta con la IA...";
             agregarMensajeChat('ia', "Pensando respuesta...");
+            if (window.mostrarCaraDodecaedro) window.mostrarCaraDodecaedro('brain');
 
             try {
                 const respuesta = await fetch('https://zbnuunaguciupyyzploq.supabase.co/functions/v1/chat-asistente', {
@@ -419,15 +433,15 @@
                 if (data.choices && data.choices.length > 0) {
                     const botReply = data.choices[0].message.content;
                     agregarMensajeChat('ia', botReply);
-                    reproducirVoz(botReply);
+                    reproducirVoz(botReply, 'check');
                 } else if (data.error) {
                     const errMsj = "Error: " + data.error;
                     agregarMensajeChat('ia', errMsj);
-                    reproducirVoz("Ocurrió un error al procesar tu consulta.");
+                    reproducirVoz("Ocurrió un error al procesar tu consulta.", 'error');
                 } else {
                     const errDefault = "No pude procesar tu solicitud en este momento. Por favor, intenta de nuevo.";
                     agregarMensajeChat('ia', errDefault);
-                    reproducirVoz(errDefault);
+                    reproducirVoz(errDefault, 'error');
                 }
 
             } catch (err) {
@@ -436,7 +450,7 @@
                 if (historial.lastChild) historial.removeChild(historial.lastChild);
                 const errConexion = "Ocurrió un error al comunicarme con el servidor.";
                 agregarMensajeChat('ia', errConexion);
-                reproducirVoz(errConexion);
+                reproducirVoz(errConexion, 'error');
             } finally {
                 document.getElementById('estadoIa').innerText = "Presiona el micrófono para hablar";
             }
