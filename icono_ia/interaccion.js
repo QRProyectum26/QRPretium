@@ -1,5 +1,8 @@
-// interaccion.js - Inyecta el SVG del dodecaedro en el DOM y controla
-// la captura de voz + conexión con la API de IA
+// interaccion.js - Inyecta el SVG del dodecaedro en el DOM, controla
+// la captura de voz, y anima el "giro" entre las 6 caras/estados del
+// asistente: mic (escuchando) -> brain (pensando) -> search (buscando
+// detalle, opcional) -> voz (respondiendo) -> check/error (resultado)
+// -> vuelta a mic.
 
 document.addEventListener("DOMContentLoaded", () => {
   const wrapper = document.getElementById("dodecaedroWrapper");
@@ -7,7 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("No se encontró #dodecaedroWrapper en el HTML.");
     return;
   }
-
   // Inyectamos el SVG como parte real del DOM (no <object>), para que
   // getElementById y animaciones.css puedan alcanzar sus elementos.
   // El parámetro ?v=Date.now() evita que el navegador sirva una copia
@@ -28,11 +30,47 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function inicializarDodecaedroIA() {
   const iconMic = document.getElementById("icon-mic");
-  const statusTitle = document.getElementById("status-text-title");
-  const statusSub1 = document.getElementById("status-text-sub1");
-  const statusSub2 = document.getElementById("status-text-sub2");
   const dodecaedroContainer = document.getElementById("dodecaedro-container");
+  const flipGroup = document.getElementById("dodecaedro-flip");
 
+  const ESTADOS = ["mic", "brain", "check", "error", "voz", "search"];
+
+  /* --- Sistema de caras: gira el dodecaedro y cambia el estado activo --- */
+  function mostrarCara(nombreEstado) {
+    if (!ESTADOS.includes(nombreEstado)) {
+      console.warn("Estado de dodecaedro desconocido:", nombreEstado);
+      return;
+    }
+    if (!flipGroup) {
+      // Si por algo no está el grupo de flip, al menos cambiamos la cara sin animar
+      cambiarCaraActiva(nombreEstado);
+      return;
+    }
+    flipGroup.classList.add("flip-out");
+    // A mitad del giro (cuando está "de canto", casi invisible en X) cambiamos
+    // qué cara está activa, y después dejamos que vuelva a expandirse.
+    setTimeout(() => {
+      cambiarCaraActiva(nombreEstado);
+      flipGroup.classList.remove("flip-out");
+    }, 280); // debe coincidir con la duración del transition en animaciones.css
+  }
+
+  function cambiarCaraActiva(nombreEstado) {
+    ESTADOS.forEach((estado) => {
+      const grupo = document.getElementById("state-" + estado);
+      if (grupo) grupo.classList.toggle("active", estado === nombreEstado);
+    });
+  }
+
+  // Exponemos la función globalmente para que catalogo.html (el flujo real
+  // de la consulta a la IA / texto-a-voz) pueda ir cambiando la cara en
+  // los momentos exactos: mostrarCaraDodecaedro('brain'), ('voz'), etc.
+  window.mostrarCaraDodecaedro = mostrarCara;
+
+  // Arrancamos mostrando la cara del micrófono (estado de reposo)
+  mostrarCara("mic");
+
+  /* --- Reconocimiento de voz --- */
   let isListening = false;
   let recognition = null;
 
@@ -46,43 +84,49 @@ function inicializarDodecaedroIA() {
     recognition.onstart = () => {
       isListening = true;
       if (dodecaedroContainer) dodecaedroContainer.classList.add("ia-listening");
-      if (statusTitle) statusTitle.textContent = "ESCUCHANDO...";
-      if (statusSub1) statusSub1.textContent = "PROCESANDO";
-      if (statusSub2) statusSub2.textContent = "ENTRADA";
+      mostrarCara("mic");
     };
 
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
       console.log("Comando recibido para qrpretium:", transcript);
 
-      if (statusTitle) statusTitle.textContent = "PROCESADO";
-      if (statusSub1) statusSub1.textContent = "ENVIANDO A";
-      if (statusSub2) statusSub2.textContent = "CATALOGO.HTML";
+      if (dodecaedroContainer) dodecaedroContainer.classList.remove("ia-listening");
 
-      // Aquí conectás tu llamada a la API de qrpretium enviando 'transcript'
+      // ¿Es una consulta pidiendo más detalle del artículo (en vez de precio)?
+      const pideDetalle = /detalle|descripci[oó]n|contame m[aá]s|informaci[oó]n/i.test(transcript);
+
+      if (typeof window.agregarMensajeChat === "function") {
+        window.agregarMensajeChat("usuario", transcript);
+      }
+
+      if (pideDetalle) {
+        mostrarCara("search");
+        setTimeout(() => mostrarCara("brain"), 900);
+      } else {
+        mostrarCara("brain");
+      }
+
+      // Disparamos la consulta real (definida en catalogo.html). Esa función
+      // ya se encarga de llamar a la IA y reproducir la respuesta por voz.
+      if (typeof window.procesarConsultaIa === "function") {
+        window.procesarConsultaIa(transcript);
+      } else {
+        console.warn("window.procesarConsultaIa no está definida — no se pudo consultar la IA.");
+      }
     };
 
     recognition.onerror = (event) => {
       console.error("Error en la interacción por voz:", event.error);
-      if (statusTitle) statusTitle.textContent = "ERROR";
-      if (statusSub1) statusSub1.textContent = "INTENTE";
-      if (statusSub2) statusSub2.textContent = "NUEVAMENTE";
-      stopListening();
+      if (dodecaedroContainer) dodecaedroContainer.classList.remove("ia-listening");
+      mostrarCara("error");
+      setTimeout(() => mostrarCara("mic"), 2500);
     };
 
     recognition.onend = () => {
-      stopListening();
+      isListening = false;
+      if (dodecaedroContainer) dodecaedroContainer.classList.remove("ia-listening");
     };
-  }
-
-  function stopListening() {
-    isListening = false;
-    if (dodecaedroContainer) dodecaedroContainer.classList.remove("ia-listening");
-    setTimeout(() => {
-      if (statusTitle) statusTitle.textContent = "ESCUCHANDO";
-      if (statusSub1) statusSub1.textContent = "MODO VOZ";
-      if (statusSub2) statusSub2.textContent = "ACTIVADO";
-    }, 2500);
   }
 
   if (iconMic) {
