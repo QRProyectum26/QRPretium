@@ -37,6 +37,7 @@
       6) icon-search  -> buscando detalle extendido del artículo (azul)
   -->
   <g id="dodecaedro-container">
+  <g id="dodecaedro-flip">
 
     <polygon class="face" points="219.5,615.0 419.0,705.7 608.8,738.0 526.7,667.2 286.0,591.2" fill="#646c7a" stroke="#7d8694" stroke-width="2.5" stroke-linejoin="round" />
     <polygon class="face" points="202.3,217.2 167.8,383.9 219.5,615.0 286.0,591.2 275.4,345.3" fill="#a3aab5" stroke="#7d8694" stroke-width="2.5" stroke-linejoin="round" />
@@ -64,6 +65,8 @@
       <polygon class="neon-border" points="275.4,345.3 286.0,591.2 526.7,667.2 664.7,468.3 509.4,269.4" fill="none" stroke="#ff5500" stroke-width="5" stroke-linejoin="round" filter="url(#glow-orange)" />
     </g>
 
+    <!-- ESTADO: pensando / procesando (naranja vivo) -->
+    <g id="state-brain">
     <!-- ÍCONO MÓDULO IA / CEREBRO — pensando / procesando (naranja vivo)
          cara Superior-Izquierda: matrix afín exacta de esa cara -->
     <g id="icon-brain" transform="matrix(0.5539,0.3379,-0.7922,0.6164,391.9,197.6) scale(1.05) rotate(20)">
@@ -74,7 +77,10 @@
     <g transform="translate(400.9,192.6) rotate(61)">
       <text x="0" y="145" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="18" fill="#7a2e00" text-anchor="middle" letter-spacing="1.5">..PENSANDO</text>
     </g>
+    </g>
 
+    <!-- ESTADO: escuchando (cara frontal, canónica) -->
+    <g id="state-mic">
     <!-- ÍCONO MICRÓFONO — escuchando (cara frontal, es la referencia canónica: sin matriz) -->
     <g id="icon-mic" transform="translate(452.4, 475.3)">
       <g transform="scale(1.3) rotate(17)">
@@ -85,7 +91,10 @@
         <text x="0" y="88" font-family="'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="9" fill="#0b7a3a" text-anchor="middle" letter-spacing="1">MODO VOZ ACTIVADO</text>
       </g>
     </g>
+    </g>
 
+    <!-- ESTADO: encontró respuesta -->
+    <g id="state-check">
     <!-- ÍCONO ÉXITO / CHECK — encontró respuesta (cara Izquierda) -->
     <g id="icon-check" transform="matrix(0.2629,0.7567,-0.1519,0.6451,230.2,430.5) scale(1.35) rotate(-103)">
       <path fill="none" stroke="#00ff66" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow-green)" d="M -16 0 L -3 13 L 23 -13" />
@@ -93,7 +102,10 @@
     <g transform="translate(232.4,500.4) rotate(-17)">
       <text x="0" y="20" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="18" fill="#0b7a3a" text-anchor="middle" letter-spacing="1.5">OK</text>
     </g>
+    </g>
 
+    <!-- ESTADO: no encontró / error -->
+    <g id="state-error">
     <!-- ÍCONO ERROR / X — no encontró respuesta (cara Derecha) -->
     <g id="icon-error" transform="matrix(0.6886,-0.7461,0.3043,0.3202,686.0,574.5) scale(1.35)">
       <path fill="none" stroke="#ff3344" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow-red)" d="M -14 -14 L 14 14 M 14 -14 L -14 14" />
@@ -101,10 +113,13 @@
     <g transform="translate(686.0,574.5) rotate(44)">
       <text x="0" y="90" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="18" fill="#8a1620" text-anchor="middle" letter-spacing="1.5">ERROR</text>
     </g>
+    </g>
 
+    <!-- ESTADO: respondiendo por voz -->
+    <g id="state-voz">
     <!-- ÍCONO ROBOT — respondiendo por voz, boca tipo ecualizador (cyan)
          cara Superior-Derecha: matrix afín exacta de esa cara -->
-    <g id="icon-robot" transform="matrix(-0.0417,0.8559,-0.8096,-0.4059,673.6,286.6) scale(0.98) scale(1,-1)rotate(-53)">
+    <g id="icon-robot" transform="matrix(-0.0417,0.8559,-0.8096,-0.4059,673.6,286.6) scale(0.98) scale(1,-1) rotate(-53)">
       <rect x="-28" y="-32" width="56" height="58" rx="14" fill="none" stroke="#22d3ee" stroke-width="6" filter="url(#glow-cyan)" />
       <line x1="0" y1="-32" x2="0" y2="-46" stroke="#22d3ee" stroke-width="5" stroke-linecap="round" filter="url(#glow-cyan)" />
       <circle cx="0" cy="-48" r="5" fill="#22d3ee" filter="url(#glow-cyan)" />
@@ -118,7 +133,10 @@
     <g transform="translate(690.5,286.6) rotate(-17)">
       <text x="0" y="90" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="18" fill="#0e7490" text-anchor="middle" letter-spacing="2">VOZ</text>
     </g>
+    </g>
 
+    <!-- ESTADO: buscando detalle extendido del artículo -->
+    <g id="state-search">
     <!-- ÍCONO FICHA + LUPA — buscando detalle extendido del artículo (azul), más chico
          cara Inferior: matrix afín exacta de esa cara -->
     <g id="icon-search" transform="matrix(0.5400,0.0178,0.7880,0.3682,412.0,663.4) scale(0.85)">
@@ -132,6 +150,8 @@
     <g transform="translate(390.0,710.4) rotate(198)">
       <text x="0" y="70" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="18" fill="#1e3a8a" text-anchor="middle" letter-spacing="1">BUSCANDO</text>
     </g>
+    </g>
 
+  </g>
   </g>
 </svg>
