@@ -30,13 +30,15 @@
       -webkit-text-stroke: 1px #FFFFFF; /* Borde blanco */
     }
 
-    /* Animación de rotación continua para el ícono de IA */
+   /* Animación de rotación continua para el ícono de IA */
     @keyframes girarContinuo {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
+      from { transform: rotateY(0deg); }
+      to { transform: rotateY(360deg); }
     }
     .icono-rotar-continuo {
-      animation: girarContinuo 12s linear infinite;
+      animation: girarContinuo 6s linear infinite; /* Bajé el tiempo a 6s para que la rotación 3D sea más fluida */
+      transform-style: preserve-3d;
+      perspective: 1000px;
     }
   </style>
 </head>
