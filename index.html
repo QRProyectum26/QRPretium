@@ -22,11 +22,21 @@
     }
   </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="icono_ia/animaciones.css">
   <style>
     /* Efecto de borde blanco para las letras QR */
     .texto-qr-borde {
       color: #94A3B8; /* Gris */
       -webkit-text-stroke: 1px #FFFFFF; /* Borde blanco */
+    }
+
+    /* Animación de rotación continua para el ícono de IA */
+    @keyframes girarContinuo {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .icono-rotar-continuo {
+      animation: girarContinuo 12s linear infinite;
     }
   </style>
 </head>
@@ -190,8 +200,8 @@
       </div>
 
       <div class="bg-gradient-to-b from-pizarra to-slate-900 p-8 rounded-3xl border border-slate-800 text-center relative">
-        <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-slate-800 border-2 border-verdeVivo shadow-lg shadow-verdeVivo/20 flex items-center justify-center text-verdeVivo text-4xl">
-          <i class="fa-solid fa-microphone"></i>
+        <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-slate-800 border-2 border-verdeVivo shadow-lg shadow-verdeVivo/20 flex items-center justify-center p-3">
+          <img src="icono_ia/icono_ia.svg" alt="Icono Asistente IA" class="w-full h-full object-contain icono-rotar-continuo">
         </div>
         <span class="inline-block px-3 py-1 bg-verdeVivo text-slate-950 font-bold text-xs rounded-full uppercase tracking-wider mb-2">AI Assistive Agent</span>
         <p class="text-sm text-slate-400">"¡Hola! Bienvenido a Tienda X. ¿En qué puedo ayudarte hoy?"</p>
