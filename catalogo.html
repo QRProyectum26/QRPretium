@@ -333,7 +333,7 @@
                 c.height = 256;
                 const ctx = c.getContext('2d');
 
-                ctx.fillStyle = '#0F172A';
+                ctx.fillStyle = '#94A3B8';
                 ctx.fillRect(0, 0, 256, 256);
 
                 ctx.strokeStyle = '#F97316';
@@ -361,11 +361,11 @@
 
             const materiales = [
                 new THREE.MeshStandardMaterial({ map: crearTexturaCara('mic', 'ESCUCHANDO', '#10B981'), roughness: 0.2, metalness: 0.7 }),
-                new THREE.MeshStandardMaterial({ map: crearTexturaCara('cerebro', 'PENSANDO', '#F97316'), roughness: 0.2, metalness: 0.7 }),
+                new THREE.MeshStandardMaterial({ map: crearTexturaCara('cerebro', '..PENSANDO', '#F97316'), roughness: 0.2, metalness: 0.7 }),
                 new THREE.MeshStandardMaterial({ map: crearTexturaCara('ok', 'OK', '#22C55E'), roughness: 0.2, metalness: 0.7 }),
                 new THREE.MeshStandardMaterial({ map: crearTexturaCara('error', 'ERROR', '#EF4444'), roughness: 0.2, metalness: 0.7 }),
-                new THREE.MeshStandardMaterial({ map: crearTexturaCara('robot', 'VOZ', '#38BDF8'), roughness: 0.2, metalness: 0.7 }),
-                new THREE.MeshStandardMaterial({ map: crearTexturaCara('lupa', 'BUSCANDO', '#3B82F6'), roughness: 0.2, metalness: 0.7 })
+                new THREE.MeshStandardMaterial({ map: crearTexturaCara('robot', 'IA VOZ', '#38BDF8'), roughness: 0.2, metalness: 0.7 }),
+                new THREE.MeshStandardMaterial({ map: crearTexturaCara('lupa', '..BUSCANDO', '#3B82F6'), roughness: 0.2, metalness: 0.7 })
             ];
 
             const geometry = new THREE.RoundedBoxGeometry(1.2, 1.2, 1.2, 6, 0.2);
