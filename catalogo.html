@@ -234,6 +234,7 @@
             const cubo = document.getElementById('cuboIa');
             if (!cubo) return;
 
+            // Se remueven siempre los estados de animación específicos para regresar al modo normal
             cubo.classList.remove('state-thinking', 'state-speaking');
 
             if (estado === 'pensando') {
