@@ -17,6 +17,115 @@
         /* Resplandor Neón Menta/Verde Pastel para el marco del botón IA */
         .marco-verde-pastel {
             box-shadow: 0 0 20px rgba(134, 239, 172, 0.45), inset 0 0 15px rgba(134, 239, 172, 0.25);
+            transition: box-shadow 0.3s ease;
+        }
+        
+        /* MEJORA 3a: Glow effect para ESCUCHANDO */
+        .glow-escuchando {
+            box-shadow: 0 0 40px rgba(16, 185, 129, 0.8), 0 0 80px rgba(16, 185, 129, 0.4), inset 0 0 30px rgba(16, 185, 129, 0.3) !important;
+            animation: pulse-glow 0.8s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 40px rgba(16, 185, 129, 0.8), 0 0 80px rgba(16, 185, 129, 0.4), inset 0 0 30px rgba(16, 185, 129, 0.3); }
+            50% { box-shadow: 0 0 60px rgba(16, 185, 129, 1), 0 0 120px rgba(16, 185, 129, 0.6), inset 0 0 50px rgba(16, 185, 129, 0.5); }
+        }
+        
+        /* MEJORA 3a: Glow para HABLANDO (ondas de sonido) */
+        .glow-hablando {
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.7), 0 0 60px rgba(56, 189, 248, 0.3), inset 0 0 20px rgba(56, 189, 248, 0.2) !important;
+            animation: pulse-hablando 0.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-hablando {
+            0%, 100% { box-shadow: 0 0 30px rgba(56, 189, 248, 0.7), 0 0 60px rgba(56, 189, 248, 0.3); }
+            50% { box-shadow: 0 0 50px rgba(56, 189, 248, 1), 0 0 100px rgba(56, 189, 248, 0.5); }
+        }
+        
+        /* MEJORA 3a: Shake para ERROR */
+        @keyframes shake-error {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            10% { transform: translateX(-8px) rotate(-3deg); }
+            20% { transform: translateX(8px) rotate(3deg); }
+            30% { transform: translateX(-6px) rotate(-2deg); }
+            40% { transform: translateX(6px) rotate(2deg); }
+            50% { transform: translateX(-4px) rotate(-1deg); }
+            60% { transform: translateX(4px) rotate(1deg); }
+            70% { transform: translateX(-2px); }
+            80% { transform: translateX(2px); }
+            90% { transform: translateX(-1px); }
+        }
+        
+        .shake-error {
+            animation: shake-error 0.6s ease-in-out;
+        }
+        
+        /* MEJORA 3b: Indicador de transcripción en tiempo real */
+        #texto-transcripcion {
+            min-height: 24px;
+            font-size: 14px;
+            color: #64748b;
+            transition: all 0.2s ease;
+        }
+        
+        #texto-transcripcion.activo {
+            color: #0f172a;
+            font-weight: 500;
+        }
+        
+        /* MEJORA 3b: Onda de sonido alrededor del cubo */
+        .onda-sonido {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid rgba(56, 189, 248, 0.6);
+            animation: expand-onda 1.2s ease-out infinite;
+            pointer-events: none;
+            z-index: 5;
+        }
+        
+        .onda-sonido:nth-child(1) { animation-delay: 0s; width: 60px; height: 60px; }
+        .onda-sonido:nth-child(2) { animation-delay: 0.4s; width: 80px; height: 80px; }
+        .onda-sonido:nth-child(3) { animation-delay: 0.8s; width: 100px; height: 100px; }
+        
+        @keyframes expand-onda {
+            0% { transform: scale(0.5); opacity: 0.8; }
+            100% { transform: scale(1.8); opacity: 0; }
+        }
+        
+        /* MEJORA 2: Botón "+" gris con signo verde */
+        .btn-info-gris {
+            background-color: #e2e8f0 !important;
+            color: #10b981 !important;
+            border: 2px solid #cbd5e1 !important;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-info-gris:hover {
+            background-color: #cbd5e1 !important;
+            transform: scale(1.05);
+        }
+        
+        /* MEJORA 1: Texto más grande */
+        .subtitulo-vidriera {
+            font-size: 0.8rem !important;
+            letter-spacing: 0.05em;
+        }
+        
+        /* MEJORA 3: Contenedor del cubo con efectos visuales */
+        #contenedorCuboIa {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: visible !important;
+        }
+        
+        .contenedor-ondas {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            z-index: 1;
         }
     </style>
 </head>
@@ -34,39 +143,52 @@
                     <div class="flex items-center space-x-2">
                         <h1 id="nombreComercio" class="text-xl font-extrabold uppercase tracking-wide leading-tight">Cargando comercio...</h1>
                         
-                        <!-- BOTÓN "+" MODAL INFO -->
+                        <!-- MEJORA 2: BOTÓN "+" GRIS CON SIGNO VERDE -->
                         <button onclick="abrirModalInfo()" title="Ver información del comercio" 
-                            class="bg-emerald-500 hover:bg-emerald-600 text-white font-black w-5 h-5 rounded-full flex items-center justify-center shadow-sm transform active:scale-95 transition-all text-base leading-none border border-emerald-400 flex-shrink-0">
+                            class="btn-info-gris font-black w-6 h-6 rounded-full flex items-center justify-center shadow-sm transform active:scale-95 transition-all text-base leading-none border flex-shrink-0">
                             +
                         </button>
                     </div>
-                    <p class="text-xs text-orange-400 font-semibold">Vidriera Inmersiva + IA</p>
+                    <!-- MEJORA 1: Texto más grande -->
+                    <p class="subtitulo-vidriera text-orange-400 font-semibold">Vidriera Inmersiva + IA</p>
                 </div>
             </div>
         </div>
     </header>
 
- <!-- Contenido Principal -->
+    <!-- Contenido Principal -->
     <main class="max-w-xl mx-auto px-4 -mt-6 relative z-10">
 
         <!-- Buscador de Productos + Botón Cubo IA Three.js Realista -->
         <div class="flex items-center gap-3 mb-1">
-            <!-- Barra de búsqueda desplazada hacia abajo en el eje Y -->
+            <!-- Barra de búsqueda -->
             <div class="relative shadow-sm rounded-xl flex-1 transform translate-y-3">
                 <input type="text" id="inputBuscar" onkeyup="filtrarProductos()" placeholder="🔍 Buscar por código, artículo o descripción..." 
                     class="w-full pl-4 pr-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-600 text-sm bg-white shadow-sm">
             </div>
 
-            <!-- CONTENEDOR CIRCULAR CON MARCO Y NEBULOSA (Unico y con tamaño amplio) -->
-            <div id="contenedorCuboIa" onclick="activarAsistenteVoz()" title="Consultar al Asistente por Voz"
-                 class="w-32 h-32 rounded-full border-2 border-green-300 marco-verde-pastel flex items-center justify-center relative overflow-hidden cursor-pointer group flex-shrink-0 transition-transform duration-300 hover:scale-105 active:scale-95 shadow-lg bg-slate-950">
+            <!-- MEJORA 3: CONTENEDOR DEL CUBO CON ONDAS DE SONIDO -->
+            <div id="contenedorCuboIa" 
+                 class="w-32 h-32 rounded-full border-2 border-green-300 marco-verde-pastel flex items-center justify-center relative overflow-visible cursor-pointer group flex-shrink-0 transition-transform duration-300 hover:scale-105 active:scale-95 shadow-lg bg-slate-950">
+                
+                <!-- MEJORA 3a: Ondas de sonido para HABLANDO (inicialmente ocultas) -->
+                <div id="contenedorOndas" class="contenedor-ondas hidden">
+                    <div class="onda-sonido"></div>
+                    <div class="onda-sonido"></div>
+                    <div class="onda-sonido"></div>
+                </div>
                 
                 <!-- Canvas de Fondo (Nebulosa Multicolor Realista) -->
-                <canvas id="fondo-espacio" class="absolute inset-0 w-full h-full z-0"></canvas>
+                <canvas id="fondo-espacio" class="absolute inset-0 w-full h-full z-0 rounded-full"></canvas>
 
                 <!-- Canvas del Cubo 3D Three.js -->
                 <canvas id="cubo3d-ia" class="w-14 h-14 relative z-10 pointer-events-none"></canvas>
             </div>
+        </div>
+
+        <!-- MEJORA 3b: Texto de transcripción en tiempo real -->
+        <div id="texto-transcripcion" class="text-center text-sm text-slate-500 font-medium py-1 min-h-[28px] transition-all">
+            Toca el cubo para hablar
         </div>
 
         <!-- Ventana Modal de Chat del Asistente IA -->
@@ -233,6 +355,70 @@
     <!-- SCRIPT 2: CUBO 3D EN THREE.JS -->
     <script>
         let controlVelocidadCubo = { x: 0.008, y: 0.012 };
+        let estadoCuboActual = 'normal';
+        let animacionShake = false;
+
+        // MEJORA 3a: Función para aplicar efectos visuales al cubo
+        function aplicarEfectoCubo(estado) {
+            const contenedor = document.getElementById('contenedorCuboIa');
+            const ondasContainer = document.getElementById('contenedorOndas');
+            
+            // Remover todas las clases de efecto
+            contenedor.classList.remove('glow-escuchando', 'glow-hablando', 'shake-error');
+            
+            // Ocultar ondas por defecto
+            ondasContainer.classList.add('hidden');
+            
+            estadoCuboActual = estado;
+            
+            switch(estado) {
+                case 'escuchando':
+                    contenedor.classList.add('glow-escuchando');
+                    break;
+                case 'hablando':
+                    contenedor.classList.add('glow-hablando');
+                    // Mostrar ondas de sonido
+                    ondasContainer.classList.remove('hidden');
+                    break;
+                case 'error':
+                    contenedor.classList.add('shake-error');
+                    // Remover la clase después de la animación
+                    setTimeout(() => {
+                        contenedor.classList.remove('shake-error');
+                    }, 600);
+                    break;
+                case 'normal':
+                default:
+                    // No añadir clases extra
+                    break;
+            }
+        }
+
+        // MEJORA 3b: Función para actualizar texto de transcripción
+        function actualizarTextoTranscripcion(texto, estado) {
+            const el = document.getElementById('texto-transcripcion');
+            if (!el) return;
+            
+            if (estado === 'escuchando' && texto) {
+                el.textContent = `🎤 ${texto}`;
+                el.className = 'text-center text-sm text-slate-700 font-medium py-1 min-h-[28px] transition-all activo';
+            } else if (estado === 'escuchando' && !texto) {
+                el.textContent = '🎤 Escuchando...';
+                el.className = 'text-center text-sm text-slate-500 font-medium py-1 min-h-[28px] transition-all';
+            } else if (estado === 'pensando') {
+                el.textContent = '🧠 Pensando...';
+                el.className = 'text-center text-sm text-orange-500 font-medium py-1 min-h-[28px] transition-all';
+            } else if (estado === 'hablando') {
+                el.textContent = '🔊 Respondiendo...';
+                el.className = 'text-center text-sm text-emerald-500 font-medium py-1 min-h-[28px] transition-all';
+            } else if (estado === 'error') {
+                el.textContent = '⚠️ Error, intenta de nuevo';
+                el.className = 'text-center text-sm text-red-500 font-medium py-1 min-h-[28px] transition-all';
+            } else {
+                el.textContent = '🎯 Toca el cubo para hablar';
+                el.className = 'text-center text-sm text-slate-400 font-medium py-1 min-h-[28px] transition-all';
+            }
+        }
 
         (function crearCubo3D() {
             const canvas = document.getElementById('cubo3d-ia');
@@ -333,10 +519,8 @@
                 c.height = 256;
                 const ctx = c.getContext('2d');
 
-                // GRIS METÁLICO FUTURISTA (Slate/Titanio): 
-    // Usa  '#64748B' (Plata Titanio)
-    ctx.fillStyle = '#94A3B8'; 
-    ctx.fillRect(0, 0, 256, 256);
+                ctx.fillStyle = '#94A3B8'; 
+                ctx.fillRect(0, 0, 256, 256);
 
                 ctx.strokeStyle = '#F97316';
                 ctx.lineWidth = 12;
@@ -387,8 +571,21 @@
 
             function animate() {
                 requestAnimationFrame(animate);
-                cubo.rotation.x += controlVelocidadCubo.x;
-                cubo.rotation.y += controlVelocidadCubo.y;
+                
+                // Velocidad dinámica según estado
+                let velX = controlVelocidadCubo.x;
+                let velY = controlVelocidadCubo.y;
+                
+                if (estadoCuboActual === 'pensando') {
+                    velX = 0.04;
+                    velY = 0.05;
+                } else if (estadoCuboActual === 'hablando') {
+                    velX = 0.02;
+                    velY = 0.025;
+                }
+                
+                cubo.rotation.x += velX;
+                cubo.rotation.y += velY;
                 renderer.render(scene, camera);
             }
             animate();
@@ -396,12 +593,16 @@
             const contenedor = document.getElementById('contenedorCuboIa');
             if (contenedor) {
                 contenedor.addEventListener('mouseenter', () => {
-                    controlVelocidadCubo.x = 0.025;
-                    controlVelocidadCubo.y = 0.03;
+                    if (estadoCuboActual !== 'escuchando' && estadoCuboActual !== 'hablando') {
+                        controlVelocidadCubo.x = 0.025;
+                        controlVelocidadCubo.y = 0.03;
+                    }
                 });
                 contenedor.addEventListener('mouseleave', () => {
-                    controlVelocidadCubo.x = 0.008;
-                    controlVelocidadCubo.y = 0.012;
+                    if (estadoCuboActual !== 'escuchando' && estadoCuboActual !== 'hablando') {
+                        controlVelocidadCubo.x = 0.008;
+                        controlVelocidadCubo.y = 0.012;
+                    }
                 });
             }
         })();
@@ -417,44 +618,202 @@
         let datosComercioGlobal = null;
         let reconocedorVoz = null;
         let estaEscuchando = false;
+        let synth = window.speechSynthesis;
+        let utteranceActual = null;
+        let estaHablando = false;
+
+        // MEJORA 3d: Caching en localStorage
+        const CACHE_KEY = 'qrpretium_data';
+        const CACHE_EXPIRY = 5 * 60 * 1000; // 5 minutos
+
+        function guardarCache(cuit, data) {
+            try {
+                const cacheData = {
+                    cuit: cuit,
+                    data: data,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+            } catch (e) {
+                console.warn('No se pudo guardar en cache:', e);
+            }
+        }
+
+        function obtenerCache(cuit) {
+            try {
+                const raw = localStorage.getItem(CACHE_KEY);
+                if (!raw) return null;
+                const cache = JSON.parse(raw);
+                if (cache.cuit !== cuit) return null;
+                if (Date.now() - cache.timestamp > CACHE_EXPIRY) {
+                    localStorage.removeItem(CACHE_KEY);
+                    return null;
+                }
+                return cache.data;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // MEJORA 3d: Analytics (registro de consultas)
+        async function registrarAnalytics(tipo, consulta, respuesta) {
+            try {
+                // Solo registrar si tenemos el comercio cargado
+                if (!datosComercioGlobal) return;
+                
+                await supabaseClient.from('analytics_consultas').insert({
+                    cuit_comercio: datosComercioGlobal.cuit || datosComercioGlobal.CUIT,
+                    tipo: tipo,
+                    consulta: consulta,
+                    respuesta_resumen: respuesta ? respuesta.substring(0, 500) : null,
+                    fecha: new Date().toISOString()
+                });
+            } catch (e) {
+                console.warn('Error al registrar analytics:', e);
+            }
+        }
 
         const urlParams = new URLSearchParams(window.location.search);
         const cuitParam = urlParams.get('cuit') ? urlParams.get('cuit').trim() : null;
 
-        function cambiarEstadoVelocidadCubo(estado) {
+        function cambiarEstadoCubo(estado) {
+            aplicarEfectoCubo(estado);
+            
+            // Cambiar velocidad según estado (ya se maneja en animate)
             if (estado === 'pensando') {
                 controlVelocidadCubo.x = 0.04;
                 controlVelocidadCubo.y = 0.05;
             } else if (estado === 'hablando') {
                 controlVelocidadCubo.x = 0.02;
-                controlVelocidadCubo.y = 0.03;
+                controlVelocidadCubo.y = 0.025;
             } else {
                 controlVelocidadCubo.x = 0.008;
                 controlVelocidadCubo.y = 0.012;
             }
+            
+            // Actualizar texto de transcripción
+            actualizarTextoTranscripcion('', estado);
         }
 
         function reproducirVoz(texto) {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(texto);
-                utterance.lang = 'es-AR';
-                utterance.rate = 1.0;
+            if (!synth) return;
+            
+            // MEJORA 3b: Cancelar voz si está hablando
+            if (estaHablando) {
+                synth.cancel();
+                estaHablando = false;
+            }
+            
+            const utterance = new SpeechSynthesisUtterance(texto);
+            utterance.lang = 'es-AR';
+            utterance.rate = 1.0;
+            utteranceActual = utterance;
 
-                utterance.onstart = () => { cambiarEstadoVelocidadCubo('hablando'); };
-                utterance.onend = () => { cambiarEstadoVelocidadCubo('normal'); };
+            utterance.onstart = () => {
+                estaHablando = true;
+                cambiarEstadoCubo('hablando');
+                actualizarTextoTranscripcion('🔊 Respondiendo...', 'hablando');
+            };
+            
+            utterance.onend = () => {
+                estaHablando = false;
+                cambiarEstadoCubo('normal');
+                actualizarTextoTranscripcion('🎯 Toca el cubo para hablar', 'normal');
+            };
+            
+            utterance.onerror = () => {
+                estaHablando = false;
+                cambiarEstadoCubo('normal');
+            };
 
-                window.speechSynthesis.speak(utterance);
+            synth.speak(utterance);
+        }
+
+        function detenerVoz() {
+            if (synth) {
+                synth.cancel();
+                estaHablando = false;
+                cambiarEstadoCubo('normal');
+                actualizarTextoTranscripcion('🎯 Toca el cubo para hablar', 'normal');
             }
         }
 
         function reproducirSaludoInicial() {
-            reproducirVoz("Hola, ¿qué tal? ¿En qué puedo ayudarte?");
+            const saludo = "Hola, ¿qué tal? ¿En qué puedo ayudarte?";
+            reproducirVoz(saludo);
+        }
+
+        // MEJORA 3b: Función para manejar el mantener presionado
+        let timeoutPresionado = null;
+        let estaManteniendo = false;
+
+        function configurarPulsacionLarga() {
+            const contenedor = document.getElementById('contenedorCuboIa');
+            if (!contenedor) return;
+            
+            contenedor.addEventListener('mousedown', () => {
+                timeoutPresionado = setTimeout(() => {
+                    estaManteniendo = true;
+                    activarAsistenteVoz();
+                }, 500);
+            });
+            
+            contenedor.addEventListener('mouseup', () => {
+                clearTimeout(timeoutPresionado);
+                if (!estaManteniendo) {
+                    // Si no fue una pulsación larga, abrir el chat
+                    if (!document.getElementById('modalIaChat').classList.contains('hidden')) {
+                        // Si el chat ya está abierto, alternar escucha
+                        alternarEscucha();
+                    } else {
+                        activarAsistenteVoz();
+                    }
+                }
+                estaManteniendo = false;
+            });
+            
+            contenedor.addEventListener('mouseleave', () => {
+                clearTimeout(timeoutPresionado);
+                estaManteniendo = false;
+            });
+            
+            // Soporte para táctil
+            contenedor.addEventListener('touchstart', (e) => {
+                timeoutPresionado = setTimeout(() => {
+                    estaManteniendo = true;
+                    activarAsistenteVoz();
+                }, 500);
+            });
+            
+            contenedor.addEventListener('touchend', () => {
+                clearTimeout(timeoutPresionado);
+                if (!estaManteniendo) {
+                    if (!document.getElementById('modalIaChat').classList.contains('hidden')) {
+                        alternarEscucha();
+                    } else {
+                        activarAsistenteVoz();
+                    }
+                }
+                estaManteniendo = false;
+            });
         }
 
         async function cargarDatos() {
             if (!cuitParam) {
                 mostrarError("No se ha especificado un CUIT de comercio en el enlace.");
+                return;
+            }
+
+            // MEJORA 3d: Intentar cargar desde cache
+            const cacheData = obtenerCache(cuitParam);
+            if (cacheData) {
+                console.log('Cargando datos desde cache');
+                datosComercioGlobal = cacheData.comercio;
+                productosGlobales = cacheData.productos;
+                aplicarDatosComercio(cacheData.comercio);
+                renderizarProductos(productosGlobales);
+                inicializarReconocimientoVoz();
+                configurarPulsacionLarga();
                 return;
             }
 
@@ -473,21 +832,6 @@
                 }
 
                 datosComercioGlobal = comercio;
-                const nombre = comercio.nombre || comercio.NOMBRE || 'Mi Comercio';
-                document.getElementById('nombreComercio').innerText = nombre;
-                document.getElementById('modalNombreComercio').innerText = nombre;
-                
-                const colorPersonalizado = comercio.color || comercio.COLOR || comercio.color_hex || comercio.COLOR_HEX;
-                if (colorPersonalizado) {
-                    document.getElementById('headerComercio').style.backgroundColor = colorPersonalizado;
-                }
-
-                const logoUrl = comercio.logo || comercio.LOGO;
-                if (logoUrl && logoUrl.trim() !== '') {
-                    document.getElementById('imgLogo').src = logoUrl;
-                }
-
-                configurarModalComercio(comercio);
 
                 let productos = null;
                 let prodRes1 = await supabaseClient.from('articulos').select('*').eq('cuit', cuitParam);
@@ -503,13 +847,37 @@
                 }
 
                 productosGlobales = productos;
+
+                // MEJORA 3d: Guardar en cache
+                guardarCache(cuitParam, { comercio, productos });
+
+                aplicarDatosComercio(comercio);
                 renderizarProductos(productosGlobales);
                 inicializarReconocimientoVoz();
+                configurarPulsacionLarga();
 
             } catch (err) {
                 console.error("Error al conectar con Supabase:", err);
                 mostrarError("Ocurrió un error al cargar la información del catálogo.");
             }
+        }
+
+        function aplicarDatosComercio(comercio) {
+            const nombre = comercio.nombre || comercio.NOMBRE || 'Mi Comercio';
+            document.getElementById('nombreComercio').innerText = nombre;
+            document.getElementById('modalNombreComercio').innerText = nombre;
+            
+            const colorPersonalizado = comercio.color || comercio.COLOR || comercio.color_hex || comercio.COLOR_HEX;
+            if (colorPersonalizado) {
+                document.getElementById('headerComercio').style.backgroundColor = colorPersonalizado;
+            }
+
+            const logoUrl = comercio.logo || comercio.LOGO;
+            if (logoUrl && logoUrl.trim() !== '') {
+                document.getElementById('imgLogo').src = logoUrl;
+            }
+
+            configurarModalComercio(comercio);
         }
 
         function configurarModalComercio(com) {
@@ -595,24 +963,46 @@
             const divEstado = document.getElementById('mensajeEstado');
             document.getElementById('textoEstado').innerText = mensaje;
             divEstado.classList.remove('hidden');
+            
+            // MEJORA 3d: Mensaje de error amigable
+            actualizarTextoTranscripcion('⚠️ Error al cargar datos', 'error');
+            cambiarEstadoCubo('error');
         }
 
         /* --- ASISTENTE IA Y VOZ --- */
 
         function activarAsistenteVoz() {
-            reproducirSaludoInicial();
+            // Si ya está hablando, detener voz
+            if (estaHablando) {
+                detenerVoz();
+            }
+            
             document.getElementById('modalIaChat').classList.remove('hidden');
+            // Limpiar historial anterior si está vacío
+            const historial = document.getElementById('chatHistorial');
+            if (historial.children.length <= 1) {
+                // Dejar solo el mensaje de bienvenida
+                historial.innerHTML = '';
+                const bienvenida = document.createElement('div');
+                bienvenida.className = "bg-slate-200 text-slate-900 p-3 rounded-xl max-w-[85%] border border-slate-300";
+                bienvenida.innerText = "Hola, soy el asistente de esta vidriera inmersiva, ¿en qué puedo ayudarte?";
+                historial.appendChild(bienvenida);
+            }
+            
+            // Iniciar escucha automática
+            setTimeout(() => {
+                alternarEscucha();
+            }, 300);
         }
 
         function cerrarModalIa() {
             document.getElementById('modalIaChat').classList.add('hidden');
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-            }
+            detenerVoz();
             if (estaEscuchando && reconocedorVoz) {
                 reconocedorVoz.stop();
             }
-            cambiarEstadoVelocidadCubo('normal');
+            cambiarEstadoCubo('normal');
+            actualizarTextoTranscripcion('🎯 Toca el cubo para hablar', 'normal');
         }
 
         function inicializarReconocimientoVoz() {
@@ -625,13 +1015,15 @@
             reconocedorVoz = new SpeechRecognition();
             reconocedorVoz.lang = 'es-AR';
             reconocedorVoz.continuous = false;
-            reconocedorVoz.interimResults = false;
+            reconocedorVoz.interimResults = true; // MEJORA 3b: Mostrar resultados intermedios
 
             reconocedorVoz.onstart = () => {
                 estaEscuchando = true;
                 document.getElementById('lblEstadoEscucha').innerText = "Escuchando... Habla ahora";
                 document.getElementById('btnEscuchar').classList.add('animate-pulse', 'bg-red-600');
                 document.getElementById('iconoMic').innerText = "🔴";
+                cambiarEstadoCubo('escuchando');
+                actualizarTextoTranscripcion('🎤 Escuchando...', 'escuchando');
             };
 
             reconocedorVoz.onend = () => {
@@ -639,17 +1031,48 @@
                 document.getElementById('lblEstadoEscucha').innerText = "Toca para hablar";
                 document.getElementById('btnEscuchar').classList.remove('animate-pulse', 'bg-red-600');
                 document.getElementById('iconoMic').innerText = "🎙️";
+                if (estadoCuboActual === 'escuchando') {
+                    cambiarEstadoCubo('normal');
+                    actualizarTextoTranscripcion('🎯 Toca el cubo para hablar', 'normal');
+                }
             };
 
             reconocedorVoz.onresult = async (event) => {
-                const textoTranscrito = event.results[0][0].transcript;
-                agregarMensajeChat('usuario', textoTranscrito);
-                await procesarConsultaIa(textoTranscrito);
+                // MEJORA 3b: Mostrar texto en tiempo real
+                let textoIntermedio = '';
+                let textoFinal = '';
+                
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal) {
+                        textoFinal = event.results[i][0].transcript;
+                    } else {
+                        textoIntermedio = event.results[i][0].transcript;
+                    }
+                }
+                
+                // Mostrar transcripción en tiempo real
+                if (textoIntermedio && !textoFinal) {
+                    actualizarTextoTranscripcion(`🎤 ${textoIntermedio}...`, 'escuchando');
+                }
+                
+                if (textoFinal) {
+                    actualizarTextoTranscripcion(`✅ ${textoFinal}`, 'normal');
+                    agregarMensajeChat('usuario', textoFinal);
+                    await procesarConsultaIa(textoFinal);
+                }
             };
 
             reconocedorVoz.onerror = (event) => {
                 console.error("Error de voz:", event.error);
                 document.getElementById('lblEstadoEscucha').innerText = "Error al escuchar. Inténtalo de nuevo.";
+                cambiarEstadoCubo('error');
+                actualizarTextoTranscripcion('⚠️ Error, intenta de nuevo', 'error');
+                setTimeout(() => {
+                    if (!estaEscuchando) {
+                        cambiarEstadoCubo('normal');
+                        actualizarTextoTranscripcion('🎯 Toca el cubo para hablar', 'normal');
+                    }
+                }, 3000);
             };
         }
 
@@ -657,6 +1080,10 @@
             if (!reconocedorVoz) {
                 alert("El reconocimiento de voz no está disponible en este navegador.");
                 return;
+            }
+            // MEJORA 3b: Si está hablando, detener voz
+            if (estaHablando) {
+                detenerVoz();
             }
             if (estaEscuchando) {
                 reconocedorVoz.stop();
@@ -680,16 +1107,46 @@
             historial.scrollTop = historial.scrollHeight;
         }
 
+        // MEJORA 3c: Funcionalidades extra para la IA
+        function generarContextoIA() {
+            // Construir un contexto con todos los productos disponibles
+            let contexto = "Eres un asistente de ventas experto en productos de un comercio. ";
+            contexto += "Los productos disponibles son:\n";
+            
+            productosGlobales.forEach((p, i) => {
+                const nombre = p.articulo || p.ARTICULO || p.nombre || p.NOMBRE || 'Producto';
+                const precio = p.precio || p.PRECIO || 0;
+                const desc = p.descripcion || p.DESCRIPCION || '';
+                const cod = p.codigo || p.CODIGO || '';
+                contexto += `${i+1}. ${nombre} - $${Number(precio).toLocaleString('es-AR')}`;
+                if (desc) contexto += ` (${desc})`;
+                if (cod) contexto += ` [Código: ${cod}]`;
+                contexto += "\n";
+            });
+            
+            contexto += "\nResponde de forma amigable, profesional y concisa. ";
+            contexto += "Si el usuario pregunta por recomendaciones, sugiere productos basándote en el presupuesto que indique. ";
+            contexto += "Si no encuentras un producto que coincida, sugiere alternativas similares. ";
+            contexto += "Nunca inventes productos que no estén en la lista.";
+            
+            return contexto;
+        }
+
         async function procesarConsultaIa(consultaTexto) {
             document.getElementById('estadoIa').innerText = "Procesando consulta con la IA...";
             agregarMensajeChat('ia', "Pensando respuesta...");
-            cambiarEstadoVelocidadCubo('pensando');
+            cambiarEstadoCubo('pensando');
+            actualizarTextoTranscripcion('🧠 Pensando...', 'pensando');
 
             try {
+                // MEJORA 3c: Construir contexto con los productos
+                const contexto = generarContextoIA();
+                const mensajeCompleto = `${contexto}\n\nUsuario: ${consultaTexto}`;
+
                 const respuesta = await fetch('https://zbnuunaguciupyyzploq.supabase.co/functions/v1/chat-asistente', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: consultaTexto })
+                    body: JSON.stringify({ message: mensajeCompleto })
                 });
 
                 const data = await respuesta.json();
@@ -701,14 +1158,31 @@
                     const botReply = data.choices[0].message.content;
                     agregarMensajeChat('ia', botReply);
                     reproducirVoz(botReply);
+                    
+                    // MEJORA 3d: Registrar analytics
+                    await registrarAnalytics('consulta_voz', consultaTexto, botReply);
+                    
+                    cambiarEstadoCubo('ok');
+                    actualizarTextoTranscripcion('✅ Respuesta lista', 'normal');
+                    // Volver a estado normal después de 2 segundos
+                    setTimeout(() => {
+                        if (!estaHablando) {
+                            cambiarEstadoCubo('normal');
+                            actualizarTextoTranscripcion('🎯 Toca el cubo para hablar', 'normal');
+                        }
+                    }, 2000);
                 } else if (data.error) {
                     const errMsj = "Error: " + data.error;
                     agregarMensajeChat('ia', errMsj);
                     reproducirVoz("Ocurrió un error al procesar tu consulta.");
+                    cambiarEstadoCubo('error');
+                    actualizarTextoTranscripcion('⚠️ Error en el servidor', 'error');
                 } else {
                     const errDefault = "No pude procesar tu solicitud en este momento. Por favor, intenta de nuevo.";
                     agregarMensajeChat('ia', errDefault);
                     reproducirVoz(errDefault);
+                    cambiarEstadoCubo('error');
+                    actualizarTextoTranscripcion('⚠️ Error, intenta de nuevo', 'error');
                 }
 
             } catch (err) {
@@ -718,8 +1192,17 @@
                 const errConexion = "Ocurrió un error al comunicarme con el servidor.";
                 agregarMensajeChat('ia', errConexion);
                 reproducirVoz(errConexion);
+                cambiarEstadoCubo('error');
+                actualizarTextoTranscripcion('⚠️ Error de conexión', 'error');
             } finally {
                 document.getElementById('estadoIa').innerText = "Presiona el micrófono para hablar";
+                // Si no está hablando, restaurar estado normal
+                if (!estaHablando && estadoCuboActual !== 'escuchando') {
+                    setTimeout(() => {
+                        cambiarEstadoCubo('normal');
+                        actualizarTextoTranscripcion('🎯 Toca el cubo para hablar', 'normal');
+                    }, 3000);
+                }
             }
         }
 
