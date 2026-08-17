@@ -14,13 +14,12 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/geometries/RoundedBoxGeometry.js"></script>
     
     <style>
-        /* Resplandor Neón Menta/Verde Pastel para el marco del botón IA */
+        /* --- RESPLANDORES Y EFECTOS DEL CUBO --- */
         .marco-verde-pastel {
             box-shadow: 0 0 20px rgba(134, 239, 172, 0.45), inset 0 0 15px rgba(134, 239, 172, 0.25);
             transition: box-shadow 0.3s ease;
         }
         
-        /* MEJORA 3a: Glow effect para ESCUCHANDO */
         .glow-escuchando {
             box-shadow: 0 0 40px rgba(16, 185, 129, 0.8), 0 0 80px rgba(16, 185, 129, 0.4), inset 0 0 30px rgba(16, 185, 129, 0.3) !important;
             animation: pulse-glow 0.8s ease-in-out infinite;
@@ -31,7 +30,6 @@
             50% { box-shadow: 0 0 60px rgba(16, 185, 129, 1), 0 0 120px rgba(16, 185, 129, 0.6), inset 0 0 50px rgba(16, 185, 129, 0.5); }
         }
         
-        /* MEJORA 3a: Glow para HABLANDO (ondas de sonido) */
         .glow-hablando {
             box-shadow: 0 0 30px rgba(56, 189, 248, 0.7), 0 0 60px rgba(56, 189, 248, 0.3), inset 0 0 20px rgba(56, 189, 248, 0.2) !important;
             animation: pulse-hablando 0.5s ease-in-out infinite;
@@ -42,7 +40,6 @@
             50% { box-shadow: 0 0 50px rgba(56, 189, 248, 1), 0 0 100px rgba(56, 189, 248, 0.5); }
         }
         
-        /* MEJORA 3a: Shake para ERROR */
         @keyframes shake-error {
             0%, 100% { transform: translateX(0) rotate(0deg); }
             10% { transform: translateX(-8px) rotate(-3deg); }
@@ -59,21 +56,8 @@
         .shake-error {
             animation: shake-error 0.6s ease-in-out;
         }
-        
-        /* MEJORA 3b: Indicador de transcripción en tiempo real */
-        #texto-transcripcion {
-            min-height: 24px;
-            font-size: 14px;
-            color: #64748b;
-            transition: all 0.2s ease;
-        }
-        
-        #texto-transcripcion.activo {
-            color: #0f172a;
-            font-weight: 500;
-        }
-        
-        /* MEJORA 3b: Onda de sonido alrededor del cubo */
+
+        /* --- ONDAS DE SONIDO --- */
         .onda-sonido {
             position: absolute;
             border-radius: 50%;
@@ -82,7 +66,6 @@
             pointer-events: none;
             z-index: 5;
         }
-        
         .onda-sonido:nth-child(1) { animation-delay: 0s; width: 60px; height: 60px; }
         .onda-sonido:nth-child(2) { animation-delay: 0.4s; width: 80px; height: 80px; }
         .onda-sonido:nth-child(3) { animation-delay: 0.8s; width: 100px; height: 100px; }
@@ -91,33 +74,270 @@
             0% { transform: scale(0.5); opacity: 0.8; }
             100% { transform: scale(1.8); opacity: 0; }
         }
-        
-        /* MEJORA 2: Botón "+" gris con signo verde */
+
+        /* --- BOTÓN "+" GRIS CON SIGNO VERDE --- */
         .btn-info-gris {
             background-color: #e2e8f0 !important;
             color: #10b981 !important;
             border: 2px solid #cbd5e1 !important;
             transition: all 0.2s ease;
         }
-        
         .btn-info-gris:hover {
             background-color: #cbd5e1 !important;
             transform: scale(1.05);
         }
-        
-        /* MEJORA 1: Texto más grande */
+
+        /* --- TEXTO MÁS GRANDE --- */
         .subtitulo-vidriera {
             font-size: 0.8rem !important;
             letter-spacing: 0.05em;
         }
+
+        /* --- PANEL LATERAL DE CHAT (NUEVO) --- */
+        .panel-chat {
+            position: fixed;
+            top: 0;
+            right: -420px;
+            width: 380px;
+            max-width: 90vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-left: 1px solid rgba(255, 255, 255, 0.08);
+            z-index: 1000;
+            transition: right 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            display: flex;
+            flex-direction: column;
+            box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
         
-        /* MEJORA 3: Contenedor del cubo con efectos visuales */
+        .panel-chat.abierto {
+            right: 0;
+        }
+        
+        /* Superposición semitransparente detrás del panel */
+        .overlay-panel {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .overlay-panel.activo {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* --- ESTILOS INTERNOS DEL PANEL --- */
+        .panel-chat .header-panel {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .panel-chat .header-panel h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .panel-chat .header-panel .estado-ia {
+            font-size: 11px;
+            color: #94a3b8;
+            font-weight: 400;
+            margin-top: 2px;
+        }
+        
+        .panel-chat .chat-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 16px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .panel-chat .chat-body .mensaje {
+            padding: 10px 14px;
+            border-radius: 14px;
+            max-width: 88%;
+            font-size: 14px;
+            line-height: 1.5;
+            word-wrap: break-word;
+            animation: fadeInUp 0.3s ease;
+        }
+        
+        .panel-chat .chat-body .mensaje.usuario {
+            background: #f97316;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .panel-chat .chat-body .mensaje.ia {
+            background: rgba(255, 255, 255, 0.08);
+            color: #e2e8f0;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .panel-chat .chat-body .mensaje.ia .texto {
+            margin-bottom: 6px;
+        }
+        
+        .panel-chat .chat-body .mensaje.ia .timestamp {
+            font-size: 9px;
+            color: #64748b;
+            text-align: right;
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* --- INPUT DE VOZ EN EL PANEL --- */
+        .panel-chat .controles-voz {
+            padding: 14px 16px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .panel-chat .controles-voz .btn-mic {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #f97316;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(249, 115, 22, 0.3);
+        }
+        
+        .panel-chat .controles-voz .btn-mic:hover {
+            transform: scale(1.05);
+            background: #ea580c;
+        }
+        
+        .panel-chat .controles-voz .btn-mic:active {
+            transform: scale(0.92);
+        }
+        
+        .panel-chat .controles-voz .btn-mic.escuchando {
+            background: #ef4444;
+            animation: pulse-mic 1s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-mic {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            50% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
+        }
+        
+        .panel-chat .controles-voz .estado-voz-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #94a3b8;
+            transition: color 0.2s;
+        }
+        
+        .panel-chat .controles-voz .estado-voz-label.activo {
+            color: #f97316;
+        }
+        
+        .panel-chat .controles-voz .texto-transcripcion {
+            font-size: 13px;
+            font-weight: 500;
+            color: #e2e8f0;
+            min-height: 24px;
+            text-align: center;
+            padding: 0 8px;
+        }
+        
+        .panel-chat .controles-voz .texto-transcripcion.pensando {
+            color: #f97316;
+        }
+        
+        .panel-chat .controles-voz .texto-transcripcion.hablando {
+            color: #38bdf8;
+        }
+        
+        .panel-chat .controles-voz .texto-transcripcion.error {
+            color: #ef4444;
+        }
+        
+        /* Scrollbar personalizado para el panel */
+        .panel-chat .chat-body::-webkit-scrollbar {
+            width: 4px;
+        }
+        .panel-chat .chat-body::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .panel-chat .chat-body::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 8px;
+        }
+
+        /* --- BOTÓN CERRAR PANEL --- */
+        .btn-cerrar-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            color: #94a3b8;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-cerrar-panel:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+        }
+
+        /* --- RESPONSIVE: PANEL A PANTALLA COMPLETA EN MÓVILES --- */
+        @media (max-width: 640px) {
+            .panel-chat {
+                width: 100vw;
+                max-width: 100vw;
+                right: -100vw;
+                border-left: none;
+            }
+            .panel-chat.abierto {
+                right: 0;
+            }
+        }
+
+        /* MEJORA: contenedor del cubo para efectos */
         #contenedorCuboIa {
             transition: all 0.3s ease;
             position: relative;
             overflow: visible !important;
         }
-        
         .contenedor-ondas {
             position: absolute;
             inset: 0;
@@ -127,103 +347,63 @@
             pointer-events: none;
             z-index: 1;
         }
+        .contenedor-ondas.hidden {
+            display: none;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen pb-10">
 
-    <!-- Encabezado / Logo del Comercio -->
+    <!-- --- ENCABEZADO --- -->
     <header id="headerComercio" class="text-white p-5 shadow-lg rounded-b-2xl transition-colors duration-300" style="background-color: #334155;">
         <div class="max-w-xl mx-auto flex items-center justify-between">
             <div class="flex items-center space-x-3">
                 <div id="logoContainer" class="flex-shrink-0">
                     <img id="imgLogo" src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Logo Comercio" class="h-12 w-12 rounded-xl bg-white p-1 shadow-md object-cover border border-slate-400">
                 </div>
-                
                 <div class="text-left">
                     <div class="flex items-center space-x-2">
                         <h1 id="nombreComercio" class="text-xl font-extrabold uppercase tracking-wide leading-tight">Cargando comercio...</h1>
-                        
-                        <!-- MEJORA 2: BOTÓN "+" GRIS CON SIGNO VERDE -->
                         <button onclick="abrirModalInfo()" title="Ver información del comercio" 
                             class="btn-info-gris font-black w-6 h-6 rounded-full flex items-center justify-center shadow-sm transform active:scale-95 transition-all text-base leading-none border flex-shrink-0">
                             +
                         </button>
                     </div>
-                    <!-- MEJORA 1: Texto más grande -->
                     <p class="subtitulo-vidriera text-orange-400 font-semibold">Vidriera Inmersiva + IA</p>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Contenido Principal -->
+    <!-- --- CONTENIDO PRINCIPAL --- -->
     <main class="max-w-xl mx-auto px-4 -mt-6 relative z-10">
 
-        <!-- Buscador de Productos + Botón Cubo IA Three.js Realista -->
+        <!-- Buscador + Cubo IA -->
         <div class="flex items-center gap-3 mb-1">
-            <!-- Barra de búsqueda -->
             <div class="relative shadow-sm rounded-xl flex-1 transform translate-y-3">
                 <input type="text" id="inputBuscar" onkeyup="filtrarProductos()" placeholder="🔍 Buscar por código, artículo o descripción..." 
                     class="w-full pl-4 pr-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-600 text-sm bg-white shadow-sm">
             </div>
 
-            <!-- MEJORA 3: CONTENEDOR DEL CUBO CON ONDAS DE SONIDO -->
+            <!-- CUBO IA -->
             <div id="contenedorCuboIa" 
                  class="w-32 h-32 rounded-full border-2 border-green-300 marco-verde-pastel flex items-center justify-center relative overflow-visible cursor-pointer group flex-shrink-0 transition-transform duration-300 hover:scale-105 active:scale-95 shadow-lg bg-slate-950">
                 
-                <!-- MEJORA 3a: Ondas de sonido para HABLANDO (inicialmente ocultas) -->
+                <!-- Ondas de sonido (ocultas por defecto) -->
                 <div id="contenedorOndas" class="contenedor-ondas hidden">
                     <div class="onda-sonido"></div>
                     <div class="onda-sonido"></div>
                     <div class="onda-sonido"></div>
                 </div>
                 
-                <!-- Canvas de Fondo (Nebulosa Multicolor Realista) -->
                 <canvas id="fondo-espacio" class="absolute inset-0 w-full h-full z-0 rounded-full"></canvas>
-
-                <!-- Canvas del Cubo 3D Three.js -->
                 <canvas id="cubo3d-ia" class="w-14 h-14 relative z-10 pointer-events-none"></canvas>
             </div>
         </div>
 
-        <!-- MEJORA 3b: Texto de transcripción en tiempo real -->
-        <div id="texto-transcripcion" class="text-center text-sm text-slate-500 font-medium py-1 min-h-[28px] transition-all">
-            Toca el cubo para hablar
-        </div>
-
-        <!-- Ventana Modal de Chat del Asistente IA -->
-        <div id="modalIaChat" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
-            <div class="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl max-w-lg w-full h-[80vh] sm:h-[600px] flex flex-col overflow-hidden">
-                
-                <!-- Encabezado Modal IA -->
-                <div class="p-4 bg-slate-800 text-white flex justify-between items-center border-b border-slate-700">
-                    <div class="flex items-center space-x-2">
-                        <span class="text-2xl">🤖</span>
-                        <div>
-                            <h3 class="font-bold text-sm">Asistente de Vidriera Inmersiva</h3>
-                            <p id="estadoIa" class="text-xs text-slate-300">Presiona el Micrófono para Hablar</p>
-                        </div>
-                    </div>
-                    <button onclick="cerrarModalIa()" class="text-slate-400 hover:text-white text-xl font-bold">✕</button>
-                </div>
-
-                <!-- Historial de Mensajes -->
-                <div id="chatHistorial" class="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-50 text-xs">
-                    <div class="bg-slate-200 text-slate-900 p-3 rounded-xl max-w-[85%] border border-slate-300">
-                        Hola, soy el asistente de esta vidriera inmersiva, ¿en qué puedo ayudarte?
-                    </div>
-                </div>
-
-                <!-- Control de Grabación de Voz -->
-                <div class="p-4 border-t border-gray-200 bg-white flex flex-col items-center space-y-2">
-                    <button id="btnEscuchar" onclick="alternarEscucha()" 
-                        class="w-16 h-16 bg-orange-500 hover:bg-orange-600 text-white rounded-full flex items-center justify-center shadow-lg transform active:scale-95 transition-all">
-                        <span id="iconoMic" class="text-2xl">🎙️</span>
-                    </button>
-                    <span id="lblEstadoEscucha" class="text-xs font-semibold text-gray-500">Toca Para Hablar</span>
-                </div>
-
-            </div>
+        <!-- Texto de estado del cubo (sutil) -->
+        <div id="textoEstadoCubo" class="text-center text-xs text-slate-400 font-medium py-1 min-h-[20px] transition-all">
+            🎯 Toca el cubo para hablar con la IA
         </div>
 
         <!-- Mensaje de Estado / Errores -->
@@ -231,12 +411,47 @@
             <p id="textoEstado" class="text-gray-500 font-medium"></p>
         </div>
 
-        <!-- Lista de Productos -->
+        <!-- LISTA DE PRODUCTOS -->
         <div id="listaProductos" class="space-y-4"></div>
 
     </main>
 
-    <!-- POP-UP / MODAL DE INFORMACIÓN DEL COMERCIO -->
+    <!-- --- OVERLAY SEMITRANSPARENTE (detrás del panel) --- -->
+    <div id="overlayPanel" class="overlay-panel" onclick="cerrarPanelIA()"></div>
+
+    <!-- --- PANEL LATERAL DE CHAT (NUEVO) --- -->
+    <div id="panelChat" class="panel-chat">
+        <!-- Encabezado -->
+        <div class="header-panel">
+            <div>
+                <h3>
+                    <span>🤖</span>
+                    <span>Asistente IA</span>
+                </h3>
+                <div class="estado-ia" id="estadoIaPanel">Toca el micrófono para hablar</div>
+            </div>
+            <button class="btn-cerrar-panel" onclick="cerrarPanelIA()" title="Cerrar panel">✕</button>
+        </div>
+
+        <!-- Cuerpo del chat -->
+        <div id="chatBody" class="chat-body">
+            <div class="mensaje ia">
+                <div class="texto">Hola, soy el asistente de esta vidriera inmersiva. Pregúntame sobre los productos que ves.</div>
+                <div class="timestamp">🤖 Asistente</div>
+            </div>
+        </div>
+
+        <!-- Controles de voz -->
+        <div class="controles-voz">
+            <button id="btnMicPanel" class="btn-mic" onclick="alternarEscuchaPanel()">
+                <span id="iconoMicPanel">🎙️</span>
+            </button>
+            <span id="estadoVozLabel" class="estado-voz-label">Toca para hablar</span>
+            <div id="textoTranscripcionPanel" class="texto-transcripcion">🎯 ¿Qué necesitas saber?</div>
+        </div>
+    </div>
+
+    <!-- --- MODAL DE INFORMACIÓN DEL COMERCIO --- -->
     <div id="modalInfo" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden border border-gray-100">
             <div class="p-5 text-white relative" style="background-color: #334155;">
@@ -278,20 +493,18 @@
         </div>
     </div>
 
-    <!-- SCRIPT 1: NEBULOSA ESPACIAL REALISTA -->
+    <!-- --- SCRIPTS --- -->
+    <!-- SCRIPT 1: NEBULOSA (sin cambios) -->
     <script>
         (function dibujarNebulosaRealista() {
             const canvas = document.getElementById('fondo-espacio');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
-
             const size = 350;
             canvas.width = size;
             canvas.height = size;
-
             ctx.fillStyle = '#010308';
             ctx.fillRect(0, 0, size, size);
-
             function dibujarNubeGas(x, y, r1, r2, colorInner, colorOuter) {
                 const grad = ctx.createRadialGradient(x, y, r1, x, y, r2);
                 grad.addColorStop(0, colorInner);
@@ -302,7 +515,6 @@
                 ctx.arc(x, y, r2, 0, Math.PI * 2);
                 ctx.fill();
             }
-
             ctx.globalCompositeOperation = 'screen';
             dibujarNubeGas(175, 175, 10, 160, 'rgba(14, 116, 144, 0.4)', 'rgba(0,0,0,0)');
             dibujarNubeGas(110, 120, 5, 130, 'rgba(6, 182, 212, 0.35)', 'rgba(0,0,0,0)');
@@ -310,21 +522,17 @@
             dibujarNubeGas(130, 240, 5, 100, 'rgba(52, 211, 153, 0.25)', 'rgba(0,0,0,0)');
             dibujarNubeGas(210, 110, 2, 80, 'rgba(245, 158, 11, 0.25)', 'rgba(0,0,0,0)');
             dibujarNubeGas(260, 150, 1, 60, 'rgba(251, 146, 60, 0.2)', 'rgba(0,0,0,0)');
-
             ctx.globalCompositeOperation = 'source-over';
-
             for (let i = 0; i < 180; i++) {
                 const x = Math.random() * size;
                 const y = Math.random() * size;
                 const radius = Math.random() * 1.1;
                 const opacity = Math.random() * 0.7 + 0.1;
-
                 ctx.beginPath();
                 ctx.arc(x, y, radius, 0, Math.PI * 2);
                 ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
                 ctx.fill();
             }
-
             const estrellasGrandes = [
                 {x: 80, y: 90, r: 1.8, c: 'rgba(186, 230, 253, 0.9)'},
                 {x: 240, y: 80, r: 2.1, c: 'rgba(254, 240, 138, 0.95)'},
@@ -332,7 +540,6 @@
                 {x: 100, y: 260, r: 2.0, c: 'rgba(224, 242, 254, 0.9)'},
                 {x: 180, y: 170, r: 2.5, c: 'rgba(255, 255, 255, 1)'}
             ];
-
             estrellasGrandes.forEach(e => {
                 const halo = ctx.createRadialGradient(e.x, e.y, 0, e.x, e.y, e.r * 6);
                 halo.addColorStop(0, e.c);
@@ -341,7 +548,6 @@
                 ctx.beginPath();
                 ctx.arc(e.x, e.y, e.r * 6, 0, Math.PI * 2);
                 ctx.fill();
-
                 ctx.strokeStyle = e.c;
                 ctx.lineWidth = 0.6;
                 ctx.beginPath();
@@ -352,21 +558,17 @@
         })();
     </script>
 
-    <!-- SCRIPT 2: CUBO 3D EN THREE.JS -->
+    <!-- SCRIPT 2: CUBO 3D (modificado para efectos visuales) -->
     <script>
         let controlVelocidadCubo = { x: 0.008, y: 0.012 };
         let estadoCuboActual = 'normal';
-        let animacionShake = false;
 
-        // MEJORA 3a: Función para aplicar efectos visuales al cubo
         function aplicarEfectoCubo(estado) {
             const contenedor = document.getElementById('contenedorCuboIa');
             const ondasContainer = document.getElementById('contenedorOndas');
+            const textoEstado = document.getElementById('textoEstadoCubo');
             
-            // Remover todas las clases de efecto
             contenedor.classList.remove('glow-escuchando', 'glow-hablando', 'shake-error');
-            
-            // Ocultar ondas por defecto
             ondasContainer.classList.add('hidden');
             
             estadoCuboActual = estado;
@@ -374,60 +576,61 @@
             switch(estado) {
                 case 'escuchando':
                     contenedor.classList.add('glow-escuchando');
+                    textoEstado.textContent = '🎤 Escuchando... Habla ahora';
+                    textoEstado.className = 'text-center text-xs text-emerald-400 font-medium py-1 min-h-[20px] transition-all';
+                    break;
+                case 'pensando':
+                    controlVelocidadCubo.x = 0.04;
+                    controlVelocidadCubo.y = 0.05;
+                    textoEstado.textContent = '🧠 Procesando tu consulta...';
+                    textoEstado.className = 'text-center text-xs text-orange-400 font-medium py-1 min-h-[20px] transition-all';
                     break;
                 case 'hablando':
                     contenedor.classList.add('glow-hablando');
-                    // Mostrar ondas de sonido
                     ondasContainer.classList.remove('hidden');
+                    textoEstado.textContent = '🔊 La IA está respondiendo...';
+                    textoEstado.className = 'text-center text-xs text-blue-400 font-medium py-1 min-h-[20px] transition-all';
+                    break;
+                case 'ok':
+                    textoEstado.textContent = '✅ Consulta resuelta';
+                    textoEstado.className = 'text-center text-xs text-emerald-400 font-medium py-1 min-h-[20px] transition-all';
+                    setTimeout(() => {
+                        if (estadoCuboActual === 'ok') {
+                            estadoCuboActual = 'normal';
+                            textoEstado.textContent = '🎯 Toca el cubo para hablar con la IA';
+                            textoEstado.className = 'text-center text-xs text-slate-400 font-medium py-1 min-h-[20px] transition-all';
+                        }
+                    }, 2500);
                     break;
                 case 'error':
                     contenedor.classList.add('shake-error');
-                    // Remover la clase después de la animación
+                    textoEstado.textContent = '⚠️ Error, intenta de nuevo';
+                    textoEstado.className = 'text-center text-xs text-red-400 font-medium py-1 min-h-[20px] transition-all';
                     setTimeout(() => {
                         contenedor.classList.remove('shake-error');
-                    }, 600);
+                        if (estadoCuboActual === 'error') {
+                            estadoCuboActual = 'normal';
+                            textoEstado.textContent = '🎯 Toca el cubo para hablar con la IA';
+                            textoEstado.className = 'text-center text-xs text-slate-400 font-medium py-1 min-h-[20px] transition-all';
+                        }
+                    }, 3000);
                     break;
                 case 'normal':
                 default:
-                    // No añadir clases extra
+                    controlVelocidadCubo.x = 0.008;
+                    controlVelocidadCubo.y = 0.012;
+                    textoEstado.textContent = '🎯 Toca el cubo para hablar con la IA';
+                    textoEstado.className = 'text-center text-xs text-slate-400 font-medium py-1 min-h-[20px] transition-all';
                     break;
-            }
-        }
-
-        // MEJORA 3b: Función para actualizar texto de transcripción
-        function actualizarTextoTranscripcion(texto, estado) {
-            const el = document.getElementById('texto-transcripcion');
-            if (!el) return;
-            
-            if (estado === 'escuchando' && texto) {
-                el.textContent = `🎤 ${texto}`;
-                el.className = 'text-center text-sm text-slate-700 font-medium py-1 min-h-[28px] transition-all activo';
-            } else if (estado === 'escuchando' && !texto) {
-                el.textContent = '🎤 Escuchando...';
-                el.className = 'text-center text-sm text-slate-500 font-medium py-1 min-h-[28px] transition-all';
-            } else if (estado === 'pensando') {
-                el.textContent = '🧠 Pensando...';
-                el.className = 'text-center text-sm text-orange-500 font-medium py-1 min-h-[28px] transition-all';
-            } else if (estado === 'hablando') {
-                el.textContent = '🔊 Respondiendo...';
-                el.className = 'text-center text-sm text-emerald-500 font-medium py-1 min-h-[28px] transition-all';
-            } else if (estado === 'error') {
-                el.textContent = '⚠️ Error, intenta de nuevo';
-                el.className = 'text-center text-sm text-red-500 font-medium py-1 min-h-[28px] transition-all';
-            } else {
-                el.textContent = '🎯 Toca el cubo para hablar';
-                el.className = 'text-center text-sm text-slate-400 font-medium py-1 min-h-[28px] transition-all';
             }
         }
 
         (function crearCubo3D() {
             const canvas = document.getElementById('cubo3d-ia');
             if (!canvas) return;
-
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
             camera.position.z = 2.8;
-
             const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
             renderer.setSize(128, 128);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -518,10 +721,8 @@
                 c.width = 256;
                 c.height = 256;
                 const ctx = c.getContext('2d');
-
                 ctx.fillStyle = '#94A3B8'; 
                 ctx.fillRect(0, 0, 256, 256);
-
                 ctx.strokeStyle = '#F97316';
                 ctx.lineWidth = 12;
                 const r = 30;
@@ -533,15 +734,12 @@
                 ctx.arcTo(10, 10, 246, 10, r);
                 ctx.closePath();
                 ctx.stroke();
-
                 dibujarIconoVectorial(ctx, tipoIcono, colorElemento);
-
                 ctx.font = 'bold 22px sans-serif';
                 ctx.fillStyle = colorElemento;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText(texto, 128, 195);
-
                 return new THREE.CanvasTexture(c);
             }
 
@@ -560,30 +758,24 @@
 
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
             scene.add(ambientLight);
-
             const pointLight1 = new THREE.PointLight(0xF97316, 2.5, 10);
             pointLight1.position.set(3, 3, 3);
             scene.add(pointLight1);
-
             const pointLight2 = new THREE.PointLight(0x38BDF8, 2, 10);
             pointLight2.position.set(-3, -3, -3);
             scene.add(pointLight2);
 
             function animate() {
                 requestAnimationFrame(animate);
-                
-                // Velocidad dinámica según estado
                 let velX = controlVelocidadCubo.x;
                 let velY = controlVelocidadCubo.y;
-                
                 if (estadoCuboActual === 'pensando') {
-                    velX = 0.04;
-                    velY = 0.05;
+                    velX = 0.045;
+                    velY = 0.055;
                 } else if (estadoCuboActual === 'hablando') {
                     velX = 0.02;
                     velY = 0.025;
                 }
-                
                 cubo.rotation.x += velX;
                 cubo.rotation.y += velY;
                 renderer.render(scene, camera);
@@ -593,13 +785,13 @@
             const contenedor = document.getElementById('contenedorCuboIa');
             if (contenedor) {
                 contenedor.addEventListener('mouseenter', () => {
-                    if (estadoCuboActual !== 'escuchando' && estadoCuboActual !== 'hablando') {
+                    if (estadoCuboActual !== 'escuchando' && estadoCuboActual !== 'hablando' && estadoCuboActual !== 'pensando') {
                         controlVelocidadCubo.x = 0.025;
                         controlVelocidadCubo.y = 0.03;
                     }
                 });
                 contenedor.addEventListener('mouseleave', () => {
-                    if (estadoCuboActual !== 'escuchando' && estadoCuboActual !== 'hablando') {
+                    if (estadoCuboActual !== 'escuchando' && estadoCuboActual !== 'hablando' && estadoCuboActual !== 'pensando') {
                         controlVelocidadCubo.x = 0.008;
                         controlVelocidadCubo.y = 0.012;
                     }
@@ -608,7 +800,7 @@
         })();
     </script>
 
-    <!-- SCRIPT 3: LÓGICA DE NEGOCIO, SUPABASE E INTERACCIÓN DE IA -->
+    <!-- SCRIPT 3: LÓGICA PRINCIPAL -->
     <script>
         const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
@@ -619,48 +811,288 @@
         let reconocedorVoz = null;
         let estaEscuchando = false;
         let synth = window.speechSynthesis;
-        let utteranceActual = null;
         let estaHablando = false;
 
-        // MEJORA 3d: Caching en localStorage
-        const CACHE_KEY = 'qrpretium_data';
-        const CACHE_EXPIRY = 5 * 60 * 1000; // 5 minutos
+        // --- ELEMENTOS DEL PANEL ---
+        const panelChat = document.getElementById('panelChat');
+        const overlayPanel = document.getElementById('overlayPanel');
+        const chatBody = document.getElementById('chatBody');
+        const btnMicPanel = document.getElementById('btnMicPanel');
+        const iconoMicPanel = document.getElementById('iconoMicPanel');
+        const estadoVozLabel = document.getElementById('estadoVozLabel');
+        const textoTranscripcionPanel = document.getElementById('textoTranscripcionPanel');
+        const estadoIaPanel = document.getElementById('estadoIaPanel');
 
-        function guardarCache(cuit, data) {
-            try {
-                const cacheData = {
-                    cuit: cuit,
-                    data: data,
-                    timestamp: Date.now()
-                };
-                localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
-            } catch (e) {
-                console.warn('No se pudo guardar en cache:', e);
+        const urlParams = new URLSearchParams(window.location.search);
+        const cuitParam = urlParams.get('cuit') ? urlParams.get('cuit').trim() : null;
+
+        // --- FUNCIONES DEL PANEL ---
+        function abrirPanelIA() {
+            panelChat.classList.add('abierto');
+            overlayPanel.classList.add('activo');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function cerrarPanelIA() {
+            panelChat.classList.remove('abierto');
+            overlayPanel.classList.remove('activo');
+            document.body.style.overflow = '';
+            if (estaEscuchando && reconocedorVoz) {
+                reconocedorVoz.stop();
+            }
+            if (estaHablando) {
+                synth.cancel();
+                estaHablando = false;
+            }
+            aplicarEfectoCubo('normal');
+        }
+
+        function togglePanelIA() {
+            if (panelChat.classList.contains('abierto')) {
+                cerrarPanelIA();
+            } else {
+                abrirPanelIA();
+                // Pequeña pausa para que el panel se abra antes de iniciar escucha
+                setTimeout(() => {
+                    if (!estaEscuchando) {
+                        iniciarEscucha();
+                    }
+                }, 400);
             }
         }
 
-        function obtenerCache(cuit) {
-            try {
-                const raw = localStorage.getItem(CACHE_KEY);
-                if (!raw) return null;
-                const cache = JSON.parse(raw);
-                if (cache.cuit !== cuit) return null;
-                if (Date.now() - cache.timestamp > CACHE_EXPIRY) {
-                    localStorage.removeItem(CACHE_KEY);
-                    return null;
+        // --- MANEJADOR DEL CLICK EN EL CUBO ---
+        document.getElementById('contenedorCuboIa').addEventListener('click', function(e) {
+            e.stopPropagation();
+            // Si el panel ya está abierto, cerrarlo
+            if (panelChat.classList.contains('abierto')) {
+                cerrarPanelIA();
+            } else {
+                // Abrir panel y activar micrófono
+                togglePanelIA();
+            }
+        });
+
+        // --- VOZ: INICIAR / DETENER ESCUCHA ---
+        function iniciarEscucha() {
+            if (!reconocedorVoz) return;
+            if (estaEscuchando) {
+                reconocedorVoz.stop();
+                return;
+            }
+            // Si está hablando, detener
+            if (estaHablando) {
+                synth.cancel();
+                estaHablando = false;
+            }
+            reconocedorVoz.start();
+        }
+
+        function alternarEscuchaPanel() {
+            if (!reconocedorVoz) return;
+            if (estaEscuchando) {
+                reconocedorVoz.stop();
+            } else {
+                if (estaHablando) {
+                    synth.cancel();
+                    estaHablando = false;
                 }
-                return cache.data;
-            } catch (e) {
-                return null;
+                reconocedorVoz.start();
             }
         }
 
-        // MEJORA 3d: Analytics (registro de consultas)
+        function actualizarEstadoPanel(estado, texto) {
+            switch(estado) {
+                case 'escuchando':
+                    btnMicPanel.classList.add('escuchando');
+                    iconoMicPanel.textContent = '🔴';
+                    estadoVozLabel.textContent = 'Escuchando...';
+                    estadoVozLabel.className = 'estado-voz-label activo';
+                    textoTranscripcionPanel.textContent = texto || '🎤 Escuchando...';
+                    textoTranscripcionPanel.className = 'texto-transcripcion';
+                    estadoIaPanel.textContent = 'Escuchando tu voz...';
+                    break;
+                case 'pensando':
+                    btnMicPanel.classList.remove('escuchando');
+                    iconoMicPanel.textContent = '⏳';
+                    estadoVozLabel.textContent = 'Procesando...';
+                    estadoVozLabel.className = 'estado-voz-label activo';
+                    textoTranscripcionPanel.textContent = '🧠 Pensando respuesta...';
+                    textoTranscripcionPanel.className = 'texto-transcripcion pensando';
+                    estadoIaPanel.textContent = 'La IA está pensando...';
+                    break;
+                case 'hablando':
+                    btnMicPanel.classList.remove('escuchando');
+                    iconoMicPanel.textContent = '🔊';
+                    estadoVozLabel.textContent = 'Respondiendo...';
+                    estadoVozLabel.className = 'estado-voz-label activo';
+                    textoTranscripcionPanel.textContent = '🔊 Escuchando respuesta...';
+                    textoTranscripcionPanel.className = 'texto-transcripcion hablando';
+                    estadoIaPanel.textContent = 'La IA está hablando...';
+                    break;
+                case 'ok':
+                    btnMicPanel.classList.remove('escuchando');
+                    iconoMicPanel.textContent = '✅';
+                    estadoVozLabel.textContent = 'Listo';
+                    estadoVozLabel.className = 'estado-voz-label';
+                    textoTranscripcionPanel.textContent = '✅ Consulta resuelta';
+                    textoTranscripcionPanel.className = 'texto-transcripcion';
+                    estadoIaPanel.textContent = 'Consulta resuelta';
+                    break;
+                case 'error':
+                    btnMicPanel.classList.remove('escuchando');
+                    iconoMicPanel.textContent = '⚠️';
+                    estadoVozLabel.textContent = 'Error';
+                    estadoVozLabel.className = 'estado-voz-label';
+                    textoTranscripcionPanel.textContent = '⚠️ Error, intenta de nuevo';
+                    textoTranscripcionPanel.className = 'texto-transcripcion error';
+                    estadoIaPanel.textContent = 'Ocurrió un error';
+                    break;
+                default:
+                    btnMicPanel.classList.remove('escuchando');
+                    iconoMicPanel.textContent = '🎙️';
+                    estadoVozLabel.textContent = 'Toca para hablar';
+                    estadoVozLabel.className = 'estado-voz-label';
+                    textoTranscripcionPanel.textContent = '🎯 ¿Qué necesitas saber?';
+                    textoTranscripcionPanel.className = 'texto-transcripcion';
+                    estadoIaPanel.textContent = 'Toca el micrófono para hablar';
+                    break;
+            }
+        }
+
+        // --- AGREGAR MENSAJE AL CHAT DEL PANEL ---
+        function agregarMensajePanel(remitente, texto, esPensando = false) {
+            const div = document.createElement('div');
+            div.className = `mensaje ${remitente}`;
+            if (esPensando) {
+                div.innerHTML = `<div class="texto">${texto}</div>`;
+            } else {
+                const timestamp = new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+                div.innerHTML = `<div class="texto">${texto}</div>`;
+                if (remitente === 'ia') {
+                    div.innerHTML += `<div class="timestamp">🤖 ${timestamp}</div>`;
+                }
+            }
+            chatBody.appendChild(div);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        // --- REPRODUCIR VOZ ---
+        function reproducirVozPanel(texto) {
+            if (!synth) return;
+            if (estaHablando) {
+                synth.cancel();
+                estaHablando = false;
+            }
+            const utterance = new SpeechSynthesisUtterance(texto);
+            utterance.lang = 'es-AR';
+            utterance.rate = 1.0;
+            utterance.onstart = () => {
+                estaHablando = true;
+                aplicarEfectoCubo('hablando');
+                actualizarEstadoPanel('hablando', '🔊 Respondiendo...');
+            };
+            utterance.onend = () => {
+                estaHablando = false;
+                aplicarEfectoCubo('ok');
+                actualizarEstadoPanel('ok', '✅ Consulta resuelta');
+                setTimeout(() => {
+                    if (!estaEscuchando && estadoCuboActual !== 'escuchando') {
+                        aplicarEfectoCubo('normal');
+                        actualizarEstadoPanel('normal');
+                    }
+                }, 2000);
+            };
+            utterance.onerror = () => {
+                estaHablando = false;
+                aplicarEfectoCubo('error');
+                actualizarEstadoPanel('error', '⚠️ Error al hablar');
+            };
+            synth.speak(utterance);
+        }
+
+        // --- PROCESAR CONSULTA IA ---
+        async function procesarConsultaIaPanel(consultaTexto) {
+            aplicarEfectoCubo('pensando');
+            actualizarEstadoPanel('pensando', '🧠 Pensando...');
+            agregarMensajePanel('ia', '⏳ Pensando respuesta...', true);
+
+            try {
+                const contexto = generarContextoIA();
+                const mensajeCompleto = `${contexto}\n\nUsuario: ${consultaTexto}`;
+
+                const respuesta = await fetch('https://zbnuunaguciupyyzploq.supabase.co/functions/v1/chat-asistente', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: mensajeCompleto })
+                });
+
+                const data = await respuesta.json();
+                
+                // Remover el mensaje de "pensando"
+                if (chatBody.lastChild && chatBody.lastChild.textContent.includes('⏳ Pensando respuesta...')) {
+                    chatBody.removeChild(chatBody.lastChild);
+                }
+
+                if (data.choices && data.choices.length > 0) {
+                    const botReply = data.choices[0].message.content;
+                    agregarMensajePanel('ia', botReply);
+                    reproducirVozPanel(botReply);
+                    await registrarAnalytics('consulta_voz', consultaTexto, botReply);
+                    aplicarEfectoCubo('ok');
+                    actualizarEstadoPanel('ok', '✅ Consulta resuelta');
+                } else if (data.error) {
+                    const errMsj = "Error: " + data.error;
+                    agregarMensajePanel('ia', errMsj);
+                    reproducirVozPanel("Ocurrió un error al procesar tu consulta.");
+                    aplicarEfectoCubo('error');
+                    actualizarEstadoPanel('error', '⚠️ Error en el servidor');
+                } else {
+                    const errDefault = "No pude procesar tu solicitud en este momento. Por favor, intenta de nuevo.";
+                    agregarMensajePanel('ia', errDefault);
+                    reproducirVozPanel(errDefault);
+                    aplicarEfectoCubo('error');
+                    actualizarEstadoPanel('error', '⚠️ Error, intenta de nuevo');
+                }
+
+            } catch (err) {
+                console.error("Error al consultar la IA:", err);
+                if (chatBody.lastChild && chatBody.lastChild.textContent.includes('⏳ Pensando respuesta...')) {
+                    chatBody.removeChild(chatBody.lastChild);
+                }
+                const errConexion = "Ocurrió un error al comunicarme con el servidor.";
+                agregarMensajePanel('ia', errConexion);
+                reproducirVozPanel(errConexion);
+                aplicarEfectoCubo('error');
+                actualizarEstadoPanel('error', '⚠️ Error de conexión');
+            }
+        }
+
+        // --- GENERAR CONTEXTO DE PRODUCTOS ---
+        function generarContextoIA() {
+            let contexto = "Eres un asistente de ventas experto en productos de un comercio. ";
+            contexto += "Los productos disponibles son:\n";
+            productosGlobales.forEach((p, i) => {
+                const nombre = p.articulo || p.ARTICULO || p.nombre || p.NOMBRE || 'Producto';
+                const precio = p.precio || p.PRECIO || 0;
+                const desc = p.descripcion || p.DESCRIPCION || '';
+                const cod = p.codigo || p.CODIGO || '';
+                contexto += `${i+1}. ${nombre} - $${Number(precio).toLocaleString('es-AR')}`;
+                if (desc) contexto += ` (${desc})`;
+                if (cod) contexto += ` [Código: ${cod}]`;
+                contexto += "\n";
+            });
+            contexto += "\nResponde de forma amigable, profesional y concisa. ";
+            contexto += "Si el usuario pregunta por recomendaciones, sugiere productos basándote en el presupuesto que indique. ";
+            contexto += "Si no encuentras un producto que coincida, sugiere alternativas similares. ";
+            contexto += "Nunca inventes productos que no estén en la lista.";
+            return contexto;
+        }
+
+        // --- REGISTRAR ANALYTICS ---
         async function registrarAnalytics(tipo, consulta, respuesta) {
             try {
-                // Solo registrar si tenemos el comercio cargado
                 if (!datosComercioGlobal) return;
-                
                 await supabaseClient.from('analytics_consultas').insert({
                     cuit_comercio: datosComercioGlobal.cuit || datosComercioGlobal.CUIT,
                     tipo: tipo,
@@ -673,147 +1105,75 @@
             }
         }
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const cuitParam = urlParams.get('cuit') ? urlParams.get('cuit').trim() : null;
-
-        function cambiarEstadoCubo(estado) {
-            aplicarEfectoCubo(estado);
-            
-            // Cambiar velocidad según estado (ya se maneja en animate)
-            if (estado === 'pensando') {
-                controlVelocidadCubo.x = 0.04;
-                controlVelocidadCubo.y = 0.05;
-            } else if (estado === 'hablando') {
-                controlVelocidadCubo.x = 0.02;
-                controlVelocidadCubo.y = 0.025;
-            } else {
-                controlVelocidadCubo.x = 0.008;
-                controlVelocidadCubo.y = 0.012;
-            }
-            
-            // Actualizar texto de transcripción
-            actualizarTextoTranscripcion('', estado);
-        }
-
-        function reproducirVoz(texto) {
-            if (!synth) return;
-            
-            // MEJORA 3b: Cancelar voz si está hablando
-            if (estaHablando) {
-                synth.cancel();
-                estaHablando = false;
-            }
-            
-            const utterance = new SpeechSynthesisUtterance(texto);
-            utterance.lang = 'es-AR';
-            utterance.rate = 1.0;
-            utteranceActual = utterance;
-
-            utterance.onstart = () => {
-                estaHablando = true;
-                cambiarEstadoCubo('hablando');
-                actualizarTextoTranscripcion('🔊 Respondiendo...', 'hablando');
-            };
-            
-            utterance.onend = () => {
-                estaHablando = false;
-                cambiarEstadoCubo('normal');
-                actualizarTextoTranscripcion('🎯 Toca el cubo para hablar', 'normal');
-            };
-            
-            utterance.onerror = () => {
-                estaHablando = false;
-                cambiarEstadoCubo('normal');
-            };
-
-            synth.speak(utterance);
-        }
-
-        function detenerVoz() {
-            if (synth) {
-                synth.cancel();
-                estaHablando = false;
-                cambiarEstadoCubo('normal');
-                actualizarTextoTranscripcion('🎯 Toca el cubo para hablar', 'normal');
-            }
-        }
-
-        function reproducirSaludoInicial() {
-            const saludo = "Hola, ¿qué tal? ¿En qué puedo ayudarte?";
-            reproducirVoz(saludo);
-        }
-
-        // MEJORA 3b: Función para manejar el mantener presionado
-        let timeoutPresionado = null;
-        let estaManteniendo = false;
-
-        function configurarPulsacionLarga() {
-            const contenedor = document.getElementById('contenedorCuboIa');
-            if (!contenedor) return;
-            
-            contenedor.addEventListener('mousedown', () => {
-                timeoutPresionado = setTimeout(() => {
-                    estaManteniendo = true;
-                    activarAsistenteVoz();
-                }, 500);
-            });
-            
-            contenedor.addEventListener('mouseup', () => {
-                clearTimeout(timeoutPresionado);
-                if (!estaManteniendo) {
-                    // Si no fue una pulsación larga, abrir el chat
-                    if (!document.getElementById('modalIaChat').classList.contains('hidden')) {
-                        // Si el chat ya está abierto, alternar escucha
-                        alternarEscucha();
-                    } else {
-                        activarAsistenteVoz();
-                    }
-                }
-                estaManteniendo = false;
-            });
-            
-            contenedor.addEventListener('mouseleave', () => {
-                clearTimeout(timeoutPresionado);
-                estaManteniendo = false;
-            });
-            
-            // Soporte para táctil
-            contenedor.addEventListener('touchstart', (e) => {
-                timeoutPresionado = setTimeout(() => {
-                    estaManteniendo = true;
-                    activarAsistenteVoz();
-                }, 500);
-            });
-            
-            contenedor.addEventListener('touchend', () => {
-                clearTimeout(timeoutPresionado);
-                if (!estaManteniendo) {
-                    if (!document.getElementById('modalIaChat').classList.contains('hidden')) {
-                        alternarEscucha();
-                    } else {
-                        activarAsistenteVoz();
-                    }
-                }
-                estaManteniendo = false;
-            });
-        }
-
-        async function cargarDatos() {
-            if (!cuitParam) {
-                mostrarError("No se ha especificado un CUIT de comercio en el enlace.");
+        // --- INICIALIZAR RECONOCIMIENTO DE VOZ ---
+        function inicializarReconocimientoVoz() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                estadoVozLabel.textContent = "No soportado";
+                textoTranscripcionPanel.textContent = "⚠️ Tu navegador no soporta voz.";
                 return;
             }
 
-            // MEJORA 3d: Intentar cargar desde cache
-            const cacheData = obtenerCache(cuitParam);
-            if (cacheData) {
-                console.log('Cargando datos desde cache');
-                datosComercioGlobal = cacheData.comercio;
-                productosGlobales = cacheData.productos;
-                aplicarDatosComercio(cacheData.comercio);
-                renderizarProductos(productosGlobales);
-                inicializarReconocimientoVoz();
-                configurarPulsacionLarga();
+            reconocedorVoz = new SpeechRecognition();
+            reconocedorVoz.lang = 'es-AR';
+            reconocedorVoz.continuous = false;
+            reconocedorVoz.interimResults = true;
+
+            reconocedorVoz.onstart = () => {
+                estaEscuchando = true;
+                aplicarEfectoCubo('escuchando');
+                actualizarEstadoPanel('escuchando', '🎤 Escuchando...');
+            };
+
+            reconocedorVoz.onend = () => {
+                estaEscuchando = false;
+                if (estadoCuboActual === 'escuchando') {
+                    aplicarEfectoCubo('normal');
+                    actualizarEstadoPanel('normal');
+                }
+            };
+
+            reconocedorVoz.onresult = async (event) => {
+                let textoIntermedio = '';
+                let textoFinal = '';
+                
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal) {
+                        textoFinal = event.results[i][0].transcript;
+                    } else {
+                        textoIntermedio = event.results[i][0].transcript;
+                    }
+                }
+                
+                if (textoIntermedio && !textoFinal) {
+                    actualizarEstadoPanel('escuchando', `🎤 ${textoIntermedio}...`);
+                }
+                
+                if (textoFinal) {
+                    actualizarEstadoPanel('escuchando', `✅ ${textoFinal}`);
+                    agregarMensajePanel('usuario', textoFinal);
+                    await procesarConsultaIaPanel(textoFinal);
+                }
+            };
+
+            reconocedorVoz.onerror = (event) => {
+                console.error("Error de voz:", event.error);
+                estaEscuchando = false;
+                aplicarEfectoCubo('error');
+                actualizarEstadoPanel('error', '⚠️ Error al escuchar');
+                setTimeout(() => {
+                    if (!estaEscuchando && !estaHablando) {
+                        aplicarEfectoCubo('normal');
+                        actualizarEstadoPanel('normal');
+                    }
+                }, 3000);
+            };
+        }
+
+        // --- CARGAR DATOS DESDE SUPABASE ---
+        async function cargarDatos() {
+            if (!cuitParam) {
+                document.getElementById('nombreComercio').innerText = 'Error: Sin CUIT';
                 return;
             }
 
@@ -827,11 +1187,21 @@
                 }
 
                 if (!comercio) {
-                    mostrarError("No se encontró el comercio solicitado.");
+                    document.getElementById('nombreComercio').innerText = 'Comercio no encontrado';
                     return;
                 }
 
                 datosComercioGlobal = comercio;
+                document.getElementById('nombreComercio').innerText = comercio.nombre || comercio.NOMBRE || 'Mi Comercio';
+                document.getElementById('modalNombreComercio').innerText = comercio.nombre || comercio.NOMBRE || 'Mi Comercio';
+                
+                const color = comercio.color || comercio.COLOR || comercio.color_hex || comercio.COLOR_HEX;
+                if (color) document.getElementById('headerComercio').style.backgroundColor = color;
+                
+                const logo = comercio.logo || comercio.LOGO;
+                if (logo && logo.trim() !== '') document.getElementById('imgLogo').src = logo;
+
+                configurarModalComercio(comercio);
 
                 let productos = null;
                 let prodRes1 = await supabaseClient.from('articulos').select('*').eq('cuit', cuitParam);
@@ -842,42 +1212,18 @@
                 }
 
                 if (!productos || productos.length === 0) {
-                    mostrarError("Este comercio aún no tiene artículos cargados.");
+                    document.getElementById('listaProductos').innerHTML = '<p class="text-center text-gray-400 py-8">Este comercio aún no tiene artículos cargados.</p>';
                     return;
                 }
 
                 productosGlobales = productos;
-
-                // MEJORA 3d: Guardar en cache
-                guardarCache(cuitParam, { comercio, productos });
-
-                aplicarDatosComercio(comercio);
                 renderizarProductos(productosGlobales);
                 inicializarReconocimientoVoz();
-                configurarPulsacionLarga();
 
             } catch (err) {
-                console.error("Error al conectar con Supabase:", err);
-                mostrarError("Ocurrió un error al cargar la información del catálogo.");
+                console.error("Error:", err);
+                document.getElementById('nombreComercio').innerText = 'Error de conexión';
             }
-        }
-
-        function aplicarDatosComercio(comercio) {
-            const nombre = comercio.nombre || comercio.NOMBRE || 'Mi Comercio';
-            document.getElementById('nombreComercio').innerText = nombre;
-            document.getElementById('modalNombreComercio').innerText = nombre;
-            
-            const colorPersonalizado = comercio.color || comercio.COLOR || comercio.color_hex || comercio.COLOR_HEX;
-            if (colorPersonalizado) {
-                document.getElementById('headerComercio').style.backgroundColor = colorPersonalizado;
-            }
-
-            const logoUrl = comercio.logo || comercio.LOGO;
-            if (logoUrl && logoUrl.trim() !== '') {
-                document.getElementById('imgLogo').src = logoUrl;
-            }
-
-            configurarModalComercio(comercio);
         }
 
         function configurarModalComercio(com) {
@@ -897,7 +1243,6 @@
             const telefono = com.telefono || com.TELEFONO;
             const whatsapp = com.whatsapp || com.WHATSAPP || telefono;
             if (telefono || whatsapp) document.getElementById('modalTelefono').innerText = whatsapp || telefono;
-
             if (whatsapp) {
                 const numLimpio = whatsapp.replace(/[^0-9]/g, '');
                 const btnWa = document.getElementById('btnWhatsappModal');
@@ -906,21 +1251,16 @@
             }
         }
 
-        function abrirModalInfo() { document.getElementById('modalInfo').classList.remove('hidden'); }
-        function cerrarModalInfo() { document.getElementById('modalInfo').classList.add('hidden'); }
-
         function renderizarProductos(lista) {
             const contenedor = document.getElementById('listaProductos');
             contenedor.innerHTML = '';
-
             if (lista.length === 0) {
                 contenedor.innerHTML = '<p class="text-center text-gray-400 py-4">No se encontraron productos coincidentes.</p>';
                 return;
             }
-
             lista.forEach(item => {
                 const codigo = item.codigo || item.CODIGO || '';
-                const articulo = item.articulo || item.ARTICULO || item.nombre || item.NOMBRE || item.descripcion || item.DESCRIPCION || 'Artículo sin título';
+                const articulo = item.articulo || item.ARTICULO || item.nombre || item.NOMBRE || item.descripcion || item.DESCRIPCION || 'Artículo';
                 const descripcion = (item.articulo || item.ARTICULO || item.nombre || item.NOMBRE) ? (item.descripcion || item.DESCRIPCION || '') : '';
                 const disponibilidad = item.disponibilidad || item.DISPONIBILIDAD || '';
                 const precio = item.precio || item.PRECIO || 0;
@@ -958,253 +1298,8 @@
             renderizarProductos(filtrados);
         }
 
-        function mostrarError(mensaje) {
-            document.getElementById('nombreComercio').innerText = 'Comercio no encontrado';
-            const divEstado = document.getElementById('mensajeEstado');
-            document.getElementById('textoEstado').innerText = mensaje;
-            divEstado.classList.remove('hidden');
-            
-            // MEJORA 3d: Mensaje de error amigable
-            actualizarTextoTranscripcion('⚠️ Error al cargar datos', 'error');
-            cambiarEstadoCubo('error');
-        }
-
-        /* --- ASISTENTE IA Y VOZ --- */
-
-        function activarAsistenteVoz() {
-            // Si ya está hablando, detener voz
-            if (estaHablando) {
-                detenerVoz();
-            }
-            
-            document.getElementById('modalIaChat').classList.remove('hidden');
-            // Limpiar historial anterior si está vacío
-            const historial = document.getElementById('chatHistorial');
-            if (historial.children.length <= 1) {
-                // Dejar solo el mensaje de bienvenida
-                historial.innerHTML = '';
-                const bienvenida = document.createElement('div');
-                bienvenida.className = "bg-slate-200 text-slate-900 p-3 rounded-xl max-w-[85%] border border-slate-300";
-                bienvenida.innerText = "Hola, soy el asistente de esta vidriera inmersiva, ¿en qué puedo ayudarte?";
-                historial.appendChild(bienvenida);
-            }
-            
-            // Iniciar escucha automática
-            setTimeout(() => {
-                alternarEscucha();
-            }, 300);
-        }
-
-        function cerrarModalIa() {
-            document.getElementById('modalIaChat').classList.add('hidden');
-            detenerVoz();
-            if (estaEscuchando && reconocedorVoz) {
-                reconocedorVoz.stop();
-            }
-            cambiarEstadoCubo('normal');
-            actualizarTextoTranscripcion('🎯 Toca el cubo para hablar', 'normal');
-        }
-
-        function inicializarReconocimientoVoz() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                document.getElementById('lblEstadoEscucha').innerText = "Tu navegador no soporta reconocimiento de voz.";
-                return;
-            }
-
-            reconocedorVoz = new SpeechRecognition();
-            reconocedorVoz.lang = 'es-AR';
-            reconocedorVoz.continuous = false;
-            reconocedorVoz.interimResults = true; // MEJORA 3b: Mostrar resultados intermedios
-
-            reconocedorVoz.onstart = () => {
-                estaEscuchando = true;
-                document.getElementById('lblEstadoEscucha').innerText = "Escuchando... Habla ahora";
-                document.getElementById('btnEscuchar').classList.add('animate-pulse', 'bg-red-600');
-                document.getElementById('iconoMic').innerText = "🔴";
-                cambiarEstadoCubo('escuchando');
-                actualizarTextoTranscripcion('🎤 Escuchando...', 'escuchando');
-            };
-
-            reconocedorVoz.onend = () => {
-                estaEscuchando = false;
-                document.getElementById('lblEstadoEscucha').innerText = "Toca para hablar";
-                document.getElementById('btnEscuchar').classList.remove('animate-pulse', 'bg-red-600');
-                document.getElementById('iconoMic').innerText = "🎙️";
-                if (estadoCuboActual === 'escuchando') {
-                    cambiarEstadoCubo('normal');
-                    actualizarTextoTranscripcion('🎯 Toca el cubo para hablar', 'normal');
-                }
-            };
-
-            reconocedorVoz.onresult = async (event) => {
-                // MEJORA 3b: Mostrar texto en tiempo real
-                let textoIntermedio = '';
-                let textoFinal = '';
-                
-                for (let i = event.resultIndex; i < event.results.length; i++) {
-                    if (event.results[i].isFinal) {
-                        textoFinal = event.results[i][0].transcript;
-                    } else {
-                        textoIntermedio = event.results[i][0].transcript;
-                    }
-                }
-                
-                // Mostrar transcripción en tiempo real
-                if (textoIntermedio && !textoFinal) {
-                    actualizarTextoTranscripcion(`🎤 ${textoIntermedio}...`, 'escuchando');
-                }
-                
-                if (textoFinal) {
-                    actualizarTextoTranscripcion(`✅ ${textoFinal}`, 'normal');
-                    agregarMensajeChat('usuario', textoFinal);
-                    await procesarConsultaIa(textoFinal);
-                }
-            };
-
-            reconocedorVoz.onerror = (event) => {
-                console.error("Error de voz:", event.error);
-                document.getElementById('lblEstadoEscucha').innerText = "Error al escuchar. Inténtalo de nuevo.";
-                cambiarEstadoCubo('error');
-                actualizarTextoTranscripcion('⚠️ Error, intenta de nuevo', 'error');
-                setTimeout(() => {
-                    if (!estaEscuchando) {
-                        cambiarEstadoCubo('normal');
-                        actualizarTextoTranscripcion('🎯 Toca el cubo para hablar', 'normal');
-                    }
-                }, 3000);
-            };
-        }
-
-        function alternarEscucha() {
-            if (!reconocedorVoz) {
-                alert("El reconocimiento de voz no está disponible en este navegador.");
-                return;
-            }
-            // MEJORA 3b: Si está hablando, detener voz
-            if (estaHablando) {
-                detenerVoz();
-            }
-            if (estaEscuchando) {
-                reconocedorVoz.stop();
-            } else {
-                reconocedorVoz.start();
-            }
-        }
-
-        function agregarMensajeChat(remitente, texto) {
-            const historial = document.getElementById('chatHistorial');
-            const div = document.createElement('div');
-
-            if (remitente === 'usuario') {
-                div.className = "bg-orange-500 text-white p-3 rounded-xl max-w-[85%] ml-auto shadow-sm";
-            } else {
-                div.className = "bg-white text-gray-800 p-3 rounded-xl max-w-[85%] border border-gray-200 shadow-sm";
-            }
-
-            div.innerText = texto;
-            historial.appendChild(div);
-            historial.scrollTop = historial.scrollHeight;
-        }
-
-        // MEJORA 3c: Funcionalidades extra para la IA
-        function generarContextoIA() {
-            // Construir un contexto con todos los productos disponibles
-            let contexto = "Eres un asistente de ventas experto en productos de un comercio. ";
-            contexto += "Los productos disponibles son:\n";
-            
-            productosGlobales.forEach((p, i) => {
-                const nombre = p.articulo || p.ARTICULO || p.nombre || p.NOMBRE || 'Producto';
-                const precio = p.precio || p.PRECIO || 0;
-                const desc = p.descripcion || p.DESCRIPCION || '';
-                const cod = p.codigo || p.CODIGO || '';
-                contexto += `${i+1}. ${nombre} - $${Number(precio).toLocaleString('es-AR')}`;
-                if (desc) contexto += ` (${desc})`;
-                if (cod) contexto += ` [Código: ${cod}]`;
-                contexto += "\n";
-            });
-            
-            contexto += "\nResponde de forma amigable, profesional y concisa. ";
-            contexto += "Si el usuario pregunta por recomendaciones, sugiere productos basándote en el presupuesto que indique. ";
-            contexto += "Si no encuentras un producto que coincida, sugiere alternativas similares. ";
-            contexto += "Nunca inventes productos que no estén en la lista.";
-            
-            return contexto;
-        }
-
-        async function procesarConsultaIa(consultaTexto) {
-            document.getElementById('estadoIa').innerText = "Procesando consulta con la IA...";
-            agregarMensajeChat('ia', "Pensando respuesta...");
-            cambiarEstadoCubo('pensando');
-            actualizarTextoTranscripcion('🧠 Pensando...', 'pensando');
-
-            try {
-                // MEJORA 3c: Construir contexto con los productos
-                const contexto = generarContextoIA();
-                const mensajeCompleto = `${contexto}\n\nUsuario: ${consultaTexto}`;
-
-                const respuesta = await fetch('https://zbnuunaguciupyyzploq.supabase.co/functions/v1/chat-asistente', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: mensajeCompleto })
-                });
-
-                const data = await respuesta.json();
-                
-                const historial = document.getElementById('chatHistorial');
-                if (historial.lastChild) historial.removeChild(historial.lastChild);
-
-                if (data.choices && data.choices.length > 0) {
-                    const botReply = data.choices[0].message.content;
-                    agregarMensajeChat('ia', botReply);
-                    reproducirVoz(botReply);
-                    
-                    // MEJORA 3d: Registrar analytics
-                    await registrarAnalytics('consulta_voz', consultaTexto, botReply);
-                    
-                    cambiarEstadoCubo('ok');
-                    actualizarTextoTranscripcion('✅ Respuesta lista', 'normal');
-                    // Volver a estado normal después de 2 segundos
-                    setTimeout(() => {
-                        if (!estaHablando) {
-                            cambiarEstadoCubo('normal');
-                            actualizarTextoTranscripcion('🎯 Toca el cubo para hablar', 'normal');
-                        }
-                    }, 2000);
-                } else if (data.error) {
-                    const errMsj = "Error: " + data.error;
-                    agregarMensajeChat('ia', errMsj);
-                    reproducirVoz("Ocurrió un error al procesar tu consulta.");
-                    cambiarEstadoCubo('error');
-                    actualizarTextoTranscripcion('⚠️ Error en el servidor', 'error');
-                } else {
-                    const errDefault = "No pude procesar tu solicitud en este momento. Por favor, intenta de nuevo.";
-                    agregarMensajeChat('ia', errDefault);
-                    reproducirVoz(errDefault);
-                    cambiarEstadoCubo('error');
-                    actualizarTextoTranscripcion('⚠️ Error, intenta de nuevo', 'error');
-                }
-
-            } catch (err) {
-                console.error("Error al consultar la IA:", err);
-                const historial = document.getElementById('chatHistorial');
-                if (historial.lastChild) historial.removeChild(historial.lastChild);
-                const errConexion = "Ocurrió un error al comunicarme con el servidor.";
-                agregarMensajeChat('ia', errConexion);
-                reproducirVoz(errConexion);
-                cambiarEstadoCubo('error');
-                actualizarTextoTranscripcion('⚠️ Error de conexión', 'error');
-            } finally {
-                document.getElementById('estadoIa').innerText = "Presiona el micrófono para hablar";
-                // Si no está hablando, restaurar estado normal
-                if (!estaHablando && estadoCuboActual !== 'escuchando') {
-                    setTimeout(() => {
-                        cambiarEstadoCubo('normal');
-                        actualizarTextoTranscripcion('🎯 Toca el cubo para hablar', 'normal');
-                    }, 3000);
-                }
-            }
-        }
+        function abrirModalInfo() { document.getElementById('modalInfo').classList.remove('hidden'); }
+        function cerrarModalInfo() { document.getElementById('modalInfo').classList.add('hidden'); }
 
         window.onload = cargarDatos;
     </script>
