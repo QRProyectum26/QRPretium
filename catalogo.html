@@ -10,11 +10,10 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Three.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- Extensión Three.js para Geometría con Esquinas Redondeadas 3D -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/geometries/RoundedBoxGeometry.js"></script>
     
     <style>
-        /* --- RESPLANDORES Y EFECTOS DEL CUBO --- */
+        /* --- RESPLANDORES DEL CUBO --- */
         .marco-verde-pastel {
             box-shadow: 0 0 20px rgba(134, 239, 172, 0.45), inset 0 0 15px rgba(134, 239, 172, 0.25);
             transition: box-shadow 0.3s ease;
@@ -75,59 +74,70 @@
             100% { transform: scale(1.8); opacity: 0; }
         }
 
-        /* --- BOTÓN "+" GRIS CON SIGNO VERDE --- */
+        /* --- BOTÓN "+" MÁS PEQUEÑO CON SIGNO VERDE --- */
         .btn-info-gris {
             background-color: #e2e8f0 !important;
             color: #10b981 !important;
             border: 2px solid #cbd5e1 !important;
             transition: all 0.2s ease;
+            width: 22px !important;
+            height: 22px !important;
+            font-size: 18px !important;
+            line-height: 18px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 0 !important;
+            font-weight: 700 !important;
         }
         .btn-info-gris:hover {
             background-color: #cbd5e1 !important;
             transform: scale(1.05);
         }
 
-        /* --- TEXTO MÁS GRANDE --- */
         .subtitulo-vidriera {
             font-size: 0.8rem !important;
             letter-spacing: 0.05em;
         }
 
-        /* --- PANEL LATERAL DE CHAT (NUEVO) --- */
+        /* --- PANEL LATERAL SEMITRANSPARENTE (NUEVO) --- */
         .panel-chat {
             position: fixed;
-            top: 0;
-            right: -420px;
-            width: 380px;
-            max-width: 90vw;
-            height: 100vh;
-            background: rgba(15, 23, 42, 0.92);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-left: 1px solid rgba(255, 255, 255, 0.08);
-            z-index: 1000;
+            top: 110px;
+            right: -70%;
+            width: 60%;
+            max-width: 500px;
+            height: calc(100vh - 140px);
+            background: rgba(241, 245, 249, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px 0 0 20px;
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: -10px 0 40px rgba(0, 0, 0, 0.08);
+            z-index: 100;
             transition: right 0.4s cubic-bezier(0.22, 1, 0.36, 1);
             display: flex;
             flex-direction: column;
-            box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
             overflow: hidden;
+            padding: 0;
         }
         
         .panel-chat.abierto {
             right: 0;
         }
         
-        /* Superposición semitransparente detrás del panel */
+        /* Overlay suave detrás del panel */
         .overlay-panel {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.3);
-            z-index: 999;
+            background: rgba(0, 0, 0, 0.15);
+            z-index: 99;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s ease;
         }
-        
         .overlay-panel.activo {
             opacity: 1;
             pointer-events: auto;
@@ -135,44 +145,107 @@
 
         /* --- ESTILOS INTERNOS DEL PANEL --- */
         .panel-chat .header-panel {
-            padding: 16px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
             flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 20px 0 0 0;
         }
         
-        .panel-chat .header-panel h3 {
-            font-size: 16px;
-            font-weight: 700;
-            color: white;
+        .panel-chat .header-panel .info-ia {
             display: flex;
             align-items: center;
             gap: 10px;
         }
         
-        .panel-chat .header-panel .estado-ia {
-            font-size: 11px;
-            color: #94a3b8;
-            font-weight: 400;
-            margin-top: 2px;
+        .panel-chat .header-panel .info-ia .icono-estado {
+            font-size: 24px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(15, 23, 42, 0.05);
+            border-radius: 50%;
+            transition: all 0.3s ease;
         }
         
+        .panel-chat .header-panel .info-ia .icono-estado.escuchando {
+            background: rgba(16, 185, 129, 0.15);
+            animation: pulse-icono 0.8s ease-in-out infinite;
+        }
+        
+        .panel-chat .header-panel .info-ia .icono-estado.pensando {
+            background: rgba(249, 115, 22, 0.15);
+        }
+        
+        .panel-chat .header-panel .info-ia .icono-estado.hablando {
+            background: rgba(56, 189, 248, 0.15);
+        }
+        
+        .panel-chat .header-panel .info-ia .icono-estado.ok {
+            background: rgba(34, 197, 94, 0.15);
+        }
+        
+        .panel-chat .header-panel .info-ia .icono-estado.error {
+            background: rgba(239, 68, 68, 0.15);
+        }
+        
+        @keyframes pulse-icono {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .panel-chat .header-panel .info-ia .texto-estado {
+            font-size: 13px;
+            font-weight: 600;
+            color: #0f172a;
+        }
+        
+        .panel-chat .header-panel .info-ia .texto-estado .sub {
+            font-size: 11px;
+            font-weight: 400;
+            color: #64748b;
+            display: block;
+        }
+        
+        .panel-chat .header-panel .btn-cerrar-panel {
+            background: rgba(0, 0, 0, 0.04);
+            border: none;
+            color: #64748b;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .panel-chat .header-panel .btn-cerrar-panel:hover {
+            background: rgba(0, 0, 0, 0.08);
+            color: #0f172a;
+        }
+
         .panel-chat .chat-body {
             flex: 1;
             overflow-y: auto;
-            padding: 16px 16px 12px;
+            padding: 12px 14px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.2);
         }
         
         .panel-chat .chat-body .mensaje {
-            padding: 10px 14px;
-            border-radius: 14px;
+            padding: 8px 12px;
+            border-radius: 12px;
             max-width: 88%;
-            font-size: 14px;
+            font-size: 13px;
             line-height: 1.5;
             word-wrap: break-word;
             animation: fadeInUp 0.3s ease;
@@ -186,157 +259,133 @@
         }
         
         .panel-chat .chat-body .mensaje.ia {
-            background: rgba(255, 255, 255, 0.08);
-            color: #e2e8f0;
+            background: rgba(15, 23, 42, 0.06);
+            color: #0f172a;
             align-self: flex-start;
             border-bottom-left-radius: 4px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .panel-chat .chat-body .mensaje.ia .texto {
-            margin-bottom: 6px;
+            border: 1px solid rgba(0, 0, 0, 0.04);
         }
         
         .panel-chat .chat-body .mensaje.ia .timestamp {
             font-size: 9px;
-            color: #64748b;
+            color: #94a3b8;
+            margin-top: 4px;
             text-align: right;
         }
         
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .panel-chat .chat-body .mensaje.pensando {
+            background: rgba(249, 115, 22, 0.08);
+            color: #f97316;
+            font-style: italic;
+            align-self: flex-start;
         }
         
-        /* --- INPUT DE VOZ EN EL PANEL --- */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Scrollbar */
+        .panel-chat .chat-body::-webkit-scrollbar {
+            width: 3px;
+        }
+        .panel-chat .chat-body::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .panel-chat .chat-body::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 8px;
+        }
+
+        /* --- BOTÓN MICRÓFONO EN EL PANEL --- */
         .panel-chat .controles-voz {
-            padding: 14px 16px 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 10px 16px 14px;
+            border-top: 1px solid rgba(0, 0, 0, 0.04);
             flex-shrink: 0;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 8px;
-            background: rgba(0, 0, 0, 0.2);
+            justify-content: center;
+            gap: 14px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 0 0 0 20px;
         }
         
         .panel-chat .controles-voz .btn-mic {
-            width: 56px;
-            height: 56px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             background: #f97316;
             border: none;
             color: white;
-            font-size: 24px;
+            font-size: 20px;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 20px rgba(249, 115, 22, 0.3);
+            box-shadow: 0 2px 12px rgba(249, 115, 22, 0.25);
+            flex-shrink: 0;
         }
-        
         .panel-chat .controles-voz .btn-mic:hover {
-            transform: scale(1.05);
+            transform: scale(1.04);
             background: #ea580c;
         }
-        
         .panel-chat .controles-voz .btn-mic:active {
             transform: scale(0.92);
         }
-        
         .panel-chat .controles-voz .btn-mic.escuchando {
             background: #ef4444;
             animation: pulse-mic 1s ease-in-out infinite;
         }
         
         @keyframes pulse-mic {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-            50% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.3); }
+            50% { box-shadow: 0 0 0 16px rgba(239, 68, 68, 0); }
         }
         
         .panel-chat .controles-voz .estado-voz-label {
             font-size: 12px;
-            font-weight: 600;
-            color: #94a3b8;
-            transition: color 0.2s;
+            font-weight: 500;
+            color: #64748b;
         }
         
         .panel-chat .controles-voz .estado-voz-label.activo {
             color: #f97316;
         }
-        
-        .panel-chat .controles-voz .texto-transcripcion {
-            font-size: 13px;
-            font-weight: 500;
-            color: #e2e8f0;
-            min-height: 24px;
-            text-align: center;
-            padding: 0 8px;
-        }
-        
-        .panel-chat .controles-voz .texto-transcripcion.pensando {
-            color: #f97316;
-        }
-        
-        .panel-chat .controles-voz .texto-transcripcion.hablando {
-            color: #38bdf8;
-        }
-        
-        .panel-chat .controles-voz .texto-transcripcion.error {
-            color: #ef4444;
-        }
-        
-        /* Scrollbar personalizado para el panel */
-        .panel-chat .chat-body::-webkit-scrollbar {
-            width: 4px;
-        }
-        .panel-chat .chat-body::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .panel-chat .chat-body::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 8px;
-        }
 
-        /* --- BOTÓN CERRAR PANEL --- */
-        .btn-cerrar-panel {
-            background: rgba(255, 255, 255, 0.05);
-            border: none;
-            color: #94a3b8;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            font-size: 18px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .btn-cerrar-panel:hover {
-            background: rgba(255, 255, 255, 0.12);
-            color: white;
-        }
-
-        /* --- RESPONSIVE: PANEL A PANTALLA COMPLETA EN MÓVILES --- */
-        @media (max-width: 640px) {
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
             .panel-chat {
-                width: 100vw;
-                max-width: 100vw;
-                right: -100vw;
-                border-left: none;
+                width: 85%;
+                right: -85%;
+                top: 80px;
+                height: calc(100vh - 100px);
+                border-radius: 16px 0 0 16px;
             }
             .panel-chat.abierto {
                 right: 0;
             }
         }
 
-        /* MEJORA: contenedor del cubo para efectos */
+        @media (max-width: 480px) {
+            .panel-chat {
+                width: 92%;
+                right: -92%;
+                top: 70px;
+                height: calc(100vh - 90px);
+                border-radius: 12px 0 0 12px;
+            }
+            .panel-chat.abierto {
+                right: 0;
+            }
+        }
+
+        /* --- CONTENEDOR DEL CUBO --- */
         #contenedorCuboIa {
             transition: all 0.3s ease;
             position: relative;
             overflow: visible !important;
+            cursor: pointer;
         }
         .contenedor-ondas {
             position: absolute;
@@ -350,11 +399,38 @@
         .contenedor-ondas.hidden {
             display: none;
         }
+
+        /* --- SUTIL INDICADOR DE ESTADO DEL CUBO --- */
+        .estado-cubo-sutil {
+            font-size: 11px;
+            color: #94a3b8;
+            text-align: center;
+            margin-top: 4px;
+            min-height: 18px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+        }
+        .estado-cubo-sutil.activo {
+            color: #f97316;
+        }
+        .estado-cubo-sutil.escuchando {
+            color: #10b981;
+        }
+        .estado-cubo-sutil.hablando {
+            color: #38bdf8;
+        }
+        .estado-cubo-sutil.error {
+            color: #ef4444;
+        }
+        .estado-cubo-sutil.ok {
+            color: #22c55e;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen pb-10">
 
-    <!-- --- ENCABEZADO --- -->
+    <!-- ENCABEZADO -->
     <header id="headerComercio" class="text-white p-5 shadow-lg rounded-b-2xl transition-colors duration-300" style="background-color: #334155;">
         <div class="max-w-xl mx-auto flex items-center justify-between">
             <div class="flex items-center space-x-3">
@@ -362,10 +438,10 @@
                     <img id="imgLogo" src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Logo Comercio" class="h-12 w-12 rounded-xl bg-white p-1 shadow-md object-cover border border-slate-400">
                 </div>
                 <div class="text-left">
-                    <div class="flex items-center space-x-2">
-                        <h1 id="nombreComercio" class="text-xl font-extrabold uppercase tracking-wide leading-tight">Cargando comercio...</h1>
+                    <div class="flex items-center space-x-1.5">
+                        <h1 id="nombreComercio" class="text-xl font-extrabold uppercase tracking-wide leading-tight">Cargando...</h1>
                         <button onclick="abrirModalInfo()" title="Ver información del comercio" 
-                            class="btn-info-gris font-black w-6 h-6 rounded-full flex items-center justify-center shadow-sm transform active:scale-95 transition-all text-base leading-none border flex-shrink-0">
+                            class="btn-info-gris font-black rounded-full flex items-center justify-center shadow-sm transform active:scale-95 transition-all border flex-shrink-0">
                             +
                         </button>
                     </div>
@@ -375,7 +451,7 @@
         </div>
     </header>
 
-    <!-- --- CONTENIDO PRINCIPAL --- -->
+    <!-- CONTENIDO PRINCIPAL -->
     <main class="max-w-xl mx-auto px-4 -mt-6 relative z-10">
 
         <!-- Buscador + Cubo IA -->
@@ -385,11 +461,10 @@
                     class="w-full pl-4 pr-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-600 text-sm bg-white shadow-sm">
             </div>
 
-            <!-- CUBO IA -->
+            <!-- CUBO IA - El elemento principal de interacción -->
             <div id="contenedorCuboIa" 
                  class="w-32 h-32 rounded-full border-2 border-green-300 marco-verde-pastel flex items-center justify-center relative overflow-visible cursor-pointer group flex-shrink-0 transition-transform duration-300 hover:scale-105 active:scale-95 shadow-lg bg-slate-950">
                 
-                <!-- Ondas de sonido (ocultas por defecto) -->
                 <div id="contenedorOndas" class="contenedor-ondas hidden">
                     <div class="onda-sonido"></div>
                     <div class="onda-sonido"></div>
@@ -401,57 +476,51 @@
             </div>
         </div>
 
-        <!-- Texto de estado del cubo (sutil) -->
-        <div id="textoEstadoCubo" class="text-center text-xs text-slate-400 font-medium py-1 min-h-[20px] transition-all">
-            🎯 Toca el cubo para hablar con la IA
-        </div>
+        <!-- Estado del cubo (sutil, abajo del cubo) -->
+        <div id="estadoCubo" class="estado-cubo-sutil">🎯 Haz clic en el cubo para hablar</div>
+
+        <!-- Lista de Productos -->
+        <div id="listaProductos" class="space-y-4 mt-2"></div>
 
         <!-- Mensaje de Estado / Errores -->
         <div id="mensajeEstado" class="text-center py-8 hidden">
             <p id="textoEstado" class="text-gray-500 font-medium"></p>
         </div>
 
-        <!-- LISTA DE PRODUCTOS -->
-        <div id="listaProductos" class="space-y-4"></div>
-
     </main>
 
-    <!-- --- OVERLAY SEMITRANSPARENTE (detrás del panel) --- -->
+    <!-- OVERLAY -->
     <div id="overlayPanel" class="overlay-panel" onclick="cerrarPanelIA()"></div>
 
-    <!-- --- PANEL LATERAL DE CHAT (NUEVO) --- -->
+    <!-- PANEL LATERAL -->
     <div id="panelChat" class="panel-chat">
-        <!-- Encabezado -->
         <div class="header-panel">
-            <div>
-                <h3>
-                    <span>🤖</span>
-                    <span>Asistente IA</span>
-                </h3>
-                <div class="estado-ia" id="estadoIaPanel">Toca el micrófono para hablar</div>
+            <div class="info-ia">
+                <div id="iconoEstadoPanel" class="icono-estado">🎙️</div>
+                <div class="texto-estado">
+                    Asistente IA
+                    <span id="estadoPanelLabel" class="sub">Toca el micrófono para hablar</span>
+                </div>
             </div>
-            <button class="btn-cerrar-panel" onclick="cerrarPanelIA()" title="Cerrar panel">✕</button>
+            <button class="btn-cerrar-panel" onclick="cerrarPanelIA()">✕</button>
         </div>
 
-        <!-- Cuerpo del chat -->
         <div id="chatBody" class="chat-body">
             <div class="mensaje ia">
-                <div class="texto">Hola, soy el asistente de esta vidriera inmersiva. Pregúntame sobre los productos que ves.</div>
+                Hola, soy el asistente de esta vidriera. Pregúntame sobre los productos que ves.
                 <div class="timestamp">🤖 Asistente</div>
             </div>
         </div>
 
-        <!-- Controles de voz -->
         <div class="controles-voz">
             <button id="btnMicPanel" class="btn-mic" onclick="alternarEscuchaPanel()">
                 <span id="iconoMicPanel">🎙️</span>
             </button>
             <span id="estadoVozLabel" class="estado-voz-label">Toca para hablar</span>
-            <div id="textoTranscripcionPanel" class="texto-transcripcion">🎯 ¿Qué necesitas saber?</div>
         </div>
     </div>
 
-    <!-- --- MODAL DE INFORMACIÓN DEL COMERCIO --- -->
+    <!-- MODAL INFO DEL COMERCIO (sin cambios) -->
     <div id="modalInfo" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden border border-gray-100">
             <div class="p-5 text-white relative" style="background-color: #334155;">
@@ -464,14 +533,14 @@
                 <div class="flex items-start space-x-3 bg-orange-50/90 p-3 rounded-xl border border-orange-200/80">
                     <span class="text-xl">🕒</span>
                     <div>
-                        <h4 class="font-bold text-orange-900 text-xs uppercase">Horarios de Atención</h4>
+                        <h4 class="font-bold text-orange-900 text-xs uppercase">Horarios</h4>
                         <p id="modalHorarios" class="text-gray-800 font-medium mt-0.5">No especificados</p>
                     </div>
                 </div>
                 <div class="flex items-start space-x-3 bg-slate-50 p-3 rounded-xl border border-slate-200/60">
                     <span class="text-xl">📍</span>
                     <div class="w-full">
-                        <h4 class="font-bold text-slate-900 text-xs uppercase">DIRECCIÓN</h4>
+                        <h4 class="font-bold text-slate-900 text-xs uppercase">Dirección</h4>
                         <p id="modalDireccion" class="text-gray-700 font-medium mt-0.5">No especificada</p>
                         <a id="linkMapa" href="#" target="_blank" class="inline-block text-xs font-bold text-slate-700 hover:text-slate-900 underline mt-1.5 hidden">📍 Ver en Google Maps →</a>
                     </div>
@@ -479,10 +548,10 @@
                 <div class="flex items-start space-x-3 bg-slate-50 p-3 rounded-xl border border-slate-200/60">
                     <span class="text-xl">📞</span>
                     <div class="w-full">
-                        <h4 class="font-bold text-slate-900 text-xs uppercase">Contacto Directo</h4>
+                        <h4 class="font-bold text-slate-900 text-xs uppercase">Contacto</h4>
                         <p id="modalTelefono" class="text-gray-700 font-medium mt-0.5">No especificado</p>
                         <a id="btnWhatsappModal" href="#" target="_blank" class="mt-2 w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-3 rounded-xl flex items-center justify-center space-x-2 text-xs transition shadow-sm hidden">
-                            <span>💬 Enviar WhatsApp</span>
+                            <span>💬 WhatsApp</span>
                         </a>
                     </div>
                 </div>
@@ -493,8 +562,7 @@
         </div>
     </div>
 
-    <!-- --- SCRIPTS --- -->
-    <!-- SCRIPT 1: NEBULOSA (sin cambios) -->
+    <!-- SCRIPTS -->
     <script>
         (function dibujarNebulosaRealista() {
             const canvas = document.getElementById('fondo-espacio');
@@ -558,60 +626,65 @@
         })();
     </script>
 
-    <!-- SCRIPT 2: CUBO 3D (modificado para efectos visuales) -->
     <script>
         let controlVelocidadCubo = { x: 0.008, y: 0.012 };
         let estadoCuboActual = 'normal';
 
+        const estadoCuboEl = document.getElementById('estadoCubo');
+
         function aplicarEfectoCubo(estado) {
             const contenedor = document.getElementById('contenedorCuboIa');
             const ondasContainer = document.getElementById('contenedorOndas');
-            const textoEstado = document.getElementById('textoEstadoCubo');
             
             contenedor.classList.remove('glow-escuchando', 'glow-hablando', 'shake-error');
             ondasContainer.classList.add('hidden');
             
             estadoCuboActual = estado;
             
+            // Actualizar texto sutil debajo del cubo
+            estadoCuboEl.className = 'estado-cubo-sutil';
+            
             switch(estado) {
                 case 'escuchando':
                     contenedor.classList.add('glow-escuchando');
-                    textoEstado.textContent = '🎤 Escuchando... Habla ahora';
-                    textoEstado.className = 'text-center text-xs text-emerald-400 font-medium py-1 min-h-[20px] transition-all';
+                    estadoCuboEl.textContent = '🎤 Escuchando...';
+                    estadoCuboEl.className = 'estado-cubo-sutil escuchando';
                     break;
                 case 'pensando':
-                    controlVelocidadCubo.x = 0.04;
-                    controlVelocidadCubo.y = 0.05;
-                    textoEstado.textContent = '🧠 Procesando tu consulta...';
-                    textoEstado.className = 'text-center text-xs text-orange-400 font-medium py-1 min-h-[20px] transition-all';
+                    controlVelocidadCubo.x = 0.045;
+                    controlVelocidadCubo.y = 0.055;
+                    estadoCuboEl.textContent = '🧠 Procesando...';
+                    estadoCuboEl.className = 'estado-cubo-sutil activo';
                     break;
                 case 'hablando':
                     contenedor.classList.add('glow-hablando');
                     ondasContainer.classList.remove('hidden');
-                    textoEstado.textContent = '🔊 La IA está respondiendo...';
-                    textoEstado.className = 'text-center text-xs text-blue-400 font-medium py-1 min-h-[20px] transition-all';
+                    estadoCuboEl.textContent = '🔊 Respondiendo...';
+                    estadoCuboEl.className = 'estado-cubo-sutil hablando';
                     break;
                 case 'ok':
-                    textoEstado.textContent = '✅ Consulta resuelta';
-                    textoEstado.className = 'text-center text-xs text-emerald-400 font-medium py-1 min-h-[20px] transition-all';
+                    estadoCuboEl.textContent = '✅ Consulta resuelta';
+                    estadoCuboEl.className = 'estado-cubo-sutil ok';
                     setTimeout(() => {
                         if (estadoCuboActual === 'ok') {
                             estadoCuboActual = 'normal';
-                            textoEstado.textContent = '🎯 Toca el cubo para hablar con la IA';
-                            textoEstado.className = 'text-center text-xs text-slate-400 font-medium py-1 min-h-[20px] transition-all';
+                            estadoCuboEl.textContent = '🎯 Haz clic en el cubo para hablar';
+                            estadoCuboEl.className = 'estado-cubo-sutil';
+                            controlVelocidadCubo.x = 0.008;
+                            controlVelocidadCubo.y = 0.012;
                         }
                     }, 2500);
                     break;
                 case 'error':
                     contenedor.classList.add('shake-error');
-                    textoEstado.textContent = '⚠️ Error, intenta de nuevo';
-                    textoEstado.className = 'text-center text-xs text-red-400 font-medium py-1 min-h-[20px] transition-all';
+                    estadoCuboEl.textContent = '⚠️ Error, intenta de nuevo';
+                    estadoCuboEl.className = 'estado-cubo-sutil error';
                     setTimeout(() => {
                         contenedor.classList.remove('shake-error');
                         if (estadoCuboActual === 'error') {
                             estadoCuboActual = 'normal';
-                            textoEstado.textContent = '🎯 Toca el cubo para hablar con la IA';
-                            textoEstado.className = 'text-center text-xs text-slate-400 font-medium py-1 min-h-[20px] transition-all';
+                            estadoCuboEl.textContent = '🎯 Haz clic en el cubo para hablar';
+                            estadoCuboEl.className = 'estado-cubo-sutil';
                         }
                     }, 3000);
                     break;
@@ -619,12 +692,13 @@
                 default:
                     controlVelocidadCubo.x = 0.008;
                     controlVelocidadCubo.y = 0.012;
-                    textoEstado.textContent = '🎯 Toca el cubo para hablar con la IA';
-                    textoEstado.className = 'text-center text-xs text-slate-400 font-medium py-1 min-h-[20px] transition-all';
+                    estadoCuboEl.textContent = '🎯 Haz clic en el cubo para hablar';
+                    estadoCuboEl.className = 'estado-cubo-sutil';
                     break;
             }
         }
 
+        // CUBO 3D THREE.JS (con todas las caras)
         (function crearCubo3D() {
             const canvas = document.getElementById('cubo3d-ia');
             if (!canvas) return;
@@ -800,7 +874,6 @@
         })();
     </script>
 
-    <!-- SCRIPT 3: LÓGICA PRINCIPAL -->
     <script>
         const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
@@ -813,15 +886,14 @@
         let synth = window.speechSynthesis;
         let estaHablando = false;
 
-        // --- ELEMENTOS DEL PANEL ---
         const panelChat = document.getElementById('panelChat');
         const overlayPanel = document.getElementById('overlayPanel');
         const chatBody = document.getElementById('chatBody');
         const btnMicPanel = document.getElementById('btnMicPanel');
         const iconoMicPanel = document.getElementById('iconoMicPanel');
         const estadoVozLabel = document.getElementById('estadoVozLabel');
-        const textoTranscripcionPanel = document.getElementById('textoTranscripcionPanel');
-        const estadoIaPanel = document.getElementById('estadoIaPanel');
+        const estadoPanelLabel = document.getElementById('estadoPanelLabel');
+        const iconoEstadoPanel = document.getElementById('iconoEstadoPanel');
 
         const urlParams = new URLSearchParams(window.location.search);
         const cuitParam = urlParams.get('cuit') ? urlParams.get('cuit').trim() : null;
@@ -831,6 +903,12 @@
             panelChat.classList.add('abierto');
             overlayPanel.classList.add('activo');
             document.body.style.overflow = 'hidden';
+            // Iniciar escucha automáticamente
+            setTimeout(() => {
+                if (!estaEscuchando && !estaHablando) {
+                    iniciarEscucha();
+                }
+            }, 400);
         }
 
         function cerrarPanelIA() {
@@ -845,6 +923,7 @@
                 estaHablando = false;
             }
             aplicarEfectoCubo('normal');
+            actualizarEstadoPanel('normal');
         }
 
         function togglePanelIA() {
@@ -852,35 +931,22 @@
                 cerrarPanelIA();
             } else {
                 abrirPanelIA();
-                // Pequeña pausa para que el panel se abra antes de iniciar escucha
-                setTimeout(() => {
-                    if (!estaEscuchando) {
-                        iniciarEscucha();
-                    }
-                }, 400);
             }
         }
 
-        // --- MANEJADOR DEL CLICK EN EL CUBO ---
+        // Click en el cubo
         document.getElementById('contenedorCuboIa').addEventListener('click', function(e) {
             e.stopPropagation();
-            // Si el panel ya está abierto, cerrarlo
-            if (panelChat.classList.contains('abierto')) {
-                cerrarPanelIA();
-            } else {
-                // Abrir panel y activar micrófono
-                togglePanelIA();
-            }
+            togglePanelIA();
         });
 
-        // --- VOZ: INICIAR / DETENER ESCUCHA ---
+        // --- VOZ ---
         function iniciarEscucha() {
             if (!reconocedorVoz) return;
             if (estaEscuchando) {
                 reconocedorVoz.stop();
                 return;
             }
-            // Si está hablando, detener
             if (estaHablando) {
                 synth.cancel();
                 estaHablando = false;
@@ -902,73 +968,60 @@
         }
 
         function actualizarEstadoPanel(estado, texto) {
-            switch(estado) {
-                case 'escuchando':
-                    btnMicPanel.classList.add('escuchando');
-                    iconoMicPanel.textContent = '🔴';
-                    estadoVozLabel.textContent = 'Escuchando...';
-                    estadoVozLabel.className = 'estado-voz-label activo';
-                    textoTranscripcionPanel.textContent = texto || '🎤 Escuchando...';
-                    textoTranscripcionPanel.className = 'texto-transcripcion';
-                    estadoIaPanel.textContent = 'Escuchando tu voz...';
-                    break;
-                case 'pensando':
-                    btnMicPanel.classList.remove('escuchando');
-                    iconoMicPanel.textContent = '⏳';
-                    estadoVozLabel.textContent = 'Procesando...';
-                    estadoVozLabel.className = 'estado-voz-label activo';
-                    textoTranscripcionPanel.textContent = '🧠 Pensando respuesta...';
-                    textoTranscripcionPanel.className = 'texto-transcripcion pensando';
-                    estadoIaPanel.textContent = 'La IA está pensando...';
-                    break;
-                case 'hablando':
-                    btnMicPanel.classList.remove('escuchando');
-                    iconoMicPanel.textContent = '🔊';
-                    estadoVozLabel.textContent = 'Respondiendo...';
-                    estadoVozLabel.className = 'estado-voz-label activo';
-                    textoTranscripcionPanel.textContent = '🔊 Escuchando respuesta...';
-                    textoTranscripcionPanel.className = 'texto-transcripcion hablando';
-                    estadoIaPanel.textContent = 'La IA está hablando...';
-                    break;
-                case 'ok':
-                    btnMicPanel.classList.remove('escuchando');
-                    iconoMicPanel.textContent = '✅';
-                    estadoVozLabel.textContent = 'Listo';
-                    estadoVozLabel.className = 'estado-voz-label';
-                    textoTranscripcionPanel.textContent = '✅ Consulta resuelta';
-                    textoTranscripcionPanel.className = 'texto-transcripcion';
-                    estadoIaPanel.textContent = 'Consulta resuelta';
-                    break;
-                case 'error':
-                    btnMicPanel.classList.remove('escuchando');
-                    iconoMicPanel.textContent = '⚠️';
-                    estadoVozLabel.textContent = 'Error';
-                    estadoVozLabel.className = 'estado-voz-label';
-                    textoTranscripcionPanel.textContent = '⚠️ Error, intenta de nuevo';
-                    textoTranscripcionPanel.className = 'texto-transcripcion error';
-                    estadoIaPanel.textContent = 'Ocurrió un error';
-                    break;
-                default:
-                    btnMicPanel.classList.remove('escuchando');
-                    iconoMicPanel.textContent = '🎙️';
-                    estadoVozLabel.textContent = 'Toca para hablar';
-                    estadoVozLabel.className = 'estado-voz-label';
-                    textoTranscripcionPanel.textContent = '🎯 ¿Qué necesitas saber?';
-                    textoTranscripcionPanel.className = 'texto-transcripcion';
-                    estadoIaPanel.textContent = 'Toca el micrófono para hablar';
-                    break;
+            const iconos = {
+                'escuchando': '🎤',
+                'pensando': '🧠',
+                'hablando': '🔊',
+                'ok': '✅',
+                'error': '⚠️',
+                'normal': '🎙️'
+            };
+            
+            iconoEstadoPanel.textContent = iconos[estado] || '🎙️';
+            iconoEstadoPanel.className = 'icono-estado ' + (estado !== 'normal' ? estado : '');
+            
+            const labels = {
+                'escuchando': 'Escuchando...',
+                'pensando': 'Procesando...',
+                'hablando': 'Respondiendo...',
+                'ok': '¡Listo!',
+                'error': 'Error',
+                'normal': 'Toca el micrófono para hablar'
+            };
+            estadoPanelLabel.textContent = labels[estado] || labels.normal;
+            
+            if (estado === 'escuchando') {
+                btnMicPanel.classList.add('escuchando');
+                iconoMicPanel.textContent = '🔴';
+                estadoVozLabel.textContent = 'Escuchando...';
+                estadoVozLabel.className = 'estado-voz-label activo';
+            } else if (estado === 'pensando') {
+                btnMicPanel.classList.remove('escuchando');
+                iconoMicPanel.textContent = '⏳';
+                estadoVozLabel.textContent = 'Procesando...';
+                estadoVozLabel.className = 'estado-voz-label activo';
+            } else if (estado === 'hablando') {
+                btnMicPanel.classList.remove('escuchando');
+                iconoMicPanel.textContent = '🔊';
+                estadoVozLabel.textContent = 'Respondiendo...';
+                estadoVozLabel.className = 'estado-voz-label activo';
+            } else {
+                btnMicPanel.classList.remove('escuchando');
+                iconoMicPanel.textContent = '🎙️';
+                estadoVozLabel.textContent = 'Toca para hablar';
+                estadoVozLabel.className = 'estado-voz-label';
             }
         }
 
-        // --- AGREGAR MENSAJE AL CHAT DEL PANEL ---
         function agregarMensajePanel(remitente, texto, esPensando = false) {
             const div = document.createElement('div');
-            div.className = `mensaje ${remitente}`;
             if (esPensando) {
-                div.innerHTML = `<div class="texto">${texto}</div>`;
+                div.className = 'mensaje pensando';
+                div.textContent = texto;
             } else {
+                div.className = `mensaje ${remitente}`;
                 const timestamp = new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
-                div.innerHTML = `<div class="texto">${texto}</div>`;
+                div.innerHTML = `<div>${texto}</div>`;
                 if (remitente === 'ia') {
                     div.innerHTML += `<div class="timestamp">🤖 ${timestamp}</div>`;
                 }
@@ -977,7 +1030,6 @@
             chatBody.scrollTop = chatBody.scrollHeight;
         }
 
-        // --- REPRODUCIR VOZ ---
         function reproducirVozPanel(texto) {
             if (!synth) return;
             if (estaHablando) {
@@ -990,12 +1042,12 @@
             utterance.onstart = () => {
                 estaHablando = true;
                 aplicarEfectoCubo('hablando');
-                actualizarEstadoPanel('hablando', '🔊 Respondiendo...');
+                actualizarEstadoPanel('hablando');
             };
             utterance.onend = () => {
                 estaHablando = false;
                 aplicarEfectoCubo('ok');
-                actualizarEstadoPanel('ok', '✅ Consulta resuelta');
+                actualizarEstadoPanel('ok');
                 setTimeout(() => {
                     if (!estaEscuchando && estadoCuboActual !== 'escuchando') {
                         aplicarEfectoCubo('normal');
@@ -1006,15 +1058,31 @@
             utterance.onerror = () => {
                 estaHablando = false;
                 aplicarEfectoCubo('error');
-                actualizarEstadoPanel('error', '⚠️ Error al hablar');
+                actualizarEstadoPanel('error');
             };
             synth.speak(utterance);
         }
 
-        // --- PROCESAR CONSULTA IA ---
+        function generarContextoIA() {
+            let contexto = "Eres un asistente de ventas experto en productos de un comercio. ";
+            contexto += "Los productos disponibles son:\n";
+            productosGlobales.forEach((p, i) => {
+                const nombre = p.articulo || p.ARTICULO || p.nombre || p.NOMBRE || 'Producto';
+                const precio = p.precio || p.PRECIO || 0;
+                const desc = p.descripcion || p.DESCRIPCION || '';
+                const cod = p.codigo || p.CODIGO || '';
+                contexto += `${i+1}. ${nombre} - $${Number(precio).toLocaleString('es-AR')}`;
+                if (desc) contexto += ` (${desc})`;
+                if (cod) contexto += ` [Código: ${cod}]`;
+                contexto += "\n";
+            });
+            contexto += "\nResponde de forma amigable, profesional y concisa. Si el usuario pregunta por recomendaciones, sugiere productos basándote en el presupuesto. Si no encuentras un producto, sugiere alternativas. Nunca inventes productos que no estén en la lista.";
+            return contexto;
+        }
+
         async function procesarConsultaIaPanel(consultaTexto) {
             aplicarEfectoCubo('pensando');
-            actualizarEstadoPanel('pensando', '🧠 Pensando...');
+            actualizarEstadoPanel('pensando');
             agregarMensajePanel('ia', '⏳ Pensando respuesta...', true);
 
             try {
@@ -1029,7 +1097,6 @@
 
                 const data = await respuesta.json();
                 
-                // Remover el mensaje de "pensando"
                 if (chatBody.lastChild && chatBody.lastChild.textContent.includes('⏳ Pensando respuesta...')) {
                     chatBody.removeChild(chatBody.lastChild);
                 }
@@ -1038,70 +1105,26 @@
                     const botReply = data.choices[0].message.content;
                     agregarMensajePanel('ia', botReply);
                     reproducirVozPanel(botReply);
-                    await registrarAnalytics('consulta_voz', consultaTexto, botReply);
                     aplicarEfectoCubo('ok');
-                    actualizarEstadoPanel('ok', '✅ Consulta resuelta');
-                } else if (data.error) {
-                    const errMsj = "Error: " + data.error;
-                    agregarMensajePanel('ia', errMsj);
-                    reproducirVozPanel("Ocurrió un error al procesar tu consulta.");
-                    aplicarEfectoCubo('error');
-                    actualizarEstadoPanel('error', '⚠️ Error en el servidor');
+                    actualizarEstadoPanel('ok');
                 } else {
-                    const errDefault = "No pude procesar tu solicitud en este momento. Por favor, intenta de nuevo.";
+                    const errDefault = "No pude procesar tu solicitud. Intenta de nuevo.";
                     agregarMensajePanel('ia', errDefault);
                     reproducirVozPanel(errDefault);
                     aplicarEfectoCubo('error');
-                    actualizarEstadoPanel('error', '⚠️ Error, intenta de nuevo');
+                    actualizarEstadoPanel('error');
                 }
 
             } catch (err) {
-                console.error("Error al consultar la IA:", err);
+                console.error(err);
                 if (chatBody.lastChild && chatBody.lastChild.textContent.includes('⏳ Pensando respuesta...')) {
                     chatBody.removeChild(chatBody.lastChild);
                 }
-                const errConexion = "Ocurrió un error al comunicarme con el servidor.";
+                const errConexion = "Error de conexión. Intenta de nuevo.";
                 agregarMensajePanel('ia', errConexion);
                 reproducirVozPanel(errConexion);
                 aplicarEfectoCubo('error');
-                actualizarEstadoPanel('error', '⚠️ Error de conexión');
-            }
-        }
-
-        // --- GENERAR CONTEXTO DE PRODUCTOS ---
-        function generarContextoIA() {
-            let contexto = "Eres un asistente de ventas experto en productos de un comercio. ";
-            contexto += "Los productos disponibles son:\n";
-            productosGlobales.forEach((p, i) => {
-                const nombre = p.articulo || p.ARTICULO || p.nombre || p.NOMBRE || 'Producto';
-                const precio = p.precio || p.PRECIO || 0;
-                const desc = p.descripcion || p.DESCRIPCION || '';
-                const cod = p.codigo || p.CODIGO || '';
-                contexto += `${i+1}. ${nombre} - $${Number(precio).toLocaleString('es-AR')}`;
-                if (desc) contexto += ` (${desc})`;
-                if (cod) contexto += ` [Código: ${cod}]`;
-                contexto += "\n";
-            });
-            contexto += "\nResponde de forma amigable, profesional y concisa. ";
-            contexto += "Si el usuario pregunta por recomendaciones, sugiere productos basándote en el presupuesto que indique. ";
-            contexto += "Si no encuentras un producto que coincida, sugiere alternativas similares. ";
-            contexto += "Nunca inventes productos que no estén en la lista.";
-            return contexto;
-        }
-
-        // --- REGISTRAR ANALYTICS ---
-        async function registrarAnalytics(tipo, consulta, respuesta) {
-            try {
-                if (!datosComercioGlobal) return;
-                await supabaseClient.from('analytics_consultas').insert({
-                    cuit_comercio: datosComercioGlobal.cuit || datosComercioGlobal.CUIT,
-                    tipo: tipo,
-                    consulta: consulta,
-                    respuesta_resumen: respuesta ? respuesta.substring(0, 500) : null,
-                    fecha: new Date().toISOString()
-                });
-            } catch (e) {
-                console.warn('Error al registrar analytics:', e);
+                actualizarEstadoPanel('error');
             }
         }
 
@@ -1110,7 +1133,6 @@
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
                 estadoVozLabel.textContent = "No soportado";
-                textoTranscripcionPanel.textContent = "⚠️ Tu navegador no soporta voz.";
                 return;
             }
 
@@ -1122,7 +1144,7 @@
             reconocedorVoz.onstart = () => {
                 estaEscuchando = true;
                 aplicarEfectoCubo('escuchando');
-                actualizarEstadoPanel('escuchando', '🎤 Escuchando...');
+                actualizarEstadoPanel('escuchando');
             };
 
             reconocedorVoz.onend = () => {
@@ -1146,11 +1168,10 @@
                 }
                 
                 if (textoIntermedio && !textoFinal) {
-                    actualizarEstadoPanel('escuchando', `🎤 ${textoIntermedio}...`);
+                    actualizarEstadoPanel('escuchando');
                 }
                 
                 if (textoFinal) {
-                    actualizarEstadoPanel('escuchando', `✅ ${textoFinal}`);
                     agregarMensajePanel('usuario', textoFinal);
                     await procesarConsultaIaPanel(textoFinal);
                 }
@@ -1160,7 +1181,7 @@
                 console.error("Error de voz:", event.error);
                 estaEscuchando = false;
                 aplicarEfectoCubo('error');
-                actualizarEstadoPanel('error', '⚠️ Error al escuchar');
+                actualizarEstadoPanel('error');
                 setTimeout(() => {
                     if (!estaEscuchando && !estaHablando) {
                         aplicarEfectoCubo('normal');
@@ -1170,7 +1191,7 @@
             };
         }
 
-        // --- CARGAR DATOS DESDE SUPABASE ---
+        // --- CARGAR DATOS ---
         async function cargarDatos() {
             if (!cuitParam) {
                 document.getElementById('nombreComercio').innerText = 'Error: Sin CUIT';
@@ -1255,7 +1276,7 @@
             const contenedor = document.getElementById('listaProductos');
             contenedor.innerHTML = '';
             if (lista.length === 0) {
-                contenedor.innerHTML = '<p class="text-center text-gray-400 py-4">No se encontraron productos coincidentes.</p>';
+                contenedor.innerHTML = '<p class="text-center text-gray-400 py-4">No se encontraron productos.</p>';
                 return;
             }
             lista.forEach(item => {
