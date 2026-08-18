@@ -125,9 +125,10 @@
             top: 0;
             z-index: 50;
             background: #f1f5f9;
-            padding-top: 4px;
+            padding-top: 8px;
             padding-bottom: 4px;
             border-radius: 0 0 12px 12px;
+            margin-top: 10px;
         }
 
         /* --- PANEL LATERAL (PC) --- */
@@ -137,7 +138,7 @@
             right: -40%;
             width: 20%;
             max-width: 260px;
-            height: 320px;
+            height: 360px;
             background: rgba(241, 245, 249, 0.10);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -464,7 +465,7 @@
 <body class="bg-gray-100 text-gray-800 min-h-screen pb-10">
 
     <!-- ENCABEZADO -->
-    <header id="headerComercio" class="text-white p-5 shadow-lg rounded-b-2xl transition-colors duration-300" style="background-color: #334155;">
+    <header id="headerComercio" class="text-white p-3 shadow-lg rounded-b-2xl transition-colors duration-300" style="background-color: #334155;">
         <div class="max-w-xl mx-auto flex items-center justify-between">
             <div class="flex items-center space-x-3">
                 <div id="logoContainer" class="flex-shrink-0">
@@ -491,7 +492,7 @@
         <div class="header-fijo">
             <div class="flex items-center gap-3 mb-1">
                 <div class="relative shadow-sm rounded-xl flex-1">
-                    <input type="text" id="inputBuscar" onkeyup="filtrarProductos()" placeholder="🔍 Buscar por código, artículo o descripción..." 
+                    <input type="text" id="inputBuscar" onkeyup="filtrarProductos()" placeholder="🔍 Buscar por Código,Artículo o Descripción..." 
                         class="w-full pl-4 pr-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-600 text-sm bg-white shadow-sm">
                 </div>
 
@@ -544,7 +545,7 @@
 
         <div id="chatBody" class="chat-body">
             <div class="mensaje ia">
-                Hola, soy el asistente de esta vidriera. Pregúntame sobre los productos que ves.
+                Hola, soy el asistente IA de esta vidriera. Pregúntame sobre los productos que ves.
                 <div class="timestamp">🤖 Asistente</div>
             </div>
         </div>
