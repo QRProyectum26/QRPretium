@@ -126,9 +126,52 @@
             z-index: 50;
             background: #f1f5f9;
             padding-top: 2px;
-            padding-bottom: 2px;
+            padding-bottom: 0px;        /* ← Ajustado: sin espacio extra */
             border-radius: 0 0 12px 12px;
-            margin-top: 16px;
+            margin-top: 10px;           /* ← Ajustado: menos separación */
+        }
+
+        /* --- NUEVO: DESCRIPCIÓN DE PRODUCTO CON SCROLL (máx 3 líneas) --- */
+        .descripcion-producto {
+            max-height: 3.6em;
+            overflow-y: auto;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #4b5563;
+            scrollbar-width: thin;
+            margin-top: 4px;
+        }
+        .descripcion-producto::-webkit-scrollbar {
+            width: 3px;
+        }
+        .descripcion-producto::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .descripcion-producto::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        /* --- NUEVO: TEXTO EN ARCO SOBRE EL CUBO --- */
+        .texto-arco {
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: #94a3b8;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            white-space: nowrap;
+            background: rgba(241, 245, 249, 0.7);
+            padding: 2px 12px;
+            border-radius: 12px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            z-index: 20;
+            pointer-events: none;
+            font-family: 'Segoe UI', sans-serif;
         }
 
         /* --- PANEL LATERAL (PC) --- */
@@ -419,7 +462,7 @@
             position: relative;
             overflow: visible !important;
             cursor: pointer;
-            margin-top: -20px
+            margin-top: -20px;
         }
         .contenedor-ondas {
             position: absolute;
@@ -434,7 +477,7 @@
             display: none;
         }
 
-        /* --- CORREGIDO: INDICADOR DE ESTADO DEL CUBO (SOLO PRETIUM IA) --- */
+        /* --- ESTADO DEL CUBO (ahora se usa solo para mensajes dinámicos) --- */
         .estado-cubo-sutil {
             font-size: 12px;
             color: #64748b;
@@ -491,15 +534,18 @@
 
         <!-- HEADER FIJO: Buscador + Cubo IA (no scrollean) -->
         <div class="header-fijo">
-            <div class="flex items-center gap-3 mb-1">
+            <div class="flex items-center gap-3">   <!-- ← Eliminado mb-1 -->
                 <div class="relative shadow-sm rounded-xl flex-1">
-                    <input type="text" id="inputBuscar" onkeyup="filtrarProductos()" placeholder="🔍 Buscar por Código,Artículo o Descripción..." 
+                    <input type="text" id="inputBuscar" onkeyup="filtrarProductos()" placeholder="🔍 Buscar por Código, Artículo o Descripción..." 
                         class="w-full pl-4 pr-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-600 text-sm bg-white shadow-sm">
                 </div>
 
                 <!-- CUBO IA -->
                 <div id="contenedorCuboIa" 
                      class="w-32 h-32 rounded-full border-2 border-green-300 marco-verde-pastel flex items-center justify-center relative overflow-visible cursor-pointer group flex-shrink-0 transition-transform duration-300 hover:scale-105 active:scale-95 shadow-lg bg-slate-950">
+                    
+                    <!-- NUEVO: Texto en arco sobre el cubo -->
+                    <div class="texto-arco">PRETIUM IA</div>
                     
                     <div id="contenedorOndas" class="contenedor-ondas hidden">
                         <div class="onda-sonido"></div>
@@ -512,13 +558,13 @@
                 </div>
             </div>
 
-            <!-- CORREGIDO: Estado del cubo: SOLO "PRETIUM IA" -->
-            <div id="estadoCubo" class="estado-cubo-sutil">PRETIUM IA</div>
+            <!-- Estado del cubo: se mantiene oculto para texto fijo, solo se usa para estados dinámicos -->
+            <div id="estadoCubo" class="estado-cubo-sutil" style="display: none;"></div>
         </div>
 
         <!-- CONTENEDOR SCROLLABLE: Lista de Productos -->
         <div id="contenedorScroll" class="contenedor-principal">
-            <div id="listaProductos" class="space-y-4 mt-2"></div>
+            <div id="listaProductos" class="space-y-4 mt-1"></div>   <!-- ← Reducido mt-2 a mt-1 -->
         </div>
 
         <!-- Mensaje de Estado / Errores -->
@@ -680,7 +726,13 @@
             
             estadoCuboActual = estado;
             
-            estadoCuboEl.className = 'estado-cubo-sutil';
+            // Mostrar el elemento de estado solo cuando hay un estado activo
+            if (estado === 'normal') {
+                estadoCuboEl.style.display = 'none';
+            } else {
+                estadoCuboEl.style.display = 'block';
+                estadoCuboEl.className = 'estado-cubo-sutil';
+            }
             
             switch(estado) {
                 case 'escuchando':
@@ -706,8 +758,7 @@
                     setTimeout(() => {
                         if (estadoCuboActual === 'ok') {
                             estadoCuboActual = 'normal';
-                            estadoCuboEl.textContent = 'PRETIUM IA';
-                            estadoCuboEl.className = 'estado-cubo-sutil';
+                            estadoCuboEl.style.display = 'none';
                             controlVelocidadCubo.x = 0.008;
                             controlVelocidadCubo.y = 0.012;
                         }
@@ -721,8 +772,7 @@
                         contenedor.classList.remove('shake-error');
                         if (estadoCuboActual === 'error') {
                             estadoCuboActual = 'normal';
-                            estadoCuboEl.textContent = 'PRETIUM IA';
-                            estadoCuboEl.className = 'estado-cubo-sutil';
+                            estadoCuboEl.style.display = 'none';
                         }
                     }, 3000);
                     break;
@@ -730,8 +780,7 @@
                 default:
                     controlVelocidadCubo.x = 0.008;
                     controlVelocidadCubo.y = 0.012;
-                    estadoCuboEl.textContent = 'PRETIUM IA';
-                    estadoCuboEl.className = 'estado-cubo-sutil';
+                    estadoCuboEl.style.display = 'none';
                     break;
             }
         }
@@ -1322,17 +1371,17 @@
                 const tarjeta = `
                     <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200 relative overflow-hidden">
                         <div class="flex justify-between items-center mb-3 pb-2 border-b border-gray-100 gap-2">
-                            ${codigo ? `<span class="bg-slate-800 text-white font-mono font-black text-base px-3 py-1 rounded-lg shadow-sm">CÓD: ${codigo}</span>` : '<span></span>'}
+                            ${codigo ? `<span class="bg-slate-800 text-white font-mono font-black text-lg px-4 py-1.5 rounded-lg shadow-sm">CÓD: ${codigo}</span>` : '<span></span>'}
                             ${disponibilidad ? `<span class="bg-slate-100 text-slate-800 font-medium text-xs px-2.5 py-1 rounded-full border border-slate-200 text-right"><span class="font-bold text-gray-500 uppercase text-[10px]">Disponibilidad:</span> 📦 ${disponibilidad}</span>` : ''}
                         </div>
                         <h3 class="font-extrabold text-gray-900 text-lg leading-tight uppercase">${articulo}</h3>
-                        ${descripcion ? `<p class="text-xs text-gray-600 mt-1 leading-relaxed">${descripcion}</p>` : ''}
+                        ${descripcion ? `<div class="descripcion-producto">${descripcion}</div>` : ''}
                         <div class="mt-3 pt-2 border-t border-gray-100 flex flex-col space-y-1.5">
                             <div class="flex items-end justify-between">
                                 <div><p class="text-[10px] text-orange-500 uppercase font-bold">Precio final</p></div>
                                 <div class="text-right"><span class="text-slate-800 font-black text-2xl">$${Number(precio).toLocaleString('es-AR')}</span></div>
                             </div>
-                            ${promocion ? `<div><span class="inline-block bg-emerald-100 text-emerald-950 font-extrabold text-[11px] px-2.5 py-1 rounded-lg uppercase tracking-wider w-full text-center border border-emerald-300 shadow-sm">🔥 ${promocion}</span></div>` : ''}
+                            ${promocion ? `<div><span class="inline-block bg-emerald-100 text-emerald-950 font-extrabold text-[11px] px-2.5 py-1 rounded-lg uppercase tracking-wider w-full text-center border border-emerald-300 shadow-sm">⚡ ${promocion}</span></div>` : ''}
                         </div>
                     </div>
                 `;
