@@ -29,8 +29,8 @@
   <style>
     /* Efecto de borde blanco para las letras QR */
     .texto-qr-borde {
-      color: #94A3B8; /* Gris */
-      -webkit-text-stroke: 1px #FFFFFF; /* Borde blanco */
+      color: #94A3B8;
+      -webkit-text-stroke: 1px #FFFFFF;
     }
 
     /* Resplandor Neón Menta/Verde Pastel para el marco del icono */
@@ -41,38 +41,31 @@
 </head>
 <body class="bg-pizarraOscura text-slate-100 font-sans antialiased selection:bg-naranja selection:text-white">
 
-  <!-- 1. HEADER / NAVEGACIÓN -->
+  <!-- HEADER -->
   <header class="sticky top-0 z-50 bg-pizarra/90 backdrop-blur-md border-b border-slate-700/50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-      
-      <!-- LOGO INSTITUCIONAL QRPRETIUM -->
       <a href="index.html" class="flex items-center gap-3 group">
         <svg class="w-10 h-10 transition-transform duration-300 group-hover:scale-105" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect width="100" height="100" rx="24" fill="#1E293B"/>
           <rect x="2" y="2" width="96" height="96" rx="22" stroke="#F97316" stroke-width="5"/>
-          
           <path d="M28 28H44V44H28V28Z" fill="#64748B"/>
           <path d="M32 32H40V40H32V32Z" fill="#1E293B"/>
           <path d="M56 28H72V44H56V28Z" fill="#64748B"/>
           <path d="M60 32H68V40H60V32Z" fill="#1E293B"/>
           <path d="M28 56H44V72H28V56Z" fill="#64748B"/>
           <path d="M32 60H40V68H32V60Z" fill="#1E293B"/>
-
           <rect x="48" y="48" width="8" height="8" rx="2" fill="#34D399"/>
           <rect x="60" y="48" width="8" height="8" rx="2" fill="#F97316"/>
           <rect x="48" y="60" width="8" height="8" rx="2" fill="#F97316"/>
-
           <path d="M72 58C72 65 75 68 82 68C75 68 72 71 72 78C72 71 69 68 62 68C69 68 72 65 72 58Z" fill="#10B981"/>
           <path d="M54 22C54 25 55 26 58 26C55 26 54 27 54 30C54 27 53 26 50 26C53 26 54 25 54 22Z" fill="#10B981"/>
         </svg>
-
         <div class="flex items-baseline font-sans">
           <span class="text-2xl font-black tracking-tight texto-qr-borde mr-0.5">QR</span>
           <span class="text-2xl font-light tracking-tight text-naranja">Pretium</span>
         </div>
       </a>
 
-      <!-- Menú Desktop -->
       <nav class="hidden md:flex gap-7 text-sm font-medium text-slate-300">
         <a href="#que-es" class="hover:text-naranja transition">¿Qué es?</a>
         <a href="#soluciones" class="hover:text-naranja transition">Soluciones</a>
@@ -82,57 +75,58 @@
         <a href="nosotros.html" class="hover:text-naranja transition">Nosotros</a>
       </nav>
 
-      <!-- Botón "Acceso Comercios" en verde y más compacto -->
       <a href="admin.html" target="_blank" rel="noopener noreferrer" class="bg-verdeVivo hover:bg-emerald-600 text-white font-semibold px-4 py-1 rounded-xl transition shadow-md shadow-verdeVivo/20">
         Acceso Comercios <i class="fa-solid fa-arrow-up-right-from-square ml-1 text-xs"></i>
       </a>
     </div>
   </header>
 
-  <!-- 2. HERO SECTION con imagen ensanchada hacia la derecha -->
-  <section class="relative py-8 lg:py-8 overflow-hidden">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-3 gap-6 items-start">
-      <!-- Columna de texto (1/3) -->
+  <!-- HERO SECTION (responsiva) -->
+  <section class="relative py-6 md:py-12 lg:py-16 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-start">
+      
+      <!-- Texto: ocupa 1/3 en escritorio, todo el ancho en móvil -->
       <div class="md:col-span-1">
-        <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-pizarra text-naranja border border-slate-700 shadow-sm mb-6">
+        <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-pizarra text-naranja border border-slate-700 shadow-sm mb-4 md:mb-6">
           <i class="fa-solid fa-sparkles"></i> Vidriera Digital & Asistente Interactivo IA
         </span>
-        <h1 class="text-4xl sm:text-5xl font-black text-white leading-tight tracking-tight mb-6">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-white leading-tight tracking-tight mb-4 md:mb-6">
           Transformá tu vidriera en una <span class="text-transparent bg-clip-text bg-gradient-to-r from-naranja to-verdeVivo">Tienda Inteligente 24/7/365.</span> <span class="text-white font-bold">VIDRIERA INMERSIVA + IA</span>
         </h1>
-        <p class="text-slate-300 text-lg mb-8 leading-relaxed">
+        <p class="text-slate-300 text-base md:text-lg mb-6 md:mb-8 leading-relaxed">
           Precios y artículos actualizados al instante, catálogo interactivo sin carteles desactualizados y un Asistente IA que asesora a tus clientes directamente desde la vidriera !.
         </p>
 
-        <div class="flex flex-wrap gap-4 mb-8">
-          <a href="https://qrpretium.com.ar/catalogo.html?cuit=30697294895" target="_blank" rel="noopener noreferrer" class="bg-verdeVivo hover:bg-emerald-600 text-slate-950 font-bold px-6 py-3.5 rounded-xl transition shadow-lg shadow-verdeVivo/20 flex items-center gap-2">
+        <div class="flex flex-wrap gap-3 md:gap-4 mb-6 md:mb-8">
+          <a href="https://qrpretium.com.ar/catalogo.html?cuit=30697294895" target="_blank" rel="noopener noreferrer" class="bg-verdeVivo hover:bg-emerald-600 text-slate-950 font-bold px-5 py-3 md:px-6 md:py-3.5 rounded-xl transition shadow-lg shadow-verdeVivo/20 flex items-center gap-2 text-sm md:text-base">
             <i class="fa-solid fa-mobile-screen-button"></i> Probar Catálogo Demo
           </a>
-          <a href="#solicitar-prueba" class="bg-pizarra hover:bg-slate-700 text-white font-semibold px-6 py-3.5 rounded-xl border border-slate-700 transition flex items-center gap-2">
+          <a href="#solicitar-prueba" class="bg-pizarra hover:bg-slate-700 text-white font-semibold px-5 py-3 md:px-6 md:py-3.5 rounded-xl border border-slate-700 transition flex items-center gap-2 text-sm md:text-base">
             <i class="fa-solid fa-calendar-check text-naranja"></i> Solicitar Visita
           </a>
         </div>
       </div>
 
-      <!-- Columna de imagen (2/3) con borde restaurado -->
+      <!-- Imagen: ocupa 2/3 en escritorio, todo el ancho en móvil -->
       <div class="md:col-span-2 relative">
         <div class="relative rounded-2xl bg-pizarra border border-slate-700 shadow-2xl overflow-hidden">
-          <div class="relative h-[700px] rounded-xl overflow-hidden group">
+          <!-- Altura responsiva: móvil (h-64), tablet (h-96), escritorio (h-[600px] lg:h-[700px]) -->
+          <div class="relative h-64 sm:h-96 md:h-[500px] lg:h-[650px] rounded-xl overflow-hidden group">
             <img src="imgindex1.png" alt="Vidriera de comercio con productos y mujer escaneando QR" class="w-full h-full object-cover object-center transform group-hover:scale-105 transition duration-500">
             
-            <!-- Overlay inferior con el texto -->
-            <div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-[95%] p-5 rounded-2xl border border-white/20 bg-slate-950/40 shadow-2xl drop-shadow-lg">
+            <!-- Overlay inferior -->
+            <div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-[95%] p-3 sm:p-4 md:p-5 rounded-2xl border border-white/20 bg-slate-950/40 shadow-2xl drop-shadow-lg">
               <div class="text-center">
-                <h3 class="text-xl font-extrabold text-white mb-2 [text-shadow:_0_2px_4px_rgba(0,0,0,0.9)]">
-                  QRPretium:<br> Escaneo Instantáneo de tu Vidriera Digital Inteligente !.
+                <h3 class="text-base sm:text-lg md:text-xl font-extrabold text-white mb-1 md:mb-2 [text-shadow:_0_2px_4px_rgba(0,0,0,0.9)]">
+                  QRPretium:<br class="sm:hidden"> Escaneo Instantáneo de tu Vidriera Digital Inteligente !.
                 </h3>
-                <p class="text-slate-100 text-sm mb-4 leading-relaxed font-medium [text-shadow:_0_1px_3px_rgba(0,0,0,0.9)]">
+                <p class="text-xs sm:text-sm text-slate-100 mb-2 md:mb-4 leading-relaxed font-medium [text-shadow:_0_1px_3px_rgba(0,0,0,0.9)]">
                   Muestra automaticamente tus precios y productos a los clientes.
                 </p>
-                <a href="https://qrpretium.com.ar/catalogo.html?cuit=30697294895" target="_blank" rel="noopener noreferrer" class="inline-block bg-naranja hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-xl transition shadow-lg transform hover:scale-105">
+                <a href="https://qrpretium.com.ar/catalogo.html?cuit=30697294895" target="_blank" rel="noopener noreferrer" class="inline-block bg-naranja hover:bg-orange-600 text-white font-bold py-2 px-4 md:py-3 md:px-6 rounded-xl transition shadow-lg transform hover:scale-105 text-sm md:text-base">
                   EMPEZAR AHORA
                 </a>
-                <p class="text-slate-200 text-xs mt-3 font-medium [text-shadow:_0_1px_3px_rgba(0,0,0,0.9)]">Sin Aplicaciones. Sin Esperas !!.</p>
+                <p class="text-slate-200 text-[10px] md:text-xs mt-2 md:mt-3 font-medium [text-shadow:_0_1px_3px_rgba(0,0,0,0.9)]">Sin Aplicaciones. Sin Esperas !!.</p>
               </div>
             </div>
           </div>
@@ -141,14 +135,13 @@
     </div>
   </section>
 
-  <!-- 3. ¿QUÉ ES QRPRETIUM? Y SOLUCIONES -->
+  <!-- RESTO DEL CONTENIDO (sin cambios) -->
   <section id="que-es" class="py-20 bg-pizarra/50 border-y border-slate-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center max-w-3xl mx-auto mb-16">
         <h2 class="text-3xl font-extrabold text-white mb-4">La solución moderna y tecnológica para la exhibición de precios en vidriera</h2>
         <p class="text-slate-400">Olvidate de imprimir o escribir cartelitos o tener precios desactualizados por inflación. Tu cliente escanea, busca y/o consulta por voz + Realidad Aumentada en tus Articulos de Exhibición !!.</p>
       </div>
-
       <div class="grid md:grid-cols-3 gap-8" id="soluciones">
         <div class="bg-pizarra p-8 rounded-2xl border border-slate-800 hover:border-slate-700 transition flex flex-col h-full">
           <div class="w-12 h-12 bg-naranja/10 text-naranja rounded-xl flex items-center justify-center text-2xl mb-6">
@@ -157,7 +150,6 @@
           <h3 class="text-xl font-bold text-white mb-3">Sincronización Inmediata</h3>
           <p class="text-slate-400 text-sm leading-relaxed">Cambiás un valor del artículo facilmente en el panel de administración desde tu celular y la vidriera digital se actualiza al instante !!.</p>
         </div>
-
         <div class="bg-pizarra p-8 rounded-2xl border border-slate-800 hover:border-slate-700 transition flex flex-col h-full">
           <div class="w-12 h-12 bg-verdeVivo/10 text-verdeVivo rounded-xl flex items-center justify-center text-2xl mb-6">
             <i class="fa-solid fa-microphone-lines"></i>
@@ -165,7 +157,6 @@
           <h3 class="text-xl font-bold text-white mb-3">Atención por Voz e IA</h3>
           <p class="text-slate-400 text-sm leading-relaxed">El cliente también interactúa hablando con el Agente Asistivo IA !. La IA comprende recomendaciones, responde dudas y lo asesora sobre tus artículos !.</p>
         </div>
-
         <div class="bg-pizarra p-8 rounded-2xl border border-slate-800 hover:border-slate-700 transition flex flex-col h-full">
           <div class="w-12 h-12 bg-blue-500/10 text-blue-400 rounded-xl flex items-center justify-center text-2xl mb-6">
             <i class="fa-solid fa-store"></i>
@@ -177,36 +168,26 @@
     </div>
   </section>
 
-  <!-- 4. SECCIÓN DESTACADA: ASISTENTE IA -->
   <section id="asistente-ia" class="py-20 relative">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
       <div>
         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-naranja/10 text-naranja border border-naranja/20 mb-4">
           <i class="fa-solid fa-robot"></i> Asesor Virtual Integrado
         </div>
-        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-6">
-          Un Agente Asistivo IA con personalidad que asesora a tus clientes desde la Vidriera QR !!
-        </h2>
-        <p class="text-slate-300 mb-6 leading-relaxed">
-          Ubicado al alcance del pulgar en la pantalla, nuestro Agente Asistivo de IA responde preguntas complejas: <em>"¿Qué vino me recomendás para un regalo por menos de $10.000?"</em> , <em>"¿Tienen stock del código 104?"</em> o <em>"¿Qué celular me recomendas con buena cámara y memoria que salga menos de $300 mil pesos?"</em>.
-        </p>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-6">Un Agente Asistivo IA con personalidad que asesora a tus clientes desde la Vidriera QR !!</h2>
+        <p class="text-slate-300 mb-6 leading-relaxed">Ubicado al alcance del pulgar en la pantalla, nuestro Agente Asistivo de IA responde preguntas complejas: <em>"¿Qué vino me recomendás para un regalo por menos de $10.000?"</em> , <em>"¿Tienen stock del código 104?"</em> o <em>"¿Qué celular me recomendas con buena cámara y memoria que salga menos de $300 mil pesos?"</em>.</p>
         <ul class="space-y-3 text-slate-300 font-medium">
           <li class="flex items-center gap-3"><i class="fa-solid fa-check text-verdeVivo"></i> Disponible en todos los planes de QRPretium.</li>
           <li class="flex items-center gap-3"><i class="fa-solid fa-check text-verdeVivo"></i> Reconocimiento de voz nativo en SmartPhone.</li>
           <li class="flex items-center gap-3"><i class="fa-solid fa-check text-verdeVivo"></i> Búsqueda por código de artículo o nombre del producto.</li>
         </ul>
       </div>
-
-      <!-- TARJETA DEL AGENTE IA CON CUBO 3D Y GRIS MÁS CLARO -->
       <div class="flex justify-center">
         <div class="bg-slate-900 p-8 rounded-3xl border border-slate-800 text-center relative max-w-sm w-full shadow-2xl">
-          <div class="w-48 h-48 mx-auto mb-4 rounded-full border-4 border-green-300 marco-verde-pastel flex items-center justify-center relative overflow-hidden cursor-pointer group transition-transform duration-300 hover:scale-105" title="Pasa el cursor para acelerar">
-            <!-- Canvas Nebulosa -->
+          <div class="w-48 h-48 mx-auto mb-4 rounded-full border-4 border-green-300 marco-verde-pastel flex items-center justify-center relative overflow-hidden cursor-pointer group transition-transform duration-300 hover:scale-105">
             <canvas id="fondo-espacio" class="absolute inset-0 w-full h-full z-0"></canvas>
-            <!-- Canvas Cubo 3D -->
             <canvas id="cubo3d-ia" class="w-32 h-32 relative z-10"></canvas>
           </div>
-
           <span class="inline-block px-3 py-1 bg-emerald-500 text-slate-950 font-bold text-xs rounded-full uppercase tracking-wider mb-2">AI Assistive Agent</span>
           <p class="text-sm text-slate-400 mb-4">"¡Hola! Bienvenido a Tienda X. ¿En qué puedo ayudarte hoy?"</p>
           <p class="text-xs text-slate-500 italic">(Interacción de Voz y Texto)</p>
@@ -215,14 +196,12 @@
     </div>
   </section>
 
-  <!-- 5. SEGURIDAD Y CARACTERÍSTICAS TÉCNICAS -->
   <section id="seguridad" class="py-20 bg-pizarra/30 border-y border-slate-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center max-w-3xl mx-auto mb-16">
         <h2 class="text-3xl font-extrabold text-white mb-4">Tecnología y Seguridad QRPretium</h2>
         <p class="text-slate-400">Infraestructura blindada para garantizar continuidad operativa 24/7/365 en tu Vidriera Digital Inmersiva + IA.</p>
       </div>
-
       <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="p-6 bg-pizarra rounded-xl border border-slate-800 flex flex-col justify-between">
           <div>
@@ -256,45 +235,28 @@
     </div>
   </section>
 
-  <!-- 6. TABLA DE PLANES -->
   <section id="planes" class="py-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center max-w-3xl mx-auto mb-10">
         <h2 class="text-3xl font-extrabold text-white mb-4">Planes diseñados para tu <span class="text-slate-400">Vidriera Inmersiva Inteligente</span></h2>
         <p class="text-slate-400 mb-6">El valor mensual disminuye según la cantidad de meses contratados. Todos los precios expresados son de abono mensual.</p>
-        
-        <!-- SELECTOR DE PERÍODO DE CONTRATACIÓN -->
         <div class="inline-flex items-center justify-center p-1 bg-pizarra rounded-2xl border border-slate-700 gap-1">
-          <button type="button" onclick="cambiarPeriodo(1)" id="btn-1m" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition bg-naranja text-white shadow-md">
-            1 Mes
-          </button>
-          <button type="button" onclick="cambiarPeriodo(3)" id="btn-3m" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition text-slate-300 hover:text-white">
-            3 Meses <span class="text-[10px] bg-verdeVivo/20 text-verdeVivo px-1.5 py-0.5 rounded ml-1 font-semibold">-10%</span>
-          </button>
-          <button type="button" onclick="cambiarPeriodo(6)" id="btn-6m" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition text-slate-300 hover:text-white">
-            6 Meses <span class="text-[10px] bg-verdeVivo/20 text-verdeVivo px-1.5 py-0.5 rounded ml-1 font-semibold">-20%</span>
-          </button>
-          <button type="button" onclick="cambiarPeriodo(12)" id="btn-12m" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition text-slate-300 hover:text-white">
-            12 Meses <span class="text-[10px] bg-verdeVivo/20 text-verdeVivo px-1.5 py-0.5 rounded ml-1 font-semibold">-30%</span>
-          </button>
+          <button type="button" onclick="cambiarPeriodo(1)" id="btn-1m" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition bg-naranja text-white shadow-md">1 Mes</button>
+          <button type="button" onclick="cambiarPeriodo(3)" id="btn-3m" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition text-slate-300 hover:text-white">3 Meses <span class="text-[10px] bg-verdeVivo/20 text-verdeVivo px-1.5 py-0.5 rounded ml-1 font-semibold">-10%</span></button>
+          <button type="button" onclick="cambiarPeriodo(6)" id="btn-6m" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition text-slate-300 hover:text-white">6 Meses <span class="text-[10px] bg-verdeVivo/20 text-verdeVivo px-1.5 py-0.5 rounded ml-1 font-semibold">-20%</span></button>
+          <button type="button" onclick="cambiarPeriodo(12)" id="btn-12m" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition text-slate-300 hover:text-white">12 Meses <span class="text-[10px] bg-verdeVivo/20 text-verdeVivo px-1.5 py-0.5 rounded ml-1 font-semibold">-30%</span></button>
         </div>
       </div>
-
       <div class="grid md:grid-cols-3 gap-8">
-        <!-- Plan Standard -->
         <div class="bg-pizarra p-8 rounded-2xl border border-slate-800 flex flex-col justify-between h-full">
           <div>
             <h3 class="text-xl font-bold text-white mb-1">Standard</h3>
             <p class="text-slate-400 text-xs mb-4">Ideal para el comercio Minorista/Retail.</p>
-            
             <div class="my-4 p-4 bg-slate-900/80 rounded-xl border border-slate-700/80 text-center">
               <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Abono Mensual</span>
-              <div class="text-3xl font-black text-white mt-1">
-                $<span id="precio-std">10.000</span> <span class="text-xs text-slate-400 font-normal">/mes</span>
-              </div>
+              <div class="text-3xl font-black text-white mt-1">$<span id="precio-std">10.000</span> <span class="text-xs text-slate-400 font-normal">/mes</span></div>
               <span id="sub-std" class="text-[11px] text-slate-500 mt-1 block font-medium">Facturación mensual</span>
             </div>
-
             <ul class="space-y-3 text-sm text-slate-300 mb-8 mt-6">
               <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Catálogo QR Vidriera hasta 35 artículos</li>
               <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Panel Admin de precios</li>
@@ -304,22 +266,16 @@
           </div>
           <a href="#solicitar-prueba" class="w-full text-center bg-slate-800 hover:bg-slate-700 text-white font-semibold py-3 rounded-xl transition border border-slate-700">Elegir Standard</a>
         </div>
-
-        <!-- Plan Power -->
         <div class="bg-pizarra p-8 rounded-2xl border-2 border-naranja relative flex flex-col justify-between h-full shadow-xl shadow-naranja/10">
           <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-naranja text-white font-bold text-xs px-3 py-1 rounded-full uppercase tracking-wider">Más Popular</span>
           <div>
             <h3 class="text-xl font-bold text-white mb-1">Power 🚀</h3>
             <p class="text-slate-400 text-xs mb-4">Para comercios Retail/Multisectorial.</p>
-            
             <div class="my-4 p-4 bg-slate-900/90 rounded-xl border border-naranja/40 text-center">
               <span class="text-xs font-semibold text-naranja uppercase tracking-wider block">Abono Mensual</span>
-              <div class="text-3xl font-black text-white mt-1">
-                $<span id="precio-pwr">25.000</span> <span class="text-xs text-slate-400 font-normal">/mes</span>
-              </div>
+              <div class="text-3xl font-black text-white mt-1">$<span id="precio-pwr">25.000</span> <span class="text-xs text-slate-400 font-normal">/mes</span></div>
               <span id="sub-pwr" class="text-[11px] text-naranja/80 mt-1 block font-medium">Facturación mensual</span>
             </div>
-
             <ul class="space-y-3 text-sm text-slate-300 mb-8 mt-6">
               <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Catálogo QR Vidriera hasta 350 artículos</li>
               <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Hasta 3 sucursales</li>
@@ -330,21 +286,15 @@
           </div>
           <a href="#solicitar-prueba" class="w-full text-center bg-naranja hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-naranja/20">Elegir Power</a>
         </div>
-
-        <!-- Plan Premium -->
         <div class="bg-pizarra p-8 rounded-2xl border border-slate-800 flex flex-col justify-between h-full">
           <div>
             <h3 class="text-xl font-bold text-white mb-1">Premium 💎</h3>
             <p class="text-slate-400 text-xs mb-4">Solución para Cadenas y Franquicias.</p>
-            
             <div class="my-4 p-4 bg-slate-900/80 rounded-xl border border-slate-700/80 text-center">
               <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Abono Mensual</span>
-              <div class="text-3xl font-black text-white mt-1">
-                $<span id="precio-prm">70.000</span> <span class="text-xs text-slate-400 font-normal">/mes</span>
-              </div>
+              <div class="text-3xl font-black text-white mt-1">$<span id="precio-prm">70.000</span> <span class="text-xs text-slate-400 font-normal">/mes</span></div>
               <span id="sub-prm" class="text-[11px] text-slate-500 mt-1 block font-medium">Facturación mensual</span>
             </div>
-
             <ul class="space-y-3 text-sm text-slate-300 mb-8 mt-6">
               <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Catálogo QR Vidriera hasta 2800 artículos</li>
               <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> <strong>IA Personalizada a medida</strong></li>
@@ -359,29 +309,21 @@
     </div>
   </section>
 
-  <!-- FRANJA DESTACADA DE PRUEBA GRATIS -->
   <section id="solicitar-prueba" class="py-16 bg-gradient-to-r from-pizarra to-slate-900 border-y border-naranja/40 relative overflow-hidden">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      
       <div class="flex flex-col md:flex-row items-center justify-between gap-8 mb-12">
         <div class="text-center md:text-left md:w-2/3">
           <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold bg-verdeVivo/10 text-verdeVivo border border-verdeVivo/30 mb-3 uppercase tracking-wider">
             <i class="fa-solid fa-gift"></i> Prueba Gratuita Sin Compromiso
           </span>
-          <h2 class="text-3xl sm:text-4xl font-black text-white mb-3">
-            Solicitar la <span class="text-naranja">Vidriera Inmersiva Inteligente</span> Completa de Prueba !
-          </h2>
-          <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
-            Experimentá el servicio con <strong>todas las funcionalidades habilitadas durante 10 días totalmente gratis</strong>. Una vez finalizada la prueba, si decidís continuar, podrás abonar mediante transferencia bancaria a la cuenta asignada.
-          </p>
+          <h2 class="text-3xl sm:text-4xl font-black text-white mb-3">Solicitar la <span class="text-naranja">Vidriera Inmersiva Inteligente</span> Completa de Prueba !</h2>
+          <p class="text-slate-300 text-sm sm:text-base leading-relaxed">Experimentá el servicio con <strong>todas las funcionalidades habilitadas durante 10 días totalmente gratis</strong>. Una vez finalizada la prueba, si decidís continuar, podrás abonar mediante transferencia bancaria a la cuenta asignada.</p>
         </div>
-
         <div class="text-center md:w-1/3 flex-shrink-0">
           <img src="img/qrvidriera.png" alt="Muestra Cartel QR Vidriera 12.5x17.5" class="max-w-[200px] sm:max-w-xs mx-auto rounded-2xl shadow-2xl border border-slate-700">
           <span class="block text-xs text-slate-400 mt-2">Medida del cartel físico: 12.5 x 17.5 cm</span>
         </div>
       </div>
-
       <div class="mb-14">
         <h3 class="text-xl font-extrabold text-white text-center mb-6 flex items-center justify-center gap-2">
           <i class="fa-solid fa-route text-naranja"></i> ¿Cómo funciona el proceso de prueba?
@@ -417,7 +359,6 @@
           </div>
         </div>
       </div>
-
       <div class="mb-12 bg-slate-900/60 p-6 sm:p-8 rounded-3xl border border-slate-800">
         <h3 class="text-lg font-bold text-white mb-4 text-center sm:text-left flex items-center justify-center sm:justify-start gap-2">
           <i class="fa-solid fa-microchip text-verdeVivo"></i> Características técnicas incluidas en tu prueba:
@@ -449,11 +390,8 @@
           </div>
         </div>
       </div>
-
-      <!-- FORMULARIO DE PRUEBA -->
       <form action="https://formsubmit.co/clientes@qrpretium.com.ar" method="POST" class="bg-pizarra/90 p-6 sm:p-8 rounded-3xl border border-slate-700/80 shadow-2xl space-y-4 backdrop-blur-sm">
         <input type="hidden" name="_subject" value="NUEVA SOLICITUD: Prueba Gratis 10 Días - Vidriera Digital">
-
         <div class="grid md:grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-semibold text-slate-300 mb-1.5">Nombre y Apellido *</label>
@@ -464,7 +402,6 @@
             <input type="text" name="nombre_comercio" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="Ej: Vinoteca San Martín">
           </div>
         </div>
-
         <div class="grid md:grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-semibold text-slate-300 mb-1.5">Teléfono / WhatsApp *</label>
@@ -475,7 +412,6 @@
             <input type="email" name="email" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="Ej: contacto@micomercio.com">
           </div>
         </div>
-
         <div class="grid md:grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-semibold text-slate-300 mb-1.5">Rubro Comercial *</label>
@@ -491,11 +427,10 @@
             </select>
           </div>
           <div>
-           <label class="block text-xs font-semibold text-slate-300 mb-1.5">Comentarios adicionales o consultas (Opcional)</label>
-          <textarea name="mensaje" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="¿Querés contarnos cuántos artículos tenés o qué necesitás para tu vidriera?"></textarea>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Comentarios adicionales o consultas (Opcional)</label>
+            <textarea name="mensaje" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="¿Querés contarnos cuántos artículos tenés o qué necesitás para tu vidriera?"></textarea>
           </div>
         </div>
-
         <button type="submit" class="w-full bg-naranja hover:bg-orange-600 text-white font-bold py-4 rounded-xl transition shadow-lg shadow-naranja/20 text-base flex items-center justify-center gap-2">
           <i class="fa-solid fa-paper-plane"></i> ACTIVAR MI PRUEBA GRATIS POR 10 DÍAS
         </button>
@@ -503,50 +438,29 @@
     </div>
   </section>
 
-  <!-- SECCIÓN CONCEPTUAL: FAMILIA ESCANEANDO EN VIDRIERA -->
   <section class="py-16 bg-pizarraOscura border-t border-slate-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="bg-pizarra rounded-3xl border border-slate-700/80 overflow-hidden shadow-2xl grid lg:grid-cols-2 items-center">
-        
         <div class="relative h-72 sm:h-96 lg:h-full min-h-[320px] overflow-hidden group">
           <img src="img/vidrierafamily.png" alt="Familia escaneando código QRPretium en vidriera de zapatillas" class="w-full h-full object-cover object-center transform group-hover:scale-105 transition duration-500">
           <div class="absolute inset-0 bg-gradient-to-t from-pizarra via-transparent to-transparent opacity-60 lg:hidden"></div>
         </div>
-
         <div class="p-8 lg:p-12 space-y-6">
           <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-verdeVivo/10 text-verdeVivo border border-verdeVivo/20">
             <i class="fa-solid fa-users font-normal"></i> Experiencia Familiar 24/7
           </span>
-
-          <h3 class="text-2xl sm:text-3xl font-black text-white leading-tight">
-            Consultá productos con <span class="text-naranja">códigos numéricos relacionales</span> sin entrar al local
-          </h3>
-
-          <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
-            Cada calzado o artículo en tu exhibición se vincula a un número simple (ej. <span class="text-verdeVivo font-mono font-bold">#101</span>, <span class="text-verdeVivo font-mono font-bold">#102</span>). Los clientes y sus familias escanean el QR principal de tu vidriera y consultan instantáneamente precios, talles disponibles y detalles técnicos usando el código o preguntándole directamente al <strong>Asistente IA por voz</strong>.
-          </p>
-
+          <h3 class="text-2xl sm:text-3xl font-black text-white leading-tight">Consultá productos con <span class="text-naranja">códigos numéricos relacionales</span> sin entrar al local</h3>
+          <p class="text-slate-300 text-sm sm:text-base leading-relaxed">Cada calzado o artículo en tu exhibición se vincula a un número simple (ej. <span class="text-verdeVivo font-mono font-bold">#101</span>, <span class="text-verdeVivo font-mono font-bold">#102</span>). Los clientes y sus familias escanean el QR principal de tu vidriera y consultan instantáneamente precios, talles disponibles y detalles técnicos usando el código o preguntándole directamente al <strong>Asistente IA por voz</strong>.</p>
           <ul class="space-y-2.5 text-xs sm:text-sm text-slate-300">
-            <li class="flex items-center gap-2.5">
-              <i class="fa-solid fa-circle-check text-verdeVivo"></i>
-              <span>Ideal para paseos nocturnos o cuando el local está cerrado.</span>
-            </li>
-            <li class="flex items-center gap-2.5">
-              <i class="fa-solid fa-circle-check text-verdeVivo"></i>
-              <span>Búsqueda directa por número de stand o modelo.</span>
-            </li>
-            <li class="flex items-center gap-2.5">
-              <i class="fa-solid fa-circle-check text-verdeVivo"></i>
-              <span>Asesoramiento instantáneo mediante IA Conversacional y Texto !.</span>
-            </li>
+            <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-verdeVivo"></i> <span>Ideal para paseos nocturnos o cuando el local está cerrado.</span></li>
+            <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-verdeVivo"></i> <span>Búsqueda directa por número de stand o modelo.</span></li>
+            <li class="flex items-center gap-2.5"><i class="fa-solid fa-circle-check text-verdeVivo"></i> <span>Asesoramiento instantáneo mediante IA Conversacional y Texto !.</span></li>
           </ul>
         </div>
-
       </div>
     </div>
   </section>
 
-  <!-- FOOTER -->
   <footer class="bg-pizarra border-t border-slate-800 py-8 text-center text-xs text-slate-400">
     <div class="max-w-7xl mx-auto px-4 space-y-3">
       <p>Contacto Institucional: <a href="mailto:clientes@qrpretium.com.ar" class="text-verdeVivo hover:underline">clientes@qrpretium.com.ar</a></p>
@@ -554,51 +468,41 @@
     </div>
   </footer>
 
-  <!-- SCRIPTS DEL CUBO 3D Y FUNCIONES -->
+  <!-- SCRIPTS -->
   <script>
-    // 1. Selector de períodos de planes
     function cambiarPeriodo(meses) {
       const btn1 = document.getElementById('btn-1m');
       const btn3 = document.getElementById('btn-3m');
       const btn6 = document.getElementById('btn-6m');
       const btn12 = document.getElementById('btn-12m');
-
       const precios = {
         1:  { std: "10.000", pwr: "25.000", prm: "70.000", sub: "Facturación mensual" },
         3:  { std: "9.000",  pwr: "22.500", prm: "63.000", sub: "Abonando 3 meses juntos" },
         6:  { std: "8.000",  pwr: "20.000", prm: "56.000", sub: "Abonando 6 meses juntos" },
         12: { std: "7.000",  pwr: "17.500", prm: "49.000", sub: "Abonando 12 meses juntos" }
       };
-
       [btn1, btn3, btn6, btn12].forEach(btn => {
         btn.className = "px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition text-slate-300 hover:text-white";
       });
-
       const btnActivo = document.getElementById('btn-' + meses + 'm');
       btnActivo.className = "px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition bg-naranja text-white shadow-md";
-
       document.getElementById('precio-std').innerText = precios[meses].std;
       document.getElementById('precio-pwr').innerText = precios[meses].pwr;
       document.getElementById('precio-prm').innerText = precios[meses].prm;
-
       document.getElementById('sub-std').innerText = precios[meses].sub;
       document.getElementById('sub-pwr').innerText = precios[meses].sub;
       document.getElementById('sub-prm').innerText = precios[meses].sub;
     }
 
-    // 2. Renderizador de la Nebulosa
     (function dibujarNebulosaRealista() {
       const canvas = document.getElementById('fondo-espacio');
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
-
       const size = 350;
       canvas.width = size;
       canvas.height = size;
-
       ctx.fillStyle = '#010308';
       ctx.fillRect(0, 0, size, size);
-
       function dibujarNubeGas(x, y, r1, r2, colorInner, colorOuter) {
         const grad = ctx.createRadialGradient(x, y, r1, x, y, r2);
         grad.addColorStop(0, colorInner);
@@ -609,7 +513,6 @@
         ctx.arc(x, y, r2, 0, Math.PI * 2);
         ctx.fill();
       }
-
       ctx.globalCompositeOperation = 'screen';
       dibujarNubeGas(175, 175, 10, 160, 'rgba(14, 116, 144, 0.4)', 'rgba(0,0,0,0)');
       dibujarNubeGas(110, 120, 5, 130, 'rgba(6, 182, 212, 0.35)', 'rgba(0,0,0,0)');
@@ -617,15 +520,12 @@
       dibujarNubeGas(130, 240, 5, 100, 'rgba(52, 211, 153, 0.25)', 'rgba(0,0,0,0)');
       dibujarNubeGas(210, 110, 2, 80, 'rgba(245, 158, 11, 0.25)', 'rgba(0,0,0,0)');
       dibujarNubeGas(260, 150, 1, 60, 'rgba(251, 146, 60, 0.2)', 'rgba(0,0,0,0)');
-
       ctx.globalCompositeOperation = 'source-over';
-
       for (let i = 0; i < 180; i++) {
         const x = Math.random() * size;
         const y = Math.random() * size;
         const radius = Math.random() * 1.1;
         const opacity = Math.random() * 0.7 + 0.1;
-
         ctx.beginPath();
         ctx.arc(x, y, radius, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
@@ -633,15 +533,12 @@
       }
     })();
 
-    // 3. Renderizador del Cubo 3D (Fondo de caras Gris Claro `#475569`)
     (function crearCubo3D() {
       const canvas = document.getElementById('cubo3d-ia');
       if (!canvas) return;
-
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
       camera.position.z = 2.8;
-
       const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
       renderer.setSize(128, 128);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -653,7 +550,6 @@
         ctx.lineWidth = 8;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-
         if (tipo === 'mic') {
           ctx.beginPath();
           ctx.arc(128, 90, 18, 0, Math.PI * 2);
@@ -665,8 +561,7 @@
           ctx.moveTo(128, 118); ctx.lineTo(128, 135);
           ctx.moveTo(108, 135); ctx.lineTo(148, 135);
           ctx.stroke();
-        } 
-        else if (tipo === 'cerebro') {
+        } else if (tipo === 'cerebro') {
           ctx.lineWidth = 6;
           ctx.beginPath();
           ctx.arc(108, 90, 20, Math.PI * 0.5, Math.PI * 1.8);
@@ -679,21 +574,18 @@
           ctx.beginPath();
           ctx.moveTo(128, 70); ctx.lineTo(128, 115);
           ctx.stroke();
-        } 
-        else if (tipo === 'ok') {
+        } else if (tipo === 'ok') {
           ctx.lineWidth = 12;
           ctx.beginPath();
           ctx.moveTo(95, 100); ctx.lineTo(118, 122); ctx.lineTo(165, 75);
           ctx.stroke();
-        } 
-        else if (tipo === 'error') {
+        } else if (tipo === 'error') {
           ctx.lineWidth = 12;
           ctx.beginPath();
           ctx.moveTo(100, 75); ctx.lineTo(156, 125);
           ctx.moveTo(156, 75); ctx.lineTo(100, 125);
           ctx.stroke();
-        } 
-        else if (tipo === 'robot') {
+        } else if (tipo === 'robot') {
           ctx.lineWidth = 6;
           ctx.beginPath();
           ctx.roundRect(98, 75, 60, 48, 8);
@@ -711,8 +603,7 @@
           ctx.beginPath();
           ctx.moveTo(112, 110); ctx.lineTo(144, 110);
           ctx.stroke();
-        } 
-        else if (tipo === 'lupa') {
+        } else if (tipo === 'lupa') {
           ctx.lineWidth = 8;
           ctx.beginPath();
           ctx.arc(118, 92, 22, 0, Math.PI * 2);
@@ -721,7 +612,6 @@
           ctx.moveTo(134, 108); ctx.lineTo(158, 130);
           ctx.stroke();
         }
-
         ctx.restore();
       }
 
@@ -730,10 +620,8 @@
         c.width = 256;
         c.height = 256;
         const ctx = c.getContext('2d');
-
         ctx.fillStyle = '#475569';
         ctx.fillRect(0, 0, 256, 256);
-
         ctx.strokeStyle = '#F97316';
         ctx.lineWidth = 12;
         const r = 30;
@@ -745,15 +633,12 @@
         ctx.arcTo(10, 10, 246, 10, r);
         ctx.closePath();
         ctx.stroke();
-
         dibujarIconoVectorial(ctx, tipoIcono, colorElemento);
-
         ctx.font = 'bold 22px sans-serif';
         ctx.fillStyle = colorElemento;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(texto, 128, 195);
-
         return new THREE.CanvasTexture(c);
       }
 
@@ -772,7 +657,6 @@
 
       const ambientLight = new THREE.AmbientLight(0xffffff, 1.1);
       scene.add(ambientLight);
-
       const pointLight1 = new THREE.PointLight(0xF97316, 2, 10);
       pointLight1.position.set(3, 3, 3);
       scene.add(pointLight1);
