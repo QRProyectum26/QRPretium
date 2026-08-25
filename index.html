@@ -82,19 +82,18 @@
         <a href="nosotros.html" class="hover:text-naranja transition">Nosotros</a>
       </nav>
 
-      <!-- ✅ AJUSTE 3: Botón "Acceso Comercios" más chato (menos altura) -->
-      <a href="admin.html" target="_blank" rel="noopener noreferrer" class="bg-verdeVivo hover:bg-orange-600 text-white font-semibold px-4 py-1 rounded-xl transition shadow-md hover:shadow-naranja/20">
+      <!-- Botón "Acceso Comercios" en verde y más compacto -->
+      <a href="admin.html" target="_blank" rel="noopener noreferrer" class="bg-verdeVivo hover:bg-emerald-600 text-white font-semibold px-4 py-1 rounded-xl transition shadow-md shadow-verdeVivo/20">
         Acceso Comercios <i class="fa-solid fa-arrow-up-right-from-square ml-1 text-xs"></i>
       </a>
     </div>
   </header>
 
-  <!-- 2. HERO SECTION (con imagen más grande) -->
-  <!-- ✅ AJUSTE 2: Aumento de padding vertical y altura de la imagen -->
+  <!-- 2. HERO SECTION con imagen ensanchada hacia la derecha -->
   <section class="relative py-8 lg:py-8 overflow-hidden">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-8 items-start">
-      <div>
-        <!-- ✅ AJUSTE 1: Cambio de color a naranja vivo -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-3 gap-6 items-start">
+      <!-- Columna de texto (1/3) -->
+      <div class="md:col-span-1">
         <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-pizarra text-naranja border border-slate-700 shadow-sm mb-6">
           <i class="fa-solid fa-sparkles"></i> Vidriera Digital & Asistente Interactivo IA
         </span>
@@ -115,14 +114,13 @@
         </div>
       </div>
 
-      <!-- MOCKUP IMAGEN VIDRIERA (más grande) -->
-      <div class="relative">
+      <!-- Columna de imagen (2/3) con borde restaurado -->
+      <div class="md:col-span-2 relative">
         <div class="relative rounded-2xl bg-pizarra border border-slate-700 shadow-2xl overflow-hidden">
-          <!-- ✅ Aumento de altura de h-96 a h-[500px] -->
           <div class="relative h-[700px] rounded-xl overflow-hidden group">
             <img src="imgindex1.png" alt="Vidriera de comercio con productos y mujer escaneando QR" class="w-full h-full object-cover object-center transform group-hover:scale-105 transition duration-500">
             
-            <!-- ✅ Ajuste: texto más abajo (bottom-2) y conserva tamaño -->
+            <!-- Overlay inferior con el texto -->
             <div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-[95%] p-5 rounded-2xl border border-white/20 bg-slate-950/40 shadow-2xl drop-shadow-lg">
               <div class="text-center">
                 <h3 class="text-xl font-extrabold text-white mb-2 [text-shadow:_0_2px_4px_rgba(0,0,0,0.9)]">
@@ -230,7 +228,6 @@
           <div>
             <i class="fa-solid fa-shield-halved text-verdeVivo text-2xl mb-4"></i>
             <h4 class="text-lg font-bold text-white mb-2">Encriptación TLS/SSL</h4>
-            <!-- ✅ AJUSTE 4: "Tu Vidriera Digital Ultra Segura !!." en blanco -->
             <p class="text-xs text-slate-400 leading-relaxed">Toda la transmisión de datos y consultas viaja cifrada de extremo a extremo. <span class="text-white font-medium">Tu Vidriera Digital Ultra Segura !!.</span></p>
           </div>
         </div>
@@ -238,7 +235,6 @@
           <div>
             <i class="fa-solid fa-clock-rotate-left text-verdeVivo text-2xl mb-4"></i>
             <h4 class="text-lg font-bold text-white mb-2">Alta Disponibilidad</h4>
-            <!-- ✅ AJUSTE 4: "Always-On !!." en blanco -->
             <p class="text-xs text-slate-400 leading-relaxed">Plataforma distribuida ultra rápida para garantizar que tu Vidriera Digital nunca se caiga. <span class="text-white font-medium">Always-On !!.</span></p>
           </div>
         </div>
@@ -253,7 +249,6 @@
           <div>
             <i class="fa-solid fa-gauge-high text-verdeVivo text-2xl mb-4"></i>
             <h4 class="text-lg font-bold text-white mb-2">Carga Ultra Rápida</h4>
-            <!-- ✅ AJUSTE 4: "Fully Responsive !!." en blanco -->
             <p class="text-xs text-slate-400 leading-relaxed">Optimizado para abrir al instante al escanear el cliente desde cualquier teléfono móvil. <span class="text-white font-medium">Fully Responsive !!.</span></p>
           </div>
         </div>
@@ -501,7 +496,6 @@
           </div>
         </div>
 
-        <!-- ✅ AJUSTE 5: Botón de verde a naranja vivo -->
         <button type="submit" class="w-full bg-naranja hover:bg-orange-600 text-white font-bold py-4 rounded-xl transition shadow-lg shadow-naranja/20 text-base flex items-center justify-center gap-2">
           <i class="fa-solid fa-paper-plane"></i> ACTIVAR MI PRUEBA GRATIS POR 10 DÍAS
         </button>
@@ -737,11 +731,9 @@
         c.height = 256;
         const ctx = c.getContext('2d');
 
-        // FONDO DE CARA GRIS MÁS CLARO PARA MAXIMIZAR CONTRASTE DE LEYENDAS Y SÍMBOLOS
         ctx.fillStyle = '#475569';
         ctx.fillRect(0, 0, 256, 256);
 
-        // Borde Naranja Vivo
         ctx.strokeStyle = '#F97316';
         ctx.lineWidth = 12;
         const r = 30;
@@ -754,10 +746,8 @@
         ctx.closePath();
         ctx.stroke();
 
-        // Icono Vectorial
         dibujarIconoVectorial(ctx, tipoIcono, colorElemento);
 
-        // Texto Inferior
         ctx.font = 'bold 22px sans-serif';
         ctx.fillStyle = colorElemento;
         ctx.textAlign = 'center';
