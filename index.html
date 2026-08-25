@@ -27,65 +27,97 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="icono_ia/animaciones.css">
   <style>
-    /* Efecto de borde blanco para las letras QR */
     .texto-qr-borde {
       color: #94A3B8;
       -webkit-text-stroke: 1px #FFFFFF;
     }
-
-    /* Resplandor Neón Menta/Verde Pastel para el marco del icono */
     .marco-verde-pastel {
       box-shadow: 0 0 30px rgba(134, 239, 172, 0.45), inset 0 0 20px rgba(134, 239, 172, 0.25);
+    }
+    .menu-movil {
+      transition: all 0.3s ease-in-out;
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      visibility: hidden;
+    }
+    .menu-movil.abierto {
+      max-height: 500px;
+      opacity: 1;
+      visibility: visible;
     }
   </style>
 </head>
 <body class="bg-pizarraOscura text-slate-100 font-sans antialiased selection:bg-naranja selection:text-white">
 
-  <!-- HEADER -->
+  <!-- HEADER CON MENÚ HAMBURGUESA -->
   <header class="sticky top-0 z-50 bg-pizarra/90 backdrop-blur-md border-b border-slate-700/50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-      <a href="index.html" class="flex items-center gap-3 group">
-        <svg class="w-10 h-10 transition-transform duration-300 group-hover:scale-105" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="100" height="100" rx="24" fill="#1E293B"/>
-          <rect x="2" y="2" width="96" height="96" rx="22" stroke="#F97316" stroke-width="5"/>
-          <path d="M28 28H44V44H28V28Z" fill="#64748B"/>
-          <path d="M32 32H40V40H32V32Z" fill="#1E293B"/>
-          <path d="M56 28H72V44H56V28Z" fill="#64748B"/>
-          <path d="M60 32H68V40H60V32Z" fill="#1E293B"/>
-          <path d="M28 56H44V72H28V56Z" fill="#64748B"/>
-          <path d="M32 60H40V68H32V60Z" fill="#1E293B"/>
-          <rect x="48" y="48" width="8" height="8" rx="2" fill="#34D399"/>
-          <rect x="60" y="48" width="8" height="8" rx="2" fill="#F97316"/>
-          <rect x="48" y="60" width="8" height="8" rx="2" fill="#F97316"/>
-          <path d="M72 58C72 65 75 68 82 68C75 68 72 71 72 78C72 71 69 68 62 68C69 68 72 65 72 58Z" fill="#10B981"/>
-          <path d="M54 22C54 25 55 26 58 26C55 26 54 27 54 30C54 27 53 26 50 26C53 26 54 25 54 22Z" fill="#10B981"/>
-        </svg>
-        <div class="flex items-baseline font-sans">
-          <span class="text-2xl font-black tracking-tight texto-qr-borde mr-0.5">QR</span>
-          <span class="text-2xl font-light tracking-tight text-naranja">Pretium</span>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 md:h-20">
+        
+        <!-- LOGO -->
+        <a href="index.html" class="flex items-center gap-2 group flex-shrink-0">
+          <svg class="w-8 h-8 md:w-10 md:h-10 transition-transform duration-300 group-hover:scale-105" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="100" height="100" rx="24" fill="#1E293B"/>
+            <rect x="2" y="2" width="96" height="96" rx="22" stroke="#F97316" stroke-width="5"/>
+            <path d="M28 28H44V44H28V28Z" fill="#64748B"/>
+            <path d="M32 32H40V40H32V32Z" fill="#1E293B"/>
+            <path d="M56 28H72V44H56V28Z" fill="#64748B"/>
+            <path d="M60 32H68V40H60V32Z" fill="#1E293B"/>
+            <path d="M28 56H44V72H28V56Z" fill="#64748B"/>
+            <path d="M32 60H40V68H32V60Z" fill="#1E293B"/>
+            <rect x="48" y="48" width="8" height="8" rx="2" fill="#34D399"/>
+            <rect x="60" y="48" width="8" height="8" rx="2" fill="#F97316"/>
+            <rect x="48" y="60" width="8" height="8" rx="2" fill="#F97316"/>
+            <path d="M72 58C72 65 75 68 82 68C75 68 72 71 72 78C72 71 69 68 62 68C69 68 72 65 72 58Z" fill="#10B981"/>
+            <path d="M54 22C54 25 55 26 58 26C55 26 54 27 54 30C54 27 53 26 50 26C53 26 54 25 54 22Z" fill="#10B981"/>
+          </svg>
+          <div class="flex items-baseline font-sans">
+            <span class="text-xl md:text-2xl font-black tracking-tight texto-qr-borde mr-0.5">QR</span>
+            <span class="text-xl md:text-2xl font-light tracking-tight text-naranja">Pretium</span>
+          </div>
+        </a>
+
+        <!-- MENÚ DESKTOP -->
+        <nav class="hidden md:flex gap-7 text-sm font-medium text-slate-300">
+          <a href="#que-es" class="hover:text-naranja transition">¿Qué es?</a>
+          <a href="#soluciones" class="hover:text-naranja transition">Soluciones</a>
+          <a href="#asistente-ia" class="hover:text-naranja transition">Asistente IA</a>
+          <a href="#seguridad" class="hover:text-naranja transition">Seguridad</a>
+          <a href="#planes" class="hover:text-naranja transition">Planes</a>
+          <a href="nosotros.html" class="hover:text-naranja transition">Nosotros</a>
+        </nav>
+
+        <!-- BOTÓN ACCESO COMERCIOS + HAMBURGUESA -->
+        <div class="flex items-center gap-2 md:gap-4">
+          <a href="admin.html" target="_blank" rel="noopener noreferrer" class="bg-verdeVivo hover:bg-emerald-600 text-white font-semibold px-3 py-1.5 md:px-4 md:py-2 rounded-xl transition shadow-md shadow-verdeVivo/20 text-xs md:text-sm flex items-center gap-1.5">
+            <span class="hidden xs:inline">Acceso Comercios</span>
+            <span class="xs:hidden">Admin</span>
+            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] md:text-xs"></i>
+          </a>
+          <button id="btnMenu" class="md:hidden text-slate-300 hover:text-white focus:outline-none p-1" aria-label="Menú">
+            <i class="fa-solid fa-bars text-2xl"></i>
+          </button>
         </div>
-      </a>
+      </div>
 
-      <nav class="hidden md:flex gap-7 text-sm font-medium text-slate-300">
-        <a href="#que-es" class="hover:text-naranja transition">¿Qué es?</a>
-        <a href="#soluciones" class="hover:text-naranja transition">Soluciones</a>
-        <a href="#asistente-ia" class="hover:text-naranja transition">Asistente IA</a>
-        <a href="#seguridad" class="hover:text-naranja transition">Seguridad</a>
-        <a href="#planes" class="hover:text-naranja transition">Planes</a>
-        <a href="nosotros.html" class="hover:text-naranja transition">Nosotros</a>
-      </nav>
-
-      <a href="admin.html" target="_blank" rel="noopener noreferrer" class="bg-verdeVivo hover:bg-emerald-600 text-white font-semibold px-4 py-1 rounded-xl transition shadow-md shadow-verdeVivo/20">
-        Acceso Comercios <i class="fa-solid fa-arrow-up-right-from-square ml-1 text-xs"></i>
-      </a>
+      <!-- MENÚ MÓVIL DESPLEGABLE -->
+      <div id="menuMovil" class="menu-movil md:hidden bg-pizarra/95 backdrop-blur-sm border-t border-slate-700/50">
+        <div class="flex flex-col space-y-3 px-4 py-5 text-sm font-medium text-slate-300">
+          <a href="#que-es" class="hover:text-naranja transition py-1">¿Qué es?</a>
+          <a href="#soluciones" class="hover:text-naranja transition py-1">Soluciones</a>
+          <a href="#asistente-ia" class="hover:text-naranja transition py-1">Asistente IA</a>
+          <a href="#seguridad" class="hover:text-naranja transition py-1">Seguridad</a>
+          <a href="#planes" class="hover:text-naranja transition py-1">Planes</a>
+          <a href="nosotros.html" class="hover:text-naranja transition py-1">Nosotros</a>
+        </div>
+      </div>
     </div>
   </header>
 
-  <!-- HERO SECTION (responsiva) -->
+  <!-- HERO SECTION -->
   <section class="relative py-6 md:py-12 lg:py-16 overflow-hidden">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-start">
-      
-      <!-- Texto: ocupa 1/3 en escritorio, todo el ancho en móvil -->
       <div class="md:col-span-1">
         <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-pizarra text-naranja border border-slate-700 shadow-sm mb-4 md:mb-6">
           <i class="fa-solid fa-sparkles"></i> Vidriera Digital & Asistente Interactivo IA
@@ -96,7 +128,6 @@
         <p class="text-slate-300 text-base md:text-lg mb-6 md:mb-8 leading-relaxed">
           Precios y artículos actualizados al instante, catálogo interactivo sin carteles desactualizados y un Asistente IA que asesora a tus clientes directamente desde la vidriera !.
         </p>
-
         <div class="flex flex-wrap gap-3 md:gap-4 mb-6 md:mb-8">
           <a href="https://qrpretium.com.ar/catalogo.html?cuit=30697294895" target="_blank" rel="noopener noreferrer" class="bg-verdeVivo hover:bg-emerald-600 text-slate-950 font-bold px-5 py-3 md:px-6 md:py-3.5 rounded-xl transition shadow-lg shadow-verdeVivo/20 flex items-center gap-2 text-sm md:text-base">
             <i class="fa-solid fa-mobile-screen-button"></i> Probar Catálogo Demo
@@ -106,15 +137,10 @@
           </a>
         </div>
       </div>
-
-      <!-- Imagen: ocupa 2/3 en escritorio, todo el ancho en móvil -->
       <div class="md:col-span-2 relative">
         <div class="relative rounded-2xl bg-pizarra border border-slate-700 shadow-2xl overflow-hidden">
-          <!-- Altura responsiva: móvil (h-64), tablet (h-96), escritorio (h-[600px] lg:h-[700px]) -->
           <div class="relative h-64 sm:h-96 md:h-[500px] lg:h-[650px] rounded-xl overflow-hidden group">
             <img src="imgindex1.png" alt="Vidriera de comercio con productos y mujer escaneando QR" class="w-full h-full object-cover object-center transform group-hover:scale-105 transition duration-500">
-            
-            <!-- Overlay inferior -->
             <div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-[95%] p-3 sm:p-4 md:p-5 rounded-2xl border border-white/20 bg-slate-950/40 shadow-2xl drop-shadow-lg">
               <div class="text-center">
                 <h3 class="text-base sm:text-lg md:text-xl font-extrabold text-white mb-1 md:mb-2 [text-shadow:_0_2px_4px_rgba(0,0,0,0.9)]">
@@ -135,14 +161,14 @@
     </div>
   </section>
 
-  <!-- RESTO DEL CONTENIDO (sin cambios) -->
+  <!-- QUÉ ES QRPRETIUM? -->
   <section id="que-es" class="py-20 bg-pizarra/50 border-y border-slate-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center max-w-3xl mx-auto mb-16">
         <h2 class="text-3xl font-extrabold text-white mb-4">La solución moderna y tecnológica para la exhibición de precios en vidriera</h2>
         <p class="text-slate-400">Olvidate de imprimir o escribir cartelitos o tener precios desactualizados por inflación. Tu cliente escanea, busca y/o consulta por voz + Realidad Aumentada en tus Articulos de Exhibición !!.</p>
       </div>
-      <div class="grid md:grid-cols-3 gap-8" id="soluciones">
+      <div class="grid md:grid-cols-3 gap-8">
         <div class="bg-pizarra p-8 rounded-2xl border border-slate-800 hover:border-slate-700 transition flex flex-col h-full">
           <div class="w-12 h-12 bg-naranja/10 text-naranja rounded-xl flex items-center justify-center text-2xl mb-6">
             <i class="fa-solid fa-bolt"></i>
@@ -168,6 +194,7 @@
     </div>
   </section>
 
+  <!-- ASISTENTE IA -->
   <section id="asistente-ia" class="py-20 relative">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
       <div>
@@ -196,6 +223,7 @@
     </div>
   </section>
 
+  <!-- SEGURIDAD -->
   <section id="seguridad" class="py-20 bg-pizarra/30 border-y border-slate-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center max-w-3xl mx-auto mb-16">
@@ -235,6 +263,7 @@
     </div>
   </section>
 
+  <!-- PLANES -->
   <section id="planes" class="py-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center max-w-3xl mx-auto mb-10">
@@ -309,6 +338,7 @@
     </div>
   </section>
 
+  <!-- SOLICITAR PRUEBA (formulario) -->
   <section id="solicitar-prueba" class="py-16 bg-gradient-to-r from-pizarra to-slate-900 border-y border-naranja/40 relative overflow-hidden">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex flex-col md:flex-row items-center justify-between gap-8 mb-12">
@@ -438,6 +468,7 @@
     </div>
   </section>
 
+  <!-- SECCIÓN FAMILIA -->
   <section class="py-16 bg-pizarraOscura border-t border-slate-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="bg-pizarra rounded-3xl border border-slate-700/80 overflow-hidden shadow-2xl grid lg:grid-cols-2 items-center">
@@ -461,6 +492,7 @@
     </div>
   </section>
 
+  <!-- FOOTER -->
   <footer class="bg-pizarra border-t border-slate-800 py-8 text-center text-xs text-slate-400">
     <div class="max-w-7xl mx-auto px-4 space-y-3">
       <p>Contacto Institucional: <a href="mailto:clientes@qrpretium.com.ar" class="text-verdeVivo hover:underline">clientes@qrpretium.com.ar</a></p>
@@ -470,6 +502,29 @@
 
   <!-- SCRIPTS -->
   <script>
+    // Menú hamburguesa
+    const btnMenu = document.getElementById('btnMenu');
+    const menuMovil = document.getElementById('menuMovil');
+
+    btnMenu.addEventListener('click', () => {
+      menuMovil.classList.toggle('abierto');
+      const icono = btnMenu.querySelector('i');
+      if (menuMovil.classList.contains('abierto')) {
+        icono.className = 'fa-solid fa-xmark text-2xl';
+      } else {
+        icono.className = 'fa-solid fa-bars text-2xl';
+      }
+    });
+
+    document.querySelectorAll('#menuMovil a').forEach(enlace => {
+      enlace.addEventListener('click', () => {
+        menuMovil.classList.remove('abierto');
+        const icono = btnMenu.querySelector('i');
+        icono.className = 'fa-solid fa-bars text-2xl';
+      });
+    });
+
+    // Selector de planes
     function cambiarPeriodo(meses) {
       const btn1 = document.getElementById('btn-1m');
       const btn3 = document.getElementById('btn-3m');
@@ -494,6 +549,7 @@
       document.getElementById('sub-prm').innerText = precios[meses].sub;
     }
 
+    // Nebulosa
     (function dibujarNebulosaRealista() {
       const canvas = document.getElementById('fondo-espacio');
       if (!canvas) return;
@@ -533,6 +589,7 @@
       }
     })();
 
+    // Cubo 3D
     (function crearCubo3D() {
       const canvas = document.getElementById('cubo3d-ia');
       if (!canvas) return;
