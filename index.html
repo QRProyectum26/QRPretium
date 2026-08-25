@@ -82,25 +82,27 @@
         <a href="nosotros.html" class="hover:text-verdeVivo transition">Nosotros</a>
       </nav>
 
-      <!-- Botón Ingreso Admin -->
-      <a href="admin.html" target="_blank" rel="noopener noreferrer" class="bg-naranja hover:bg-orange-600 text-white font-semibold px-5 py-2.5 rounded-xl transition shadow-md hover:shadow-naranja/20">
+      <!-- ✅ AJUSTE 3: Botón "Acceso Comercios" más chato (menos altura) -->
+      <a href="admin.html" target="_blank" rel="noopener noreferrer" class="bg-naranja hover:bg-orange-600 text-white font-semibold px-5 py-1.5 rounded-xl transition shadow-md hover:shadow-naranja/20">
         Acceso Comercios <i class="fa-solid fa-arrow-up-right-from-square ml-1 text-xs"></i>
       </a>
     </div>
   </header>
 
-  <!-- 2. HERO SECTION -->
-  <section class="relative py-16 lg:py-24 overflow-hidden">
+  <!-- 2. HERO SECTION (con imagen más grande) -->
+  <!-- ✅ AJUSTE 2: Aumento de padding vertical y altura de la imagen -->
+  <section class="relative py-20 lg:py-28 overflow-hidden">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
       <div>
-        <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-pizarra text-verdeVivo border border-slate-700 shadow-sm mb-6">
+        <!-- ✅ AJUSTE 1: Cambio de color a naranja vivo -->
+        <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-pizarra text-naranja border border-slate-700 shadow-sm mb-6">
           <i class="fa-solid fa-sparkles"></i> Vidriera Digital & Asistente Interactivo IA
         </span>
         <h1 class="text-4xl sm:text-5xl font-black text-white leading-tight tracking-tight mb-6">
           Transformá tu vidriera en una <span class="text-transparent bg-clip-text bg-gradient-to-r from-naranja to-verdeVivo">Tienda Inteligente 24/7/365.</span> <span class="text-white font-bold">VIDRIERA INMERSIVA + IA</span>
         </h1>
         <p class="text-slate-300 text-lg mb-8 leading-relaxed">
-          Precios y artículos actualizados al instante, catálogo interactivo sin carteles desactualizados y un Asistente IA que asesora a tus clientes directamente desde la vidriera !!.
+          Precios y artículos actualizados al instante, catálogo interactivo sin carteles desactualizados y un Asistente IA que asesora a tus clientes directamente desde la vidriera !.
         </p>
 
         <div class="flex flex-wrap gap-4 mb-8">
@@ -113,16 +115,18 @@
         </div>
       </div>
 
-      <!-- MOCKUP IMAGEN VIDRIERA -->
+      <!-- MOCKUP IMAGEN VIDRIERA (más grande) -->
       <div class="relative">
         <div class="relative rounded-2xl p-2 bg-pizarra border border-slate-700 shadow-2xl overflow-hidden">
-          <div class="relative h-96 rounded-xl overflow-hidden group">
+          <!-- ✅ Aumento de altura de h-96 a h-[500px] -->
+          <div class="relative h-[500px] rounded-xl overflow-hidden group">
             <img src="imgindex1.png" alt="Vidriera de comercio con productos y mujer escaneando QR" class="w-full h-full object-cover object-center transform group-hover:scale-105 transition duration-500">
             
-            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 w-[95%] p-5 rounded-2xl border border-white/20 bg-slate-950/40 shadow-2xl drop-shadow-lg">
+            <!-- ✅ Ajuste: texto más abajo (bottom-2) y conserva tamaño -->
+            <div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-[95%] p-5 rounded-2xl border border-white/20 bg-slate-950/40 shadow-2xl drop-shadow-lg">
               <div class="text-center">
                 <h3 class="text-xl font-extrabold text-white mb-2 [text-shadow:_0_2px_4px_rgba(0,0,0,0.9)]">
-                  QRPretium:<br> Escaneo Instantáneo de tu Vidriera Digital Inteligente !!.
+                  QRPretium:<br> Escaneo Instantáneo de tu Vidriera Digital Inteligente !.
                 </h3>
                 <p class="text-slate-100 text-sm mb-4 leading-relaxed font-medium [text-shadow:_0_1px_3px_rgba(0,0,0,0.9)]">
                   Muestra automaticamente tus precios y productos a los clientes.
@@ -226,14 +230,16 @@
           <div>
             <i class="fa-solid fa-shield-halved text-verdeVivo text-2xl mb-4"></i>
             <h4 class="text-lg font-bold text-white mb-2">Encriptación TLS/SSL</h4>
-            <p class="text-xs text-slate-400 leading-relaxed">Toda la transmisión de datos y consultas viaja cifrada de extremo a extremo. Tu Vidriera Digital Ultra Segura !!.</p>
+            <!-- ✅ AJUSTE 4: "Tu Vidriera Digital Ultra Segura !!." en blanco -->
+            <p class="text-xs text-slate-400 leading-relaxed">Toda la transmisión de datos y consultas viaja cifrada de extremo a extremo. <span class="text-white font-medium">Tu Vidriera Digital Ultra Segura !!.</span></p>
           </div>
         </div>
         <div class="p-6 bg-pizarra rounded-xl border border-slate-800 flex flex-col justify-between">
           <div>
             <i class="fa-solid fa-clock-rotate-left text-verdeVivo text-2xl mb-4"></i>
             <h4 class="text-lg font-bold text-white mb-2">Alta Disponibilidad</h4>
-            <p class="text-xs text-slate-400 leading-relaxed">Plataforma distribuida ultra rápida para garantizar que tu Vidriera Digital nunca se caiga. Always-On !!.</p>
+            <!-- ✅ AJUSTE 4: "Always-On !!." en blanco -->
+            <p class="text-xs text-slate-400 leading-relaxed">Plataforma distribuida ultra rápida para garantizar que tu Vidriera Digital nunca se caiga. <span class="text-white font-medium">Always-On !!.</span></p>
           </div>
         </div>
         <div class="p-6 bg-pizarra rounded-xl border border-slate-800 flex flex-col justify-between">
@@ -247,7 +253,8 @@
           <div>
             <i class="fa-solid fa-gauge-high text-verdeVivo text-2xl mb-4"></i>
             <h4 class="text-lg font-bold text-white mb-2">Carga Ultra Rápida</h4>
-            <p class="text-xs text-slate-400 leading-relaxed">Optimizado para abrir al instante al escanear el cliente desde cualquier teléfono móvil. Fully Responsive !!.</p>
+            <!-- ✅ AJUSTE 4: "Fully Responsive !!." en blanco -->
+            <p class="text-xs text-slate-400 leading-relaxed">Optimizado para abrir al instante al escanear el cliente desde cualquier teléfono móvil. <span class="text-white font-medium">Fully Responsive !!.</span></p>
           </div>
         </div>
       </div>
@@ -494,7 +501,8 @@
           </div>
         </div>
 
-        <button type="submit" class="w-full bg-verdeVivo hover:bg-emerald-600 text-slate-950 font-bold py-4 rounded-xl transition shadow-lg shadow-verdeVivo/20 text-base flex items-center justify-center gap-2">
+        <!-- ✅ AJUSTE 5: Botón de verde a naranja vivo -->
+        <button type="submit" class="w-full bg-naranja hover:bg-orange-600 text-white font-bold py-4 rounded-xl transition shadow-lg shadow-naranja/20 text-base flex items-center justify-center gap-2">
           <i class="fa-solid fa-paper-plane"></i> ACTIVAR MI PRUEBA GRATIS POR 10 DÍAS
         </button>
       </form>
