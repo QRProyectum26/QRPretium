@@ -749,5 +749,38 @@
       });
     })();
   </script>
+  <!-- ✅ NUEVO SCRIPT PARA ENVIAR EL FORMULARIO COMO JSON -->
+  <script>
+    document.getElementById('formSolicitud').addEventListener('submit', async function(e) {
+      e.preventDefault(); // Evita el envío tradicional
+
+      // Recoge los datos del formulario
+      const formData = new FormData(this);
+      const data = Object.fromEntries(formData.entries());
+
+      try {
+        const response = await fetch(this.action, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          alert('✅ Solicitud enviada con éxito. Te contactaremos pronto.');
+          this.reset(); // Limpia el formulario
+        } else {
+          alert('❌ Error: ' + (result.error || 'Intenta de nuevo más tarde.'));
+        }
+      } catch (error) {
+        alert('❌ Error de conexión. Verifica tu internet e intenta de nuevo.');
+        console.error(error);
+      }
+    });
+  </script>
+  <!-- FIN DEL SCRIPT -->
 </body>
 </html>
