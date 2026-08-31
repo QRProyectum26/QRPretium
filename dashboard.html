@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Clientes - QRPretium</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        #map {
+            height: 500px;
+            border-radius: 16px;
+            border: 1px solid #e5e7eb;
+            z-index: 1;
+        }
+        .filtro-card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e5e7eb;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+
+    <div class="max-w-7xl mx-auto">
+
+        <!-- HEADER -->
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-2xl font-black text-slate-800">📍 Dashboard de Clientes</h1>
+            <a href="index.html" class="text-sm text-slate-600 hover:text-slate-900">← Volver al inicio</a>
+        </div>
+
+        <!-- FILTROS -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="filtro-card">
+                <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Rubro</label>
+                <select id="filtroRubro" class="w-full border rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-slate-600">
+                    <option value="todos">Todos los rubros</option>
+                    <!-- Se llenará dinámicamente -->
+                </select>
+            </div>
+            <div class="filtro-card">
+                <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Zona / Ciudad</label>
+                <select id="filtroCiudad" class="w-full border rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-slate-600">
+                    <option value="todos">Todas las zonas</option>
+                    <!-- Se llenará dinámicamente -->
+                </select>
+            </div>
+            <div class="filtro-card flex items-end">
+                <button id="btnAplicarFiltros" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 px-4 rounded-xl text-sm transition">
+                    Aplicar filtros
+                </button>
+            </div>
+        </div>
+
+        <!-- MAPA -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-2 mb-6">
+            <div id="map"></div>
+        </div>
+
+        <!-- TABLA DE CLIENTES -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+                <h2 class="font-bold text-slate-800 text-sm">Clientes filtrados</h2>
+                <span id="cantClientes" class="text-xs font-bold bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full">0 clientes</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-gray-50 text-gray-500 uppercase text-[10px] tracking-wider font-extrabold border-b">
+                        <tr>
+                            <th class="p-3">Nombre</th>
+                            <th class="p-3">Comercio</th>
+                            <th class="p-3">Rubro</th>
+                            <th class="p-3">Ciudad</th>
+                            <th class="p-3">Teléfono</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyClientes" class="divide-y divide-gray-100">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
+
+        let clientes = [];
+        let mapa = null;
+        let marcadores = [];
+
+        // Inicializar mapa
+        function initMap() {
+            mapa = L.map('map').setView([-38.4161, -63.6167], 5); // Centro de Argentina
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap'
+            }).addTo(mapa);
+        }
+
+        // Consultar Supabase
+        async function obtenerClientes() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/solicitudes?select=*`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                    }
+                });
+                if (!response.ok) throw new Error('Error al obtener datos');
+                return await response.json();
+            } catch (error) {
+                console.error('Error:', error);
+                return [];
+            }
+        }
+
+        // Geocodificar (convertir ciudad a coordenadas aproximadas)
+        async function geocodificar(ciudad) {
+            if (!ciudad || ciudad === '' || ciudad === 'No especificada') return null;
+            try {
+                const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(ciudad)}&format=json&limit=1`;
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data && data.length > 0) {
+                    return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+                }
+                return null;
+            } catch {
+                return null;
+            }
+        }
+
+        // Renderizar mapa y tabla
+        async function renderizarDashboard(filtroRubro = 'todos', filtroCiudad = 'todos') {
+            const data = await obtenerClientes();
+            clientes = data;
+
+            // Filtrar
+            let filtrados = clientes;
+            if (filtroRubro !== 'todos') {
+                filtrados = filtrados.filter(c => c.rubro === filtroRubro);
+            }
+            if (filtroCiudad !== 'todos') {
+                filtrados = filtrados.filter(c => c.ciudad === filtroCiudad);
+            }
+
+            // Limpiar mapa y marcadores
+            if (marcadores.length > 0) {
+                marcadores.forEach(m => mapa.removeLayer(m));
+                marcadores = [];
+            }
+
+            // Agregar marcadores
+            for (const cliente of filtrados) {
+                let coords = null;
+                if (cliente.lat && cliente.lng) {
+                    coords = { lat: parseFloat(cliente.lat), lng: parseFloat(cliente.lng) };
+                } else if (cliente.ciudad) {
+                    coords = await geocodificar(cliente.ciudad);
+                }
+                if (coords) {
+                    const marker = L.marker([coords.lat, coords.lng])
+                        .addTo(mapa)
+                        .bindPopup(`<b>${cliente.nombre_responsable}</b><br>${cliente.nombre_comercio}<br>${cliente.rubro}`);
+                    marcadores.push(marker);
+                }
+            }
+
+            // Ajustar vista del mapa
+            if (marcadores.length > 0) {
+                const group = L.featureGroup(marcadores);
+                mapa.fitBounds(group.getBounds().pad(0.1));
+            }
+
+            // Renderizar tabla
+            const tbody = document.getElementById('tbodyClientes');
+            const cant = document.getElementById('cantClientes');
+            tbody.innerHTML = '';
+            cant.innerText = `${filtrados.length} clientes`;
+
+            if (filtrados.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-400">No hay clientes que coincidan con los filtros.</td></tr>`;
+                return;
+            }
+
+            filtrados.forEach(c => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="p-3 font-semibold">${c.nombre_responsable || '-'}</td>
+                        <td class="p-3">${c.nombre_comercio || '-'}</td>
+                        <td class="p-3 text-xs font-medium text-gray-600">${c.rubro || '-'}</td>
+                        <td class="p-3 text-xs text-gray-500">${c.ciudad || '-'}</td>
+                        <td class="p-3 text-xs text-gray-500">${c.telefono || '-'}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Cargar filtros dinámicamente
+        async function cargarFiltros() {
+            const data = await obtenerClientes();
+            const rubros = [...new Set(data.map(c => c.rubro).filter(Boolean))];
+            const ciudades = [...new Set(data.map(c => c.ciudad).filter(Boolean))];
+
+            const selectRubro = document.getElementById('filtroRubro');
+            const selectCiudad = document.getElementById('filtroCiudad');
+
+            rubros.sort().forEach(r => {
+                selectRubro.innerHTML += `<option value="${r}">${r}</option>`;
+            });
+            ciudades.sort().forEach(c => {
+                selectCiudad.innerHTML += `<option value="${c}">${c}</option>`;
+            });
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', async () => {
+            initMap();
+            await cargarFiltros();
+            await renderizarDashboard();
+
+            document.getElementById('btnAplicarFiltros').addEventListener('click', async () => {
+                const rubro = document.getElementById('filtroRubro').value;
+                const ciudad = document.getElementById('filtroCiudad').value;
+                await renderizarDashboard(rubro, ciudad);
+            });
+        });
+    </script>
+</body>
+</html>
