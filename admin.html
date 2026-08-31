@@ -158,7 +158,7 @@
                 </div>
             </div>
 
-            <!-- ✅ NUEVA SECCIÓN: DATOS DEL LOCAL -->
+            <!-- SECCIÓN: DATOS DEL LOCAL -->
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 mt-6">
                 <h2 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
                     <span>🏪</span> Datos del Local
@@ -218,7 +218,6 @@
 
                 <div id="mensajeDatos" class="hidden mt-3 p-3 text-xs font-bold rounded-xl text-center leading-relaxed"></div>
             </div>
-            <!-- FIN NUEVA SECCIÓN -->
 
         </main>
     </div>
@@ -331,10 +330,9 @@
             document.getElementById('inputColor').value = color;
 
             await cargarArticulos();
-            cargarDatosComercioEnFormulario(); // ✅ Cargar datos del local
+            cargarDatosComercioEnFormulario();
         }
 
-        // ✅ Función para cargar datos del comercio en el formulario
         function cargarDatosComercioEnFormulario() {
             if (!comercioActual) return;
             document.getElementById('editNombre').value = obtenerValorObjeto(comercioActual, ['nombre', 'NOMBRE']) || '';
@@ -346,7 +344,6 @@
             document.getElementById('editHorarios').value = obtenerValorObjeto(comercioActual, ['horarios', 'HORARIOS']) || '';
         }
 
-        // ✅ Función para guardar los datos del comercio
         async function guardarDatosComercio() {
             const btn = document.getElementById('btnGuardarDatos');
             const mensaje = document.getElementById('mensajeDatos');
@@ -395,7 +392,6 @@
                     throw ultimoError;
                 }
 
-                // Actualizar los datos del comercio en la variable global
                 comercioActual = { ...comercioActual, ...payload };
                 cargarDatosComercioEnFormulario();
 
@@ -417,13 +413,262 @@
             }
         }
 
-        // ... (resto de funciones: cargarArticulos, renderizarTabla, guardarArticulo, etc.)
-        // (Mantén todo el código que ya tenías, solo agregué las dos funciones nuevas y la llamada en cargarPanel)
+        async function cargarArticulos() {
+            try {
+                let data = [];
+                try {
+                    data = await consultarSupabase('ARTICULOS?select=*');
+                } catch (e) {
+                    data = await consultarSupabase('articulos?select=*');
+                }
 
-        // A partir de aquí, copia el resto de tus funciones (cargarArticulos, renderizarTabla, etc.)
-        // ya están incluidas en el archivo original. Solo asegúrate de que estén todas.
+                if (data.length > 0) {
+                    esquemaColumnas = Object.keys(data[0]);
+                }
 
-        // ... (el resto del código JavaScript que ya tenías)
+                const cuitComparar = cuitLimpioActual.replace(/[-.\s]/g, '');
+                articulosLista = data.filter(a => {
+                    const rawCuit = String(obtenerValorObjeto(a, ['cuit', 'CUIT']));
+                    return rawCuit.replace(/[-.\s]/g, '') === cuitComparar;
+                });
+
+                renderizarTabla();
+
+                let planComercio = 'standard';
+                try {
+                    let datosComercio = await consultarSupabase(`comercios?select=plan&cuit=eq.${cuitComparar}`);
+                    if (datosComercio && datosComercio.length > 0) {
+                        planComercio = datosComercio[0].plan || datosComercio[0].PLAN || 'standard';
+                    }
+                } catch (errPlan) {
+                    console.warn("No se pudo obtener el plan del comercio, usando 'standard':", errPlan);
+                }
+
+                actualizarIndicadorCupo(planComercio, articulosLista.length);
+
+            } catch (err) {
+                console.error("Error al cargar artículos:", err);
+            }
+        }
+
+        function actualizarIndicadorCupo(planComercio, totalGuardados) {
+            const plan = (planComercio || 'standard').toLowerCase();
+            
+            const limites = {
+                'standard': 24,
+                'power': 72,
+                'premium': 2400
+            };
+
+            const limiteMax = limites[plan] || 24;
+            const porcentaje = Math.min((totalGuardados / limiteMax) * 100, 100);
+
+            const elemPlan = document.getElementById('nombrePlan');
+            const elemCupo = document.getElementById('textoCupo');
+            const barra = document.getElementById('barraProgreso');
+
+            if (elemPlan) elemPlan.innerText = `Plan ${plan.toUpperCase()}`;
+            if (elemCupo) elemCupo.innerText = `${totalGuardados} de ${limiteMax} artículos`;
+            
+            if (barra) {
+                barra.style.width = `${porcentaje}%`;
+                if (totalGuardados >= limiteMax) {
+                    barra.className = "bg-red-500 h-full transition-all duration-300";
+                } else if (porcentaje >= 80) {
+                    barra.className = "bg-amber-500 h-full transition-all duration-300";
+                } else {
+                    barra.className = "bg-slate-700 h-full transition-all duration-300";
+                }
+            }
+
+            const btnGuardar = document.getElementById('btnGuardarArt'); 
+            if (btnGuardar) {
+                if (totalGuardados >= limiteMax) {
+                    btnGuardar.disabled = true;
+                    btnGuardar.classList.add('opacity-50', 'cursor-not-allowed');
+                } else {
+                    btnGuardar.disabled = false;
+                    btnGuardar.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            }
+        }
+
+        function renderizarTabla() {
+            const tbody = document.getElementById('tbodyArticulos');
+            document.getElementById('cantArticulos').innerText = `${articulosLista.length} productos`;
+            tbody.innerHTML = '';
+
+            if (articulosLista.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-400">No hay artículos cargados para este CUIT.</td></tr>`;
+                return;
+            }
+
+            articulosLista.forEach(item => {
+                const id = item.id || item.ID;
+                const cod = obtenerValorObjeto(item, ['codigo', 'CODIGO']) || '-';
+                const art = obtenerValorObjeto(item, ['articulo', 'ARTICULO', 'nombre', 'NOMBRE']) || '-';
+                const disp = obtenerValorObjeto(item, ['disponibilidad', 'DISPONIBILIDAD']) || '-';
+                const precio = obtenerValorObjeto(item, ['precio', 'PRECIO']) || 0;
+                const promo = obtenerValorObjeto(item, ['promocion', 'PROMOCION']) || '-';
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="p-3 font-mono font-bold text-slate-800">${cod}</td>
+                        <td class="p-3 font-semibold text-gray-900 uppercase">${art}</td>
+                        <td class="p-3 text-xs text-gray-600">${disp}</td>
+                        <td class="p-3 font-black text-slate-800">$${Number(precio).toLocaleString('es-AR')}</td>
+                        <td class="p-3 text-xs text-emerald-500 font-bold">${promo !== '-' ? '🔥 ' + promo : '-'}</td>
+                        <td class="p-3 text-right space-x-1">
+                            <button onclick="prepararEdicion(${id})" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-bold text-xs">✏️ Editar</button>
+                            <button onclick="eliminarArticulo(${id})" class="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded font-bold text-xs">🗑️ Borrar</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function obtenerClaveColumna(nombreStandard) {
+            if (esquemaColumnas.length > 0) {
+                const encontrada = esquemaColumnas.find(c => c.toLowerCase() === nombreStandard.toLowerCase());
+                if (encontrada) return encontrada;
+            }
+            return nombreStandard;
+        }
+
+        async function guardarArticulo(e) {
+            e.preventDefault(); // ✅ Evita que la página se recargue
+            const btnGuardar = document.getElementById('btnGuardarArt');
+            btnGuardar.disabled = true;
+            btnGuardar.innerText = "Guardando...";
+
+            const id = document.getElementById('artId').value;
+
+            const payload = {};
+            payload[obtenerClaveColumna('cuit')] = cuitLimpioActual;
+            payload[obtenerClaveColumna('codigo')] = document.getElementById('artCodigo').value.trim();
+            payload[obtenerClaveColumna('articulo')] = document.getElementById('artNombre').value.trim();
+            payload[obtenerClaveColumna('descripcion')] = document.getElementById('artDescripcion').value.trim();
+            payload[obtenerClaveColumna('disponibilidad')] = document.getElementById('artDisponibilidad').value.trim();
+            payload[obtenerClaveColumna('precio')] = parseFloat(document.getElementById('artPrecio').value) || 0;
+            payload[obtenerClaveColumna('promocion')] = document.getElementById('artPromocion').value.trim();
+
+            const campoId = obtenerClaveColumna('id');
+
+            try {
+                let metodo = id ? 'PATCH' : 'POST';
+                let queryId = id ? `?${campoId}=eq.${id}` : '';
+
+                let guardadoExitoso = false;
+                let ultimoError = null;
+
+                try {
+                    await consultarSupabase(`ARTICULOS${queryId}`, {
+                        method: metodo,
+                        body: JSON.stringify(payload)
+                    });
+                    guardadoExitoso = true;
+                } catch (err1) {
+                    ultimoError = err1;
+                }
+
+                if (!guardadoExitoso) {
+                    try {
+                        await consultarSupabase(`articulos${queryId}`, {
+                            method: metodo,
+                            body: JSON.stringify(payload)
+                        });
+                        guardadoExitoso = true;
+                    } catch (err2) {
+                        ultimoError = err2;
+                    }
+                }
+
+                if (!guardadoExitoso) {
+                    throw ultimoError;
+                }
+
+                mostrarMensaje(id ? "✅ Artículo actualizado correctamente." : "✅ Nuevo artículo guardado con éxito.");
+                limpiarFormulario();
+                await cargarArticulos(); // ✅ Solo recarga artículos, NO el panel completo
+            } catch (err) {
+                console.error("Error al guardar:", err);
+                mostrarMensaje(`Error al guardar: ${err.message}`, true);
+            } finally {
+                btnGuardar.disabled = false;
+                btnGuardar.innerText = "Guardar Artículo";
+            }
+        }
+
+        function prepararEdicion(id) {
+            const item = articulosLista.find(a => (a.id || a.ID) == id);
+            if (!item) return;
+
+            document.getElementById('artId').value = id;
+            document.getElementById('artCodigo').value = obtenerValorObjeto(item, ['codigo', 'CODIGO']);
+            document.getElementById('artNombre').value = obtenerValorObjeto(item, ['articulo', 'ARTICULO', 'nombre', 'NOMBRE']);
+            document.getElementById('artDescripcion').value = obtenerValorObjeto(item, ['descripcion', 'DESCRIPCION']);
+            document.getElementById('artDisponibilidad').value = obtenerValorObjeto(item, ['disponibilidad', 'DISPONIBILIDAD']);
+            document.getElementById('artPrecio').value = obtenerValorObjeto(item, ['precio', 'PRECIO']);
+            document.getElementById('artPromocion').value = obtenerValorObjeto(item, ['promocion', 'PROMOCION']);
+
+            document.getElementById('tituloFormArticulo').innerText = "✏️ Editar Artículo";
+            document.getElementById('btnCancelar').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function limpiarFormulario() {
+            document.getElementById('artId').value = '';
+            document.getElementById('artCodigo').value = '';
+            document.getElementById('artNombre').value = '';
+            document.getElementById('artDescripcion').value = '';
+            document.getElementById('artDisponibilidad').value = '';
+            document.getElementById('artPrecio').value = '';
+            document.getElementById('artPromocion').value = '';
+
+            document.getElementById('tituloFormArticulo').innerText = "➕ Agregar Nuevo Artículo";
+            document.getElementById('btnCancelar').classList.add('hidden');
+        }
+
+        async function eliminarArticulo(id) {
+            if (confirm("¿Estás seguro de que deseas borrar este artículo?")) {
+                const campoId = obtenerClaveColumna('id');
+                try {
+                    try {
+                        await consultarSupabase(`ARTICULOS?${campoId}=eq.${id}`, { method: 'DELETE' });
+                    } catch (e) {
+                        await consultarSupabase(`articulos?${campoId}=eq.${id}`, { method: 'DELETE' });
+                    }
+                    mostrarMensaje("🗑️ Artículo eliminado.");
+                    await cargarArticulos();
+                } catch (err) {
+                    mostrarMensaje(`Error al borrar: ${err.message}`, true);
+                }
+            }
+        }
+
+        async function guardarColor(nuevoColor) {
+            document.getElementById('headerAdmin').style.backgroundColor = nuevoColor;
+            const idComercio = comercioActual.id || comercioActual.ID;
+            const campoId = obtenerClaveColumna('id');
+
+            try {
+                await consultarSupabase(`COMERCIOS?${campoId}=eq.${idComercio}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ color: nuevoColor })
+                });
+            } catch (e) {
+                await consultarSupabase(`comercios?${campoId}=eq.${idComercio}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ color: nuevoColor })
+                });
+            }
+        }
+
+        function cerrarSesion() {
+            comercioActual = null;
+            document.getElementById('seccionPanel').classList.add('hidden');
+            document.getElementById('seccionLogin').classList.remove('hidden');
+        }
     </script>
 </body>
 </html>
