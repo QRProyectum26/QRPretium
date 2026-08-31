@@ -1381,7 +1381,7 @@
             <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200 relative overflow-hidden">
                 <div class="flex flex-wrap items-center justify-between mb-3 pb-2 border-b border-gray-100 gap-2">
                     ${codigo ? `<span class="bg-slate-800 text-white font-mono font-black text-lg px-1.5 py-0.5 rounded-lg shadow-sm whitespace-nowrap flex-shrink-0" style="min-width: 80px; text-align: center;">CÓD: ${codigo}</span>` : '<span></span>'}
-                    ${disponibilidad ? `<span class="bg-emerald-100 text-slate-800 font-medium text-xs px-2.5 py-0.7 rounded-full border border-slate-200 text-right flex-shrink-0">📦 ${disponibilidad}</span>` : ''}
+                    ${disponibilidad ? `<span class="bg-emerald-100 text-slate-800 font-medium text-xs px-2.5 py-0.7 rounded-full border border-emerald-300 text-right flex-shrink-0">📦 ${disponibilidad}</span>` : ''}
                 </div>
                 <h3 class="font-extrabold text-gray-900 text-lg leading-tight uppercase">${articulo}</h3>
                 ${descripcion ? `<div class="descripcion-producto">${descripcion}</div>` : ''}
@@ -1390,7 +1390,7 @@
                         <div><p class="text-[13px] text-orange-500 uppercase font-bold">Precio final</p></div>
                         <div class="text-right"><span class="text-slate-800 font-black text-2xl">$${Number(precio).toLocaleString('es-AR')}</span></div>
                     </div>
-               ${promocion ? `<div><span class="inline-block bg-slate-100 text-emerald-950 font-extrabold text-[11px] px-2.5 py-[2px] rounded-lg uppercase tracking-wider w-full text-center border border-emerald-300 shadow-sm"><svg class="inline-block align-middle text-orange-500" width="1rem" height="1.2rem" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg> ${promocion}</span></div>` : ''}
+               ${promocion ? `<div><span class="inline-block bg-slate-100 text-emerald-950 font-extrabold text-[11px] px-2.5 py-[2px] rounded-lg uppercase tracking-wider w-full text-center border border-slate-200 shadow-sm"><svg class="inline-block align-middle text-orange-500" width="1rem" height="1.2rem" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg> ${promocion}</span></div>` : ''}
                 </div>
             </div>
         `;
