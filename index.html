@@ -50,7 +50,7 @@
 </head>
 <body class="bg-pizarraOscura text-slate-100 font-sans antialiased selection:bg-naranja selection:text-white">
 
-  <!-- HEADER CON MENÚ HAMBURGUESA (sin cambios) -->
+  <!-- HEADER CON MENÚ HAMBURGUESA -->
   <header class="sticky top-0 z-50 bg-pizarra/90 backdrop-blur-md border-b border-slate-700/50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16 md:h-20">
@@ -146,7 +146,6 @@
                 <p class="text-xs sm:text-sm text-slate-100 mb-2 md:mb-4 leading-relaxed font-medium [text-shadow:_0_1px_3px_rgba(0,0,0,0.9)]">
                   Muestra automaticamente precios y detalles de productos a los clientes.Ofertas y mas!!
                 </p>
-                <!-- ✅ CAMBIADO: enlace a #solicitar-prueba -->
                 <a href="#solicitar-prueba" class="inline-block bg-naranja hover:bg-orange-600 text-white font-bold py-1 px-4 md:py-2 md:px-6 rounded-xl transition shadow-lg transform hover:scale-105 text-sm md:text-base">
                   EMPEZAR AHORA !
                 </a>
@@ -261,7 +260,7 @@
     </div>
   </section>
 
-  <!-- PLANES (los botones ya apuntan a #solicitar-prueba, no se modifican) -->
+  <!-- PLANES -->
   <section id="planes" class="py-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center max-w-3xl mx-auto mb-10">
@@ -392,7 +391,7 @@
       <!-- ✅ TÍTULO DEL FORMULARIO -->
       <h3 class="text-xl font-extrabold text-white text-left mb-4">Complete el Formulario</h3>
 
-      <!-- ✅ FORMULARIO MODIFICADO -->
+      <!-- ✅ FORMULARIO MODIFICADO CON SELECTORES -->
       <form id="formSolicitud" action="https://zbnuunaguciupyyzploq.supabase.co/functions/v1/solicitar" method="POST" class="bg-pizarra/90 p-6 sm:p-8 rounded-3xl border border-slate-700/80 shadow-2xl space-y-4 backdrop-blur-sm">
 
         <!-- DESPLEGABLE: "Solicitar" -->
@@ -450,18 +449,28 @@
           </div>
         </div>
 
+        <!-- ✅ CAMPOS DE DIRECCIÓN, PROVINCIA Y CIUDAD CON SELECTORES -->
         <div class="grid md:grid-cols-3 gap-4">
+          <!-- Dirección (input de texto) -->
           <div>
             <label class="block text-xs font-semibold text-slate-300 mb-1.5">Dirección</label>
-            <input type="text" name="direccion" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="Calle y número">
+            <input type="text" name="direccion" id="direccion" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="Calle y número">
           </div>
+          <!-- Provincia (selector) -->
           <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Ciudad</label>
-            <input type="text" name="ciudad" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="Ej: Buenos Aires">
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Provincia *</label>
+            <select name="provincia" id="provincia" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition">
+              <option value="">Seleccioná tu provincia...</option>
+              <!-- Se llenará con JavaScript -->
+            </select>
           </div>
+          <!-- Ciudad (selector) -->
           <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Provincia</label>
-            <input type="text" name="provincia" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="Ej: CABA">
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Ciudad *</label>
+            <select name="ciudad" id="ciudad" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition">
+              <option value="">Seleccioná tu ciudad...</option>
+              <!-- Se llenará con JavaScript -->
+            </select>
           </div>
         </div>
 
@@ -510,7 +519,7 @@
     </div>
   </footer>
 
-  <!-- SCRIPTS (sin cambios, solo el menú, planes, nebulosa y cubo) -->
+  <!-- SCRIPTS -->
   <script>
     // Menú hamburguesa
     const btnMenu = document.getElementById('btnMenu');
@@ -748,9 +757,68 @@
         velocidadY = 0.012;
       });
     })();
-  </script>
-  <!-- ✅ NUEVO SCRIPT PARA ENVIAR EL FORMULARIO COMO JSON -->
-  <script>
+
+    // ✅ SCRIPT PARA POBLAR PROVINCIAS Y CIUDADES EN EL FORMULARIO
+    document.addEventListener('DOMContentLoaded', function() {
+      // Provincias y ciudades de Argentina
+      const provinciasYCiudades = {
+        "Buenos Aires": ["La Plata", "Mar del Plata", "Bahía Blanca", "San Nicolás", "Tandil", "Junín", "Pergamino", "Campana", "Zárate", "Luján", "Mercedes", "Chivilcoy", "Azul", "Olavarría", "Necochea", "Tres Arroyos", "Pehuajó", "Lincoln", "Chacabuco", "Chivilcoy", "San Miguel", "Temperley", "Lomas de Zamora", "Avellaneda", "Lanús", "Quilmes", "Berazategui", "Florencio Varela", "Almirante Brown", "Esteban Echeverría", "Ezeiza", "Hurlingham", "Ituzaingó", "Merlo", "Morón", "Tres de Febrero", "Vicente López", "San Isidro", "San Fernando", "Tigre", "Pilar", "Escobar", "Campana", "Zárate", "Baradero", "San Pedro", "Arrecifes", "Carmen de Areco", "Exaltación de la Cruz", "Capilla del Señor"],
+        "CABA": ["CABA", "Ciudad Autónoma de Buenos Aires", "Capital Federal"],
+        "Córdoba": ["Córdoba", "Villa Carlos Paz", "Río Cuarto", "Villa María", "San Francisco", "Jesús María", "Alta Gracia", "Bell Ville", "Cosquín", "La Falda", "Capilla del Monte", "Mina Clavero", "Villa Dolores", "Cruz del Eje", "Deán Funes"],
+        "Santa Fe": ["Rosario", "Santa Fe", "Rafaela", "Venado Tuerto", "Sunchales", "Casilda", "Esperanza", "San Lorenzo", "Capitán Bermúdez", "Granadero Baigorria", "Pérez", "Funes", "Roldán", "Cañada de Gómez", "Armstrong", "Las Parejas"],
+        "Mendoza": ["Mendoza", "San Rafael", "Tunuyán", "Luján de Cuyo", "Guaymallén", "Las Heras", "Godoy Cruz", "Maipú", "Rivadavia", "San Martín", "La Paz", "General Alvear", "Tupungato"],
+        "Tucumán": ["San Miguel de Tucumán", "Concepción", "Yerba Buena", "Tafí Viejo", "Aguilares", "Monteros", "Famaillá", "Lules", "Simoca", "Banda del Río Salí", "Alderetes"],
+        "Salta": ["Salta", "Tartagal", "Orán", "General Güemes", "Cafayate", "San José de Metán", "Rosario de la Frontera", "Embarcación", "San Ramón de la Nueva Orán"],
+        "Entre Ríos": ["Paraná", "Concordia", "Gualeguaychú", "Concepción del Uruguay", "Villa Elisa", "Chajarí", "Federación", "Colón", "San José de Feliciano", "La Paz", "Diamante", "Victoria"],
+        "Chaco": ["Resistencia", "Presidencia Roque Sáenz Peña", "Villa Ángela", "Charata", "General Pinedo", "Machagai", "Quitilipi", "Castelli", "Juan José Castelli", "Las Breñas"],
+        "Corrientes": ["Corrientes", "Goya", "Mercedes", "Curuzú Cuatiá", "Monte Caseros", "Esquina", "Paso de los Libres", "Santo Tomé", "Bella Vista", "Saladas", "Mburucuyá"],
+        "Misiones": ["Posadas", "Oberá", "Eldorado", "Puerto Iguazú", "Apóstoles", "San Vicente", "Montecarlo", "Aristóbulo del Valle", "Leandro N. Alem", "San Pedro", "Jardín América"],
+        "San Juan": ["San Juan", "Rawson", "Caucete", "San José de Jáchal", "Albardón", "Rivadavia", "Chimbas", "Santa Lucía", "Pocito", "Sarmiento", "Calingasta", "Iglesia"],
+        "San Luis": ["San Luis", "Villa Mercedes", "La Punta", "Merlo", "Juana Koslay", "La Toma", "Concarán", "Nogolí", "Candelaria", "San Francisco del Monte de Oro"],
+        "La Rioja": ["La Rioja", "Chamical", "Chepes", "Villa Unión", "Arauco", "Famatina", "Chilecito", "Castro Barros", "General Belgrano", "San Blas"],
+        "Catamarca": ["San Fernando del Valle de Catamarca", "Andalgalá", "Tinogasta", "Recreo", "Belén", "Santa María", "Fiambalá", "Poman", "El Alto", "Ancasti"],
+        "Santiago del Estero": ["Santiago del Estero", "Añatuya", "Villa Ojo de Agua", "Fernández", "Termas de Río Hondo", "Frías", "Loreto", "Sumampa", "Pinto", "Bandera", "Campo Gallo"],
+        "Jujuy": ["San Salvador de Jujuy", "Palpalá", "La Quiaca", "Libertador General San Martín", "Perico", "Monterrico", "El Carmen", "San Pedro", "Humahuaca", "Tilcara"],
+        "Neuquén": ["Neuquén", "Centenario", "Plottier", "San Martín de los Andes", "Villa la Angostura", "Zapala", "Cutral Có", "Chos Malal", "Junín de los Andes", "Rincón de los Sauces"],
+        "Río Negro": ["Viedma", "Bariloche", "General Roca", "Cipolletti", "Allen", "Cinco Saltos", "Catriel", "El Bolsón", "San Antonio Oeste", "Sierra Grande", "Ingeniero Jacobacci"],
+        "Chubut": ["Rawson", "Comodoro Rivadavia", "Trelew", "Puerto Madryn", "Esquel", "Gaiman", "Dolavon", "Sarmiento", "José de San Martín", "Rada Tilly", "Camarones"],
+        "Santa Cruz": ["Río Gallegos", "Caleta Olivia", "El Calafate", "Puerto Deseado", "Gobernador Gregores", "Las Heras", "Pico Truncado", "Perito Moreno", "El Chaltén"],
+        "Tierra del Fuego": ["Ushuaia", "Río Grande", "Tolhuin"],
+        "Formosa": ["Formosa", "Clorinda", "Pirané", "El Colorado", "Laguna Blanca", "Ibarreta", "Espinillo", "Las Lomitas"],
+        "La Pampa": ["Santa Rosa", "General Pico", "Carlos Casares", "Realicó", "Victorica", "General Acha", "Guatraché", "Trenel", "Alpachiri", "Doblas"]
+      };
+
+      const provinciaSelect = document.getElementById('provincia');
+      const ciudadSelect = document.getElementById('ciudad');
+
+      if (provinciaSelect && ciudadSelect) {
+        // Agregar opciones de provincias
+        const provincias = Object.keys(provinciasYCiudades).sort();
+        provincias.forEach(p => {
+          const option = document.createElement('option');
+          option.value = p;
+          option.textContent = p;
+          provinciaSelect.appendChild(option);
+        });
+
+        // Evento para actualizar ciudades al seleccionar provincia
+        provinciaSelect.addEventListener('change', function() {
+          const provincia = this.value;
+          ciudadSelect.innerHTML = '<option value="">Seleccioná tu ciudad...</option>';
+          if (provincia && provinciasYCiudades[provincia]) {
+            const ciudades = provinciasYCiudades[provincia].sort();
+            ciudades.forEach(c => {
+              const option = document.createElement('option');
+              option.value = c;
+              option.textContent = c;
+              ciudadSelect.appendChild(option);
+            });
+          }
+        });
+      }
+    });
+
+    // ✅ SCRIPT PARA ENVIAR EL FORMULARIO COMO JSON (ya existente)
     document.getElementById('formSolicitud').addEventListener('submit', async function(e) {
       e.preventDefault(); // Evita el envío tradicional
 
@@ -781,6 +849,5 @@
       }
     });
   </script>
-  <!-- FIN DEL SCRIPT -->
 </body>
 </html>
