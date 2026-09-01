@@ -41,6 +41,26 @@
             z-index: 1000;
             pointer-events: none;
         }
+        /* Estilos para el selector de estado */
+        .select-estado {
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            border: 1px solid #d1d5db;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .select-estado:hover {
+            border-color: #6b7280;
+        }
+        .select-estado.pendiente { background: #fef3c7; color: #92400e; border-color: #f59e0b; }
+        .select-estado.visitado { background: #d1fae5; color: #065f46; border-color: #10b981; }
+        .select-estado.revisitar { background: #dbeafe; color: #1e40af; border-color: #3b82f6; }
+        .select-estado.llamar { background: #ffedd5; color: #9a3412; border-color: #f97316; }
+        .select-estado.no_interesado { background: #f3f4f6; color: #374151; border-color: #9ca3af; }
+        .select-estado.pendiente option { background: white; color: #374151; }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen p-6">
@@ -69,7 +89,7 @@
                     <option value="todos">Todas las zonas</option>
                 </select>
             </div>
-            <!-- Tipo de Solicitud (NUEVO) -->
+            <!-- Tipo de Solicitud -->
             <div class="filtro-card">
                 <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Tipo de Solicitud</label>
                 <select id="filtroTipo" class="w-full border rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-slate-600">
@@ -82,7 +102,7 @@
                     <option value="Prueba Gratuita">Prueba Gratuita</option>
                 </select>
             </div>
-            <!-- Estado (NUEVO) -->
+            <!-- Estado -->
             <div class="filtro-card">
                 <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Estado</label>
                 <select id="filtroEstado" class="w-full border rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-slate-600">
@@ -105,7 +125,7 @@
         <!-- MAPA -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-2 mb-6 relative">
             <div id="map"></div>
-            <div id="geocodingStatus" class="geocoding-status hidden">🌍 Geocodificando direcciones...</div>
+            <div id="geocodingStatus" class="geocoding-status hidden">🌍 Cargando marcadores...</div>
         </div>
 
         <!-- TABLA DE CLIENTES -->
@@ -126,6 +146,7 @@
                             <th class="p-3">Teléfono</th>
                             <th class="p-3">Tipo</th>
                             <th class="p-3">Estado</th>
+                            <th class="p-3 text-center">Acción</th>
                         </tr>
                     </thead>
                     <tbody id="tbodyClientes" class="divide-y divide-gray-100">
@@ -167,6 +188,41 @@
             }
         }
 
+        // ✅ Función para actualizar el estado en Supabase
+        async function actualizarEstado(id, nuevoEstado) {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/solicitudes?id=eq.${id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation',
+                    },
+                    body: JSON.stringify({ estado: nuevoEstado }),
+                });
+
+                if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`);
+
+                // Actualizar la vista local
+                const cliente = clientes.find(c => c.id === id);
+                if (cliente) {
+                    cliente.estado = nuevoEstado;
+                    // Re-renderizar para reflejar el cambio
+                    await renderizarDashboard(
+                        document.getElementById('filtroRubro').value,
+                        document.getElementById('filtroCiudad').value,
+                        document.getElementById('filtroTipo').value,
+                        document.getElementById('filtroEstado').value
+                    );
+                }
+                console.log(`✅ Estado actualizado a "${nuevoEstado}" para el cliente ${id}`);
+            } catch (error) {
+                console.error('❌ Error al actualizar estado:', error);
+                alert('❌ Error al actualizar estado. Intenta de nuevo.');
+            }
+        }
+
         async function renderizarDashboard(filtroRubro = 'todos', filtroCiudad = 'todos', filtroTipo = 'todos', filtroEstado = 'todos') {
             const data = await obtenerClientes();
             clientes = data;
@@ -197,13 +253,20 @@
             cant.innerText = `${filtrados.length} clientes`;
 
             if (filtrados.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-gray-400">No hay clientes que coincidan con los filtros.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="9" class="p-4 text-center text-gray-400">No hay clientes que coincidan con los filtros.</td></tr>`;
                 return;
             }
 
             filtrados.forEach(c => {
+                // Determinar clase CSS para el estado
+                let estadoClass = 'pendiente';
+                if (c.estado === 'Visitado') estadoClass = 'visitado';
+                else if (c.estado === 'Revisitar') estadoClass = 'revisitar';
+                else if (c.estado === 'Llamar') estadoClass = 'llamar';
+                else if (c.estado === 'No Interesado') estadoClass = 'no_interesado';
+
                 tbody.innerHTML += `
-                    <tr class="hover:bg-gray-50 transition">
+                    <tr class="hover:bg-gray-50 transition" data-id="${c.id}">
                         <td class="p-3 font-semibold">${c.nombre_responsable || '-'}</td>
                         <td class="p-3">${c.nombre_comercio || '-'}</td>
                         <td class="p-3 text-xs font-medium text-gray-600">${c.rubro || '-'}</td>
@@ -212,11 +275,22 @@
                         <td class="p-3 text-xs text-gray-500">${c.telefono || '-'}</td>
                         <td class="p-3 text-xs font-medium text-gray-600">${c.tipo_solicitud || '-'}</td>
                         <td class="p-3 text-xs font-medium ${c.estado === 'Pendiente' ? 'text-amber-600' : c.estado === 'Visitado' ? 'text-green-600' : c.estado === 'Revisitar' ? 'text-blue-600' : c.estado === 'Llamar' ? 'text-orange-600' : 'text-gray-500'}">${c.estado || '-'}</td>
+                        <td class="p-3 text-center">
+                            <select class="select-estado ${estadoClass}" 
+                                    onchange="actualizarEstado(${c.id}, this.value)"
+                                    aria-label="Cambiar estado del cliente">
+                                <option value="Pendiente" ${c.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
+                                <option value="Visitado" ${c.estado === 'Visitado' ? 'selected' : ''}>Visitado</option>
+                                <option value="Revisitar" ${c.estado === 'Revisitar' ? 'selected' : ''}>Revisitar</option>
+                                <option value="Llamar" ${c.estado === 'Llamar' ? 'selected' : ''}>Llamar</option>
+                                <option value="No Interesado" ${c.estado === 'No Interesado' ? 'selected' : ''}>No Interesado</option>
+                            </select>
+                        </td>
                     </tr>
                 `;
             });
 
-            // Geocodificar y agregar marcadores (solo para los que tienen coordenadas)
+            // Geocodificar y agregar marcadores
             const statusEl = document.getElementById('geocodingStatus');
             statusEl.classList.remove('hidden');
             statusEl.textContent = `🌍 Cargando marcadores...`;
@@ -224,7 +298,6 @@
             let marcadoresAgregados = 0;
 
             for (const cliente of filtrados) {
-                // Si ya tiene lat/lng guardados, usarlos
                 if (cliente.lat && cliente.lng) {
                     const marker = L.marker([parseFloat(cliente.lat), parseFloat(cliente.lng)])
                         .addTo(mapa)
