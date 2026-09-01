@@ -23,6 +23,11 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             border: 1px solid #e5e7eb;
         }
+        .loading-marker {
+            text-align: center;
+            padding: 20px;
+            color: #6b7280;
+        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen p-6">
@@ -41,14 +46,12 @@
                 <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Rubro</label>
                 <select id="filtroRubro" class="w-full border rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-slate-600">
                     <option value="todos">Todos los rubros</option>
-                    <!-- Se llenará dinámicamente -->
                 </select>
             </div>
             <div class="filtro-card">
                 <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Zona / Ciudad</label>
                 <select id="filtroCiudad" class="w-full border rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-slate-600">
                     <option value="todos">Todas las zonas</option>
-                    <!-- Se llenará dinámicamente -->
                 </select>
             </div>
             <div class="filtro-card flex items-end">
@@ -113,26 +116,38 @@
                         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
                     }
                 });
-                if (!response.ok) throw new Error('Error al obtener datos');
+                if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`);
                 return await response.json();
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Error al obtener clientes:', error);
                 return [];
             }
         }
 
-        // Geocodificar (convertir ciudad a coordenadas aproximadas)
+        // Geocodificar con proxy CORS (evita bloqueos de CORS y rate limiting)
         async function geocodificar(ciudad) {
-            if (!ciudad || ciudad === '' || ciudad === 'No especificada') return null;
+            if (!ciudad || ciudad === '' || ciudad === 'No especificada' || ciudad === '-') return null;
+            
+            // Usar un proxy CORS para evitar bloqueos
+            const proxyUrl = 'https://corsproxy.io/?';
+            const nominatimUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(ciudad)}&format=json&limit=1`;
+            
             try {
-                const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(ciudad)}&format=json&limit=1`;
-                const response = await fetch(url);
+                const response = await fetch(proxyUrl + encodeURIComponent(nominatimUrl));
+                if (!response.ok) {
+                    console.warn(`Geocodificación fallida para "${ciudad}": ${response.status}`);
+                    return null;
+                }
                 const data = await response.json();
                 if (data && data.length > 0) {
-                    return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+                    return {
+                        lat: parseFloat(data[0].lat),
+                        lng: parseFloat(data[0].lon)
+                    };
                 }
                 return null;
-            } catch {
+            } catch (error) {
+                console.warn(`Error geocodificando "${ciudad}":`, error);
                 return null;
             }
         }
@@ -157,23 +172,75 @@
                 marcadores = [];
             }
 
-            // Agregar marcadores
+            // Si no hay clientes, mostrar mensaje en el mapa
+            if (filtrados.length === 0) {
+                // Mostrar un mensaje en el mapa (opcional)
+                const noDataMsg = L.control({ position: 'bottomleft' });
+                noDataMsg.onAdd = function() {
+                    const div = L.DomUtil.create('div', 'loading-marker');
+                    div.innerHTML = 'No hay clientes que coincidan con los filtros.';
+                    return div;
+                };
+                noDataMsg.addTo(mapa);
+                // Renderizar tabla vacía
+                const tbody = document.getElementById('tbodyClientes');
+                const cant = document.getElementById('cantClientes');
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-400">No hay clientes que coincidan con los filtros.</td></tr>`;
+                cant.innerText = '0 clientes';
+                return;
+            }
+
+            // Geocodificar y agregar marcadores (con límite de 10 para evitar 429)
+            const ciudadesUnicas = [...new Set(filtrados.map(c => c.ciudad).filter(Boolean))];
+            let geocoded = {};
+            
+            // Geocodificar solo las primeras 10 ciudades únicas para evitar rate limit
+            const ciudadesALimitar = ciudadesUnicas.slice(0, 10);
+            for (const ciudad of ciudadesALimitar) {
+                const coords = await geocodificar(ciudad);
+                if (coords) {
+                    geocoded[ciudad] = coords;
+                }
+                // Pequeña pausa para no saturar la API
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+
+            // Agregar marcadores para clientes con coordenadas
+            let marcadoresAgregados = 0;
             for (const cliente of filtrados) {
                 let coords = null;
                 if (cliente.lat && cliente.lng) {
                     coords = { lat: parseFloat(cliente.lat), lng: parseFloat(cliente.lng) };
-                } else if (cliente.ciudad) {
-                    coords = await geocodificar(cliente.ciudad);
+                } else if (cliente.ciudad && geocoded[cliente.ciudad]) {
+                    coords = geocoded[cliente.ciudad];
                 }
                 if (coords) {
                     const marker = L.marker([coords.lat, coords.lng])
                         .addTo(mapa)
-                        .bindPopup(`<b>${cliente.nombre_responsable}</b><br>${cliente.nombre_comercio}<br>${cliente.rubro}`);
+                        .bindPopup(`
+                            <b>${cliente.nombre_responsable || 'Sin nombre'}</b><br>
+                            ${cliente.nombre_comercio || 'Sin comercio'}<br>
+                            ${cliente.rubro || 'Sin rubro'}<br>
+                            ${cliente.ciudad || 'Sin ciudad'}<br>
+                            📞 ${cliente.telefono || 'Sin teléfono'}
+                        `);
                     marcadores.push(marker);
+                    marcadoresAgregados++;
                 }
             }
 
-            // Ajustar vista del mapa
+            // Si no se agregaron marcadores, mostrar mensaje
+            if (marcadoresAgregados === 0) {
+                const noDataMsg = L.control({ position: 'bottomleft' });
+                noDataMsg.onAdd = function() {
+                    const div = L.DomUtil.create('div', 'loading-marker');
+                    div.innerHTML = 'No se pudieron geolocalizar clientes. Verifica que tengan ciudad o coordenadas.';
+                    return div;
+                };
+                noDataMsg.addTo(mapa);
+            }
+
+            // Ajustar vista del mapa si hay marcadores
             if (marcadores.length > 0) {
                 const group = L.featureGroup(marcadores);
                 mapa.fitBounds(group.getBounds().pad(0.1));
@@ -184,11 +251,6 @@
             const cant = document.getElementById('cantClientes');
             tbody.innerHTML = '';
             cant.innerText = `${filtrados.length} clientes`;
-
-            if (filtrados.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-400">No hay clientes que coincidan con los filtros.</td></tr>`;
-                return;
-            }
 
             filtrados.forEach(c => {
                 tbody.innerHTML += `
@@ -211,6 +273,10 @@
 
             const selectRubro = document.getElementById('filtroRubro');
             const selectCiudad = document.getElementById('filtroCiudad');
+
+            // Limpiar opciones existentes (excepto la primera)
+            selectRubro.innerHTML = '<option value="todos">Todos los rubros</option>';
+            selectCiudad.innerHTML = '<option value="todos">Todas las zonas</option>';
 
             rubros.sort().forEach(r => {
                 selectRubro.innerHTML += `<option value="${r}">${r}</option>`;
