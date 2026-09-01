@@ -28,19 +28,6 @@
             padding: 20px;
             color: #6b7280;
         }
-        .geocoding-status {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.7);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            z-index: 1000;
-            pointer-events: none;
-        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen p-6">
@@ -75,9 +62,8 @@
         </div>
 
         <!-- MAPA -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-2 mb-6 relative">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-2 mb-6">
             <div id="map"></div>
-            <div id="geocodingStatus" class="geocoding-status hidden">Geocodificando ciudades...</div>
         </div>
 
         <!-- TABLA DE CLIENTES -->
@@ -109,10 +95,59 @@
         const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
 
+        // 📌 MAPA DE COORDENADAS PARA CIUDADES ARGENTINAS (manual)
+        const COORDENADAS_CIUDADES = {
+            'buenos aires': { lat: -34.6037, lng: -58.3816 },
+            'capital federal': { lat: -34.6037, lng: -58.3816 },
+            'caba': { lat: -34.6037, lng: -58.3816 },
+            'córdoba': { lat: -31.4201, lng: -64.1888 },
+            'rosario': { lat: -32.9468, lng: -60.6393 },
+            'mendoza': { lat: -32.8908, lng: -68.8272 },
+            'san miguel de tucumán': { lat: -26.8083, lng: -65.2176 },
+            'tucumán': { lat: -26.8083, lng: -65.2176 },
+            'la plata': { lat: -34.9205, lng: -57.9536 },
+            'mar del plata': { lat: -38.0055, lng: -57.5426 },
+            'salta': { lat: -24.7821, lng: -65.4232 },
+            'santa fe': { lat: -31.6333, lng: -60.7000 },
+            'san juan': { lat: -31.5375, lng: -68.5364 },
+            'neuquén': { lat: -38.9516, lng: -68.0591 },
+            'posadas': { lat: -27.3621, lng: -55.9007 },
+            'san luis': { lat: -33.3000, lng: -66.3333 },
+            'catamarca': { lat: -28.4696, lng: -65.7852 },
+            'la rioja': { lat: -29.4111, lng: -66.8507 },
+            'santiago del estero': { lat: -27.7833, lng: -64.2667 },
+            'corrientes': { lat: -27.4667, lng: -58.8333 },
+            'resistencia': { lat: -27.4500, lng: -58.9833 },
+            'formosa': { lat: -26.1833, lng: -58.1667 },
+            'rawson': { lat: -43.3000, lng: -65.1000 },
+            'ushuaia': { lat: -54.8000, lng: -68.3000 },
+            'rio grande': { lat: -53.7833, lng: -67.7000 },
+            'bariloche': { lat: -41.1333, lng: -71.3000 },
+            'san carlos de bariloche': { lat: -41.1333, lng: -71.3000 },
+            'trelew': { lat: -43.2500, lng: -65.3000 },
+            'comodoro rivadavia': { lat: -45.8667, lng: -67.5000 },
+            'general roca': { lat: -39.0333, lng: -67.5833 },
+            'viedma': { lat: -40.8000, lng: -63.0000 },
+            'san rafael': { lat: -34.6000, lng: -68.3333 },
+            'junín': { lat: -34.5833, lng: -60.9500 },
+            'pergamino': { lat: -33.9000, lng: -60.5833 },
+            'campana': { lat: -34.1667, lng: -58.9167 },
+            'zarate': { lat: -34.1000, lng: -59.0333 },
+            'luján': { lat: -34.5667, lng: -59.1000 },
+            'mercedes': { lat: -34.6500, lng: -59.4167 },
+            'san nicolás': { lat: -33.3333, lng: -60.2167 },
+            'san pedro': { lat: -33.6833, lng: -59.6667 },
+            'chivilcoy': { lat: -34.9000, lng: -60.0167 },
+            'azul': { lat: -36.7833, lng: -59.8500 },
+            'tandil': { lat: -37.3333, lng: -59.1333 },
+            'olavarría': { lat: -36.9000, lng: -60.3333 },
+            'necochea': { lat: -38.5500, lng: -58.7500 },
+            'bahía blanca': { lat: -38.7167, lng: -62.2667 },
+        };
+
         let clientes = [];
         let mapa = null;
         let marcadores = [];
-        let geocache = {};
 
         function initMap() {
             mapa = L.map('map').setView([-38.4161, -63.6167], 5);
@@ -137,36 +172,39 @@
             }
         }
 
-        // Geocodificar con proxy CORS (usando corsproxy.io que es más confiable)
+        // Geocodificar con Nominatim directamente (sin proxy)
         async function geocodificar(ciudad) {
             if (!ciudad || ciudad === '' || ciudad === 'No especificada' || ciudad === '-') return null;
-            if (geocache[ciudad]) return geocache[ciudad];
 
-            // Intentar con corsproxy.io (más rápido)
-            const proxyUrl = 'https://corsproxy.io/?';
-            const nominatimUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(ciudad)}&format=json&limit=1`;
-            
-            try {
-                const response = await fetch(proxyUrl + encodeURIComponent(nominatimUrl), {
-                    signal: AbortSignal.timeout(5000) // Timeout de 5 segundos
-                });
-                if (!response.ok) {
-                    console.warn(`Geocodificación fallida para "${ciudad}": ${response.status}`);
-                    return null;
-                }
-                const data = await response.json();
-                if (data && data.length > 0) {
-                    const coords = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
-                    geocache[ciudad] = coords;
-                    return coords;
-                }
-                geocache[ciudad] = null;
-                return null;
-            } catch (error) {
-                console.warn(`Error geocodificando "${ciudad}":`, error);
-                geocache[ciudad] = null;
-                return null;
+            // 1. Verificar en el mapa manual de coordenadas
+            const ciudadLower = ciudad.toLowerCase().trim();
+            if (COORDENADAS_CIUDADES[ciudadLower]) {
+                return COORDENADAS_CIUDADES[ciudadLower];
             }
+
+            // 2. Intentar geocodificar con Nominatim (sin proxy, algunos navegadores lo permiten)
+            try {
+                const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(ciudad)}&format=json&limit=1`;
+                const response = await fetch(url, {
+                    signal: AbortSignal.timeout(3000)
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && data.length > 0) {
+                        const coords = {
+                            lat: parseFloat(data[0].lat),
+                            lng: parseFloat(data[0].lon)
+                        };
+                        // Guardar en el mapa manual para futuras veces
+                        COORDENADAS_CIUDADES[ciudadLower] = coords;
+                        return coords;
+                    }
+                }
+            } catch (error) {
+                console.warn(`Nominatim falló para "${ciudad}":`, error);
+            }
+
+            return null;
         }
 
         async function renderizarDashboard(filtroRubro = 'todos', filtroCiudad = 'todos') {
@@ -181,15 +219,11 @@
                 filtrados = filtrados.filter(c => c.ciudad === filtroCiudad);
             }
 
-            // Limpiar mapa
             if (marcadores.length > 0) {
                 marcadores.forEach(m => mapa.removeLayer(m));
                 marcadores = [];
             }
 
-            // Mostrar estado de geocodificación
-            const statusEl = document.getElementById('geocodingStatus');
-            
             // Renderizar tabla
             const tbody = document.getElementById('tbodyClientes');
             const cant = document.getElementById('cantClientes');
@@ -198,18 +232,9 @@
 
             if (filtrados.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-400">No hay clientes que coincidan con los filtros.</td></tr>`;
-                // Mostrar mensaje en el mapa
-                const noDataMsg = L.control({ position: 'bottomleft' });
-                noDataMsg.onAdd = function() {
-                    const div = L.DomUtil.create('div', 'loading-marker');
-                    div.innerHTML = '📭 No hay clientes que coincidan con los filtros.';
-                    return div;
-                };
-                noDataMsg.addTo(mapa);
                 return;
             }
 
-            // Agregar filas a la tabla
             filtrados.forEach(c => {
                 tbody.innerHTML += `
                     <tr class="hover:bg-gray-50 transition">
@@ -222,13 +247,9 @@
                 `;
             });
 
-            // Geocodificar solo las ciudades únicas (con caché)
+            // Geocodificar y agregar marcadores
             const ciudadesUnicas = [...new Set(filtrados.map(c => c.ciudad).filter(Boolean))];
             let marcadoresAgregados = 0;
-
-            // Mostrar estado de geocodificación
-            statusEl.classList.remove('hidden');
-            statusEl.textContent = `🌍 Geocodificando ${ciudadesUnicas.length} ciudades...`;
 
             for (const ciudad of ciudadesUnicas) {
                 const coords = await geocodificar(ciudad);
@@ -248,23 +269,18 @@
                         marcadoresAgregados++;
                     }
                 }
-                // Pausa para no saturar
-                await new Promise(resolve => setTimeout(resolve, 200));
+                // Pequeña pausa para no saturar
+                await new Promise(resolve => setTimeout(resolve, 100));
             }
 
-            // Ocultar estado
-            statusEl.classList.add('hidden');
-
-            // Ajustar vista del mapa
             if (marcadores.length > 0) {
                 const group = L.featureGroup(marcadores);
                 mapa.fitBounds(group.getBounds().pad(0.1));
             } else {
-                // Si no hay marcadores, mostrar mensaje
                 const noDataMsg = L.control({ position: 'bottomleft' });
                 noDataMsg.onAdd = function() {
                     const div = L.DomUtil.create('div', 'loading-marker');
-                    div.innerHTML = '⚠️ No se pudieron geolocalizar las ciudades. Verifica que estén bien escritas o agrega lat/lng manualmente.';
+                    div.innerHTML = '⚠️ No se encontraron coordenadas para las ciudades. Verifica que estén bien escritas o agrega lat/lng manualmente.';
                     return div;
                 };
                 noDataMsg.addTo(mapa);
