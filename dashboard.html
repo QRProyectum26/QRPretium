@@ -98,10 +98,11 @@
         let clientes = [];
         let mapa = null;
         let marcadores = [];
+        let geocache = {}; // Caché para geocodificaciones
 
         // Inicializar mapa
         function initMap() {
-            mapa = L.map('map').setView([-38.4161, -63.6167], 5); // Centro de Argentina
+            mapa = L.map('map').setView([-38.4161, -63.6167], 5);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap'
             }).addTo(mapa);
@@ -124,12 +125,17 @@
             }
         }
 
-        // Geocodificar con proxy CORS (evita bloqueos de CORS y rate limiting)
+        // Geocodificar con proxy CORS (más robusto)
         async function geocodificar(ciudad) {
             if (!ciudad || ciudad === '' || ciudad === 'No especificada' || ciudad === '-') return null;
             
-            // Usar un proxy CORS para evitar bloqueos
-            const proxyUrl = 'https://corsproxy.io/?';
+            // Verificar caché
+            if (geocache[ciudad]) {
+                return geocache[ciudad];
+            }
+
+            // Usar un proxy más confiable
+            const proxyUrl = 'https://api.allorigins.win/raw?url=';
             const nominatimUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(ciudad)}&format=json&limit=1`;
             
             try {
@@ -140,14 +146,18 @@
                 }
                 const data = await response.json();
                 if (data && data.length > 0) {
-                    return {
+                    const coords = {
                         lat: parseFloat(data[0].lat),
                         lng: parseFloat(data[0].lon)
                     };
+                    geocache[ciudad] = coords;
+                    return coords;
                 }
+                geocache[ciudad] = null;
                 return null;
             } catch (error) {
                 console.warn(`Error geocodificando "${ciudad}":`, error);
+                geocache[ciudad] = null;
                 return null;
             }
         }
@@ -172,86 +182,18 @@
                 marcadores = [];
             }
 
-            // Si no hay clientes, mostrar mensaje en el mapa
-            if (filtrados.length === 0) {
-                // Mostrar un mensaje en el mapa (opcional)
-                const noDataMsg = L.control({ position: 'bottomleft' });
-                noDataMsg.onAdd = function() {
-                    const div = L.DomUtil.create('div', 'loading-marker');
-                    div.innerHTML = 'No hay clientes que coincidan con los filtros.';
-                    return div;
-                };
-                noDataMsg.addTo(mapa);
-                // Renderizar tabla vacía
-                const tbody = document.getElementById('tbodyClientes');
-                const cant = document.getElementById('cantClientes');
-                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-400">No hay clientes que coincidan con los filtros.</td></tr>`;
-                cant.innerText = '0 clientes';
-                return;
-            }
-
-            // Geocodificar y agregar marcadores (con límite de 10 para evitar 429)
-            const ciudadesUnicas = [...new Set(filtrados.map(c => c.ciudad).filter(Boolean))];
-            let geocoded = {};
-            
-            // Geocodificar solo las primeras 10 ciudades únicas para evitar rate limit
-            const ciudadesALimitar = ciudadesUnicas.slice(0, 10);
-            for (const ciudad of ciudadesALimitar) {
-                const coords = await geocodificar(ciudad);
-                if (coords) {
-                    geocoded[ciudad] = coords;
-                }
-                // Pequeña pausa para no saturar la API
-                await new Promise(resolve => setTimeout(resolve, 200));
-            }
-
-            // Agregar marcadores para clientes con coordenadas
-            let marcadoresAgregados = 0;
-            for (const cliente of filtrados) {
-                let coords = null;
-                if (cliente.lat && cliente.lng) {
-                    coords = { lat: parseFloat(cliente.lat), lng: parseFloat(cliente.lng) };
-                } else if (cliente.ciudad && geocoded[cliente.ciudad]) {
-                    coords = geocoded[cliente.ciudad];
-                }
-                if (coords) {
-                    const marker = L.marker([coords.lat, coords.lng])
-                        .addTo(mapa)
-                        .bindPopup(`
-                            <b>${cliente.nombre_responsable || 'Sin nombre'}</b><br>
-                            ${cliente.nombre_comercio || 'Sin comercio'}<br>
-                            ${cliente.rubro || 'Sin rubro'}<br>
-                            ${cliente.ciudad || 'Sin ciudad'}<br>
-                            📞 ${cliente.telefono || 'Sin teléfono'}
-                        `);
-                    marcadores.push(marker);
-                    marcadoresAgregados++;
-                }
-            }
-
-            // Si no se agregaron marcadores, mostrar mensaje
-            if (marcadoresAgregados === 0) {
-                const noDataMsg = L.control({ position: 'bottomleft' });
-                noDataMsg.onAdd = function() {
-                    const div = L.DomUtil.create('div', 'loading-marker');
-                    div.innerHTML = 'No se pudieron geolocalizar clientes. Verifica que tengan ciudad o coordenadas.';
-                    return div;
-                };
-                noDataMsg.addTo(mapa);
-            }
-
-            // Ajustar vista del mapa si hay marcadores
-            if (marcadores.length > 0) {
-                const group = L.featureGroup(marcadores);
-                mapa.fitBounds(group.getBounds().pad(0.1));
-            }
-
-            // Renderizar tabla
+            // Renderizar tabla (siempre visible)
             const tbody = document.getElementById('tbodyClientes');
             const cant = document.getElementById('cantClientes');
             tbody.innerHTML = '';
             cant.innerText = `${filtrados.length} clientes`;
 
+            if (filtrados.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-400">No hay clientes que coincidan con los filtros.</td></tr>`;
+                return;
+            }
+
+            // Agregar filas a la tabla
             filtrados.forEach(c => {
                 tbody.innerHTML += `
                     <tr class="hover:bg-gray-50 transition">
@@ -263,6 +205,48 @@
                     </tr>
                 `;
             });
+
+            // Geocodificar ciudades (con caché y retraso)
+            const ciudadesUnicas = [...new Set(filtrados.map(c => c.ciudad).filter(Boolean))];
+            let marcadoresAgregados = 0;
+
+            for (const ciudad of ciudadesUnicas) {
+                const coords = await geocodificar(ciudad);
+                if (coords) {
+                    // Encontrar todos los clientes de esta ciudad
+                    const clientesDeCiudad = filtrados.filter(c => c.ciudad === ciudad);
+                    for (const cliente of clientesDeCiudad) {
+                        const marker = L.marker([coords.lat, coords.lng])
+                            .addTo(mapa)
+                            .bindPopup(`
+                                <b>${cliente.nombre_responsable || 'Sin nombre'}</b><br>
+                                ${cliente.nombre_comercio || 'Sin comercio'}<br>
+                                ${cliente.rubro || 'Sin rubro'}<br>
+                                ${cliente.ciudad || 'Sin ciudad'}<br>
+                                📞 ${cliente.telefono || 'Sin teléfono'}
+                            `);
+                        marcadores.push(marker);
+                        marcadoresAgregados++;
+                    }
+                }
+                // Pequeña pausa para no saturar la API
+                await new Promise(resolve => setTimeout(resolve, 300));
+            }
+
+            // Ajustar vista del mapa si hay marcadores
+            if (marcadores.length > 0) {
+                const group = L.featureGroup(marcadores);
+                mapa.fitBounds(group.getBounds().pad(0.1));
+            } else {
+                // Si no hay marcadores, mostrar mensaje en el mapa
+                const noDataMsg = L.control({ position: 'bottomleft' });
+                noDataMsg.onAdd = function() {
+                    const div = L.DomUtil.create('div', 'loading-marker');
+                    div.innerHTML = '⚠️ No se encontraron coordenadas para las ciudades. Verifica que las ciudades estén bien escritas o agrega lat/lng manualmente.';
+                    return div;
+                };
+                noDataMsg.addTo(mapa);
+            }
         }
 
         // Cargar filtros dinámicamente
@@ -274,7 +258,6 @@
             const selectRubro = document.getElementById('filtroRubro');
             const selectCiudad = document.getElementById('filtroCiudad');
 
-            // Limpiar opciones existentes (excepto la primera)
             selectRubro.innerHTML = '<option value="todos">Todos los rubros</option>';
             selectCiudad.innerHTML = '<option value="todos">Todas las zonas</option>';
 
