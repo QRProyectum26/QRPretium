@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planes - QRPretium</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .bg-pizarra { background-color: #0F172A; }
+    .bg-pizarra-claro { background-color: #1E293B; }
+    .text-naranja { color: #F97316; }
+    .text-verde { color: #10B981; }
+    .border-naranja { border-color: #F97316; }
+    .shadow-naranja { box-shadow: 0 4px 20px rgba(249, 115, 22, 0.2); }
+    .btn-naranja { background-color: #F97316; color: white; padding: 12px 32px; border-radius: 12px; font-weight: 700; display: inline-block; transition: all 0.3s; }
+    .btn-naranja:hover { background-color: #ea580c; transform: scale(1.03); }
+    .btn-verde { background-color: #10B981; color: white; padding: 12px 32px; border-radius: 12px; font-weight: 700; display: inline-block; transition: all 0.3s; }
+    .btn-verde:hover { background-color: #059669; transform: scale(1.03); }
+    .section-title { font-size: 2.8rem; font-weight: 900; line-height: 1.2; }
+    .card-plan { background: #1E293B; border-radius: 20px; padding: 2rem; border: 1px solid #334155; transition: all 0.3s; }
+    .card-plan:hover { transform: translateY(-6px); border-color: #F97316; box-shadow: 0 12px 40px rgba(249, 115, 22, 0.15); }
+    .card-plan.premium { border-color: #F97316; border-width: 2px; }
+    .precio { font-size: 3rem; font-weight: 900; color: white; }
+    .precio span { font-size: 1.2rem; font-weight: 400; color: #94a3b8; }
+    .feature-list { list-style: none; padding: 0; }
+    .feature-list li { padding: 0.5rem 0; border-bottom: 1px solid #334155; display: flex; align-items: center; gap: 0.75rem; }
+    .feature-list li:last-child { border-bottom: none; }
+    .feature-list li::before { content: "✓"; color: #10B981; font-weight: 900; font-size: 1.2rem; }
+    .form-cartel { background: #1E293B; border-radius: 20px; padding: 2rem; border: 1px solid #334155; }
+    .form-cartel label { font-size: 0.85rem; font-weight: 600; color: #94a3b8; display: block; margin-bottom: 0.3rem; }
+    .form-cartel input, .form-cartel select, .form-cartel textarea { width: 100%; padding: 0.8rem 1rem; border-radius: 12px; background: #0F172A; border: 1px solid #334155; color: white; font-size: 0.95rem; transition: border 0.3s; }
+    .form-cartel input:focus, .form-cartel select:focus, .form-cartel textarea:focus { outline: none; border-color: #F97316; }
+    .form-cartel .opcion-radio { display: flex; gap: 1.5rem; align-items: center; }
+    .form-cartel .opcion-radio label { display: flex; align-items: center; gap: 0.5rem; font-weight: 400; color: #cbd5e1; cursor: pointer; }
+    .form-cartel .opcion-radio input[type="radio"] { width: auto; margin-right: 0.3rem; }
+    .img-mockup { border-radius: 16px; border: 2px solid #334155; box-shadow: 0 8px 32px rgba(0,0,0,0.4); width: 100%; height: auto; }
+    .qr-cartel-preview { max-width: 280px; margin: 0 auto; background: #0F172A; padding: 1.5rem; border-radius: 16px; border: 2px solid #334155; }
+    .qr-cartel-preview img { width: 100%; border-radius: 8px; }
+    .badge-popular { background: #F97316; color: white; font-size: 0.7rem; font-weight: 700; padding: 0.3rem 1rem; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.05em; display: inline-block; margin-bottom: 0.5rem; }
+    @media (max-width: 768px) {
+      .section-title { font-size: 2rem; }
+      .precio { font-size: 2.2rem; }
+      .card-plan { padding: 1.5rem; }
+      .form-cartel { padding: 1.5rem; }
+      .qr-cartel-preview { max-width: 100%; }
+    }
+  </style>
+</head>
+<body class="bg-pizarra text-slate-100 antialiased selection:bg-naranja selection:text-white">
+
+  <!-- HEADER -->
+  <header class="sticky top-0 z-50 bg-pizarra/90 backdrop-blur-md border-b border-slate-700/50 py-4">
+    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2">
+        <span class="text-2xl font-black tracking-tight text-white">QR</span>
+        <span class="text-2xl font-light tracking-tight text-naranja">Pretium</span>
+      </a>
+      <a href="index.html" class="text-sm text-slate-300 hover:text-white transition">← Volver al sitio</a>
+    </div>
+  </header>
+
+  <!-- HERO: Imagen representativa + llamado -->
+  <section class="py-16 md:py-24 bg-gradient-to-b from-pizarra to-pizarra-claro">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <span class="text-naranja font-bold text-xs uppercase tracking-widest bg-naranja/10 px-4 py-2 rounded-full border border-naranja/30">Planes y Servicios</span>
+      <h1 class="section-title text-white mt-4 mb-4">
+        Elegí el plan <span class="text-naranja">para tu negocio</span>
+      </h1>
+      <p class="text-lg text-slate-300 max-w-2xl mx-auto mb-8">
+        QRPretium está diseñado para comercios selectos, de moda, diseño y alto volumen. 
+        Potenciá tu vidriera con tecnología de punta y atención personalizada.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="#planes" class="btn-naranja shadow-naranja">Ver planes</a>
+        <a href="#cartel" class="bg-slate-700 hover:bg-slate-600 text-white font-bold px-6 py-3 rounded-xl transition">Personalizar cartel QR</a>
+      </div>
+      <!-- Imagen representativa (una sola imagen de impacto) -->
+      <div class="mt-12 max-w-4xl mx-auto">
+        <img src="img/img01010.png" alt="Vidriera QRPretium" class="img-mockup rounded-2xl border-2 border-naranja/30 shadow-2xl">
+        <p class="text-xs text-slate-400 mt-2">Vidriera digital con precios y promociones actualizadas al instante</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN PLANES -->
+  <section id="planes" class="py-20 bg-pizarra border-y border-slate-800">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="text-center mb-12">
+        <span class="text-verde font-bold text-xs uppercase tracking-widest">Planes</span>
+        <h2 class="section-title text-white">Elegí el plan <span class="text-naranja">que mejor se adapte</span></h2>
+        <p class="text-slate-400 text-sm">Todos los planes incluyen actualización instantánea, asistente IA y panel de administración.</p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <!-- STANDARD -->
+        <div class="card-plan">
+          <h3 class="text-2xl font-bold text-white">Standard</h3>
+          <div class="precio mt-2">$14.000 <span>/mes</span></div>
+          <p class="text-slate-400 text-sm mt-1">Ideal para comercios de moda y diseño con catálogo selecto.</p>
+          <ul class="feature-list mt-4 text-sm text-slate-300">
+            <li>Hasta 35 artículos en vidriera</li>
+            <li>1 sucursal / local</li>
+            <li>Asistente IA por Voz</li>
+            <li>Panel de administración básico</li>
+            <li>Cartel QR personalizado (1 unidad)</li>
+            <li>Soporte por email</li>
+          </ul>
+          <a href="#cartel" class="mt-6 w-full block text-center bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-xl transition">Seleccionar Standard</a>
+        </div>
+
+        <!-- POWER (MÁS POPULAR) -->
+        <div class="card-plan premium relative">
+          <div class="badge-popular">Más Popular</div>
+          <h3 class="text-2xl font-bold text-white">Power</h3>
+          <div class="precio mt-2">$28.000 <span>/mes</span></div>
+          <p class="text-slate-400 text-sm mt-1">Para comercios con varias sucursales y catálogo en expansión.</p>
+          <ul class="feature-list mt-4 text-sm text-slate-300">
+            <li>Hasta 350 artículos en vidriera</li>
+            <li>Hasta 3 sucursales</li>
+            <li>Asistente IA Avanzado</li>
+            <li>Personalización de marca (logo, colores)</li>
+            <li>Cartel QR personalizado (hasta 3 unidades)</li>
+            <li>Reporte de consultas a la IA</li>
+            <li>Soporte prioritario</li>
+          </ul>
+          <a href="#cartel" class="mt-6 w-full block text-center bg-naranja hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition shadow-naranja">Seleccionar Power</a>
+        </div>
+
+        <!-- PREMIUM -->
+        <div class="card-plan">
+          <h3 class="text-2xl font-bold text-white">Premium</h3>
+          <div class="precio mt-2">$70.000 <span>/mes</span></div>
+          <p class="text-slate-400 text-sm mt-1">Para cadenas, franquicias y grandes volúmenes de artículos.</p>
+          <ul class="feature-list mt-4 text-sm text-slate-300">
+            <li>Hasta 2800 artículos en vidriera</li>
+            <li>Sucursales ilimitadas</li>
+            <li>IA Personalizada a medida</li>
+            <li>Integraciones a medida (ERP, sistemas propios)</li>
+            <li>Cartel QR personalizado (hasta 10 unidades)</li>
+            <li>Dashboard de métricas avanzado</li>
+            <li>Soporte 24/7 dedicado</li>
+          </ul>
+          <a href="#cartel" class="mt-6 w-full block text-center bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-xl transition">Seleccionar Premium</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN: EL CARTEL QR + PERSONALIZACIÓN -->
+  <section id="cartel" class="py-20 bg-pizarra-claro border-y border-slate-800">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="text-center mb-12">
+        <span class="text-verde font-bold text-xs uppercase tracking-widest">Personalización</span>
+        <h2 class="section-title text-white">Diseñá tu <span class="text-naranja">cartel QR</span></h2>
+        <p class="text-slate-400 text-sm">Completá los datos y generá tu pedido. La imprenta socia lo imprimirá y te lo enviará por delivery.</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-8 items-start">
+        <!-- FORMULARIO DE PERSONALIZACIÓN -->
+        <div class="form-cartel">
+          <form id="formCartel" action="#" method="POST" class="space-y-5">
+
+            <!-- Selección de plan (oculto, se llena con JS) -->
+            <input type="hidden" id="planSeleccionado" value="Standard">
+
+            <div>
+              <label for="nombreComercio">Nombre del Comercio *</label>
+              <input type="text" id="nombreComercio" placeholder="Ej: Tienda X" required>
+            </div>
+
+            <div>
+              <label for="direccionComercio">Dirección del Comercio *</label>
+              <input type="text" id="direccionComercio" placeholder="Calle, número, localidad" required>
+            </div>
+
+            <div>
+              <label for="logoComercio">Logo (opcional)</label>
+              <input type="file" id="logoComercio" accept="image/*">
+              <p class="text-xs text-slate-400 mt-1">Subí tu logo en formato PNG o JPG (máx 2MB). Si no subís ninguno, usaremos el logo de QRPretium.</p>
+            </div>
+
+            <div>
+              <label>Ubicación de "Vidriera Inmersiva" *</label>
+              <div class="opcion-radio">
+                <label>
+                  <input type="radio" name="ubicacionTexto" value="dentro" checked>
+                  Dentro del cartel
+                </label>
+                <label>
+                  <input type="radio" name="ubicacionTexto" value="fuera">
+                  Fuera del cartel (en la vidriera)
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <label for="cantidadCarteles">Cantidad de carteles *</label>
+              <select id="cantidadCarteles" required>
+                <option value="1">1 unidad</option>
+                <option value="2">2 unidades</option>
+                <option value="3">3 unidades</option>
+                <option value="4">4 unidades</option>
+                <option value="5">5 unidades</option>
+                <option value="6">6 unidades</option>
+                <option value="7">7 unidades</option>
+                <option value="8">8 unidades</option>
+                <option value="9">9 unidades</option>
+                <option value="10">10 unidades</option>
+              </select>
+              <p class="text-xs text-slate-400 mt-1">Cantidad de carteles físicos que recibirás para colocar en tu vidriera.</p>
+            </div>
+
+            <div>
+              <label for="mensajeAdicional">Instrucciones adicionales (opcional)</label>
+              <textarea id="mensajeAdicional" rows="3" placeholder="Ej: color de fondo, tamaño especial, etc."></textarea>
+            </div>
+
+            <button type="submit" class="w-full btn-verde shadow-verde">
+              <i class="fa-solid fa-paper-plane mr-2"></i> Enviar pedido a imprenta
+            </button>
+            <p class="text-xs text-slate-400 text-center mt-2">Al enviar, recibirás un correo con la confirmación y los datos de la imprenta socia.</p>
+          </form>
+        </div>
+
+        <!-- VISTA PREVIA DEL CARTEL + INFORMACIÓN -->
+        <div>
+          <div class="bg-slate-900 p-6 rounded-2xl border border-slate-700">
+            <h3 class="text-lg font-bold text-white mb-4">Vista previa del cartel</h3>
+            <div class="qr-cartel-preview">
+              <img src="img/QR CATG8- 12.5 X 17.5.png" alt="Cartel QR" class="rounded-lg">
+              <p class="text-xs text-slate-400 mt-3 text-center">Ejemplo de cartel QR con nombre "Tienda X"</p>
+            </div>
+            <div class="mt-4 text-sm text-slate-300 space-y-2">
+              <p><span class="text-verde">✓</span> Material: Vinilo polimérico de alta adherencia</p>
+              <p><span class="text-verde">✓</span> Acabado: Espejado (efecto premium)</p>
+              <p><span class="text-verde">✓</span> Tamaño estándar: 12.5 x 17.5 cm</p>
+              <p><span class="text-verde">✓</span> Colocación: desde el interior del vidrio</p>
+              <p class="text-xs text-slate-400 mt-2">La leyenda "Vidriera Inmersiva" puede ir dentro o fuera del cartel, según tu elección.</p>
+            </div>
+          </div>
+
+          <!-- GUÍA EN PDF -->
+          <div class="mt-6 bg-slate-900 p-6 rounded-2xl border border-slate-700">
+            <h3 class="text-lg font-bold text-white mb-2">📄 Guía de uso</h3>
+            <p class="text-sm text-slate-300">Descargá la guía completa para cargar tus artículos, configurar el panel y aprovechar todas las funcionalidades de QRPretium.</p>
+            <a href="docs/guia-qrpretium.pdf" target="_blank" class="mt-3 inline-block bg-slate-700 hover:bg-slate-600 text-white font-bold px-4 py-2 rounded-xl text-sm transition">
+              <i class="fa-solid fa-file-pdf mr-2"></i> Descargar guía (PDF)
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DATOS BANCARIOS PARA TRANSFERENCIA -->
+  <section class="py-16 bg-pizarra border-y border-slate-800">
+    <div class="max-w-4xl mx-auto px-4 text-center">
+      <span class="text-verde font-bold text-xs uppercase tracking-widest">Pago</span>
+      <h2 class="text-3xl font-extrabold text-white mb-4">Datos bancarios para <span class="text-naranja">transferencia</span></h2>
+      <div class="bg-slate-900 p-6 rounded-2xl border border-slate-700 text-left max-w-md mx-auto">
+        <p><span class="text-slate-400">Banco:</span> <span class="text-white font-medium">Banco Galicia</span></p>
+        <p><span class="text-slate-400">Titular:</span> <span class="text-white font-medium">QRPretium S.A.</span></p>
+        <p><span class="text-slate-400">CBU:</span> <span class="text-white font-mono text-sm">1234567890123456789012</span></p>
+        <p><span class="text-slate-400">Alias:</span> <span class="text-white font-medium">QRPRETIUM</span></p>
+        <p><span class="text-slate-400">Concepto:</span> <span class="text-white font-medium">Plan [Standard/Power/Premium] + CUIT</span></p>
+      </div>
+      <p class="text-sm text-slate-400 mt-4">Una vez realizada la transferencia, tu comercio será activado y recibirás tus credenciales de acceso al panel de administración.</p>
+    </div>
+  </section>
+
+  <!-- LLAMADO FINAL -->
+  <section class="py-12 bg-gradient-to-r from-pizarra to-slate-900 border-t border-naranja/40">
+    <div class="max-w-4xl mx-auto px-4 text-center">
+      <h2 class="text-2xl font-extrabold text-white mb-2">¿Listo para transformar tu vidriera?</h2>
+      <p class="text-slate-300 mb-4">Elegí tu plan, personalizá tu cartel QR y empezá a ofrecer una experiencia digital única.</p>
+      <a href="#cartel" class="btn-naranja shadow-naranja">Personalizar mi cartel QR</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-pizarra border-t border-slate-800 py-6 text-center text-xs text-slate-400">
+    <p>© QRPretium - Todos los derechos reservados - 2026</p>
+  </footer>
+
+  <!-- SCRIPT para manejar el formulario y la selección de planes -->
+  <script>
+    // Capturar el plan seleccionado desde los botones "Seleccionar"
+    document.querySelectorAll('.card-plan a[href="#cartel"]').forEach((btn, index) => {
+      btn.addEventListener('click', function(e) {
+        const card = this.closest('.card-plan');
+        let plan = 'Standard';
+        if (card) {
+          const titulo = card.querySelector('h3')?.textContent || '';
+          if (titulo.includes('Power')) plan = 'Power';
+          else if (titulo.includes('Premium')) plan = 'Premium';
+        }
+        document.getElementById('planSeleccionado').value = plan;
+        // Opcional: mostrar un mensaje o cambiar el texto del formulario
+        console.log('Plan seleccionado:', plan);
+      });
+    });
+
+    // Manejar el envío del formulario del cartel
+    document.getElementById('formCartel').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const nombre = document.getElementById('nombreComercio').value.trim();
+      const direccion = document.getElementById('direccionComercio').value.trim();
+      const cantidad = document.getElementById('cantidadCarteles').value;
+      const ubicacionTexto = document.querySelector('input[name="ubicacionTexto"]:checked').value;
+      const mensaje = document.getElementById('mensajeAdicional').value.trim();
+      const plan = document.getElementById('planSeleccionado').value;
+
+      if (!nombre || !direccion) {
+        alert('Por favor, completá el nombre y la dirección del comercio.');
+        return;
+      }
+
+      // Aquí enviarías los datos a Supabase o a una Edge Function
+      // Por ahora, mostramos un mensaje de confirmación
+      alert(`✅ Pedido enviado a la imprenta socia.\n\nPlan: ${plan}\nComercio: ${nombre}\nDirección: ${direccion}\nCantidad: ${cantidad} carteles\nTexto "Vidriera Inmersiva": ${ubicacionTexto === 'dentro' ? 'Dentro del cartel' : 'Fuera del cartel (en la vidriera)'}\n\nEn breve recibirás un correo con los detalles del pedido.`);
+
+      // Opcional: resetear el formulario
+      // this.reset();
+      // document.getElementById('planSeleccionado').value = 'Standard';
+    });
+  </script>
+
+  <!-- Font Awesome para íconos (opcional, pero recomendado) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</body>
+</html>
