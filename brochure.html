@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brochure - QRPretium</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .bg-pizarra { background-color: #0F172A; }
+    .bg-pizarra-claro { background-color: #1E293B; }
+    .text-naranja { color: #F97316; }
+    .text-verde { color: #10B981; }
+    .border-naranja { border-color: #F97316; }
+    .shadow-naranja { box-shadow: 0 4px 20px rgba(249, 115, 22, 0.2); }
+    .shadow-verde { box-shadow: 0 4px 20px rgba(16, 185, 129, 0.2); }
+    .btn-naranja { background-color: #F97316; color: white; padding: 12px 32px; border-radius: 12px; font-weight: 700; display: inline-block; transition: all 0.3s; }
+    .btn-naranja:hover { background-color: #ea580c; transform: scale(1.03); }
+    .section-title { font-size: 2.5rem; font-weight: 900; line-height: 1.2; }
+    .section-subtitle { font-size: 1.2rem; color: #94a3b8; max-width: 700px; margin: 0 auto; }
+    .card { background: #1E293B; border-radius: 20px; padding: 2rem; border: 1px solid #334155; transition: transform 0.3s; }
+    .card:hover { transform: translateY(-4px); border-color: #F97316; }
+    .img-mockup { border-radius: 16px; border: 2px solid #334155; box-shadow: 0 8px 32px rgba(0,0,0,0.4); width: 100%; height: auto; }
+    .qr-cartel { max-width: 280px; margin: 0 auto; }
+    .qr-cartel img { border-radius: 16px; border: 2px solid #475569; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+    .beneficio-icon { font-size: 2rem; }
+    @media (max-width: 768px) {
+      .section-title { font-size: 2rem; }
+      .card { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body class="bg-pizarra text-slate-100 antialiased selection:bg-naranja selection:text-white">
+
+  <!-- HEADER (opcional, para navegación) -->
+  <header class="sticky top-0 z-50 bg-pizarra/90 backdrop-blur-md border-b border-slate-700/50 py-4">
+    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2">
+        <span class="text-2xl font-black tracking-tight text-white">QR</span>
+        <span class="text-2xl font-light tracking-tight text-naranja">Pretium</span>
+      </a>
+      <a href="index.html" class="text-sm text-slate-300 hover:text-white transition">← Volver al sitio</a>
+    </div>
+  </header>
+
+  <!-- PORTADA -->
+  <section class="py-16 md:py-24 bg-gradient-to-b from-pizarra to-pizarra-claro">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <div class="inline-block bg-naranja/10 text-naranja font-bold text-xs uppercase tracking-widest px-4 py-2 rounded-full border border-naranja/30 mb-6">
+        Brochure Digital
+      </div>
+      <h1 class="text-4xl md:text-6xl font-black text-white leading-tight tracking-tight mb-4">
+        Tu vidriera, <span class="text-naranja">inteligente.</span> <span class="text-verde">Siempre.</span>
+      </h1>
+      <p class="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto mb-8">
+        Convertí tu vidriera física en una tienda digital interactiva, disponible 24/7/365, con asistente IA y actualización instantánea.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="#que-es" class="btn-naranja shadow-naranja">Conocé más</a>
+        <a href="index.html#solicitar-prueba" class="bg-slate-700 hover:bg-slate-600 text-white font-bold px-6 py-3 rounded-xl transition">Probar gratis</a>
+      </div>
+      <!-- Imagen de portada: vidriera inmersiva (img0111.jpg) -->
+      <div class="mt-12 max-w-4xl mx-auto">
+        <img src="img0111.jpg" alt="Vidriera Inmersiva QRPretium" class="img-mockup rounded-2xl border-2 border-naranja/30 shadow-2xl">
+      </div>
+    </div>
+  </section>
+
+  <!-- 1. ¿QUÉ ES QRPRETIUM? -->
+  <section id="que-es" class="py-20 bg-pizarra border-y border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+      <div>
+        <span class="text-naranja font-bold text-xs uppercase tracking-widest">Qué es</span>
+        <h2 class="section-title text-white mb-4">Una vidriera digital <span class="text-naranja">sin límites</span></h2>
+        <p class="text-slate-300 text-lg leading-relaxed mb-6">
+          QRPretium transforma la vidriera de tu comercio en un punto de venta digital, interactivo y actualizado al instante. 
+          Con un simple código QR, tus clientes acceden a tu catálogo completo, precios, promociones y disponibilidad desde su teléfono, 
+          sin necesidad de descargar apps ni esperar atención.
+        </p>
+        <ul class="space-y-3 text-slate-300">
+          <li class="flex items-start gap-3"><span class="text-verde text-xl">✓</span> Catálogo accesible 24/7, incluso con local cerrado.</li>
+          <li class="flex items-start gap-3"><span class="text-verde text-xl">✓</span> Sin apps para el cliente: solo escanea el QR.</li>
+          <li class="flex items-start gap-3"><span class="text-verde text-xl">✓</span> Cambios al instante desde tu celular o PC.</li>
+        </ul>
+      </div>
+      <div>
+        <img src="img01010.png" alt="Vidriera con productos y precios" class="img-mockup rounded-2xl border-2 border-slate-700 shadow-xl">
+        <p class="text-xs text-slate-400 text-center mt-2">Vidriera digital con precios y promociones actualizadas</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. TECNOLOGÍA Y VENTAJAS -->
+  <section class="py-20 bg-pizarra-claro">
+    <div class="max-w-7xl mx-auto px-4 text-center mb-12">
+      <span class="text-verde font-bold text-xs uppercase tracking-widest">Tecnología</span>
+      <h2 class="section-title text-white">Una solución <span class="text-naranja">integral</span> y <span class="text-verde">segura</span></h2>
+      <p class="section-subtitle">QR + NFT + IA + Panel de administración en la nube. Todo pensado para tu negocio.</p>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-3 gap-6">
+      <div class="card text-center">
+        <div class="text-4xl mb-4">🔐</div>
+        <h3 class="text-xl font-bold text-white mb-2">QR + NFT</h3>
+        <p class="text-slate-300 text-sm leading-relaxed">Cada comercio tiene un código QR único que enlaza a su catálogo digital, respaldado por un NFT que garantiza autenticidad y trazabilidad.</p>
+      </div>
+      <div class="card text-center">
+        <div class="text-4xl mb-4">🤖</div>
+        <h3 class="text-xl font-bold text-white mb-2">Asistente IA</h3>
+        <p class="text-slate-300 text-sm leading-relaxed">Un cubo 3D interactivo que responde preguntas de los clientes por voz o texto. Recomienda productos, resuelve dudas y asesora.</p>
+      </div>
+      <div class="card text-center">
+        <div class="text-4xl mb-4">⚡</div>
+        <h3 class="text-xl font-bold text-white mb-2">Panel Admin</h3>
+        <p class="text-slate-300 text-sm leading-relaxed">Gestión sencilla desde cualquier dispositivo. Actualizá precios, promociones y disponibilidad al instante.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. VENTAJAS PARA EL COMERCIANTE -->
+  <section class="py-20 bg-pizarra border-y border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 text-center mb-12">
+      <span class="text-naranja font-bold text-xs uppercase tracking-widest">Ventajas</span>
+      <h2 class="section-title text-white">Para el <span class="text-naranja">comerciante</span></h2>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-8">
+      <div class="card flex flex-col">
+        <h3 class="text-xl font-bold text-white mb-2">✅ Actualización instantánea</h3>
+        <p class="text-slate-300 text-sm leading-relaxed">Cambiás precios, promociones o disponibilidad desde tu celular y la vidriera digital se actualiza al instante. Olvidate de los carteles desactualizados.</p>
+      </div>
+      <div class="card flex flex-col">
+        <h3 class="text-xl font-bold text-white mb-2">✅ Ahorro en impresión</h3>
+        <p class="text-slate-300 text-sm leading-relaxed">Todo es digital. No más gastos en impresión de carteles ni reimpresiones por cambios de precio.</p>
+      </div>
+      <div class="card flex flex-col">
+        <h3 class="text-xl font-bold text-white mb-2">✅ Gestión remota</h3>
+        <p class="text-slate-300 text-sm leading-relaxed">Administrá tu catálogo desde cualquier lugar, a cualquier hora. Solo necesitás conexión a internet.</p>
+      </div>
+      <div class="card flex flex-col">
+        <h3 class="text-xl font-bold text-white mb-2">✅ Seguridad y trazabilidad</h3>
+        <p class="text-slate-300 text-sm leading-relaxed">Datos encriptados y respaldo en blockchain. Historial de consultas y comportamiento de clientes.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. ASESOR IA + CATÁLOGO INTERACTIVO -->
+  <section class="py-20 bg-pizarra-claro">
+    <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+      <div>
+        <span class="text-verde font-bold text-xs uppercase tracking-widest">Asistente IA</span>
+        <h2 class="section-title text-white mb-4">El cubo que <span class="text-naranja">habla</span> con tus clientes</h2>
+        <p class="text-slate-300 text-lg leading-relaxed mb-4">
+          Tu vidriera tiene un asistente virtual que responde preguntas como: 
+          <em class="text-slate-200">"¿Qué vino me recomendás para un regalo por menos de $10.000?"</em> o 
+          <em class="text-slate-200">"¿Tienen stock del código 104?"</em>
+        </p>
+        <ul class="space-y-3 text-slate-300">
+          <li class="flex items-start gap-3"><span class="text-verde text-xl">✓</span> Interacción por voz o texto.</li>
+          <li class="flex items-start gap-3"><span class="text-verde text-xl">✓</span> Disponible 24/7.</li>
+          <li class="flex items-start gap-3"><span class="text-verde text-xl">✓</span> Mejora la experiencia del cliente y aumenta ventas.</li>
+        </ul>
+      </div>
+      <div>
+        <img src="Gemini_Generated_Image_2gd2cq2gd2cq2gd2G002.jpg" alt="Catálogo interactivo con IA" class="img-mockup rounded-2xl border-2 border-slate-700 shadow-xl">
+        <p class="text-xs text-slate-400 text-center mt-2">Catálogo con descripciones, precios y promociones</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. CATÁLOGO INTERACTIVO (detalle) -->
+  <section class="py-20 bg-pizarra border-y border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+      <div>
+        <img src="Gemini_Generated_Image_d0ef94d0ef94d0efG004.jpg" alt="Vista del catálogo desde el teléfono" class="img-mockup rounded-2xl border-2 border-slate-700 shadow-xl">
+      </div>
+      <div>
+        <span class="text-naranja font-bold text-xs uppercase tracking-widest">Catálogo</span>
+        <h2 class="section-title text-white mb-4">Todo lo que tu cliente <span class="text-naranja">necesita</span> ver</h2>
+        <ul class="space-y-4 text-slate-300">
+          <li class="flex items-start gap-3"><span class="text-verde text-xl">✓</span> <strong>Visualización clara:</strong> Precios, promociones, disponibilidad y descripciones.</li>
+          <li class="flex items-start gap-3"><span class="text-verde text-xl">✓</span> <strong>Búsqueda inteligente:</strong> Por código de artículo, nombre o consulta por voz.</li>
+          <li class="flex items-start gap-3"><span class="text-verde text-xl">✓</span> <strong>Ofertas y promociones:</strong> Destacá tus mejores ofertas con un simple ícono.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. PERSONALIZACIÓN DEL CARTEL QR (NUEVO) -->
+  <section class="py-20 bg-pizarra-claro">
+    <div class="max-w-7xl mx-auto px-4 text-center mb-12">
+      <span class="text-verde font-bold text-xs uppercase tracking-widest">Personalización</span>
+      <h2 class="section-title text-white">El cartel QR <span class="text-naranja">a tu medida</span></h2>
+      <p class="section-subtitle">Podés personalizar el cartel QR de tu vidriera con el nombre de tu comercio, colores y la leyenda "Vidriera Inmersiva" dentro o fuera del cartel.</p>
+    </div>
+    <div class="max-w-5xl mx-auto px-4 grid md:grid-cols-2 gap-8 items-center">
+      <!-- Ejemplo de cartel QR -->
+      <div class="qr-cartel bg-slate-900 p-6 rounded-2xl border border-slate-700 text-center">
+        <img src="QR CATG8- 12.5 X 17.5.png" alt="Cartel QR QRPretium" class="w-full rounded-xl shadow-lg">
+        <p class="text-xs text-slate-400 mt-3">Medida estándar: 12.5 x 17.5 cm</p>
+        <p class="text-sm text-slate-300 mt-2 font-medium">Personalizá el nombre del comercio y el diseño.</p>
+      </div>
+      <!-- Descripción -->
+      <div class="text-left">
+        <h3 class="text-2xl font-bold text-white mb-4">Personalizá tu cartel QR</h3>
+        <ul class="space-y-3 text-slate-300">
+          <li class="flex items-start gap-3"><span class="text-verde text-xl">✓</span> <strong>Nombre del comercio:</strong> Aparece en la parte superior (ej. "Tienda X").</li>
+          <li class="flex items-start gap-3"><span class="text-verde text-xl">✓</span> <strong>Leyenda "Vidriera Inmersiva":</strong> Puede ir dentro del cartel o en la vidriera.</li>
+          <li class="flex items-start gap-3"><span class="text-verde text-xl">✓</span> <strong>Colores y logo:</strong> Adaptamos el diseño a la identidad de tu marca.</li>
+          <li class="flex items-start gap-3"><span class="text-verde text-xl">✓</span> <strong>Formato físico:</strong> Cartel de alta calidad, listo para colocar en tu vidriera.</li>
+        </ul>
+        <p class="text-sm text-slate-400 mt-4">Todos los carteles incluyen el nombre del comercio en la parte superior. La leyenda "Vidriera Inmersiva" puede ir dentro o fuera del cartel, según prefieras.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. VENTAJAS PARA EL CLIENTE / TRANSEÚNTE -->
+  <section class="py-20 bg-pizarra border-y border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <span class="text-naranja font-bold text-xs uppercase tracking-widest">Cliente</span>
+      <h2 class="section-title text-white">Ventajas para quien <span class="text-naranja">escanea</span></h2>
+      <div class="max-w-4xl mx-auto grid md:grid-cols-3 gap-6 mt-8">
+        <div class="card text-center">
+          <div class="text-4xl mb-3">📱</div>
+          <h3 class="text-lg font-bold text-white">Sin apps</h3>
+          <p class="text-slate-300 text-sm">Solo escanea el QR desde cualquier teléfono. Sin descargas.</p>
+        </div>
+        <div class="card text-center">
+          <div class="text-4xl mb-3">🕒</div>
+          <h3 class="text-lg font-bold text-white">24/7</h3>
+          <p class="text-slate-300 text-sm">Acceso a toda la información incluso cuando el local está cerrado.</p>
+        </div>
+        <div class="card text-center">
+          <div class="text-4xl mb-3">🗣️</div>
+          <h3 class="text-lg font-bold text-white">Asesor IA</h3>
+          <p class="text-slate-300 text-sm">Habla con el asistente y obtiene recomendaciones al instante.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. PLANES (resumen sin precios) -->
+  <section class="py-20 bg-pizarra-claro">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <span class="text-verde font-bold text-xs uppercase tracking-widest">Planes</span>
+      <h2 class="section-title text-white">Elegí el plan <span class="text-naranja">para tu negocio</span></h2>
+      <div class="grid md:grid-cols-3 gap-6 mt-8 max-w-5xl mx-auto">
+        <div class="card">
+          <h3 class="text-2xl font-bold text-white">Standard</h3>
+          <ul class="text-sm text-slate-300 space-y-2 mt-4 text-left">
+            <li>• Hasta 35 artículos</li>
+            <li>• 1 sucursal</li>
+            <li>• Asistente IA por Voz</li>
+            <li>• Soporte por email</li>
+          </ul>
+        </div>
+        <div class="card border-2 border-naranja">
+          <h3 class="text-2xl font-bold text-white">Power</h3>
+          <ul class="text-sm text-slate-300 space-y-2 mt-4 text-left">
+            <li>• Hasta 350 artículos</li>
+            <li>• 3 sucursales</li>
+            <li>• Asistente IA Avanzado</li>
+            <li>• Personalización de marca</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3 class="text-2xl font-bold text-white">Premium</h3>
+          <ul class="text-sm text-slate-300 space-y-2 mt-4 text-left">
+            <li>• Hasta 2800 artículos</li>
+            <li>• Sucursales ilimitadas</li>
+            <li>• IA Personalizada a medida</li>
+            <li>• Soporte prioritario 24/7</li>
+          </ul>
+        </div>
+      </div>
+      <p class="text-slate-400 text-sm mt-6">Consultá precios y promociones en nuestra web o solicitá una prueba gratuita.</p>
+    </div>
+  </section>
+
+  <!-- 9. LLAMADO A LA ACCIÓN FINAL -->
+  <section class="py-16 bg-gradient-to-r from-pizarra to-slate-900 border-y border-naranja/40">
+    <div class="max-w-4xl mx-auto px-4 text-center">
+      <h2 class="text-3xl font-extrabold text-white mb-4">Probá <span class="text-naranja">QRPretium</span> gratis por 10 días</h2>
+      <p class="text-slate-300 text-lg mb-6">Sin compromiso, con todas las funcionalidades habilitadas.</p>
+      <a href="index.html#solicitar-prueba" class="btn-naranja shadow-naranja">Solicitar prueba gratuita</a>
+      <p class="text-slate-400 text-sm mt-4">📧 clientes@qrpretium.com.ar &nbsp;|&nbsp; 🌐 qrpretium.com.ar</p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-pizarra border-t border-slate-800 py-6 text-center text-xs text-slate-400">
+    <p>© QRPretium - Todos los derechos reservados - 2026</p>
+  </footer>
+
+</body>
+</html>
