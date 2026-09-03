@@ -20,11 +20,15 @@
     .card { background: #1E293B; border-radius: 20px; padding: 2rem; border: 1px solid #334155; transition: transform 0.3s; }
     .card:hover { transform: translateY(-4px); border-color: #F97316; }
     .img-mockup { border-radius: 16px; border: 2px solid #334155; box-shadow: 0 8px 32px rgba(0,0,0,0.4); width: 100%; height: auto; }
+    .img-small { max-width: 300px; margin: 0 auto; }
     .qr-cartel { max-width: 280px; margin: 0 auto; }
     .qr-cartel img { border-radius: 16px; border: 2px solid #475569; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+    .cubo-ia-img { max-width: 280px; margin: 0 auto; }
     @media (max-width: 768px) {
       .section-title { font-size: 2rem; }
       .card { padding: 1.5rem; }
+      .img-small { max-width: 100%; }
+      .cubo-ia-img { max-width: 100%; }
     }
   </style>
 </head>
@@ -41,7 +45,7 @@
     </div>
   </header>
 
-  <!-- PORTADA -->
+  <!-- PORTADA (img01010.png - Vidriera con productos y precios) -->
   <section class="py-16 md:py-24 bg-gradient-to-b from-pizarra to-pizarra-claro">
     <div class="max-w-7xl mx-auto px-4 text-center">
       <div class="inline-block bg-naranja/10 text-naranja font-bold text-xs uppercase tracking-widest px-4 py-2 rounded-full border border-naranja/30 mb-6">
@@ -57,14 +61,15 @@
         <a href="#que-es" class="btn-naranja shadow-naranja">Conocé más</a>
         <a href="index.html#solicitar-prueba" class="bg-slate-700 hover:bg-slate-600 text-white font-bold px-6 py-3 rounded-xl transition">Probar gratis</a>
       </div>
-      <!-- Imagen de portada: vidriera inmersiva (img0111.jpg) -->
+      <!-- Imagen de portada: VIDRIERA CON PRODUCTOS Y PRECIOS -->
       <div class="mt-12 max-w-4xl mx-auto">
-        <img src="img/img0111.jpg" alt="Vidriera Inmersiva QRPretium" class="img-mockup rounded-2xl border-2 border-naranja/30 shadow-2xl">
+        <img src="img/img01010.png" alt="Vidriera Inmersiva QRPretium" class="img-mockup rounded-2xl border-2 border-naranja/30 shadow-2xl">
+        <p class="text-xs text-slate-400 mt-2">Vidriera digital con precios y promociones actualizadas</p>
       </div>
     </div>
   </section>
 
-  <!-- 1. ¿QUÉ ES QRPRETIUM? -->
+  <!-- 1. ¿QUÉ ES QRPRETIUM? (img0111.jpg - Mujer ejecutiva) -->
   <section id="que-es" class="py-20 bg-pizarra border-y border-slate-800">
     <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
       <div>
@@ -82,8 +87,9 @@
         </ul>
       </div>
       <div>
-        <img src="img/img01010.png" alt="Vidriera con productos y precios" class="img-mockup rounded-2xl border-2 border-slate-700 shadow-xl">
-        <p class="text-xs text-slate-400 text-center mt-2">Vidriera digital con precios y promociones actualizadas</p>
+        <!-- Imagen de mujer ejecutiva -->
+        <img src="img/img0111.jpg" alt="Mujer ejecutiva en vidriera" class="img-mockup rounded-2xl border-2 border-slate-700 shadow-xl">
+        <p class="text-xs text-slate-400 text-center mt-2">Vidriera interactiva con promociones destacadas</p>
       </div>
     </div>
   </section>
@@ -140,26 +146,36 @@
     </div>
   </section>
 
-  <!-- 4. ASESOR IA + CATÁLOGO INTERACTIVO -->
+  <!-- 4. ASESOR IA (CUBO + CELULAR en vertical) -->
   <section class="py-20 bg-pizarra-claro">
-    <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
-      <div>
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="text-center mb-12">
         <span class="text-verde font-bold text-xs uppercase tracking-widest">Asistente IA</span>
-        <h2 class="section-title text-white mb-4">El cubo que <span class="text-naranja">habla</span> con tus clientes</h2>
-        <p class="text-slate-300 text-lg leading-relaxed mb-4">
+        <h2 class="section-title text-white">El cubo que <span class="text-naranja">habla</span> con tus clientes</h2>
+      </div>
+      <div class="grid md:grid-cols-2 gap-8 items-center max-w-5xl mx-auto">
+        <!-- Imagen del cubo IA (debes tenerla en img/cubo-ia.png) -->
+        <div class="text-center">
+          <img src="img/cubo-ia.png" alt="Cubo IA QRPretium" class="cubo-ia-img rounded-2xl border-2 border-slate-700 shadow-xl mx-auto">
+          <p class="text-xs text-slate-400 mt-2">Asistente virtual en 3D</p>
+        </div>
+        <!-- Imagen del celular con el catálogo -->
+        <div class="text-center">
+          <img src="img/Gemini_Generated_Image_2gd2cq2gd2cq2gd2G002.jpg" alt="Catálogo en el teléfono" class="img-small rounded-2xl border-2 border-slate-700 shadow-xl mx-auto">
+          <p class="text-xs text-slate-400 mt-2">Vista del catálogo desde el teléfono</p>
+        </div>
+      </div>
+      <div class="max-w-3xl mx-auto text-center mt-8">
+        <p class="text-slate-300 text-lg leading-relaxed">
           Tu vidriera tiene un asistente virtual que responde preguntas como: 
           <em class="text-slate-200">"¿Qué vino me recomendás para un regalo por menos de $10.000?"</em> o 
           <em class="text-slate-200">"¿Tienen stock del código 104?"</em>
         </p>
-        <ul class="space-y-3 text-slate-300">
+        <ul class="space-y-3 text-slate-300 mt-4 inline-block text-left">
           <li class="flex items-start gap-3"><span class="text-verde text-xl">✓</span> Interacción por voz o texto.</li>
           <li class="flex items-start gap-3"><span class="text-verde text-xl">✓</span> Disponible 24/7.</li>
           <li class="flex items-start gap-3"><span class="text-verde text-xl">✓</span> Mejora la experiencia del cliente y aumenta ventas.</li>
         </ul>
-      </div>
-      <div>
-        <img src="img/Gemini_Generated_Image_2gd2cq2gd2cq2gd2G002.jpg" alt="Catálogo interactivo con IA" class="img-mockup rounded-2xl border-2 border-slate-700 shadow-xl">
-        <p class="text-xs text-slate-400 text-center mt-2">Catálogo con descripciones, precios y promociones</p>
       </div>
     </div>
   </section>
@@ -190,13 +206,11 @@
       <p class="section-subtitle">Podés personalizar el cartel QR de tu vidriera con el nombre de tu comercio, colores y la leyenda "Vidriera Inmersiva" dentro o fuera del cartel.</p>
     </div>
     <div class="max-w-5xl mx-auto px-4 grid md:grid-cols-2 gap-8 items-center">
-      <!-- Ejemplo de cartel QR -->
       <div class="qr-cartel bg-slate-900 p-6 rounded-2xl border border-slate-700 text-center">
         <img src="img/QR CATG8- 12.5 X 17.5.png" alt="Cartel QR QRPretium" class="w-full rounded-xl shadow-lg">
         <p class="text-xs text-slate-400 mt-3">Medida estándar: 12.5 x 17.5 cm</p>
         <p class="text-sm text-slate-300 mt-2 font-medium">Personalizá el nombre del comercio y el diseño.</p>
       </div>
-      <!-- Descripción -->
       <div class="text-left">
         <h3 class="text-2xl font-bold text-white mb-4">Personalizá tu cartel QR</h3>
         <ul class="space-y-3 text-slate-300">
@@ -210,7 +224,7 @@
     </div>
   </section>
 
-  <!-- 7. VENTAJAS PARA EL CLIENTE / TRANSEÚNTE -->
+  <!-- 7. VENTAJAS PARA EL CLIENTE -->
   <section class="py-20 bg-pizarra border-y border-slate-800">
     <div class="max-w-7xl mx-auto px-4 text-center">
       <span class="text-naranja font-bold text-xs uppercase tracking-widest">Cliente</span>
@@ -235,7 +249,7 @@
     </div>
   </section>
 
-  <!-- 8. PLANES (resumen sin precios) -->
+  <!-- 8. PLANES -->
   <section class="py-20 bg-pizarra-claro">
     <div class="max-w-7xl mx-auto px-4 text-center">
       <span class="text-verde font-bold text-xs uppercase tracking-widest">Planes</span>
