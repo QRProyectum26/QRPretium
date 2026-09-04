@@ -195,7 +195,9 @@
   const Rf = 2.95;    // radio exterior de la solapa (extendida hacia afuera)
   const tf = 0.14;   // espesor de la solapa
   const holeR = 0.11; // radio de los orificios para tornillo
-  const rh = (Rf + (R - t)) / 2; // radio al que se ubican los 4 orificios
+  const rh = Rf - 0.3; // radio al que se ubican los 4 orificios (más hacia afuera, para no cruzar el anillo central)
+  const ringRadius = (Rf + (R - t)) / 2; // radio del anillo protuberante, centrado en el ancho de la solapa
+  const ringTube = 0.05; // grosor (radio del caño) del anillo protuberante
 
   const material = new THREE.MeshPhysicalMaterial({
     color: 0xc8cad0,
@@ -259,6 +261,24 @@
   flange.castShadow = true;
   flange.receiveShadow = true;
   group.add(flange);
+
+  // --- Anillo protuberante en el centro de la solapa (cara inferior), recorriendo todo el diámetro ---
+  const ringMaterial = new THREE.MeshPhysicalMaterial({
+    color: 0x55575c,
+    metalness: 1.0,
+    roughness: 0.35,
+    clearcoat: 0.1,
+    clearcoatRoughness: 0.3,
+    envMapIntensity: 1.2,
+    side: THREE.DoubleSide,
+  });
+  const ringGeo = new THREE.TorusGeometry(ringRadius, ringTube, 20, 128);
+  const ring = new THREE.Mesh(ringGeo, ringMaterial);
+  ring.rotation.x = Math.PI / 2;
+  ring.position.y = -tf; // apoyado en la cara inferior de la solapa, embebido levemente hacia arriba
+  ring.castShadow = true;
+  ring.receiveShadow = true;
+  group.add(ring);
 
   // Leve inclinación inicial para apreciar la solapa, los orificios y el hueco interior
   group.rotation.x = -0.32;
