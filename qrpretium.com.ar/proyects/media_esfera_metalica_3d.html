@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Media esfera metálica — hueca con solapa de fijación</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: radial-gradient(ellipse at center, #2a2d33 0%, #101114 75%, #08090a 100%);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  #canvas-container {
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+  }
+  #canvas-container.dragging {
+    cursor: grabbing;
+  }
+  canvas {
+    display: block;
+  }
+  #overlay {
+    position: fixed;
+    top: 22px;
+    left: 26px;
+    color: #e8e9ec;
+    pointer-events: none;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    max-width: 420px;
+  }
+  #overlay h1 {
+    font-size: 17px;
+    font-weight: 600;
+    margin: 0 0 6px 0;
+    letter-spacing: 0.3px;
+  }
+  #overlay p {
+    font-size: 12.5px;
+    line-height: 1.5;
+    margin: 0;
+    color: #b7bac1;
+    font-weight: 400;
+  }
+  #hint {
+    position: fixed;
+    bottom: 20px;
+    left: 26px;
+    color: #8a8d94;
+    font-size: 12px;
+    letter-spacing: 0.2px;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    pointer-events: none;
+  }
+  #specs {
+    position: fixed;
+    bottom: 20px;
+    right: 26px;
+    color: #8a8d94;
+    font-size: 11.5px;
+    text-align: right;
+    line-height: 1.7;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    pointer-events: none;
+  }
+  #specs span {
+    color: #d7d9dd;
+  }
+  #loading {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9a9da4;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    z-index: 10;
+    transition: opacity 0.4s ease;
+  }
+</style>
+</head>
+<body>
+
+<div id="loading">Cargando escena 3D…</div>
+
+<div id="overlay">
+  <h1>Media esfera metálica — casquete hueco</h1>
+  <p>Solapa perimetral con 4 orificios simétricos para tornillos de unión con una segunda pieza idéntica.</p>
+</div>
+
+<div id="hint">◐ Arrastrá para rotar &nbsp;·&nbsp; Rueda del mouse para zoom</div>
+<div id="specs">
+  Acero plateado <span>·</span> pared hueca <span>·</span> 4 orificios ⌀ simétricos
+</div>
+
+<div id="canvas-container"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+  const container = document.getElementById('canvas-container');
+  const loadingEl = document.getElementById('loading');
+
+  // ---------- Escena, cámara, renderer ----------
+  const scene = new THREE.Scene();
+
+  const camera = new THREE.PerspectiveCamera(
+    38,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    100
+  );
+  camera.position.set(0, 1.6, 7.2);
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.15;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  container.appendChild(renderer.domElement);
+
+  // ---------- Entorno reflectante (para el look metálico) ----------
+  function buildEnvironment() {
+    const envScene = new THREE.Scene();
+    envScene.background = new THREE.Color(0x14161a);
+
+    const geo = new THREE.PlaneGeometry(8, 4);
+
+    const p1 = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: 0xffffff }));
+    p1.position.set(0, 6, -2);
+    p1.rotation.x = Math.PI / 3;
+    envScene.add(p1);
+
+    const p2 = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: 0x8fb2ff }));
+    p2.position.set(-7, 1, 2);
+    p2.rotation.y = Math.PI / 2;
+    envScene.add(p2);
+
+    const p3 = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: 0xffdcb0 }));
+    p3.position.set(7, 0.5, 3);
+    p3.rotation.y = -Math.PI / 2;
+    envScene.add(p3);
+
+    const p4 = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: 0xffffff }));
+    p4.position.set(0, -5, 4);
+    p4.rotation.x = -Math.PI / 2.5;
+    envScene.add(p4);
+
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    pmrem.compileEquirectangularShader();
+    const rt = pmrem.fromScene(envScene, 0.03);
+    pmrem.dispose();
+    return rt.texture;
+  }
+
+  const envMap = buildEnvironment();
+  scene.environment = envMap;
+
+  // ---------- Luces ----------
+  scene.add(new THREE.AmbientLight(0xffffff, 0.25));
+
+  const keyLight = new THREE.DirectionalLight(0xffffff, 1.1);
+  keyLight.position.set(4, 6, 5);
+  keyLight.castShadow = true;
+  keyLight.shadow.mapSize.set(2048, 2048);
+  keyLight.shadow.camera.near = 1;
+  keyLight.shadow.camera.far = 20;
+  keyLight.shadow.camera.left = -5;
+  keyLight.shadow.camera.right = 5;
+  keyLight.shadow.camera.top = 5;
+  keyLight.shadow.camera.bottom = -5;
+  keyLight.shadow.radius = 4;
+  scene.add(keyLight);
+
+  const fillLight = new THREE.PointLight(0x9fbfff, 0.6, 20);
+  fillLight.position.set(-5, 2, -3);
+  scene.add(fillLight);
+
+  const rimLight = new THREE.PointLight(0xffe6c2, 0.5, 20);
+  rimLight.position.set(2, -3, -4);
+  scene.add(rimLight);
+
+  // ---------- Geometría: media esfera hueca + solapa con 4 orificios ----------
+  const R  = 2.0;    // radio exterior de la esfera
+  const t  = 0.16;   // espesor de la pared (hueco)
+  const Rf = 2.95;    // radio exterior de la solapa (extendida hacia afuera)
+  const tf = 0.14;   // espesor de la solapa
+  const holeR = 0.11; // radio de los orificios para tornillo
+  const rh = (Rf + (R - t)) / 2; // radio al que se ubican los 4 orificios
+
+  const material = new THREE.MeshPhysicalMaterial({
+    color: 0xc8cad0,
+    metalness: 1.0,
+    roughness: 0.27,
+    clearcoat: 0.15,
+    clearcoatRoughness: 0.3,
+    envMapIntensity: 1.35,
+    side: THREE.DoubleSide,
+  });
+
+  const group = new THREE.Group();
+
+  // --- Casquete hueco (superficie exterior + interior) vía revolución (Lathe) ---
+  const segs = 64;
+  const profile = [];
+  for (let i = 0; i <= segs; i++) {
+    const theta = (i / segs) * (Math.PI / 2);
+    profile.push(new THREE.Vector2(R * Math.sin(theta), R * Math.cos(theta)));
+  }
+  for (let i = segs; i >= 0; i--) {
+    const theta = (i / segs) * (Math.PI / 2);
+    profile.push(new THREE.Vector2((R - t) * Math.sin(theta), (R - t) * Math.cos(theta)));
+  }
+
+  const domeGeo = new THREE.LatheGeometry(profile, 96);
+  const dome = new THREE.Mesh(domeGeo, material);
+  dome.castShadow = true;
+  dome.receiveShadow = true;
+  group.add(dome);
+
+  // --- Solapa perimetral con 4 orificios simétricos ---
+  const flangeShape = new THREE.Shape();
+  flangeShape.absarc(0, 0, Rf, 0, Math.PI * 2, false);
+
+  const innerHole = new THREE.Path();
+  innerHole.absarc(0, 0, R - t, 0, Math.PI * 2, true);
+  flangeShape.holes.push(innerHole);
+
+  for (let i = 0; i < 4; i++) {
+    const angle = (Math.PI / 2) * i + Math.PI / 4;
+    const hx = rh * Math.cos(angle);
+    const hy = rh * Math.sin(angle);
+    const holePath = new THREE.Path();
+    holePath.absarc(hx, hy, holeR, 0, Math.PI * 2, true);
+    flangeShape.holes.push(holePath);
+  }
+
+  const flangeGeo = new THREE.ExtrudeGeometry(flangeShape, {
+    depth: tf,
+    bevelEnabled: true,
+    bevelThickness: 0.015,
+    bevelSize: 0.015,
+    bevelSegments: 2,
+    curveSegments: 64,
+  });
+  flangeGeo.rotateX(-Math.PI / 2);
+  flangeGeo.translate(0, -tf, 0);
+
+  const flange = new THREE.Mesh(flangeGeo, material);
+  flange.castShadow = true;
+  flange.receiveShadow = true;
+  group.add(flange);
+
+  // Leve inclinación inicial para apreciar la solapa, los orificios y el hueco interior
+  group.rotation.x = -0.32;
+  group.rotation.y = 0.55;
+  scene.add(group);
+
+  // --- Piso con sombra suave, tipo estudio fotográfico ---
+  const floorGeo = new THREE.PlaneGeometry(40, 40);
+  const floorMat = new THREE.ShadowMaterial({ opacity: 0.38 });
+  const floor = new THREE.Mesh(floorGeo, floorMat);
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.y = -tf - 0.02;
+  floor.receiveShadow = true;
+  scene.add(floor);
+
+  // ---------- Interacción: arrastrar para rotar, rueda para zoom ----------
+  let isDragging = false;
+  let prevX = 0, prevY = 0;
+  let autoRotate = true;
+  const rotationTarget = { x: group.rotation.x, y: group.rotation.y };
+
+  function onPointerDown(x, y) {
+    isDragging = true;
+    autoRotate = false;
+    prevX = x;
+    prevY = y;
+    container.classList.add('dragging');
+  }
+  function onPointerMove(x, y) {
+    if (!isDragging) return;
+    const dx = x - prevX;
+    const dy = y - prevY;
+    rotationTarget.y += dx * 0.006;
+    rotationTarget.x += dy * 0.006;
+    rotationTarget.x = Math.max(-1.35, Math.min(1.35, rotationTarget.x));
+    prevX = x;
+    prevY = y;
+  }
+  function onPointerUp() {
+    isDragging = false;
+    container.classList.remove('dragging');
+  }
+
+  container.addEventListener('mousedown', (e) => onPointerDown(e.clientX, e.clientY));
+  window.addEventListener('mousemove', (e) => onPointerMove(e.clientX, e.clientY));
+  window.addEventListener('mouseup', onPointerUp);
+
+  container.addEventListener('touchstart', (e) => {
+    const touch = e.touches[0];
+    onPointerDown(touch.clientX, touch.clientY);
+  }, { passive: true });
+  container.addEventListener('touchmove', (e) => {
+    const touch = e.touches[0];
+    onPointerMove(touch.clientX, touch.clientY);
+  }, { passive: true });
+  window.addEventListener('touchend', onPointerUp);
+
+  let camDistance = camera.position.length();
+  const minDist = 4.0;
+  const maxDist = 13.0;
+
+  container.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    camDistance += e.deltaY * 0.0035 * camDistance;
+    camDistance = Math.max(minDist, Math.min(maxDist, camDistance));
+  }, { passive: false });
+
+  // ---------- Resize ----------
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  // ---------- Loop de animación ----------
+  function animate() {
+    requestAnimationFrame(animate);
+
+    if (autoRotate && !isDragging) {
+      rotationTarget.y += 0.0022;
+    }
+
+    group.rotation.x += (rotationTarget.x - group.rotation.x) * 0.12;
+    group.rotation.y += (rotationTarget.y - group.rotation.y) * 0.12;
+
+    const dir = camera.position.clone().normalize();
+    camera.position.copy(dir.multiplyScalar(camDistance));
+    camera.lookAt(0, -0.1, 0);
+
+    renderer.render(scene, camera);
+  }
+
+  loadingEl.style.opacity = '0';
+  setTimeout(() => { loadingEl.style.display = 'none'; }, 400);
+  animate();
+})();
+</script>
+</body>
+</html>
