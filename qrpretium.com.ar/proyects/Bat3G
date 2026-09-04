@@ -91,12 +91,12 @@
 
 <div id="overlay">
   <h1>Dona metálica — hueca por dentro</h1>
-  <p>Sección cortada del 20% del anillo, dejando a la vista el espesor de la pared hueca en los dos extremos.</p>
+  <p>Sección cortada del 20% del anillo, rellena con una bobina espiralada de cobre que se enrosca sobre los extremos de la dona.</p>
 </div>
 
 <div id="hint">◐ Arrastrá para rotar &nbsp;·&nbsp; Rueda del mouse para zoom</div>
 <div id="specs">
-  Acero plateado <span>·</span> pared hueca <span>·</span> arco de 288° (80%)
+  Acero plateado <span>·</span> pared hueca <span>·</span> bobina de cobre (20%)
 </div>
 
 <div id="canvas-container"></div>
@@ -243,6 +243,111 @@
   donut.receiveShadow = true;
   group.add(donut);
 
+  // --- Bobina espiralada de cobre en el tramo faltante (20%) ---
+  // Se enrosca alrededor del mismo camino curvo de la dona: parte de las vueltas
+  // quedan enrolladas sobre los extremos sólidos, y el resto flota rellenando el
+  // hueco, manteniendo la curvatura del anillo principal (torusRadius).
+  const coilR = tubeOuterR * 1.05;  // diámetro de la bobina, 5% mayor al de la dona
+  const wireR = 0.028;              // grosor del alambre de cobre (más fino)
+  const wireGap = 0.03;             // separación entre anillos de la bobina (~1mm a esta escala)
+  const overlapAngle = 0.05 * Math.PI * 2; // cuánto se enrolla sobre la dona sólida, a cada lado
+
+  class CoilPath extends THREE.Curve {
+    constructor(mainRadius, coilRadius, thetaStart, thetaEnd, turns) {
+      super();
+      this.mainRadius = mainRadius;
+      this.coilRadius = coilRadius;
+      this.thetaStart = thetaStart;
+      this.thetaEnd = thetaEnd;
+      this.turns = turns;
+    }
+    getPoint(t, target) {
+      const theta = this.thetaStart + t * (this.thetaEnd - this.thetaStart);
+      const phi = t * this.turns * Math.PI * 2;
+      const outX = Math.cos(theta), outZ = Math.sin(theta);
+      const cx = this.mainRadius * outX;
+      const cz = this.mainRadius * outZ;
+      const px = cx + this.coilRadius * Math.cos(phi) * outX;
+      const pz = cz + this.coilRadius * Math.cos(phi) * outZ;
+      const py = this.coilRadius * Math.sin(phi);
+      return (target || new THREE.Vector3()).set(px, py, pz);
+    }
+  }
+
+  const coilThetaStart = sweepAngle - overlapAngle;
+  const coilThetaEnd = Math.PI * 2 + overlapAngle;
+
+  // Cantidad de vueltas calculada para que, a lo largo de todo el tramo, quede
+  // el espaciado (wireGap) deseado entre anillos consecutivos de la bobina.
+  const coilArcLength = (coilThetaEnd - coilThetaStart) * torusRadius;
+  const coilPitch = 2 * wireR + wireGap;
+  const numTurns = Math.round(coilArcLength / coilPitch);
+
+  const coilPath = new CoilPath(torusRadius, coilR, coilThetaStart, coilThetaEnd, numTurns);
+
+  const copperMaterial = new THREE.MeshPhysicalMaterial({
+    color: 0xa8481f,
+    metalness: 1.0,
+    roughness: 0.3,
+    clearcoat: 0.2,
+    clearcoatRoughness: 0.25,
+    envMapIntensity: 1.3,
+    side: THREE.DoubleSide,
+  });
+
+  const coilGeo = new THREE.TubeGeometry(coilPath, Math.round(numTurns * 40), wireR, 10, false);
+  const coil = new THREE.Mesh(coilGeo, copperMaterial);
+  coil.castShadow = true;
+  coil.receiveShadow = true;
+  group.add(coil);
+
+  // --- Rotor interno: 3 cilindros metálicos horizontales, unidos por un anillo gris oscuro ---
+  // Viven en el hueco interno del propio tubo de la dona (no en el agujero central):
+  // el anillo que los sujeta tiene el mismo radio que el diámetro medio de la dona
+  // (el "camino" central del tubo), y cada cilindro queda acostado, orientado en la
+  // misma dirección tangencial que ese camino, como si rodaran dentro del caño hueco.
+  const cylRadius = tubeOuterR * 0.25;      // diámetro = 1/4 del diámetro de la dona
+  const cylLength = 0.55;                   // largo: cabe holgado dentro del hueco del tubo
+  const hubRingTube = 0.035;
+
+  const hubMaterial = new THREE.MeshPhysicalMaterial({
+    color: 0x4a4c50,
+    metalness: 1.0,
+    roughness: 0.4,
+    clearcoat: 0.1,
+    clearcoatRoughness: 0.3,
+    envMapIntensity: 1.1,
+    side: THREE.DoubleSide,
+  });
+
+  const rotorGroup = new THREE.Group();
+
+  // Anillo sujetador: mismo radio que el diámetro medio de la dona (torusRadius),
+  // recorriendo el centro exacto del hueco interno del tubo.
+  const hubRingGeo = new THREE.TorusGeometry(torusRadius, hubRingTube, 16, 128);
+  const hubRing = new THREE.Mesh(hubRingGeo, hubMaterial);
+  hubRing.rotation.x = Math.PI / 2;
+  hubRing.castShadow = true;
+  hubRing.receiveShadow = true;
+  rotorGroup.add(hubRing);
+
+  // Los 3 cilindros a 120°, todos dentro del tramo sólido de la dona (0°, 120°, 240°
+  // están dentro de los 288° de tubo sólido), acostados en dirección tangencial.
+  const cylGeo = new THREE.CylinderGeometry(cylRadius, cylRadius, cylLength, 28);
+  const up = new THREE.Vector3(0, 1, 0);
+  for (let i = 0; i < 3; i++) {
+    const angle = (i * Math.PI * 2) / 3;
+    const cyl = new THREE.Mesh(cylGeo, material);
+    cyl.position.set(torusRadius * Math.cos(angle), 0, torusRadius * Math.sin(angle));
+    const tangent = new THREE.Vector3(-Math.sin(angle), 0, Math.cos(angle));
+    cyl.quaternion.setFromUnitVectors(up, tangent);
+    cyl.castShadow = true;
+    cyl.receiveShadow = true;
+    rotorGroup.add(cyl);
+  }
+
+  group.add(rotorGroup);
+
   // Inclinación inicial para apreciar el hueco interior y los dos extremos cortados
   group.rotation.x = -0.28;
   group.rotation.y = -0.85;
@@ -326,6 +431,8 @@
 
     group.rotation.x += (rotationTarget.x - group.rotation.x) * 0.12;
     group.rotation.y += (rotationTarget.y - group.rotation.y) * 0.12;
+
+    rotorGroup.rotation.y += 0.018; // los 3 cilindros giran al unísono dentro de la dona
 
     const dir = camera.position.clone().normalize();
     camera.position.copy(dir.multiplyScalar(camDistance));
