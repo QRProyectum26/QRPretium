@@ -1,3 +1,6 @@
+HTML
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -10,14 +13,14 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        /* --- ESTILOS DE LA TARJETA VERTICAL DE NEX (NARANJA VIVO) --- */
+        /* --- ESTILOS DE LA TARJETA VERTICAL DE NEX (AMPLIADA) --- */
         .tarjeta-nex-vertical {
-            box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.3), 0 0 15px rgba(249, 115, 22, 0.4);
+            box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.4), 0 0 15px rgba(249, 115, 22, 0.5);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .tarjeta-nex-vertical:hover {
-            box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.4), 0 0 25px rgba(249, 115, 22, 0.8);
+            box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.5), 0 0 25px rgba(249, 115, 22, 0.8);
             transform: translateY(-2px);
         }
 
@@ -43,14 +46,14 @@
             to { transform: scale(1.03); }
         }
 
-        /* --- GLOBO DE DIÁLOGO / POP-UP DE TEXTO CON BORDE NARANJA --- */
+        /* --- GLOBO DE DIÁLOGO / POP-UP DE TEXTO DE NEX --- */
         .globo-dialogo-nex {
             position: absolute;
-            top: calc(100% + 10px);
+            top: calc(100% + 8px);
             right: 0;
             width: 270px;
             background: #ffffff;
-            border: 2px solid #f97316; /* Naranja vivo */
+            border: 2px solid #f97316;
             border-radius: 16px;
             padding: 12px 14px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
@@ -58,12 +61,11 @@
             animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* Flecha apuntando a NEX con borde naranja */
         .globo-dialogo-nex::before {
             content: '';
             position: absolute;
             top: -10px;
-            right: 40px;
+            right: 48px;
             border-width: 0 10px 10px 10px;
             border-style: solid;
             border-color: transparent transparent #f97316 transparent;
@@ -73,7 +75,7 @@
             content: '';
             position: absolute;
             top: -7px;
-            right: 41px;
+            right: 49px;
             border-width: 0 9px 9px 9px;
             border-style: solid;
             border-color: transparent transparent #ffffff transparent;
@@ -84,20 +86,21 @@
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        /* --- BOTÓN "+" EMPRESA --- */
+        /* --- BOTÓN "+" DEBAJO DEL LOGO --- */
         .btn-info-plus {
             background-color: #f1f5f9;
             color: #f97316;
-            border: 2px solid #ffedd5;
+            border: 1.5px solid #ffedd5;
             transition: all 0.2s ease;
-            width: 24px;
-            height: 24px;
-            font-size: 16px;
+            width: 20px;
+            height: 20px;
+            font-size: 14px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
             font-weight: 800;
+            margin-top: 4px;
         }
         .btn-info-plus:hover {
             background-color: #f97316;
@@ -108,52 +111,52 @@
 
         /* Contenedor Scroll Principal */
         .contenedor-principal {
-            max-height: calc(100vh - 190px);
+            max-height: calc(100vh - 200px);
             overflow-y: auto;
             padding-bottom: 30px;
         }
         .contenedor-principal::-webkit-scrollbar { width: 4px; }
         .contenedor-principal::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
 
-        /* Scrollbar personalizado para el cuadro de descripción técnica */
         .desc-scroll::-webkit-scrollbar { width: 3px; }
         .desc-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen">
 
-    <!-- ENCABEZADO COMPACTO (FRANJA COMPACTA VERTICALMENTE) -->
+    <!-- ENCABEZADO COMPACTO -->
     <header id="headerComercio" class="bg-slate-900 text-white py-3 px-4 rounded-b-2xl shadow-md relative z-10">
-        <div class="max-w-xl mx-auto flex items-center justify-between relative">
+        <div class="max-w-xl mx-auto flex items-start justify-between relative">
             
-            <!-- DATOS DE LA EMPRESA / STAND -->
-            <div class="flex items-center space-x-3 pr-2">
-                <img id="imgLogo" src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Logo Stand" class="h-10 w-10 rounded-xl bg-white p-1 shadow-md object-cover border border-slate-700">
-                <div>
-                    <div class="flex items-center space-x-2">
-                        <h1 id="nombreComercio" class="text-base font-extrabold uppercase tracking-wide leading-tight text-white">TechExpo Solutions</h1>
-                        <!-- Botón "+" abre Pop-Up datos de la Empresa -->
-                        <button onclick="abrirModalInfo()" title="Ver datos de la empresa" class="btn-info-plus shadow-sm active:scale-95">
-                            +
-                        </button>
-                    </div>
-                    <!-- TEXTO STAND INMERSIVO EN NARANJA VIVO -->
+            <!-- LOGO + BOTÓN "+" ABAJO + DATOS DE LA EMPRESA -->
+            <div class="flex items-start space-x-3 pr-2">
+                <!-- Columna Logo y Botón + debajo -->
+                <div class="flex flex-col items-center flex-shrink-0">
+                    <img id="imgLogo" src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Logo Stand" class="h-10 w-10 rounded-xl bg-white p-1 shadow-md object-cover border border-slate-700">
+                    <button onclick="abrirModalInfo()" title="Ver datos completos de la empresa" class="btn-info-plus shadow-sm active:scale-95">
+                        +
+                    </button>
+                </div>
+
+                <!-- Nombre y Subtítulo -->
+                <div class="pt-0.5">
+                    <h1 id="nombreComercio" class="text-base font-extrabold uppercase tracking-wide leading-tight text-white">TechExpo Solutions</h1>
                     <p class="text-[11px] text-orange-500 font-extrabold tracking-wider uppercase mt-0.5">STAND INMERSIVO + IA</p>
                 </div>
             </div>
 
-            <!-- CONTENEDOR RECTANGULAR VERTICAL DE NEX (MARCO NARANJA VIVO - POSICIÓN 50/50) -->
-            <div class="relative flex-shrink-0" style="margin-bottom: -50px;">
+            <!-- CONTENEDOR RECTANGULAR VERTICAL DE NEX (MÁS ANCHO Y ALTO - ALINEADO ABAJO) -->
+            <div class="relative flex-shrink-0" style="margin-bottom: -58px;">
                 <div id="contenedorNex" onclick="alternarEscuchaOAccion()" 
-                     class="tarjeta-nex-vertical w-24 h-36 bg-slate-950 border-2 border-orange-500 rounded-2xl overflow-hidden cursor-pointer relative group flex flex-col justify-between p-1 transition-all">
+                     class="tarjeta-nex-vertical w-28 h-40 bg-slate-950 border-2 border-orange-500 rounded-2xl overflow-hidden cursor-pointer relative group flex flex-col justify-between p-1.5 transition-all">
                     
                     <!-- Etiqueta superior -->
-                    <div class="bg-orange-500 text-white font-black text-[8px] tracking-wider text-center py-0.5 px-1 rounded-md uppercase z-10">
+                    <div class="bg-orange-500 text-white font-black text-[9px] tracking-wider text-center py-0.5 px-1 rounded-md uppercase z-10">
                         NEX • Asesor IA
                     </div>
 
                     <!-- Imagen del Robot NEX -->
-                    <div class="w-full h-24 overflow-hidden rounded-lg relative my-auto">
+                    <div class="w-full h-28 overflow-hidden rounded-lg relative my-auto">
                         <img id="avatarNexImg" src="watermarked_img_18404316456539557055.jpg" alt="NEX Robot" class="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105">
                     </div>
 
@@ -163,7 +166,7 @@
                     </div>
                 </div>
 
-                <!-- POP-UP / GLOBO DE TEXTO (BORDE NARANJA VIVO) -->
+                <!-- POP-UP / GLOBO DE TEXTO (BORDE NARANJA) -->
                 <div id="globoTextoNex" class="globo-dialogo-nex hidden">
                     <div class="flex items-start justify-between gap-2 border-b border-orange-100 pb-1.5 mb-1.5">
                         <span class="text-[11px] font-extrabold text-orange-600 uppercase flex items-center gap-1">
@@ -183,27 +186,27 @@
     <!-- BARRA DE BÚSQUEDA Y LISTA DE ARTÍCULOS -->
     <main class="max-w-xl mx-auto px-4 pt-3 relative z-0">
 
-        <!-- BUSCADOR -->
-        <div class="flex items-center gap-3 mb-3 pr-28">
+        <!-- BUSCADOR CON BORDE GRIS OSCURO -->
+        <div class="flex items-center gap-3 mb-3 pr-32">
             <div class="relative w-full shadow-sm rounded-xl">
                 <input type="text" id="inputBuscar" onkeyup="filtrarProductos()" placeholder="🔍 Código, artículo o especificación..." 
-                    class="w-full pl-3.5 pr-3.5 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 text-xs bg-white shadow-sm">
+                    class="w-full pl-3.5 pr-3.5 py-2 rounded-xl border-2 border-slate-600 focus:outline-none focus:ring-2 focus:ring-orange-500 text-xs bg-white shadow-sm font-medium">
             </div>
         </div>
 
-        <!-- LISTADO DE TARJETAS DE PRODUCTO DE FERIA (SIN IMÁGENES) -->
+        <!-- LISTADO DE TARJETAS DE PRODUCTO DE FERIA -->
         <div id="contenedorScroll" class="contenedor-principal">
             <div id="listaProductos" class="space-y-4">
                 
                 <!-- TARJETA DE PRODUCTO 1 -->
                 <div class="tarjeta-producto bg-white p-4 rounded-2xl shadow-sm border border-gray-200 flex flex-col gap-2.5">
                     
-                    <!-- Fila Superior: Código (Izq. Gris Oscuro) + Promoción de Feria (Der.) -->
+                    <!-- Fila Superior: Código (Gris Oscuro) + Promoción (Verde Pastel Uniforme) -->
                     <div class="flex items-center justify-between">
                         <span class="bg-slate-800 text-white text-[11px] font-extrabold px-2.5 py-1 rounded-lg tracking-wider">
                             CÓD: VLV-500
                         </span>
-                        <span class="bg-orange-100 text-orange-700 font-extrabold text-[11px] px-2.5 py-0.5 rounded-full border border-orange-200 flex items-center gap-1">
+                        <span class="bg-emerald-100 text-emerald-800 font-extrabold text-[11px] px-2.5 py-0.5 rounded-full border border-emerald-300 flex items-center gap-1">
                             🔥 Bonificación Exclusiva de Expo
                         </span>
                     </div>
@@ -218,25 +221,25 @@
                         Fabricada en aleación de titanio de alta resistencia química y térmica. Tolerancia hasta 350 BAR de presión contínua. Módulo de diagnóstico remoto integrado mediante protocolo HART y Modbus RS485. Apta para plantas petroquímicas y farmacéuticas de alta exigencia.
                     </div>
 
-                    <!-- 3 Botones de Acción Técnica: A) Brochure B) Video C) Tabla -->
+                    <!-- 3 Botones de Acción Técnica (Color Azul/Gris Oscuro con Letras Gris Claro) -->
                     <div class="grid grid-cols-3 gap-2 pt-1">
-                        <button onclick="abrirModalBrochure('Válvula VLV-500')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-1.5 px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-slate-300 transition active:scale-95">
+                        <button onclick="abrirModalBrochure('Válvula VLV-500')" class="bg-slate-800 hover:bg-slate-900 text-slate-100 font-bold py-1.5 px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-slate-700 transition active:scale-95">
                             📄 Brochure
                         </button>
-                        <button onclick="abrirModalVideo('Válvula VLV-500', 'https://www.youtube.com/embed/dQw4w9WgXcQ')" class="bg-orange-50 hover:bg-orange-100 text-orange-600 font-bold py-1.5 px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-orange-200 transition active:scale-95">
+                        <button onclick="abrirModalVideo('Válvula VLV-500', 'https://www.youtube.com/embed/dQw4w9WgXcQ')" class="bg-slate-800 hover:bg-slate-900 text-slate-100 font-bold py-1.5 px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-slate-700 transition active:scale-95">
                             🎬 Video
                         </button>
                         <button onclick="abrirModalTabla('Válvula VLV-500', [
                             ['Presión Máx.', '350 BAR'],
-                            ['Material', 'Titanio Grau 5 / Vitón'],
+                            ['Material', 'Titanio Grado 5 / Vitón'],
                             ['Conexión', 'Flange 2 pulgadas NPT'],
                             ['Garantía', '3 Años de fábrica']
-                        ])" class="bg-sky-50 hover:bg-sky-100 text-sky-700 font-bold py-1.5 px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-sky-200 transition active:scale-95">
+                        ])" class="bg-slate-800 hover:bg-slate-900 text-slate-100 font-bold py-1.5 px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-slate-700 transition active:scale-95">
                             📊 Tabla
                         </button>
                     </div>
 
-                    <!-- Botón para Solicitar Cita / Dejar Datos -->
+                    <!-- Botón para Solicitar Demostración -->
                     <button onclick="abrirModalConsulta('Válvula Reguladora de Flujo Industrial Pro (CÓD: VLV-500)')" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold py-2 px-3 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-sm active:scale-95">
                         ✉️ Solicitar Demostración / Dejar Datos
                     </button>
@@ -250,7 +253,7 @@
                         <span class="bg-slate-800 text-white text-[11px] font-extrabold px-2.5 py-1 rounded-lg tracking-wider">
                             CÓD: SENS-90
                         </span>
-                        <span class="bg-emerald-100 text-emerald-800 font-extrabold text-[11px] px-2.5 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1">
+                        <span class="bg-emerald-100 text-emerald-800 font-extrabold text-[11px] px-2.5 py-0.5 rounded-full border border-emerald-300 flex items-center gap-1">
                             🎁 Incluye Kit de Calibración
                         </span>
                     </div>
@@ -265,12 +268,12 @@
                         Sensor ambiental para medición continua de material particulado PM2.5 y PM10 en salas limpias. Conexión nativa Wi-Fi/LoRaWAN con telemetría en la nube en tiempo real. Algoritmo de autocalibración laser adaptativo contra acumulación de polvo.
                     </div>
 
-                    <!-- 3 Botones de Acción Técnica -->
+                    <!-- 3 Botones de Acción Técnica (Estilo Unificado Oscuro) -->
                     <div class="grid grid-cols-3 gap-2 pt-1">
-                        <button onclick="abrirModalBrochure('Sensor SENS-90')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-1.5 px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-slate-300 transition active:scale-95">
+                        <button onclick="abrirModalBrochure('Sensor SENS-90')" class="bg-slate-800 hover:bg-slate-900 text-slate-100 font-bold py-1.5 px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-slate-700 transition active:scale-95">
                             📄 Brochure
                         </button>
-                        <button onclick="abrirModalVideo('Sensor SENS-90', 'https://www.youtube.com/embed/dQw4w9WgXcQ')" class="bg-orange-50 hover:bg-orange-100 text-orange-600 font-bold py-1.5 px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-orange-200 transition active:scale-95">
+                        <button onclick="abrirModalVideo('Sensor SENS-90', 'https://www.youtube.com/embed/dQw4w9WgXcQ')" class="bg-slate-800 hover:bg-slate-900 text-slate-100 font-bold py-1.5 px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-slate-700 transition active:scale-95">
                             🎬 Video
                         </button>
                         <button onclick="abrirModalTabla('Sensor SENS-90', [
@@ -278,12 +281,12 @@
                             ['Conectividad', 'LoRaWAN, Wi-Fi, RS485'],
                             ['Alimentación', '12-24V DC / Batería Li-Ion'],
                             ['Certificación', 'ISO 14644-1 Cleanrooms']
-                        ])" class="bg-sky-50 hover:bg-sky-100 text-sky-700 font-bold py-1.5 px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-sky-200 transition active:scale-95">
+                        ])" class="bg-slate-800 hover:bg-slate-900 text-slate-100 font-bold py-1.5 px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-slate-700 transition active:scale-95">
                             📊 Tabla
                         </button>
                     </div>
 
-                    <!-- Botón para Solicitar Cita / Dejar Datos -->
+                    <!-- Botón para Solicitar Demostración -->
                     <button onclick="abrirModalConsulta('Sensor Óptico de Partículas IoT (CÓD: SENS-90)')" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold py-2 px-3 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-sm active:scale-95">
                         ✉️ Solicitar Demostración / Dejar Datos
                     </button>
@@ -296,16 +299,16 @@
 
     <!-- ==================== POP-UPS / MODALES ==================== -->
 
-    <!-- MODAL 1: INFORMACIÓN DE LA EMPRESA (BOTÓN "+") -->
+    <!-- MODAL 1: INFORMACIÓN DE LA EMPRESA (HEADER GRIS OSCURO) -->
     <div id="modalInfo" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden border border-gray-100">
-            <div class="p-4 text-white relative bg-slate-900 border-b-2 border-orange-500">
+            <div class="p-4 bg-slate-900 text-white relative border-b-2 border-orange-500">
                 <button onclick="cerrarModalInfo()" class="absolute top-3.5 right-4 text-slate-400 hover:text-white text-lg font-bold">✕</button>
-                <p class="text-[10px] font-black text-orange-500 uppercase tracking-widest">Información Oficial</p>
-                <h2 id="modalNombreComercio" class="text-lg font-black uppercase tracking-wide">TechExpo Solutions</h2>
+                <p class="text-[10px] font-black text-orange-500 uppercase tracking-widest">Ficha de la Empresa</p>
+                <h2 id="modalNombreComercio" class="text-base font-black uppercase tracking-wide text-white">TechExpo Solutions</h2>
             </div>
             <div class="p-4 space-y-3 text-xs text-slate-700">
-                <div class="flex items-start space-x-3 bg-slate-50 p-2.5 rounded-xl border">
+                <div class="flex items-start space-x-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
                     <span class="text-base">📍</span>
                     <div>
                         <h4 class="font-bold text-slate-900 uppercase text-[10px]">Ubicación en Stand</h4>
@@ -336,18 +339,18 @@
         </div>
     </div>
 
-    <!-- MODAL 2: TABLA DE ESPECIFICACIONES TÉCNICAS -->
+    <!-- MODAL 2: TABLA DE ESPECIFICACIONES TÉCNICAS (HEADER GRIS OSCURO Y LETRAS BLANCAS) -->
     <div id="modalTabla" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden border border-gray-100">
-            <div class="p-4 bg-sky-900 text-white relative border-b-2 border-sky-400">
-                <button onclick="cerrarModalTabla()" class="absolute top-3.5 right-4 text-sky-200 hover:text-white text-lg font-bold">✕</button>
-                <p class="text-[10px] font-black text-sky-300 uppercase tracking-widest">Ficha Técnica</p>
-                <h3 id="tituloTablaModal" class="text-sm font-black uppercase">Especificaciones del Producto</h3>
+            <div class="p-4 bg-slate-900 text-white relative border-b-2 border-orange-500">
+                <button onclick="cerrarModalTabla()" class="absolute top-3.5 right-4 text-slate-400 hover:text-white text-lg font-bold">✕</button>
+                <p class="text-[10px] font-black text-orange-500 uppercase tracking-widest">Ficha Técnica</p>
+                <h3 id="tituloTablaModal" class="text-sm font-black uppercase text-white">Especificaciones del Producto</h3>
             </div>
             <div class="p-4">
                 <table class="w-full text-left text-xs border-collapse">
                     <tbody id="cuerpoTablaModal" class="divide-y divide-gray-200">
-                        <!-- Se llena dinámicamente -->
+                        <!-- Llenado dinámico -->
                     </tbody>
                 </table>
             </div>
@@ -360,7 +363,7 @@
     <!-- MODAL 3: VIDEO DEMOSTRATIVO -->
     <div id="modalVideo" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden">
-            <div class="p-3 bg-slate-900 text-white flex justify-between items-center px-4">
+            <div class="p-3 bg-slate-900 text-white flex justify-between items-center px-4 border-b border-slate-700">
                 <span id="tituloVideoModal" class="text-xs font-bold text-orange-400 truncate">Video Demostrativo</span>
                 <button onclick="cerrarModalVideo()" class="text-slate-400 hover:text-white font-bold text-base">✕</button>
             </div>
@@ -370,32 +373,36 @@
         </div>
     </div>
 
-    <!-- MODAL 4: FORMULARIO DE CONSULTA / AGENDAR CITA -->
+    <!-- MODAL 4: FORMULARIO DE DEMOSTRACIÓN COMPACTO (CON CAMPO OPCIONAL DE EMPRESA) -->
     <div id="modalConsulta" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden">
-            <div class="p-4 bg-orange-500 text-white relative">
-                <button onclick="cerrarModalConsulta()" class="absolute top-3.5 right-4 text-orange-100 hover:text-white text-lg font-bold">✕</button>
-                <p class="text-[10px] font-black text-orange-100 uppercase tracking-widest">Contacto Directo Stand</p>
-                <h3 class="text-sm font-black uppercase">Solicitar Información / Cita</h3>
+            <div class="py-3 px-4 bg-orange-500 text-white relative">
+                <button onclick="cerrarModalConsulta()" class="absolute top-2.5 right-4 text-orange-100 hover:text-white text-lg font-bold">✕</button>
+                <p class="text-[9px] font-black text-orange-100 uppercase tracking-widest">Contacto Directo Stand</p>
+                <h3 class="text-xs font-black uppercase">Solicitar Información / Cita</h3>
             </div>
-            <form onsubmit="enviarConsulta(event)" class="p-4 space-y-3 text-xs">
+            <form onsubmit="enviarConsulta(event)" class="p-3.5 space-y-2 text-xs">
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1">Producto de Interés:</label>
-                    <input type="text" id="inputProductoConsulta" readonly class="w-full p-2 bg-slate-100 border border-slate-300 rounded-lg font-bold text-slate-800 text-[11px]">
+                    <label class="block font-bold text-slate-700 mb-0.5 text-[11px]">Producto de Interés:</label>
+                    <input type="text" id="inputProductoConsulta" readonly class="w-full py-1 px-2.5 bg-slate-100 border border-slate-300 rounded-lg font-bold text-slate-800 text-[10px]">
                 </div>
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1">Nombre Completo *</label>
-                    <input type="text" required placeholder="Ej: Juan Pérez" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none">
+                    <label class="block font-bold text-slate-700 mb-0.5 text-[11px]">Nombre Completo *</label>
+                    <input type="text" required placeholder="Ej: Juan Pérez" class="w-full py-1 px-2.5 border border-slate-300 rounded-lg focus:ring-1 focus:ring-orange-500 focus:outline-none text-[11px]">
                 </div>
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1">Teléfono / WhatsApp *</label>
-                    <input type="tel" required placeholder="Ej: +54 11 1234 5678" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none">
+                    <label class="block font-bold text-slate-700 mb-0.5 text-[11px]">Empresa / Organización (Opcional)</label>
+                    <input type="text" placeholder="Ej: Industria Global S.A." class="w-full py-1 px-2.5 border border-slate-300 rounded-lg focus:ring-1 focus:ring-orange-500 focus:outline-none text-[11px]">
                 </div>
                 <div>
-                    <label class="block font-bold text-slate-700 mb-1">Correo Electrónico</label>
-                    <input type="email" placeholder="ejemplo@empresa.com" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none">
+                    <label class="block font-bold text-slate-700 mb-0.5 text-[11px]">Teléfono / WhatsApp *</label>
+                    <input type="tel" required placeholder="Ej: +54 11 1234 5678" class="w-full py-1 px-2.5 border border-slate-300 rounded-lg focus:ring-1 focus:ring-orange-500 focus:outline-none text-[11px]">
                 </div>
-                <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-extrabold py-2.5 rounded-xl transition shadow-md mt-2">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-0.5 text-[11px]">Correo Electrónico</label>
+                    <input type="email" placeholder="ejemplo@empresa.com" class="w-full py-1 px-2.5 border border-slate-300 rounded-lg focus:ring-1 focus:ring-orange-500 focus:outline-none text-[11px]">
+                </div>
+                <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-extrabold py-2 rounded-xl transition shadow-md mt-1 text-xs">
                     🚀 Enviar Solicitud
                 </button>
             </form>
