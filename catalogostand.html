@@ -41,6 +41,12 @@
         @keyframes pulse-escuchando {
             from { transform: scale(1); }
             to { transform: scale(1.03); }
+            
+            /* --- CLASE GENERAL PARA EL BOTÓN DE SOLICITAR DEMOSTRACIÓN --- */
+        .btn-solicitar-demo {
+            padding-top: 4px !important;    /* Ajusta aquí el alto superior */
+            padding-bottom: 6px !important; /* Ajusta aquí el alto inferior */
+        }
         }
 
         /* --- GLOBO DE DIÁLOGO DE NEX --- */
@@ -282,7 +288,7 @@
                         </button>
                     </div>
 
-                    <button onclick="abrirModalConsulta('Sensor Óptico de Partículas IoT (CÓD: SENS-90)')" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold py-2 px-3 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-sm active:scale-95">
+                    <button onclick="abrirModalConsulta('Sensor Óptico de Partículas IoT (CÓD: SENS-90)')" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold btn-solicitar-demo px-3 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-sm active:scale-95">
                         ✉️ Solicitar Demostración / Dejar Datos
                     </button>
                 </div>
