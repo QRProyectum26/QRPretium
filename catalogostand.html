@@ -3,77 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stand Inmersivo con Asesor IA NEX - QRPretium Expo</title>
+    <title>Stand Inmersivo con Asesor IA NEX - Expo Stand</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        /* --- ESTILOS DE LA TARJETA VERTICAL DE NEX --- */
+        /* --- ESTILOS DE LA TARJETA VERTICAL DE NEX (NARANJA VIVO) --- */
         .tarjeta-nex-vertical {
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 0 20px rgba(56, 189, 248, 0.3);
+            box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.3), 0 0 15px rgba(249, 115, 22, 0.4);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .tarjeta-nex-vertical:hover {
-            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.4), 0 0 30px rgba(56, 189, 248, 0.6);
+            box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.4), 0 0 25px rgba(249, 115, 22, 0.8);
             transform: translateY(-2px);
         }
 
         .glow-hablando {
-            border-color: #38bdf8 !important;
-            box-shadow: 0 0 30px rgba(56, 189, 248, 0.8), 0 0 60px rgba(56, 189, 248, 0.4) !important;
-            animation: pulse-hablando 0.6s ease-in-out infinite alternate;
+            border-color: #f97316 !important;
+            box-shadow: 0 0 25px rgba(249, 115, 22, 0.9), 0 0 50px rgba(249, 115, 22, 0.5) !important;
+            animation: pulse-hablando 0.5s ease-in-out infinite alternate;
         }
 
         .glow-escuchando {
             border-color: #10b981 !important;
-            box-shadow: 0 0 30px rgba(16, 185, 129, 0.8), 0 0 60px rgba(16, 185, 129, 0.4) !important;
-            animation: pulse-escuchando 0.6s ease-in-out infinite alternate;
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.9), 0 0 50px rgba(16, 185, 129, 0.5) !important;
+            animation: pulse-escuchando 0.5s ease-in-out infinite alternate;
         }
 
         @keyframes pulse-hablando {
-            from { transform: scale(1); box-shadow: 0 0 20px rgba(56, 189, 248, 0.6); }
-            to { transform: scale(1.02); box-shadow: 0 0 35px rgba(56, 189, 248, 1); }
+            from { transform: scale(1); }
+            to { transform: scale(1.03); }
         }
 
         @keyframes pulse-escuchando {
-            from { transform: scale(1); box-shadow: 0 0 20px rgba(16, 185, 129, 0.6); }
-            to { transform: scale(1.02); box-shadow: 0 0 35px rgba(16, 185, 129, 1); }
+            from { transform: scale(1); }
+            to { transform: scale(1.03); }
         }
 
-        /* --- GLOBO DE DIÁLOGO / POPUP DE TEXTO DEBAJO DE NEX --- */
+        /* --- GLOBO DE DIÁLOGO / POP-UP DE TEXTO CON BORDE NARANJA --- */
         .globo-dialogo-nex {
             position: absolute;
-            top: calc(100% + 12px);
+            top: calc(100% + 10px);
             right: 0;
-            width: 260px;
+            width: 270px;
             background: #ffffff;
-            border: 2px solid #38bdf8;
+            border: 2px solid #f97316; /* Naranja vivo */
             border-radius: 16px;
             padding: 12px 14px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
             z-index: 60;
             animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* Flecha apuntando hacia la tarjeta de NEX */
+        /* Flecha apuntando a NEX con borde naranja */
         .globo-dialogo-nex::before {
             content: '';
             position: absolute;
             top: -10px;
-            right: 45px;
+            right: 40px;
             border-width: 0 10px 10px 10px;
             border-style: solid;
-            border-color: transparent transparent #38bdf8 transparent;
+            border-color: transparent transparent #f97316 transparent;
         }
 
         .globo-dialogo-nex::after {
             content: '';
             position: absolute;
             top: -7px;
-            right: 46px;
+            right: 41px;
             border-width: 0 9px 9px 9px;
             border-style: solid;
             border-color: transparent transparent #ffffff transparent;
@@ -84,11 +84,11 @@
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        /* --- BOTÓN "+" --- */
+        /* --- BOTÓN "+" EMPRESA --- */
         .btn-info-plus {
             background-color: #f1f5f9;
-            color: #059669;
-            border: 2px solid #a7f3d0;
+            color: #f97316;
+            border: 2px solid #ffedd5;
             transition: all 0.2s ease;
             width: 24px;
             height: 24px;
@@ -100,92 +100,79 @@
             font-weight: 800;
         }
         .btn-info-plus:hover {
-            background-color: #10b981;
+            background-color: #f97316;
             color: #ffffff;
-            border-color: #059669;
+            border-color: #ea580c;
             transform: scale(1.1);
         }
 
-        /* Contenedor con scroll para productos */
+        /* Contenedor Scroll Principal */
         .contenedor-principal {
-            max-height: calc(100vh - 240px);
+            max-height: calc(100vh - 190px);
             overflow-y: auto;
             padding-bottom: 30px;
         }
         .contenedor-principal::-webkit-scrollbar { width: 4px; }
         .contenedor-principal::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
 
-        /* Panel lateral de chat */
-        .panel-chat {
-            position: fixed;
-            top: 100px;
-            right: -100%;
-            width: 320px;
-            height: calc(100vh - 120px);
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(12px);
-            border-radius: 20px 0 0 20px;
-            box-shadow: -10px 0 30px rgba(0,0,0,0.15);
-            z-index: 90;
-            transition: right 0.3s ease;
-            display: flex;
-            flex-direction: column;
-        }
-        .panel-chat.abierto { right: 0; }
+        /* Scrollbar personalizado para el cuadro de descripción técnica */
+        .desc-scroll::-webkit-scrollbar { width: 3px; }
+        .desc-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen">
 
-    <!-- ENCABEZADO PRINCIPAL (FRANJA AZUL / SLATE) -->
-    <header id="headerComercio" class="bg-slate-800 text-white pt-6 pb-12 px-4 rounded-b-3xl shadow-xl relative z-10">
-        <div class="max-w-xl mx-auto flex items-start justify-between relative">
+    <!-- ENCABEZADO COMPACTO (FRANJA COMPACTA VERTICALMENTE) -->
+    <header id="headerComercio" class="bg-slate-900 text-white py-3 px-4 rounded-b-2xl shadow-md relative z-10">
+        <div class="max-w-xl mx-auto flex items-center justify-between relative">
             
             <!-- DATOS DE LA EMPRESA / STAND -->
             <div class="flex items-center space-x-3 pr-2">
-                <img id="imgLogo" src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Logo Stand" class="h-12 w-12 rounded-xl bg-white p-1 shadow-md object-cover border border-slate-500">
+                <img id="imgLogo" src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Logo Stand" class="h-10 w-10 rounded-xl bg-white p-1 shadow-md object-cover border border-slate-700">
                 <div>
                     <div class="flex items-center space-x-2">
-                        <h1 id="nombreComercio" class="text-lg font-extrabold uppercase tracking-wide leading-tight">Expo Stand Demo</h1>
-                        <!-- Botón "+" abre Pop-Up con datos de la Empresa -->
-                        <button onclick="abrirModalInfo()" title="Ver datos completos de la empresa" class="btn-info-plus shadow-sm active:scale-95">
+                        <h1 id="nombreComercio" class="text-base font-extrabold uppercase tracking-wide leading-tight text-white">TechExpo Solutions</h1>
+                        <!-- Botón "+" abre Pop-Up datos de la Empresa -->
+                        <button onclick="abrirModalInfo()" title="Ver datos de la empresa" class="btn-info-plus shadow-sm active:scale-95">
                             +
                         </button>
                     </div>
-                    <p class="text-xs text-sky-400 font-semibold tracking-wider uppercase mt-0.5">Stand Inmersivo + IA</p>
+                    <!-- TEXTO STAND INMERSIVO EN NARANJA VIVO -->
+                    <p class="text-[11px] text-orange-500 font-extrabold tracking-wider uppercase mt-0.5">STAND INMERSIVO + IA</p>
                 </div>
             </div>
 
-            <!-- CONTENEDOR RECTANGULAR VERTICAL DE NEX (POSICIÓN HÍBRIDA 50/50) -->
-            <div class="relative flex-shrink-0" style="margin-bottom: -60px;">
+            <!-- CONTENEDOR RECTANGULAR VERTICAL DE NEX (MARCO NARANJA VIVO - POSICIÓN 50/50) -->
+            <div class="relative flex-shrink-0" style="margin-bottom: -50px;">
                 <div id="contenedorNex" onclick="alternarEscuchaOAccion()" 
-                     class="tarjeta-nex-vertical w-28 h-40 bg-slate-900 border-2 border-sky-400 rounded-2xl overflow-hidden cursor-pointer relative group flex flex-col justify-between p-1.5 transition-all">
+                     class="tarjeta-nex-vertical w-24 h-36 bg-slate-950 border-2 border-orange-500 rounded-2xl overflow-hidden cursor-pointer relative group flex flex-col justify-between p-1 transition-all">
                     
                     <!-- Etiqueta superior -->
-                    <div class="bg-sky-500/90 backdrop-blur-sm text-slate-950 font-black text-[9px] tracking-wider text-center py-0.5 px-1 rounded-lg uppercase z-10">
+                    <div class="bg-orange-500 text-white font-black text-[8px] tracking-wider text-center py-0.5 px-1 rounded-md uppercase z-10">
                         NEX • Asesor IA
                     </div>
 
-                    <!-- Imagen de cuerpo/torso del robot NEX -->
-                    <div class="w-full h-28 overflow-hidden rounded-xl relative my-auto">
+                    <!-- Imagen del Robot NEX -->
+                    <div class="w-full h-24 overflow-hidden rounded-lg relative my-auto">
                         <img id="avatarNexImg" src="watermarked_img_18404316456539557055.jpg" alt="NEX Robot" class="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105">
                     </div>
 
                     <!-- Botón/Indicador inferior -->
-                    <div id="indicadorEstadoNex" class="bg-slate-800/90 text-sky-300 text-[10px] font-bold text-center py-0.5 rounded-md border border-slate-700 flex items-center justify-center gap-1">
-                        <span>🎙️</span> <span>Toca p/ Hablar</span>
+                    <div id="indicadorEstadoNex" class="bg-slate-900 text-orange-400 text-[9px] font-extrabold text-center py-0.5 rounded-md border border-slate-800 flex items-center justify-center gap-1">
+                        <span>🎙️</span> <span>Consultar</span>
                     </div>
                 </div>
 
-                <!-- POP-UP / GLOBO DE TEXTO DEBAJO DEL CONTENEDOR DE NEX -->
+                <!-- POP-UP / GLOBO DE TEXTO (BORDE NARANJA VIVO) -->
                 <div id="globoTextoNex" class="globo-dialogo-nex hidden">
-                    <div class="flex items-start justify-between gap-2 border-b border-gray-100 pb-1.5 mb-1.5">
-                        <span class="text-[11px] font-extrabold text-sky-600 uppercase flex items-center gap-1">
-                            🤖 NEX dice:
+                    <div class="flex items-start justify-between gap-2 border-b border-orange-100 pb-1.5 mb-1.5">
+                        <span class="text-[11px] font-extrabold text-orange-600 uppercase flex items-center gap-1">
+                            🤖 NEX Asesor IA:
                         </span>
                         <button onclick="cerrarGloboTexto()" class="text-gray-400 hover:text-red-500 text-xs font-bold px-1">✕</button>
                     </div>
                     <p id="textoRespuestaNex" class="text-xs text-slate-700 font-medium leading-relaxed">
-                        ¡Hola! Soy NEX. Haz clic en mí o usa la voz para consultarme lo que necesites sobre nuestros productos.
+                        ¡Bienvenido a nuestro Stand! Haz clic sobre mi imagen para consultarme sobre cualquier producto o especificación técnica.
                     </p>
                 </div>
             </div>
@@ -193,178 +180,315 @@
         </div>
     </header>
 
-    <!-- ZONA DEL BUSCADOR Y CONTENIDO PRINCIPAL -->
-    <main class="max-w-xl mx-auto px-4 pt-4 relative z-0">
+    <!-- BARRA DE BÚSQUEDA Y LISTA DE ARTÍCULOS -->
+    <main class="max-w-xl mx-auto px-4 pt-3 relative z-0">
 
         <!-- BUSCADOR -->
-        <div class="flex items-center gap-3 mb-4 pr-32"> <!-- pr-32 para dejar espacio al robot a la derecha -->
+        <div class="flex items-center gap-3 mb-3 pr-28">
             <div class="relative w-full shadow-sm rounded-xl">
-                <input type="text" id="inputBuscar" onkeyup="filtrarProductos()" placeholder="🔍 Buscar por código o producto..." 
-                    class="w-full pl-4 pr-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-500 text-sm bg-white shadow-sm">
+                <input type="text" id="inputBuscar" onkeyup="filtrarProductos()" placeholder="🔍 Código, artículo o especificación..." 
+                    class="w-full pl-3.5 pr-3.5 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 text-xs bg-white shadow-sm">
             </div>
         </div>
 
-        <!-- LISTA DE PRODUCTOS -->
+        <!-- LISTADO DE TARJETAS DE PRODUCTO DE FERIA (SIN IMÁGENES) -->
         <div id="contenedorScroll" class="contenedor-principal">
-            <div id="listaProductos" class="space-y-3">
-                <!-- Producto Demo 1 -->
-                <div class="tarjeta-producto bg-white p-3.5 rounded-2xl shadow-sm border border-gray-200/80 flex gap-3 items-center">
-                    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200" class="w-16 h-16 object-cover rounded-xl border">
-                    <div class="flex-1">
-                        <span class="text-[10px] font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-md">CÓD: AUD-01</span>
-                        <h3 class="font-bold text-slate-800 text-sm mt-0.5">Auriculares Hi-Fi Inalámbricos</h3>
-                        <p class="text-xs text-gray-500 line-clamp-1">Cancelación de ruido activa y batería de 30hs.</p>
-                        <p class="text-xs font-extrabold text-slate-900 mt-1">$45.000 USD</p>
+            <div id="listaProductos" class="space-y-4">
+                
+                <!-- TARJETA DE PRODUCTO 1 -->
+                <div class="tarjeta-producto bg-white p-4 rounded-2xl shadow-sm border border-gray-200 flex flex-col gap-2.5">
+                    
+                    <!-- Fila Superior: Código (Izq. Gris Oscuro) + Promoción de Feria (Der.) -->
+                    <div class="flex items-center justify-between">
+                        <span class="bg-slate-800 text-white text-[11px] font-extrabold px-2.5 py-1 rounded-lg tracking-wider">
+                            CÓD: VLV-500
+                        </span>
+                        <span class="bg-orange-100 text-orange-700 font-extrabold text-[11px] px-2.5 py-0.5 rounded-full border border-orange-200 flex items-center gap-1">
+                            🔥 Bonificación Exclusiva de Expo
+                        </span>
                     </div>
+
+                    <!-- Nombre del Producto -->
+                    <h3 class="font-black text-slate-800 text-base leading-snug">
+                        Válvula Reguladora de Flujo Industrial Pro
+                    </h3>
+
+                    <!-- Descripción Técnica con Scroll -->
+                    <div class="desc-scroll bg-slate-50 p-2.5 rounded-xl text-xs text-slate-600 border border-slate-200/60 max-h-20 overflow-y-auto font-medium leading-relaxed">
+                        Fabricada en aleación de titanio de alta resistencia química y térmica. Tolerancia hasta 350 BAR de presión contínua. Módulo de diagnóstico remoto integrado mediante protocolo HART y Modbus RS485. Apta para plantas petroquímicas y farmacéuticas de alta exigencia.
+                    </div>
+
+                    <!-- 3 Botones de Acción Técnica: A) Brochure B) Video C) Tabla -->
+                    <div class="grid grid-cols-3 gap-2 pt-1">
+                        <button onclick="abrirModalBrochure('Válvula VLV-500')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-1.5 px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-slate-300 transition active:scale-95">
+                            📄 Brochure
+                        </button>
+                        <button onclick="abrirModalVideo('Válvula VLV-500', 'https://www.youtube.com/embed/dQw4w9WgXcQ')" class="bg-orange-50 hover:bg-orange-100 text-orange-600 font-bold py-1.5 px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-orange-200 transition active:scale-95">
+                            🎬 Video
+                        </button>
+                        <button onclick="abrirModalTabla('Válvula VLV-500', [
+                            ['Presión Máx.', '350 BAR'],
+                            ['Material', 'Titanio Grau 5 / Vitón'],
+                            ['Conexión', 'Flange 2 pulgadas NPT'],
+                            ['Garantía', '3 Años de fábrica']
+                        ])" class="bg-sky-50 hover:bg-sky-100 text-sky-700 font-bold py-1.5 px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-sky-200 transition active:scale-95">
+                            📊 Tabla
+                        </button>
+                    </div>
+
+                    <!-- Botón para Solicitar Cita / Dejar Datos -->
+                    <button onclick="abrirModalConsulta('Válvula Reguladora de Flujo Industrial Pro (CÓD: VLV-500)')" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold py-2 px-3 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-sm active:scale-95">
+                        ✉️ Solicitar Demostración / Dejar Datos
+                    </button>
                 </div>
 
-                <!-- Producto Demo 2 -->
-                <div class="tarjeta-producto bg-white p-3.5 rounded-2xl shadow-sm border border-gray-200/80 flex gap-3 items-center">
-                    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200" class="w-16 h-16 object-cover rounded-xl border">
-                    <div class="flex-1">
-                        <span class="text-[10px] font-bold text-sky-600 bg-sky-50 px-2 py-0.5 rounded-md">CÓD: REL-02</span>
-                        <h3 class="font-bold text-slate-800 text-sm mt-0.5">Smartwatch Deportivo Pro</h3>
-                        <p class="text-xs text-gray-500 line-clamp-1">Monitoreo cardíaco, GPS integrado y sumergible.</p>
-                        <p class="text-xs font-extrabold text-slate-900 mt-1">$28.500 USD</p>
+                <!-- TARJETA DE PRODUCTO 2 -->
+                <div class="tarjeta-producto bg-white p-4 rounded-2xl shadow-sm border border-gray-200 flex flex-col gap-2.5">
+                    
+                    <!-- Fila Superior -->
+                    <div class="flex items-center justify-between">
+                        <span class="bg-slate-800 text-white text-[11px] font-extrabold px-2.5 py-1 rounded-lg tracking-wider">
+                            CÓD: SENS-90
+                        </span>
+                        <span class="bg-emerald-100 text-emerald-800 font-extrabold text-[11px] px-2.5 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1">
+                            🎁 Incluye Kit de Calibración
+                        </span>
                     </div>
+
+                    <!-- Nombre del Producto -->
+                    <h3 class="font-black text-slate-800 text-base leading-snug">
+                        Sensor Óptico de Partículas IoT Ultra-Preciso
+                    </h3>
+
+                    <!-- Descripción Técnica con Scroll -->
+                    <div class="desc-scroll bg-slate-50 p-2.5 rounded-xl text-xs text-slate-600 border border-slate-200/60 max-h-20 overflow-y-auto font-medium leading-relaxed">
+                        Sensor ambiental para medición continua de material particulado PM2.5 y PM10 en salas limpias. Conexión nativa Wi-Fi/LoRaWAN con telemetría en la nube en tiempo real. Algoritmo de autocalibración laser adaptativo contra acumulación de polvo.
+                    </div>
+
+                    <!-- 3 Botones de Acción Técnica -->
+                    <div class="grid grid-cols-3 gap-2 pt-1">
+                        <button onclick="abrirModalBrochure('Sensor SENS-90')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-1.5 px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-slate-300 transition active:scale-95">
+                            📄 Brochure
+                        </button>
+                        <button onclick="abrirModalVideo('Sensor SENS-90', 'https://www.youtube.com/embed/dQw4w9WgXcQ')" class="bg-orange-50 hover:bg-orange-100 text-orange-600 font-bold py-1.5 px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-orange-200 transition active:scale-95">
+                            🎬 Video
+                        </button>
+                        <button onclick="abrirModalTabla('Sensor SENS-90', [
+                            ['Rango Medición', '0.3 a 10 µm'],
+                            ['Conectividad', 'LoRaWAN, Wi-Fi, RS485'],
+                            ['Alimentación', '12-24V DC / Batería Li-Ion'],
+                            ['Certificación', 'ISO 14644-1 Cleanrooms']
+                        ])" class="bg-sky-50 hover:bg-sky-100 text-sky-700 font-bold py-1.5 px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-sky-200 transition active:scale-95">
+                            📊 Tabla
+                        </button>
+                    </div>
+
+                    <!-- Botón para Solicitar Cita / Dejar Datos -->
+                    <button onclick="abrirModalConsulta('Sensor Óptico de Partículas IoT (CÓD: SENS-90)')" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold py-2 px-3 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-sm active:scale-95">
+                        ✉️ Solicitar Demostración / Dejar Datos
+                    </button>
                 </div>
+
             </div>
         </div>
 
     </main>
 
-    <!-- POP-UP / MODAL DATOS COMPLETO DE LA EMPRESA (AL PRESIONAR BOTÓN "+") -->
-    <div id="modalInfo" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden border border-gray-100 animate-popIn">
-            
-            <!-- Cabecera Pop-Up -->
-            <div class="p-5 text-white relative bg-slate-800">
-                <button onclick="cerrarModalInfo()" class="absolute top-4 right-4 text-slate-300 hover:text-white text-lg font-bold bg-slate-700/60 w-7 h-7 rounded-full flex items-center justify-center">✕</button>
-                <p class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest mb-1">Ficha Informativa</p>
-                <h2 id="modalNombreComercio" class="text-xl font-black uppercase tracking-wide pr-6 leading-tight">Empresa Expo Global</h2>
-                <div class="w-full h-1 bg-sky-500 rounded-full mt-3"></div>
-            </div>
+    <!-- ==================== POP-UPS / MODALES ==================== -->
 
-            <!-- Cuerpo Datos de la Empresa -->
-            <div class="p-5 space-y-3.5 text-xs text-slate-700">
-                
-                <!-- Ubicación -->
-                <div class="flex items-start space-x-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200/80">
-                    <span class="text-lg">📍</span>
+    <!-- MODAL 1: INFORMACIÓN DE LA EMPRESA (BOTÓN "+") -->
+    <div id="modalInfo" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden border border-gray-100">
+            <div class="p-4 text-white relative bg-slate-900 border-b-2 border-orange-500">
+                <button onclick="cerrarModalInfo()" class="absolute top-3.5 right-4 text-slate-400 hover:text-white text-lg font-bold">✕</button>
+                <p class="text-[10px] font-black text-orange-500 uppercase tracking-widest">Información Oficial</p>
+                <h2 id="modalNombreComercio" class="text-lg font-black uppercase tracking-wide">TechExpo Solutions</h2>
+            </div>
+            <div class="p-4 space-y-3 text-xs text-slate-700">
+                <div class="flex items-start space-x-3 bg-slate-50 p-2.5 rounded-xl border">
+                    <span class="text-base">📍</span>
                     <div>
                         <h4 class="font-bold text-slate-900 uppercase text-[10px]">Ubicación en Stand</h4>
-                        <p id="modalDireccion" class="font-medium mt-0.5">Pabellón Azul • Stand #402, Centro de Exposiciones</p>
+                        <p class="font-medium mt-0.5">Pabellón A • Stand #104, Centro de Convenciones</p>
                     </div>
                 </div>
-
-                <!-- Teléfono & WhatsApp -->
-                <div class="flex items-start space-x-3 bg-emerald-50/80 p-2.5 rounded-xl border border-emerald-200/80">
-                    <span class="text-lg">📞</span>
+                <div class="flex items-start space-x-3 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200">
+                    <span class="text-base">📞</span>
                     <div class="w-full">
-                        <h4 class="font-bold text-emerald-950 uppercase text-[10px]">Atención Comercial</h4>
-                        <p id="modalTelefono" class="font-medium mt-0.5">+54 11 5555-8888</p>
-                        <a id="btnWhatsappModal" href="https://wa.me/541155558888" target="_blank" class="mt-2 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-3 rounded-lg flex items-center justify-center space-x-1.5 text-xs transition">
-                            <span>💬 Chatear por WhatsApp</span>
+                        <h4 class="font-bold text-emerald-950 uppercase text-[10px]">Atención & WhatsApp</h4>
+                        <p class="font-medium mt-0.5">+54 11 4444-9999</p>
+                        <a href="https://wa.me/541144449999" target="_blank" class="mt-1.5 w-full bg-emerald-600 text-white font-bold py-1.5 px-3 rounded-lg flex items-center justify-center gap-1">
+                            💬 Abrir WhatsApp Directo
                         </a>
                     </div>
                 </div>
-
-                <!-- Sitio Web Oficial -->
-                <div class="flex items-start space-x-3 bg-sky-50/80 p-2.5 rounded-xl border border-sky-200/80">
-                    <span class="text-lg">🌐</span>
+                <div class="flex items-start space-x-3 bg-orange-50 p-2.5 rounded-xl border border-orange-200">
+                    <span class="text-base">🌐</span>
                     <div>
-                        <h4 class="font-bold text-sky-950 uppercase text-[10px]">Sitio Web Oficial</h4>
-                        <a id="modalWeb" href="https://www.ejemploempresa.com" target="_blank" class="text-sky-600 hover:underline font-bold mt-0.5 block">www.ejemploempresa.com</a>
+                        <h4 class="font-bold text-orange-950 uppercase text-[10px]">Sitio Web Oficial</h4>
+                        <a href="https://www.techexpo.demo" target="_blank" class="text-orange-600 hover:underline font-bold block mt-0.5">www.techexpo.demo</a>
                     </div>
-                </div>
-
-                <!-- Correo Electrónico -->
-                <div class="flex items-start space-x-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200/80">
-                    <span class="text-lg">✉️</span>
-                    <div>
-                        <h4 class="font-bold text-slate-900 uppercase text-[10px]">Correo Electrónico</h4>
-                        <p id="modalEmail" class="font-medium mt-0.5">contacto@ejemploempresa.com</p>
-                    </div>
-                </div>
-
-                <!-- Horarios de la Expo -->
-                <div class="flex items-start space-x-3 bg-orange-50/80 p-2.5 rounded-xl border border-orange-200/80">
-                    <span class="text-lg">🕒</span>
-                    <div>
-                        <h4 class="font-bold text-orange-950 uppercase text-[10px]">Horario de Atención</h4>
-                        <p id="modalHorarios" class="font-medium mt-0.5">Lunes a Viernes: 09:00 - 18:00 Hs</p>
-                    </div>
-                </div>
-
-                <!-- Descarga de Catálogo General -->
-                <div class="pt-1">
-                    <a href="#" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 px-3 rounded-xl flex items-center justify-center gap-2 text-xs transition shadow-sm">
-                        <span>📄 Descargar Catálogo PDF</span>
-                    </a>
                 </div>
             </div>
-
-            <div class="bg-gray-50 px-5 py-3 text-center border-t border-gray-100">
-                <button onclick="cerrarModalInfo()" class="w-full py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 font-extrabold rounded-xl text-xs transition">Cerrar</button>
+            <div class="bg-gray-50 px-4 py-2.5 text-center border-t">
+                <button onclick="cerrarModalInfo()" class="w-full py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 font-extrabold rounded-xl text-xs">Cerrar</button>
             </div>
         </div>
     </div>
 
-    <!-- SCRIPT DE INTERACCIÓN, VOZ Y POP-UPS -->
+    <!-- MODAL 2: TABLA DE ESPECIFICACIONES TÉCNICAS -->
+    <div id="modalTabla" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden border border-gray-100">
+            <div class="p-4 bg-sky-900 text-white relative border-b-2 border-sky-400">
+                <button onclick="cerrarModalTabla()" class="absolute top-3.5 right-4 text-sky-200 hover:text-white text-lg font-bold">✕</button>
+                <p class="text-[10px] font-black text-sky-300 uppercase tracking-widest">Ficha Técnica</p>
+                <h3 id="tituloTablaModal" class="text-sm font-black uppercase">Especificaciones del Producto</h3>
+            </div>
+            <div class="p-4">
+                <table class="w-full text-left text-xs border-collapse">
+                    <tbody id="cuerpoTablaModal" class="divide-y divide-gray-200">
+                        <!-- Se llena dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="bg-gray-50 px-4 py-2.5 text-center border-t">
+                <button onclick="cerrarModalTabla()" class="w-full py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 font-extrabold rounded-xl text-xs">Volver</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: VIDEO DEMOSTRATIVO -->
+    <div id="modalVideo" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden">
+            <div class="p-3 bg-slate-900 text-white flex justify-between items-center px-4">
+                <span id="tituloVideoModal" class="text-xs font-bold text-orange-400 truncate">Video Demostrativo</span>
+                <button onclick="cerrarModalVideo()" class="text-slate-400 hover:text-white font-bold text-base">✕</button>
+            </div>
+            <div class="aspect-video bg-black">
+                <iframe id="iframeVideoModal" class="w-full h-full" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 4: FORMULARIO DE CONSULTA / AGENDAR CITA -->
+    <div id="modalConsulta" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden">
+            <div class="p-4 bg-orange-500 text-white relative">
+                <button onclick="cerrarModalConsulta()" class="absolute top-3.5 right-4 text-orange-100 hover:text-white text-lg font-bold">✕</button>
+                <p class="text-[10px] font-black text-orange-100 uppercase tracking-widest">Contacto Directo Stand</p>
+                <h3 class="text-sm font-black uppercase">Solicitar Información / Cita</h3>
+            </div>
+            <form onsubmit="enviarConsulta(event)" class="p-4 space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Producto de Interés:</label>
+                    <input type="text" id="inputProductoConsulta" readonly class="w-full p-2 bg-slate-100 border border-slate-300 rounded-lg font-bold text-slate-800 text-[11px]">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Nombre Completo *</label>
+                    <input type="text" required placeholder="Ej: Juan Pérez" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Teléfono / WhatsApp *</label>
+                    <input type="tel" required placeholder="Ej: +54 11 1234 5678" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Correo Electrónico</label>
+                    <input type="email" placeholder="ejemplo@empresa.com" class="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none">
+                </div>
+                <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-extrabold py-2.5 rounded-xl transition shadow-md mt-2">
+                    🚀 Enviar Solicitud
+                </button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- LÓGICA DE SCRIPT E INTERACCIONES -->
     <script>
         let escuchando = false;
         let sintesisVoz = window.speechSynthesis;
 
-        // Abrir y cerrar el Pop-up de Información de la Empresa
-        function abrirModalInfo() {
-            document.getElementById('modalInfo').classList.remove('hidden');
+        // Abrir / Cerrar Modales
+        function abrirModalInfo() { document.getElementById('modalInfo').classList.remove('hidden'); }
+        function cerrarModalInfo() { document.getElementById('modalInfo').classList.add('hidden'); }
+
+        function abrirModalTabla(nombre, datos) {
+            document.getElementById('tituloTablaModal').innerText = nombre;
+            const cuerpo = document.getElementById('cuerpoTablaModal');
+            cuerpo.innerHTML = '';
+            datos.forEach(fila => {
+                cuerpo.innerHTML += `
+                    <tr class="hover:bg-slate-50">
+                        <td class="py-2 px-2 font-bold text-slate-800 border-r border-gray-100 w-1/2">${fila[0]}</td>
+                        <td class="py-2 px-2 text-slate-600 w-1/2">${fila[1]}</td>
+                    </tr>
+                `;
+            });
+            document.getElementById('modalTabla').classList.remove('hidden');
+        }
+        function cerrarModalTabla() { document.getElementById('modalTabla').classList.add('hidden'); }
+
+        function abrirModalVideo(nombre, url) {
+            document.getElementById('tituloVideoModal').innerText = 'Video: ' + nombre;
+            document.getElementById('iframeVideoModal').src = url;
+            document.getElementById('modalVideo').classList.remove('hidden');
+        }
+        function cerrarModalVideo() {
+            document.getElementById('iframeVideoModal').src = '';
+            document.getElementById('modalVideo').classList.add('hidden');
         }
 
-        function cerrarModalInfo() {
-            document.getElementById('modalInfo').classList.add('hidden');
+        function abrirModalBrochure(nombre) {
+            responderNex(`Iniciando la descarga del Brochure PDF de ${nombre}.`);
+            alert(`📄 Descargando Brochure oficial de ${nombre}...`);
         }
 
-        // Mostrar u Ocultar el Globo de Texto de NEX
+        function abrirModalConsulta(producto) {
+            document.getElementById('inputProductoConsulta').value = producto;
+            document.getElementById('modalConsulta').classList.remove('hidden');
+        }
+        function cerrarModalConsulta() { document.getElementById('modalConsulta').classList.add('hidden'); }
+
+        function enviarConsulta(e) {
+            e.preventDefault();
+            alert('✅ Solicitud recibida. Un representante de nuestro Stand se contactará a la brevedad.');
+            cerrarModalConsulta();
+        }
+
+        // Mostrar / Ocultar Globo de Texto NEX
         function mostrarGloboTexto(texto) {
             const globo = document.getElementById('globoTextoNex');
-            const textoParrafo = document.getElementById('textoRespuestaNex');
-            textoParrafo.innerText = texto;
+            document.getElementById('textoRespuestaNex').innerText = texto;
             globo.classList.remove('hidden');
         }
-
-        function cerrarGloboTexto() {
-            document.getElementById('globoTextoNex').classList.add('hidden');
-        }
+        function cerrarGloboTexto() { document.getElementById('globoTextoNex').classList.add('hidden'); }
 
         // Función para que NEX responda en TEXTO y VOZ simultáneamente
         function responderNex(texto) {
-            // 1. Mostrar respuesta en el Globo de texto flotante
             mostrarGloboTexto(texto);
 
-            // 2. Animación de resplandor hablando
             const contenedorNex = document.getElementById('contenedorNex');
             const indicador = document.getElementById('indicadorEstadoNex');
             
             contenedorNex.classList.add('glow-hablando');
             indicador.innerHTML = '<span>🔊</span> <span>Hablando...</span>';
 
-            // 3. Emitir Respuesta por VOZ (Text-To-Speech)
             if (sintesisVoz) {
-                sintesisVoz.cancel(); // Cancelar lecturas previas
+                sintesisVoz.cancel();
                 const utterance = new SpeechSynthesisUtterance(texto);
                 utterance.lang = 'es-ES';
                 utterance.rate = 1.0;
 
                 utterance.onend = function() {
                     contenedorNex.classList.remove('glow-hablando');
-                    indicador.innerHTML = '<span>🎙️</span> <span>Toca p/ Hablar</span>';
+                    indicador.innerHTML = '<span>🎙️</span> <span>Consultar</span>';
                 };
 
                 sintesisVoz.speak(utterance);
             } else {
                 setTimeout(() => {
                     contenedorNex.classList.remove('glow-hablando');
-                    indicador.innerHTML = '<span>🎙️</span> <span>Toca p/ Hablar</span>';
+                    indicador.innerHTML = '<span>🎙️</span> <span>Consultar</span>';
                 }, 3000);
             }
         }
@@ -377,22 +501,21 @@
             if (escuchando) {
                 escuchando = false;
                 contenedorNex.classList.remove('glow-escuchando');
-                indicador.innerHTML = '<span>🎙️</span> <span>Toca p/ Hablar</span>';
+                indicador.innerHTML = '<span>🎙️</span> <span>Consultar</span>';
             } else {
                 escuchando = true;
                 contenedorNex.classList.add('glow-escuchando');
                 indicador.innerHTML = '<span>👂</span> <span>Escuchando...</span>';
 
-                // Simulación de respuesta tras escuchar la consulta
                 setTimeout(() => {
                     escuchando = false;
                     contenedorNex.classList.remove('glow-escuchando');
-                    responderNex("Hola, con gusto te asesoro. Puedes buscar productos usando la barra superior o consultarme detalles específicos.");
-                }, 2500);
+                    responderNex("Nuestros productos de feria cuentan con brochures descargables, tablas de especificación y promociones exclusivas. ¿Deseas consultar algún código?");
+                }, 2200);
             }
         }
 
-        // Filtro rápido de productos en la lista
+        // Filtro rápido de productos
         function filtrarProductos() {
             const query = document.getElementById('inputBuscar').value.toLowerCase();
             const tarjetas = document.querySelectorAll('.tarjeta-producto');
