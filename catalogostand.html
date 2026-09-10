@@ -41,22 +41,24 @@
         @keyframes pulse-escuchando {
             from { transform: scale(1); }
             to { transform: scale(1.03); }
-            
-            /* --- CLASE GENERAL PARA EL BOTÓN DE SOLICITAR DEMOSTRACIÓN --- */
+        }
+
+        /* --- CLASE GENERAL PARA EL BOTÓN DE SOLICITAR DEMOSTRACIÓN --- */
         .btn-solicitar-demo {
             padding-top: 5.5px !important;    /* Ajusta aquí el alto superior */
-            padding-bottom: 6px !important; /* Ajusta aquí el alto inferior */
+            padding-bottom: 6px !important;  /* Ajusta aquí el alto inferior */
         }
+
         /* --- CLASE GENERAL PARA LOS BOTONES TÉCNICOS (Brochure, Video, Tabla) --- */
         .btn-tecnico-gral {
-            padding-top: 4.5px !important;    /* Ajusta aquí el alto superior (ej: 4px, 5px, 6px) */
+            padding-top: 4.5px !important;    /* Ajusta aquí el alto superior */
             padding-bottom: 4.5px !important; /* Ajusta aquí el alto inferior */
         }
+
         /* --- CLASE GENERAL PARA EL TEXTO DEL CÓDIGO DE PRODUCTO --- */
         .codigo-producto-gral {
-            font-size: 14px !important; /* Puedes cambiar a 12px, 13px, 14px, etc. */
-            letter-spacing: 0.05em;     /* Espaciado opcional para que se lea mejor */
-        }
+            font-size: 14px !important;
+            letter-spacing: 0.05em;
         }
 
         /* --- GLOBO DE DIÁLOGO DE NEX --- */
@@ -170,7 +172,7 @@
                     </div>
 
                     <div id="indicadorEstadoNex" class="bg-slate-900 text-orange-400 text-[9px] font-extrabold text-center py-0.5 rounded-md border border-slate-800 flex items-center justify-center gap-1">
-                        <span>🎙️</span> <span>Consultar</span>
+                        <span>🎙️</span> <span id="textoEstadoNex">Consultar</span>
                     </div>
                 </div>
 
@@ -259,7 +261,7 @@
                 <div class="tarjeta-producto bg-white p-4 rounded-2xl shadow-sm border border-gray-200 flex flex-col gap-2.5">
                     
                     <div class="flex items-center justify-between">
-                        <span class="bg-slate-800 text-white  font-extrabold px-2.5 py-1 rounded-lg codigo-producto-gral">
+                        <span class="bg-slate-800 text-white font-extrabold px-2.5 py-1 rounded-lg codigo-producto-gral">
                             CÓD: SENS-90
                         </span>
                         <span class="bg-emerald-100 text-emerald-800 font-extrabold text-[11px] px-2.5 py-0.5 rounded-full border border-emerald-300 flex items-center gap-1">
@@ -343,7 +345,7 @@
                         <a href="https://www.techexpo.demo" target="_blank" class="text-orange-600 hover:underline font-bold block mt-0.5">www.techexpo.demo</a>
                     </div>
                 </div>
-                <!-- NUEVO: RECUADRO RUBRO -->
+                <!-- RECUADRO RUBRO -->
                 <div class="flex items-start space-x-3 bg-blue-50 p-2.5 rounded-xl border border-blue-200">
                     <span class="text-base">🏭</span>
                     <div>
@@ -351,7 +353,7 @@
                         <p class="font-medium mt-0.5 text-slate-800">Automatización Industrial & Instrumentación IoT</p>
                     </div>
                 </div>
-                <!-- NUEVO: RECUADRO DIRECCIÓN / SEDE -->
+                <!-- RECUADRO DIRECCIÓN / SEDE -->
                 <div class="flex items-start space-x-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
                     <span class="text-base">🏢</span>
                     <div>
@@ -377,7 +379,7 @@
             <div class="p-3 overflow-y-auto tabla-scroll flex-grow">
                 <table class="w-full text-left text-xs border-collapse">
                     <tbody id="cuerpoTablaModal" class="divide-y divide-gray-200">
-                        <!-- Llenado dinámico de hasta 10 filas -->
+                        <!-- Llenado dinámico -->
                     </tbody>
                 </table>
             </div>
@@ -469,6 +471,125 @@
     <script>
         let escuchando = false;
         let sintesisVoz = window.speechSynthesis;
+        let reconocedorVoz = null;
+
+        // Configuración de Reconocimiento de Voz Web Speech API
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            reconocedorVoz = new SpeechRecognition();
+            reconocedorVoz.lang = 'es-ES';
+            reconocedorVoz.continuous = false;
+
+            reconocedorVoz.onstart = function() {
+                escuchando = true;
+                const nex = document.getElementById('contenedorNex');
+                nex.classList.remove('glow-hablando');
+                nex.classList.add('glow-escuchando');
+                document.getElementById('textoEstadoNex').innerText = 'Escuchando...';
+            };
+
+            reconocedorVoz.onresult = function(event) {
+                const mensaje = event.results[0][0].transcript;
+                procesarConsultaIA(mensaje);
+            };
+
+            reconocedorVoz.onerror = function(e) {
+                detenerEstadoNex();
+                mostrarGloboTexto("No logré escucharte bien. Por favor intenta de nuevo o escribe en el buscador.");
+            };
+
+            reconocedorVoz.onend = function() {
+                detenerEstadoNex();
+            };
+        }
+
+        // Alternar Reconocimiento por Voz o Entrada
+        function alternarEscuchaOAccion() {
+            if (sintesisVoz.speaking) {
+                sintesisVoz.cancel();
+                detenerEstadoNex();
+                return;
+            }
+
+            if (!reconocedorVoz) {
+                const consulta = prompt("Ingresa tu consulta sobre nuestros productos:");
+                if (consulta) procesarConsultaIA(consulta);
+                return;
+            }
+
+            if (escuchando) {
+                reconocedorVoz.stop();
+            } else {
+                try {
+                    reconocedorVoz.start();
+                } catch(e) {
+                    reconocedorVoz.stop();
+                }
+            }
+        }
+
+        function detenerEstadoNex() {
+            escuchando = false;
+            const nex = document.getElementById('contenedorNex');
+            nex.classList.remove('glow-escuchando', 'glow-hablando');
+            document.getElementById('textoEstadoNex').innerText = 'Consultar';
+        }
+
+        // Búsqueda en Vivo de Productos
+        function filtrarProductos() {
+            const texto = document.getElementById('inputBuscar').value.toLowerCase();
+            const tarjetas = document.querySelectorAll('.tarjeta-producto');
+
+            tarjetas.forEach(tarjeta => {
+                const contenido = tarjeta.innerText.toLowerCase();
+                if (contenido.includes(texto)) {
+                    tarjeta.style.display = 'flex';
+                } else {
+                    tarjeta.style.display = 'none';
+                }
+            });
+        }
+
+        // Respuestas Básicas de IA NEX
+        function procesarConsultaIA(consulta) {
+            const consultaLower = consulta.toLowerCase();
+            let respuesta = "Contamos con tecnología de punta en automatización industrial. Puedes revisar nuestro catálogo en pantalla para más especificaciones.";
+
+            if (consultaLower.includes("válvula") || consultaLower.includes("vlv-500") || consultaLower.includes("presión")) {
+                respuesta = "La Válvula VLV-500 soporta hasta 350 BAR de presión continua y cuenta con comunicación HART y Modbus.";
+            } else if (consultaLower.includes("sensor") || consultaLower.includes("sens-90") || consultaLower.includes("partículas")) {
+                respuesta = "El Sensor SENS-90 mide partículas PM2.5 y PM10 en tiempo real con conectividad LoRaWAN y Wi-Fi.";
+            } else if (consultaLower.includes("ubicación") || consultaLower.includes("dónde") || consultaLower.includes("stand")) {
+                respuesta = "Nos encontramos en el Pabellón A, Stand número 104 del Centro de Convenciones.";
+            }
+
+            responderNex(respuesta);
+        }
+
+        // Respuesta NEX (Voz y Texto)
+        function responderNex(texto) {
+            mostrarGloboTexto(texto);
+
+            if ('speechSynthesis' in window) {
+                sintesisVoz.cancel();
+                const utterance = new SpeechSynthesisUtterance(texto);
+                utterance.lang = 'es-ES';
+                utterance.rate = 1.0;
+
+                utterance.onstart = function() {
+                    const nex = document.getElementById('contenedorNex');
+                    nex.classList.remove('glow-escuchando');
+                    nex.classList.add('glow-hablando');
+                    document.getElementById('textoEstadoNex').innerText = 'Hablando...';
+                };
+
+                utterance.onend = function() {
+                    detenerEstadoNex();
+                };
+
+                sintesisVoz.speak(utterance);
+            }
+        }
 
         // Abrir / Cerrar Modales
         function abrirModalInfo() { document.getElementById('modalInfo').classList.remove('hidden'); }
@@ -479,7 +600,7 @@
             document.getElementById('tituloTablaModal').innerText = nombre;
             const cuerpo = document.getElementById('cuerpoTablaModal');
             cuerpo.innerHTML = '';
-            // Se muestran hasta 10 filas
+            
             datos.slice(0, 10).forEach((fila, idx) => {
                 cuerpo.innerHTML += `
                     <tr class="${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50'} hover:bg-orange-50 transition">
@@ -504,6 +625,7 @@
             document.getElementById('modalBrochure').classList.add('hidden');
         }
 
+        // Video Demostrativo Modal
         function abrirModalVideo(nombre, url) {
             document.getElementById('tituloVideoModal').innerText = 'Video: ' + nombre;
             document.getElementById('iframeVideoModal').src = url;
@@ -514,6 +636,7 @@
             document.getElementById('modalVideo').classList.add('hidden');
         }
 
+        // Formulario de Consulta
         function abrirModalConsulta(producto) {
             document.getElementById('inputProductoConsulta').value = producto;
             document.getElementById('modalConsulta').classList.remove('hidden');
@@ -533,68 +656,6 @@
             globo.classList.remove('hidden');
         }
         function cerrarGloboTexto() { document.getElementById('globoTextoNex').classList.add('hidden'); }
-
-        // Respuesta NEX (Voz y Texto)
-        function responderNex(texto) {
-            mostrarGloboTexto(texto);
-
-            const contenedorNex = document.getElementById('contenedorNex');
-            const indicador = document.getElementById('indicadorEstadoNex');
-            
-            contenedorNex.classList.add('glow-hablando');
-            indicador.innerHTML = '<span>🔊</span> <span>Hablando...</span>';
-
-            if (sintesisVoz) {
-                sintesisVoz.cancel();
-                const utterance = new SpeechSynthesisUtterance(texto);
-                utterance.lang = 'es-ES';
-                utterance.rate = 1.0;
-
-                utterance.onend = function() {
-                    contenedorNex.classList.remove('glow-hablando');
-                    indicador.innerHTML = '<span>🎙️</span> <span>Consultar</span>';
-                };
-
-                sintesisVoz.speak(utterance);
-            } else {
-                setTimeout(() => {
-                    contenedorNex.classList.remove('glow-hablando');
-                    indicador.innerHTML = '<span>🎙️</span> <span>Consultar</span>';
-                }, 3000);
-            }
-        }
-
-        // Alternar Escucha NEX
-        function alternarEscuchaOAccion() {
-            const contenedorNex = document.getElementById('contenedorNex');
-            const indicador = document.getElementById('indicadorEstadoNex');
-
-            if (escuchando) {
-                escuchando = false;
-                contenedorNex.classList.remove('glow-escuchando');
-                indicador.innerHTML = '<span>🎙️</span> <span>Consultar</span>';
-            } else {
-                escuchando = true;
-                contenedorNex.classList.add('glow-escuchando');
-                indicador.innerHTML = '<span>👂</span> <span>Escuchando...</span>';
-
-                setTimeout(() => {
-                    escuchando = false;
-                    contenedorNex.classList.remove('glow-escuchando');
-                    responderNex("Nuestros productos de feria cuentan con brochures previsualizables en PDF, tablas con hasta 10 especificaciones y promociones exclusivas. ¿Deseas consultar algún código?");
-                }, 2200);
-            }
-        }
-
-        // Filtro de Búsqueda
-        function filtrarProductos() {
-            const query = document.getElementById('inputBuscar').value.toLowerCase();
-            const tarjetas = document.querySelectorAll('.tarjeta-producto');
-            tarjetas.forEach(card => {
-                const texto = card.innerText.toLowerCase();
-                card.style.display = texto.includes(query) ? 'flex' : 'none';
-            });
-        }
     </script>
 </body>
-</html>
+</html>      
