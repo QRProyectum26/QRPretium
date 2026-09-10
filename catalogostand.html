@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -11,7 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        /* --- ESTILOS DE LA TARJETA VERTICAL DE NEX (AMPLIADA) --- */
+        /* --- ESTILOS DE LA TARJETA VERTICAL DE NEX --- */
         .tarjeta-nex-vertical {
             box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.4), 0 0 15px rgba(249, 115, 22, 0.5);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -44,7 +43,7 @@
             to { transform: scale(1.03); }
         }
 
-        /* --- GLOBO DE DIÁLOGO / POP-UP DE TEXTO DE NEX --- */
+        /* --- GLOBO DE DIÁLOGO DE NEX --- */
         .globo-dialogo-nex {
             position: absolute;
             top: calc(100% + 8px);
@@ -107,7 +106,7 @@
             transform: scale(1.1);
         }
 
-        /* Contenedor Scroll Principal */
+        /* Contenedores con Scroll */
         .contenedor-principal {
             max-height: calc(100vh - 200px);
             overflow-y: auto;
@@ -116,8 +115,8 @@
         .contenedor-principal::-webkit-scrollbar { width: 4px; }
         .contenedor-principal::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
 
-        .desc-scroll::-webkit-scrollbar { width: 3px; }
-        .desc-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .desc-scroll::-webkit-scrollbar, .tabla-scroll::-webkit-scrollbar { width: 4px; }
+        .desc-scroll::-webkit-scrollbar-thumb, .tabla-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen">
@@ -128,7 +127,6 @@
             
             <!-- LOGO + BOTÓN "+" ABAJO + DATOS DE LA EMPRESA -->
             <div class="flex items-start space-x-3 pr-2">
-                <!-- Columna Logo y Botón + debajo -->
                 <div class="flex flex-col items-center flex-shrink-0">
                     <img id="imgLogo" src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Logo Stand" class="h-10 w-10 rounded-xl bg-white p-1 shadow-md object-cover border border-slate-700">
                     <button onclick="abrirModalInfo()" title="Ver datos completos de la empresa" class="btn-info-plus shadow-sm active:scale-95">
@@ -136,35 +134,31 @@
                     </button>
                 </div>
 
-                <!-- Nombre y Subtítulo -->
                 <div class="pt-0.5">
                     <h1 id="nombreComercio" class="text-base font-extrabold uppercase tracking-wide leading-tight text-white">TechExpo Solutions</h1>
                     <p class="text-[11px] text-orange-500 font-extrabold tracking-wider uppercase mt-0.5">STAND INMERSIVO + IA</p>
                 </div>
             </div>
 
-            <!-- CONTENEDOR RECTANGULAR VERTICAL DE NEX (MÁS ANCHO Y ALTO - ALINEADO ABAJO) -->
+            <!-- CONTENEDOR RECTANGULAR VERTICAL DE NEX -->
             <div class="relative flex-shrink-0" style="margin-bottom: -58px;">
                 <div id="contenedorNex" onclick="alternarEscuchaOAccion()" 
                      class="tarjeta-nex-vertical w-28 h-40 bg-slate-950 border-2 border-orange-500 rounded-2xl overflow-hidden cursor-pointer relative group flex flex-col justify-between p-1.5 transition-all">
                     
-                    <!-- Etiqueta superior -->
                     <div class="bg-orange-500 text-white font-black text-[9px] tracking-wider text-center py-0.5 px-1 rounded-md uppercase z-10">
                         NEX • Asesor IA
                     </div>
 
-                    <!-- Imagen del Robot NEX -->
                     <div class="w-full h-28 overflow-hidden rounded-lg relative my-auto">
                         <img id="avatarNexImg" src="watermarked_img_18404316456539557055.jpg" alt="NEX Robot" class="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105">
                     </div>
 
-                    <!-- Botón/Indicador inferior -->
                     <div id="indicadorEstadoNex" class="bg-slate-900 text-orange-400 text-[9px] font-extrabold text-center py-0.5 rounded-md border border-slate-800 flex items-center justify-center gap-1">
                         <span>🎙️</span> <span>Consultar</span>
                     </div>
                 </div>
 
-                <!-- POP-UP / GLOBO DE TEXTO (BORDE NARANJA) -->
+                <!-- POP-UP / GLOBO DE TEXTO -->
                 <div id="globoTextoNex" class="globo-dialogo-nex hidden">
                     <div class="flex items-start justify-between gap-2 border-b border-orange-100 pb-1.5 mb-1.5">
                         <span class="text-[11px] font-extrabold text-orange-600 uppercase flex items-center gap-1">
@@ -199,7 +193,6 @@
                 <!-- TARJETA DE PRODUCTO 1 -->
                 <div class="tarjeta-producto bg-white p-4 rounded-2xl shadow-sm border border-gray-200 flex flex-col gap-2.5">
                     
-                    <!-- Fila Superior: Código (Gris Oscuro) + Promoción (Verde Pastel Uniforme) -->
                     <div class="flex items-center justify-between">
                         <span class="bg-slate-800 text-white text-[11px] font-extrabold px-2.5 py-1 rounded-lg tracking-wider">
                             CÓD: VLV-500
@@ -209,19 +202,17 @@
                         </span>
                     </div>
 
-                    <!-- Nombre del Producto -->
                     <h3 class="font-black text-slate-800 text-base leading-snug">
                         Válvula Reguladora de Flujo Industrial Pro
                     </h3>
 
-                    <!-- Descripción Técnica con Scroll -->
                     <div class="desc-scroll bg-slate-50 p-2.5 rounded-xl text-xs text-slate-600 border border-slate-200/60 max-h-20 overflow-y-auto font-medium leading-relaxed">
                         Fabricada en aleación de titanio de alta resistencia química y térmica. Tolerancia hasta 350 BAR de presión contínua. Módulo de diagnóstico remoto integrado mediante protocolo HART y Modbus RS485. Apta para plantas petroquímicas y farmacéuticas de alta exigencia.
                     </div>
 
-                    <!-- 3 Botones de Acción Técnica (Color Azul/Gris Oscuro con Letras Gris Claro) -->
+                    <!-- 3 Botones de Acción Técnica -->
                     <div class="grid grid-cols-3 gap-2 pt-1">
-                        <button onclick="abrirModalBrochure('Válvula VLV-500')" class="bg-slate-800 hover:bg-slate-900 text-slate-100 font-bold py-1.5 px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-slate-700 transition active:scale-95">
+                        <button onclick="abrirModalBrochure('Válvula VLV-500', 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')" class="bg-slate-800 hover:bg-slate-900 text-slate-100 font-bold py-1.5 px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-slate-700 transition active:scale-95">
                             📄 Brochure
                         </button>
                         <button onclick="abrirModalVideo('Válvula VLV-500', 'https://www.youtube.com/embed/dQw4w9WgXcQ')" class="bg-slate-800 hover:bg-slate-900 text-slate-100 font-bold py-1.5 px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-slate-700 transition active:scale-95">
@@ -231,13 +222,18 @@
                             ['Presión Máx.', '350 BAR'],
                             ['Material', 'Titanio Grado 5 / Vitón'],
                             ['Conexión', 'Flange 2 pulgadas NPT'],
+                            ['Tolerancia Temp.', '-40°C a +280°C'],
+                            ['Protocolo Com.', 'HART 7.0 / Modbus'],
+                            ['Normativa', 'ISO 9001 / CE / ATEX'],
+                            ['Fluido Apto', 'Gases, Petróleo, Ácidos'],
+                            ['Peso Total', '12.4 Kg'],
+                            ['Mantenimiento', 'Cada 10.000 horas'],
                             ['Garantía', '3 Años de fábrica']
                         ])" class="bg-slate-800 hover:bg-slate-900 text-slate-100 font-bold py-1.5 px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-slate-700 transition active:scale-95">
                             📊 Tabla
                         </button>
                     </div>
 
-                    <!-- Botón para Solicitar Demostración -->
                     <button onclick="abrirModalConsulta('Válvula Reguladora de Flujo Industrial Pro (CÓD: VLV-500)')" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold py-2 px-3 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-sm active:scale-95">
                         ✉️ Solicitar Demostración / Dejar Datos
                     </button>
@@ -246,7 +242,6 @@
                 <!-- TARJETA DE PRODUCTO 2 -->
                 <div class="tarjeta-producto bg-white p-4 rounded-2xl shadow-sm border border-gray-200 flex flex-col gap-2.5">
                     
-                    <!-- Fila Superior -->
                     <div class="flex items-center justify-between">
                         <span class="bg-slate-800 text-white text-[11px] font-extrabold px-2.5 py-1 rounded-lg tracking-wider">
                             CÓD: SENS-90
@@ -256,19 +251,16 @@
                         </span>
                     </div>
 
-                    <!-- Nombre del Producto -->
                     <h3 class="font-black text-slate-800 text-base leading-snug">
                         Sensor Óptico de Partículas IoT Ultra-Preciso
                     </h3>
 
-                    <!-- Descripción Técnica con Scroll -->
                     <div class="desc-scroll bg-slate-50 p-2.5 rounded-xl text-xs text-slate-600 border border-slate-200/60 max-h-20 overflow-y-auto font-medium leading-relaxed">
                         Sensor ambiental para medición continua de material particulado PM2.5 y PM10 en salas limpias. Conexión nativa Wi-Fi/LoRaWAN con telemetría en la nube en tiempo real. Algoritmo de autocalibración laser adaptativo contra acumulación de polvo.
                     </div>
 
-                    <!-- 3 Botones de Acción Técnica (Estilo Unificado Oscuro) -->
                     <div class="grid grid-cols-3 gap-2 pt-1">
-                        <button onclick="abrirModalBrochure('Sensor SENS-90')" class="bg-slate-800 hover:bg-slate-900 text-slate-100 font-bold py-1.5 px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-slate-700 transition active:scale-95">
+                        <button onclick="abrirModalBrochure('Sensor SENS-90', 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')" class="bg-slate-800 hover:bg-slate-900 text-slate-100 font-bold py-1.5 px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-slate-700 transition active:scale-95">
                             📄 Brochure
                         </button>
                         <button onclick="abrirModalVideo('Sensor SENS-90', 'https://www.youtube.com/embed/dQw4w9WgXcQ')" class="bg-slate-800 hover:bg-slate-900 text-slate-100 font-bold py-1.5 px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-slate-700 transition active:scale-95">
@@ -278,14 +270,19 @@
                             ['Rango Medición', '0.3 a 10 µm'],
                             ['Conectividad', 'LoRaWAN, Wi-Fi, RS485'],
                             ['Alimentación', '12-24V DC / Batería Li-Ion'],
-                            ['Certificación', 'ISO 14644-1 Cleanrooms']
+                            ['Sensibilidad', '± 2% precisión óptica'],
+                            ['Frecuencia Muestra', '1 lectura / segundo'],
+                            ['Protección', 'IP65 contra intemperie'],
+                            ['Temperatura Op.', '0°C a 60°C'],
+                            ['Consumo', '0.8 Watts máx.'],
+                            ['Certificación', 'ISO 14644-1 Cleanrooms'],
+                            ['Calibración', 'Anual recomendada']
                         ])" class="bg-slate-800 hover:bg-slate-900 text-slate-100 font-bold py-1.5 px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-slate-700 transition active:scale-95">
                             📊 Tabla
                         </button>
                     </div>
 
-                    <!-- Botón para Solicitar Demostración -->
-                    <button onclick="abrirModalConsulta('Sensor Óptico de Partículas IoT (CÓD: SENS-90)')" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold py-1.5 px-3 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-sm active:scale-95">
+                    <button onclick="abrirModalConsulta('Sensor Óptico de Partículas IoT (CÓD: SENS-90)')" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold py-2 px-3 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-sm active:scale-95">
                         ✉️ Solicitar Demostración / Dejar Datos
                     </button>
                 </div>
@@ -297,7 +294,7 @@
 
     <!-- ==================== POP-UPS / MODALES ==================== -->
 
-    <!-- MODAL 1: INFORMACIÓN DE LA EMPRESA (HEADER GRIS OSCURO) -->
+    <!-- MODAL 1: INFORMACIÓN DE LA EMPRESA (CON RUBRO Y DIRECCIÓN) -->
     <div id="modalInfo" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden border border-gray-100">
             <div class="p-4 bg-slate-900 text-white relative border-b-2 border-orange-500">
@@ -305,7 +302,7 @@
                 <p class="text-[10px] font-black text-orange-500 uppercase tracking-widest">Ficha de la Empresa</p>
                 <h2 id="modalNombreComercio" class="text-base font-black uppercase tracking-wide text-white">TechExpo Solutions</h2>
             </div>
-            <div class="p-4 space-y-3 text-xs text-slate-700">
+            <div class="p-4 space-y-2.5 text-xs text-slate-700 max-h-[75vh] overflow-y-auto desc-scroll">
                 <div class="flex items-start space-x-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
                     <span class="text-base">📍</span>
                     <div>
@@ -330,6 +327,22 @@
                         <a href="https://www.techexpo.demo" target="_blank" class="text-orange-600 hover:underline font-bold block mt-0.5">www.techexpo.demo</a>
                     </div>
                 </div>
+                <!-- NUEVO: RECUADRO RUBRO -->
+                <div class="flex items-start space-x-3 bg-blue-50 p-2.5 rounded-xl border border-blue-200">
+                    <span class="text-base">🏭</span>
+                    <div>
+                        <h4 class="font-bold text-blue-950 uppercase text-[10px]">Rubro / Sector</h4>
+                        <p class="font-medium mt-0.5 text-slate-800">Automatización Industrial & Instrumentación IoT</p>
+                    </div>
+                </div>
+                <!-- NUEVO: RECUADRO DIRECCIÓN / SEDE -->
+                <div class="flex items-start space-x-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                    <span class="text-base">🏢</span>
+                    <div>
+                        <h4 class="font-bold text-slate-900 uppercase text-[10px]">Dirección / Sede Central</h4>
+                        <p class="font-medium mt-0.5 text-slate-800">Av. Industrial 4550, Parque Tecnológico, Buenos Aires, Argentina</p>
+                    </div>
+                </div>
             </div>
             <div class="bg-gray-50 px-4 py-2.5 text-center border-t">
                 <button onclick="cerrarModalInfo()" class="w-full py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 font-extrabold rounded-xl text-xs">Cerrar</button>
@@ -337,28 +350,56 @@
         </div>
     </div>
 
-    <!-- MODAL 2: TABLA DE ESPECIFICACIONES TÉCNICAS (HEADER GRIS OSCURO Y LETRAS BLANCAS) -->
+    <!-- MODAL 2: TABLA DE ESPECIFICACIONES TÉCNICAS (SOPORTA HASTA 10 FILAS x 2 COLUMNAS) -->
     <div id="modalTabla" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden border border-gray-100">
-            <div class="p-4 bg-slate-900 text-white relative border-b-2 border-orange-500">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden border border-gray-100 flex flex-col max-h-[85vh]">
+            <div class="p-4 bg-slate-900 text-white relative border-b-2 border-orange-500 flex-shrink-0">
                 <button onclick="cerrarModalTabla()" class="absolute top-3.5 right-4 text-slate-400 hover:text-white text-lg font-bold">✕</button>
                 <p class="text-[10px] font-black text-orange-500 uppercase tracking-widest">Ficha Técnica</p>
                 <h3 id="tituloTablaModal" class="text-sm font-black uppercase text-white">Especificaciones del Producto</h3>
             </div>
-            <div class="p-4">
+            <div class="p-3 overflow-y-auto tabla-scroll flex-grow">
                 <table class="w-full text-left text-xs border-collapse">
                     <tbody id="cuerpoTablaModal" class="divide-y divide-gray-200">
-                        <!-- Llenado dinámico -->
+                        <!-- Llenado dinámico de hasta 10 filas -->
                     </tbody>
                 </table>
             </div>
-            <div class="bg-gray-50 px-4 py-2.5 text-center border-t">
-                <button onclick="cerrarModalTabla()" class="w-full py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 font-extrabold rounded-xl text-xs">Volver</button>
+            <div class="bg-gray-50 px-4 py-2.5 text-center border-t flex-shrink-0">
+                <button onclick="cerrarModalTabla()" class="w-full py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 font-extrabold rounded-xl text-xs">Volver a Tarjeta</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL 3: VIDEO DEMOSTRATIVO -->
+    <!-- MODAL 3: VISOR DE BROCHURE PDF (VISUALIZACIÓN DIRECTA + BOTÓN DESCARGA/VOLVER) -->
+    <div id="modalBrochure" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full h-[85vh] overflow-hidden flex flex-col">
+            <div class="p-3 bg-slate-900 text-white flex justify-between items-center px-4 border-b border-slate-700 flex-shrink-0">
+                <div>
+                    <p class="text-[9px] font-black text-orange-500 uppercase tracking-widest">Documento PDF</p>
+                    <h3 id="tituloBrochureModal" class="text-xs font-bold text-slate-100 truncate">Brochure Técnico</h3>
+                </div>
+                <button onclick="cerrarModalBrochure()" class="text-slate-400 hover:text-white font-bold text-base">✕</button>
+            </div>
+            
+            <!-- Previsualizador PDF incorporado -->
+            <div class="flex-grow bg-slate-200 relative">
+                <iframe id="iframeBrochureModal" class="w-full h-full" src="" frameborder="0"></iframe>
+            </div>
+
+            <!-- Footer del Modal con Opciones -->
+            <div class="p-3 bg-gray-50 border-t flex items-center justify-between gap-2 flex-shrink-0">
+                <button onclick="cerrarModalBrochure()" class="w-1/2 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 font-extrabold rounded-xl text-xs">
+                    ⬅️ Volver a Tarjeta
+                </button>
+                <a id="linkDescargarBrochure" href="#" target="_blank" download class="w-1/2 py-2 bg-orange-500 hover:bg-orange-600 text-white font-extrabold rounded-xl text-xs flex items-center justify-center gap-1 shadow-sm">
+                    📥 Descargar PDF
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 4: VIDEO DEMOSTRATIVO -->
     <div id="modalVideo" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden">
             <div class="p-3 bg-slate-900 text-white flex justify-between items-center px-4 border-b border-slate-700">
@@ -371,7 +412,7 @@
         </div>
     </div>
 
-    <!-- MODAL 4: FORMULARIO DE DEMOSTRACIÓN COMPACTO (CON CAMPO OPCIONAL DE EMPRESA) -->
+    <!-- MODAL 5: FORMULARIO DE DEMOSTRACIÓN COMPACTO -->
     <div id="modalConsulta" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden">
             <div class="py-3 px-4 bg-orange-500 text-white relative">
@@ -417,21 +458,35 @@
         function abrirModalInfo() { document.getElementById('modalInfo').classList.remove('hidden'); }
         function cerrarModalInfo() { document.getElementById('modalInfo').classList.add('hidden'); }
 
+        // Tabla Modal: Soporta hasta 10 filas de 2 columnas
         function abrirModalTabla(nombre, datos) {
             document.getElementById('tituloTablaModal').innerText = nombre;
             const cuerpo = document.getElementById('cuerpoTablaModal');
             cuerpo.innerHTML = '';
-            datos.forEach(fila => {
+            // Se muestran hasta 10 filas
+            datos.slice(0, 10).forEach((fila, idx) => {
                 cuerpo.innerHTML += `
-                    <tr class="hover:bg-slate-50">
-                        <td class="py-2 px-2 font-bold text-slate-800 border-r border-gray-100 w-1/2">${fila[0]}</td>
-                        <td class="py-2 px-2 text-slate-600 w-1/2">${fila[1]}</td>
+                    <tr class="${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50'} hover:bg-orange-50 transition">
+                        <td class="py-2 px-2.5 font-bold text-slate-800 border-r border-gray-200 w-1/2">${fila[0]}</td>
+                        <td class="py-2 px-2.5 text-slate-600 w-1/2 font-medium">${fila[1]}</td>
                     </tr>
                 `;
             });
             document.getElementById('modalTabla').classList.remove('hidden');
         }
         function cerrarModalTabla() { document.getElementById('modalTabla').classList.add('hidden'); }
+
+        // Previsualizador de Brochure PDF
+        function abrirModalBrochure(nombre, urlPdf) {
+            document.getElementById('tituloBrochureModal').innerText = 'Brochure: ' + nombre;
+            document.getElementById('iframeBrochureModal').src = urlPdf;
+            document.getElementById('linkDescargarBrochure').href = urlPdf;
+            document.getElementById('modalBrochure').classList.remove('hidden');
+        }
+        function cerrarModalBrochure() {
+            document.getElementById('iframeBrochureModal').src = '';
+            document.getElementById('modalBrochure').classList.add('hidden');
+        }
 
         function abrirModalVideo(nombre, url) {
             document.getElementById('tituloVideoModal').innerText = 'Video: ' + nombre;
@@ -441,11 +496,6 @@
         function cerrarModalVideo() {
             document.getElementById('iframeVideoModal').src = '';
             document.getElementById('modalVideo').classList.add('hidden');
-        }
-
-        function abrirModalBrochure(nombre) {
-            responderNex(`Iniciando la descarga del Brochure PDF de ${nombre}.`);
-            alert(`📄 Descargando Brochure oficial de ${nombre}...`);
         }
 
         function abrirModalConsulta(producto) {
@@ -468,7 +518,7 @@
         }
         function cerrarGloboTexto() { document.getElementById('globoTextoNex').classList.add('hidden'); }
 
-        // Función para que NEX responda en TEXTO y VOZ simultáneamente
+        // Respuesta NEX (Voz y Texto)
         function responderNex(texto) {
             mostrarGloboTexto(texto);
 
@@ -498,7 +548,7 @@
             }
         }
 
-        // Alternar Escucha / Interacción al tocar la tarjeta de NEX
+        // Alternar Escucha NEX
         function alternarEscuchaOAccion() {
             const contenedorNex = document.getElementById('contenedorNex');
             const indicador = document.getElementById('indicadorEstadoNex');
@@ -515,12 +565,12 @@
                 setTimeout(() => {
                     escuchando = false;
                     contenedorNex.classList.remove('glow-escuchando');
-                    responderNex("Nuestros productos de feria cuentan con brochures descargables, tablas de especificación y promociones exclusivas. ¿Deseas consultar algún código?");
+                    responderNex("Nuestros productos de feria cuentan con brochures previsualizables en PDF, tablas con hasta 10 especificaciones y promociones exclusivas. ¿Deseas consultar algún código?");
                 }, 2200);
             }
         }
 
-        // Filtro rápido de productos
+        // Filtro de Búsqueda
         function filtrarProductos() {
             const query = document.getElementById('inputBuscar').value.toLowerCase();
             const tarjetas = document.querySelectorAll('.tarjeta-producto');
