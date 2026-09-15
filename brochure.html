@@ -520,3 +520,19 @@
           ctx.beginPath();
           ctx.arc(x, y, radius, 0, Math.PI * 2);
           ctx.fillStyle = 'rgba(255, 255, 255, ' + opacity
+                // ---------- HOVER ----------
+      const contenedor = canvas.parentElement;
+      if (contenedor) {
+        contenedor.addEventListener('mouseenter', function() {
+          velocidadX = 0.025;
+          velocidadY = 0.03;
+        });
+        contenedor.addEventListener('mouseleave', function() {
+          velocidadX = 0.008;
+          velocidadY = 0.012;
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
