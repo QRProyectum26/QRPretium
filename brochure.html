@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Brochure - QRPretium</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Three.js CDN y RoundedBox (para el cubo IA) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/geometries/RoundedBoxGeometry.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
     body { font-family: 'Inter', sans-serif; }
@@ -24,11 +27,106 @@
     .qr-cartel { max-width: 280px; margin: 0 auto; }
     .qr-cartel img { border-radius: 16px; border: 2px solid #475569; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
     .cubo-ia-img { max-width: 280px; margin: 0 auto; }
+
+    /* --- IMÁGENES EXPANDIBLES --- */
+    .imagen-expandible {
+      cursor: zoom-in;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .imagen-expandible:hover {
+      transform: scale(1.02);
+      box-shadow: 0 12px 40px rgba(249, 115, 22, 0.3);
+    }
+
+    /* --- MODAL DE IMAGEN EXPANDIDA --- */
+    .modal-imagen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 9999;
+      cursor: zoom-out;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-imagen.activo {
+      display: flex;
+    }
+    .modal-imagen img {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 12px;
+      box-shadow: 0 0 80px rgba(249, 115, 22, 0.3);
+      animation: zoomIn 0.3s ease;
+    }
+    @keyframes zoomIn {
+      from { transform: scale(0.85); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .modal-imagen .btn-cerrar-imagen {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(239, 68, 68, 0.9);
+      color: white;
+      border: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      font-size: 22px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s;
+      z-index: 10000;
+    }
+    .modal-imagen .btn-cerrar-imagen:hover {
+      transform: scale(1.1);
+      background: #dc2626;
+    }
+
+    /* --- CONTENEDOR DEL CUBO IA --- */
+    #contenedorCuboIaBrochure {
+      width: 200px;
+      height: 200px;
+      margin: 0 auto;
+      border-radius: 50%;
+      border: 4px solid #86efac;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      box-shadow: 0 0 30px rgba(134, 239, 172, 0.45), inset 0 0 20px rgba(134, 239, 172, 0.25);
+      background: #0f172a;
+      transition: transform 0.3s;
+    }
+    #contenedorCuboIaBrochure:hover {
+      transform: scale(1.05);
+    }
+    #cubo3d-ia-brochure {
+      width: 120px;
+      height: 120px;
+      position: relative;
+      z-index: 10;
+    }
+    #fondo-espacio-brochure {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      border-radius: 50%;
+    }
+
     @media (max-width: 768px) {
       .section-title { font-size: 2rem; }
       .card { padding: 1.5rem; }
       .img-small { max-width: 100%; }
       .cubo-ia-img { max-width: 100%; }
+      #contenedorCuboIaBrochure { width: 160px; height: 160px; }
+      #cubo3d-ia-brochure { width: 100px; height: 100px; }
     }
   </style>
 </head>
@@ -61,7 +159,6 @@
         <a href="#que-es" class="btn-naranja shadow-naranja">Conocé más</a>
         <a href="index.html#solicitar-prueba" class="bg-slate-700 hover:bg-slate-600 text-white font-bold px-6 py-3 rounded-xl transition">Probar gratis</a>
       </div>
-      <!-- Imagen de portada -->
       <div class="mt-12 max-w-4xl mx-auto">
         <img src="img/img01020122.jpg" alt="Vidriera Inmersiva QRPretium" class="img-mockup rounded-2xl border-2 border-naranja/30 shadow-2xl">
         <p class="text-xs text-slate-400 mt-2">Vidriera Inmersiva con precios y promociones actualizados !!</p>
@@ -147,7 +244,7 @@
     </div>
   </section>
 
-  <!-- 4. ASESOR IA -->
+  <!-- 4. ASESOR IA (con CUBO 3D animado) -->
   <section class="py-20 bg-pizarra-claro">
     <div class="max-w-7xl mx-auto px-4">
       <div class="text-center mb-12">
@@ -155,10 +252,15 @@
         <h2 class="section-title text-white">El cubo que <span class="text-naranja">habla</span> con tus clientes</h2>
       </div>
       <div class="grid md:grid-cols-2 gap-8 items-center max-w-5xl mx-auto">
+        <!-- CUBO IA ANIMADO (reemplaza la imagen estática) -->
         <div class="text-center">
-          <img src="img/cubo-ia.png" alt="Cubo IA QRPretium" class="cubo-ia-img rounded-2xl border-2 border-slate-700 shadow-xl mx-auto">
-          <p class="text-xs text-slate-400 mt-2">Asistente virtual en 3D</p>
+          <div id="contenedorCuboIaBrochure">
+            <canvas id="fondo-espacio-brochure"></canvas>
+            <canvas id="cubo3d-ia-brochure"></canvas>
+          </div>
+          <p class="text-xs text-slate-400 mt-3">Asistente virtual en 3D (vista previa)</p>
         </div>
+        <!-- Celular con el catálogo -->
         <div class="text-center">
           <img src="img/Gemini_Generated_Image_2gd2cq2gd2cq2gd2G002.jpg" alt="Catálogo en el teléfono" class="img-small rounded-2xl border-2 border-slate-700 shadow-xl mx-auto">
           <p class="text-xs text-slate-400 mt-2">Vista del catálogo desde el teléfono</p>
@@ -197,7 +299,7 @@
     </div>
   </section>
 
-  <!-- 6. PERSONALIZACIÓN DEL DISPLAY QR GRÁFICO (RUTAS Y ARCHIVOS CORREGIDOS) -->
+  <!-- 6. PERSONALIZACIÓN DEL DISPLAY QR GRÁFICO (con imágenes expandibles) -->
   <section class="py-20 bg-pizarra-claro">
     <div class="max-w-7xl mx-auto px-4 text-center mb-12">
       <span class="text-verde font-bold text-xs uppercase tracking-widest">Personalización</span>
@@ -206,14 +308,15 @@
         Personalizá tu local con un Display QR Gráfico elegante. Elegí cómo mostrar la leyenda "Vidriera Inmersiva":
         de forma sutil, con textos externos, o integrados en el diseño.
       </p>
+      <p class="text-xs text-slate-400 mt-2">💡 Hacé click en cada imagen para verla en pantalla completa</p>
     </div>
 
     <!-- Grilla de 3 Opciones -->
     <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-3 gap-6">
       
-      <!-- Opción 1: Standard (IMG0101555.jpg) -->
+      <!-- Opción 1: Standard -->
       <div class="card p-0 overflow-hidden flex flex-col">
-        <img src="img/IMG0101555.jpg" alt="Vidriera Inmersiva Standard" class="w-full h-auto object-cover border-b border-slate-700">
+        <img src="img/IMG0101555.jpg" alt="Vidriera Inmersiva Standard" class="w-full h-auto object-cover border-b border-slate-700 imagen-expandible">
         <div class="p-6 flex-grow">
           <h3 class="text-xl font-bold text-white mb-2">Opción Standard - Limpia y Elegante</h3>
           <p class="text-slate-300 text-sm leading-relaxed">
@@ -222,9 +325,9 @@
         </div>
       </div>
 
-      <!-- Opción 2: Descripciones Externas (img010133.jpg) -->
+      <!-- Opción 2: Descripciones Externas -->
       <div class="card p-0 overflow-hidden flex flex-col">
-        <img src="img/img010133.jpg" alt="Vidriera con Descripciones Externas" class="w-full h-auto object-cover border-b border-slate-700">
+        <img src="img/img010133.jpg" alt="Vidriera con Descripciones Externas" class="w-full h-auto object-cover border-b border-slate-700 imagen-expandible">
         <div class="p-6 flex-grow">
           <h3 class="text-xl font-bold text-white mb-2">Opción con Descripciones Externas</h3>
           <p class="text-slate-300 text-sm leading-relaxed">
@@ -233,9 +336,9 @@
         </div>
       </div>
 
-      <!-- Opción 3: Descripciones Integradas (IMG010135.jpg) -->
+      <!-- Opción 3: Descripciones Integradas -->
       <div class="card p-0 overflow-hidden flex flex-col">
-        <img src="img/IMG010135.jpg" alt="Vidriera con Descripciones Integradas" class="w-full h-auto object-cover border-b border-slate-700">
+        <img src="img/IMG010135.jpg" alt="Vidriera con Descripciones Integradas" class="w-full h-auto object-cover border-b border-slate-700 imagen-expandible">
         <div class="p-6 flex-grow">
           <h3 class="text-xl font-bold text-white mb-2">Opción con Descripciones Integradas</h3>
           <p class="text-slate-300 text-sm leading-relaxed">
@@ -335,5 +438,76 @@
     <p>© QRPretium - Todos los derechos reservados - 2026</p>
   </footer>
 
-</body>
-</html>
+  <!-- MODAL DE IMAGEN EXPANDIDA -->
+  <div id="modalImagen" class="modal-imagen" onclick="cerrarImagen()">
+    <button class="btn-cerrar-imagen" onclick="event.stopPropagation(); cerrarImagen();">✕</button>
+    <img id="imagenExpandida" src="" alt="Imagen expandida" onclick="event.stopPropagation();">
+  </div>
+
+  <!-- SCRIPT: EXPANSIÓN DE IMÁGENES -->
+  <script>
+    function expandirImagen(src) {
+      const modal = document.getElementById('modalImagen');
+      const img = document.getElementById('imagenExpandida');
+      img.src = src;
+      modal.classList.add('activo');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function cerrarImagen() {
+      const modal = document.getElementById('modalImagen');
+      modal.classList.remove('activo');
+      document.getElementById('imagenExpandida').src = '';
+      document.body.style.overflow = '';
+    }
+
+    // Cerrar con tecla ESC
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') cerrarImagen();
+    });
+
+    // Hacer clickeables todas las imágenes con la clase "imagen-expandible"
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.imagen-expandible').forEach(img => {
+        img.addEventListener('click', function(e) {
+          e.stopPropagation();
+          expandirImagen(this.src);
+        });
+      });
+    });
+  </script>
+
+  <!-- SCRIPT: CUBO IA 3D (basado en el index) -->
+  <script>
+    (function crearCubo3DBrochure() {
+      const canvas = document.getElementById('cubo3d-ia-brochure');
+      const canvasFondo = document.getElementById('fondo-espacio-brochure');
+      if (!canvas || !canvasFondo) return;
+
+      // --- NEBULOSA DE FONDO ---
+      (function dibujarNebulosa() {
+        const ctx = canvasFondo.getContext('2d');
+        const size = 350;
+        canvasFondo.width = size;
+        canvasFondo.height = size;
+
+        ctx.fillStyle = '#010308';
+        ctx.fillRect(0, 0, size, size);
+
+        function dibujarNubeGas(x, y, r1, r2, colorInner, colorOuter) {
+          const grad = ctx.createRadialGradient(x, y, r1, x, y, r2);
+          grad.addColorStop(0, colorInner);
+          grad.addColorStop(0.5, colorInner.replace(/[\d\.]+\)$/, '0.15)'));
+          grad.addColorStop(1, colorOuter);
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(x, y, r2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.globalCompositeOperation = 'screen';
+        dibujarNubeGas(175, 175, 10, 160, 'rgba(14, 116, 144, 0.4)', 'rgba(0,0,0,0)');
+        dibujarNubeGas(110, 120, 5, 130, 'rgba(6, 182, 212, 0.35)', 'rgba(0,0,0,0)');
+        dibujarNubeGas(220, 210, 10, 140, 'rgba(16, 185, 129, 0.35)', 'rgba(0,0,0,0)');
+        dibujarNubeGas(130, 240, 5, 100, 'rgba(52, 211, 153, 0.25)', 'rgba(0,0,0,0)');
+        dibujarNubeGas(210, 110, 2, 80, 'rgba(245, 158, 11, 0.25)', 'rgba(0,0,0,0)
