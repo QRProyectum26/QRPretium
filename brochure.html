@@ -461,12 +461,10 @@
       document.body.style.overflow = '';
     }
 
-    // Cerrar con tecla ESC
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') cerrarImagen();
     });
 
-    // Hacer clickeables todas las imágenes con la clase "imagen-expandible"
     document.addEventListener('DOMContentLoaded', function() {
       document.querySelectorAll('.imagen-expandible').forEach(img => {
         img.addEventListener('click', function(e) {
@@ -477,14 +475,14 @@
     });
   </script>
 
-  <!-- SCRIPT: CUBO IA 3D (COMPLETO) -->
+  <!-- SCRIPT: CUBO IA 3D COMPLETO -->
   <script>
     (function crearCubo3DBrochure() {
       const canvas = document.getElementById('cubo3d-ia-brochure');
       const canvasFondo = document.getElementById('fondo-espacio-brochure');
       if (!canvas || !canvasFondo) return;
 
-      // --- NEBULOSA DE FONDO ---
+      // ---------- NEBULOSA DE FONDO ----------
       (function dibujarNebulosa() {
         const ctx = canvasFondo.getContext('2d');
         const size = 350;
@@ -514,4 +512,11 @@
         dibujarNubeGas(260, 150, 1, 60, 'rgba(251, 146, 60, 0.2)', 'rgba(0,0,0,0)');
         ctx.globalCompositeOperation = 'source-over';
 
-        for (let i = 0; i <
+        for (let i = 0; i < 180; i++) {
+          const x = Math.random() * size;
+          const y = Math.random() * size;
+          const radius = Math.random() * 1.1;
+          const opacity = Math.random() * 0.7 + 0.1;
+          ctx.beginPath();
+          ctx.arc(x, y, radius, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255, 255, 255, ' + opacity
