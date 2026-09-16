@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Administración - QRPretium</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen pb-12">
@@ -85,43 +84,36 @@
                 <form onsubmit="guardarArticulo(event)" class="grid grid-cols-1 md:grid-cols-12 gap-3">
                     <input type="hidden" id="artId">
 
-                    <!-- Código -->
                     <div class="md:col-span-2">
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Código</label>
                         <input type="text" id="artCodigo" placeholder="Ej: 007,P25,A05" required class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
                     </div>
 
-                    <!-- Artículo / Nombre -->
                     <div class="md:col-span-7">
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Artículo / Nombre</label>
                         <input type="text" id="artNombre" placeholder="Ej: SWEATER PUGH, CAMPERA CORDEROY,SACO SMOKING" required class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
                     </div>
 
-                    <!-- Precio -->
                     <div class="md:col-span-2">
                         <label class="block text-[11px] font-bold text-orange-400 uppercase mb-1">Precio ($)</label>
                         <input type="number" step="0.01" id="artPrecio" placeholder="Ej: 25000" required class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
                     </div>
 
-                    <!-- Descripción -->
                     <div class="md:col-span-12">
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Descripción</label>
                         <input type="text" id="artDescripcion" placeholder="Ej: Buzo liso en frisa de algodón..." class="w-full px-3 py-4 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
                     </div>
 
-                    <!-- Disponibilidad -->
                     <div class="md:col-span-6">
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Disponibilidad</label>
                         <input type="text" id="artDisponibilidad" placeholder="Ej: Talle L,M,XL-AZUL,VERDE FUSION" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
                     </div>
 
-                    <!-- Promoción -->
                     <div class="md:col-span-6">
                         <label class="block text-[11px] font-bold text-emerald-500 uppercase mb-1">Promoción</label>
                         <input type="text" id="artPromocion" placeholder="Ej: 10% OFF EFECTIVO-3 Cuotas S/Int." class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
                     </div>
 
-                    <!-- Botones -->
                     <div class="md:col-span-12 flex justify-end gap-2 mt-2">
                         <button type="button" onclick="limpiarFormulario()" id="btnCancelar" class="hidden px-4 py-2 bg-gray-200 text-gray-700 font-bold rounded-xl text-sm">
                             Cancelar
@@ -170,10 +162,8 @@
                     <div class="md:col-span-2">
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Nombre del Comercio</label>
                         <div class="flex items-start gap-3 flex-wrap">
-                            <!-- Input de texto -->
                             <input type="text" id="editNombre" class="flex-1 min-w-[180px] px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
 
-                            <!-- Botón subir logo -->
                             <div class="flex flex-col items-center gap-1">
                                 <input type="file" id="inputLogo" accept="image/png, image/jpeg, image/webp, image/svg+xml" class="hidden" onchange="cargarLogo(event)">
                                 <button type="button" onclick="document.getElementById('inputLogo').click()" 
@@ -183,7 +173,6 @@
                                 <span class="text-[10px] text-gray-400">Máx. 200 KB</span>
                             </div>
 
-                            <!-- Preview del logo -->
                             <div id="previewLogoContenedor" class="hidden flex-col items-center gap-1">
                                 <img id="previewLogo" src="" alt="Logo" class="h-14 w-14 object-contain bg-gray-50 border border-gray-200 rounded-xl p-1">
                                 <button type="button" onclick="quitarLogo()" class="text-[10px] text-red-500 hover:underline font-bold">Quitar</button>
@@ -192,43 +181,36 @@
                         <p class="text-[10px] text-gray-400 mt-1">Recomendado: imagen cuadrada, PNG con fondo transparente, mínimo 128x128 px.</p>
                     </div>
 
-                    <!-- Dirección -->
                     <div class="md:col-span-2">
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Dirección</label>
                         <input type="text" id="editDireccion" placeholder="Calle y número" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
                     </div>
 
-                    <!-- Ciudad -->
                     <div>
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Ciudad</label>
                         <input type="text" id="editCiudad" placeholder="Ej: Buenos Aires" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
                     </div>
 
-                    <!-- Provincia -->
                     <div>
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Provincia</label>
                         <input type="text" id="editProvincia" placeholder="Ej: CABA" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
                     </div>
 
-                    <!-- Teléfono -->
                     <div>
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Teléfono</label>
                         <input type="text" id="editTelefono" placeholder="Ej: 11 1234 5678" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
                     </div>
 
-                    <!-- WhatsApp -->
                     <div>
                         <label class="block text-[11px] font-bold text-emerald-500 uppercase mb-1">WhatsApp</label>
                         <input type="text" id="editWhatsapp" placeholder="Ej: 11 1234 5678" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
                     </div>
 
-                    <!-- Horarios -->
                     <div class="md:col-span-2">
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Horarios de Atención</label>
                         <input type="text" id="editHorarios" placeholder="Ej: Lunes a Viernes 9:00-18:00, Sábados 10:00-14:00" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
                     </div>
 
-                    <!-- Botón Guardar -->
                     <div class="md:col-span-2 flex justify-end mt-2">
                         <button type="button" onclick="guardarDatosComercio()" id="btnGuardarDatos" class="px-6 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-sm shadow transition">
                             Guardar Datos del Local
@@ -364,7 +346,6 @@
             document.getElementById('editWhatsapp').value = obtenerValorObjeto(comercioActual, ['whatsapp', 'WHATSAPP']) || '';
             document.getElementById('editHorarios').value = obtenerValorObjeto(comercioActual, ['horarios', 'HORARIOS']) || '';
 
-            // ✅ Cargar logo existente
             const logoGuardado = obtenerValorObjeto(comercioActual, ['logo', 'LOGO']);
             if (logoGuardado && String(logoGuardado).trim().length > 0) {
                 logoBase64Actual = logoGuardado;
@@ -634,4 +615,113 @@
                 let ultimoError = null;
 
                 try {
-                    await consultarSupabase(`ARTICULOS${queryId}`,
+                    await consultarSupabase(`ARTICULOS${queryId}`, {
+                        method: metodo,
+                        body: JSON.stringify(payload)
+                    });
+                    guardadoExitoso = true;
+                } catch (err1) {
+                    ultimoError = err1;
+                }
+
+                if (!guardadoExitoso) {
+                    try {
+                        await consultarSupabase(`articulos${queryId}`, {
+                            method: metodo,
+                            body: JSON.stringify(payload)
+                        });
+                        guardadoExitoso = true;
+                    } catch (err2) {
+                        ultimoError = err2;
+                    }
+                }
+
+                if (!guardadoExitoso) {
+                    throw ultimoError;
+                }
+
+                mostrarMensaje(id ? "✅ Artículo actualizado correctamente." : "✅ Nuevo artículo guardado con éxito.");
+                limpiarFormulario();
+                await cargarArticulos();
+            } catch (err) {
+                console.error("Error al guardar:", err);
+                mostrarMensaje(`Error al guardar: ${err.message}`, true);
+            } finally {
+                btnGuardar.disabled = false;
+                btnGuardar.innerText = "Guardar Artículo";
+            }
+        }
+
+        function prepararEdicion(id) {
+            const item = articulosLista.find(a => (a.id || a.ID) == id);
+            if (!item) return;
+
+            document.getElementById('artId').value = id;
+            document.getElementById('artCodigo').value = obtenerValorObjeto(item, ['codigo', 'CODIGO']);
+            document.getElementById('artNombre').value = obtenerValorObjeto(item, ['articulo', 'ARTICULO', 'nombre', 'NOMBRE']);
+            document.getElementById('artDescripcion').value = obtenerValorObjeto(item, ['descripcion', 'DESCRIPCION']);
+            document.getElementById('artDisponibilidad').value = obtenerValorObjeto(item, ['disponibilidad', 'DISPONIBILIDAD']);
+            document.getElementById('artPrecio').value = obtenerValorObjeto(item, ['precio', 'PRECIO']);
+            document.getElementById('artPromocion').value = obtenerValorObjeto(item, ['promocion', 'PROMOCION']);
+
+            document.getElementById('tituloFormArticulo').innerText = "✏️ Editar Artículo";
+            document.getElementById('btnCancelar').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function limpiarFormulario() {
+            document.getElementById('artId').value = '';
+            document.getElementById('artCodigo').value = '';
+            document.getElementById('artNombre').value = '';
+            document.getElementById('artDescripcion').value = '';
+            document.getElementById('artDisponibilidad').value = '';
+            document.getElementById('artPrecio').value = '';
+            document.getElementById('artPromocion').value = '';
+
+            document.getElementById('tituloFormArticulo').innerText = "➕ Agregar Nuevo Artículo";
+            document.getElementById('btnCancelar').classList.add('hidden');
+        }
+
+        async function eliminarArticulo(id) {
+            if (confirm("¿Estás seguro de que deseas borrar este artículo?")) {
+                const campoId = obtenerClaveColumna('id');
+                try {
+                    try {
+                        await consultarSupabase(`ARTICULOS?${campoId}=eq.${id}`, { method: 'DELETE' });
+                    } catch (e) {
+                        await consultarSupabase(`articulos?${campoId}=eq.${id}`, { method: 'DELETE' });
+                    }
+                    mostrarMensaje("🗑️ Artículo eliminado.");
+                    await cargarArticulos();
+                } catch (err) {
+                    mostrarMensaje(`Error al borrar: ${err.message}`, true);
+                }
+            }
+        }
+
+        async function guardarColor(nuevoColor) {
+            document.getElementById('headerAdmin').style.backgroundColor = nuevoColor;
+            const idComercio = comercioActual.id || comercioActual.ID;
+            const campoId = obtenerClaveColumna('id');
+
+            try {
+                await consultarSupabase(`COMERCIOS?${campoId}=eq.${idComercio}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ color: nuevoColor })
+                });
+            } catch (e) {
+                await consultarSupabase(`comercios?${campoId}=eq.${idComercio}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ color: nuevoColor })
+                });
+            }
+        }
+
+        function cerrarSesion() {
+            comercioActual = null;
+            document.getElementById('seccionPanel').classList.add('hidden');
+            document.getElementById('seccionLogin').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
