@@ -166,10 +166,30 @@
                 <p class="text-xs text-gray-500 mb-4">Modificá la información que aparece al hacer clic en el signo "+" en la vidriera.</p>
 
                 <form id="formDatosComercio" class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <!-- Nombre -->
+                    <!-- Nombre + Logo -->
                     <div class="md:col-span-2">
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Nombre del Comercio</label>
-                        <input type="text" id="editNombre" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+                        <div class="flex items-start gap-3 flex-wrap">
+                            <!-- Input de texto -->
+                            <input type="text" id="editNombre" class="flex-1 min-w-[180px] px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+
+                            <!-- Botón subir logo -->
+                            <div class="flex flex-col items-center gap-1">
+                                <input type="file" id="inputLogo" accept="image/png, image/jpeg, image/webp, image/svg+xml" class="hidden" onchange="cargarLogo(event)">
+                                <button type="button" onclick="document.getElementById('inputLogo').click()" 
+                                    class="px-3 py-2 bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs rounded-xl shadow transition whitespace-nowrap">
+                                    📷 Subir Logo
+                                </button>
+                                <span class="text-[10px] text-gray-400">Máx. 200 KB</span>
+                            </div>
+
+                            <!-- Preview del logo -->
+                            <div id="previewLogoContenedor" class="hidden flex-col items-center gap-1">
+                                <img id="previewLogo" src="" alt="Logo" class="h-14 w-14 object-contain bg-gray-50 border border-gray-200 rounded-xl p-1">
+                                <button type="button" onclick="quitarLogo()" class="text-[10px] text-red-500 hover:underline font-bold">Quitar</button>
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-gray-400 mt-1">Recomendado: imagen cuadrada, PNG con fondo transparente, mínimo 128x128 px.</p>
                     </div>
 
                     <!-- Dirección -->
@@ -230,6 +250,7 @@
         let cuitLimpioActual = '';
         let articulosLista = [];
         let esquemaColumnas = [];
+        let logoBase64Actual = '';
 
         async function consultarSupabase(endpoint, opciones = {}) {
             const url = `${SUPABASE_URL}/rest/v1/${endpoint}`;
@@ -342,6 +363,56 @@
             document.getElementById('editTelefono').value = obtenerValorObjeto(comercioActual, ['telefono', 'TELEFONO']) || '';
             document.getElementById('editWhatsapp').value = obtenerValorObjeto(comercioActual, ['whatsapp', 'WHATSAPP']) || '';
             document.getElementById('editHorarios').value = obtenerValorObjeto(comercioActual, ['horarios', 'HORARIOS']) || '';
+
+            // ✅ Cargar logo existente
+            const logoGuardado = obtenerValorObjeto(comercioActual, ['logo', 'LOGO']);
+            if (logoGuardado && String(logoGuardado).trim().length > 0) {
+                logoBase64Actual = logoGuardado;
+                document.getElementById('previewLogo').src = logoGuardado;
+                document.getElementById('previewLogoContenedor').classList.remove('hidden');
+                document.getElementById('previewLogoContenedor').classList.add('flex');
+            } else {
+                logoBase64Actual = '';
+                document.getElementById('previewLogoContenedor').classList.add('hidden');
+                document.getElementById('previewLogoContenedor').classList.remove('flex');
+            }
+        }
+
+        // ================== LOGO ==================
+        function cargarLogo(event) {
+            const archivo = event.target.files[0];
+            if (!archivo) return;
+
+            const tiposPermitidos = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/svg+xml'];
+            if (!tiposPermitidos.includes(archivo.type)) {
+                alert('❌ Formato no permitido. Usá PNG, JPG, WEBP o SVG.');
+                event.target.value = '';
+                return;
+            }
+
+            const maxBytes = 200 * 1024;
+            if (archivo.size > maxBytes) {
+                alert(`❌ La imagen pesa ${(archivo.size / 1024).toFixed(1)} KB. El máximo permitido es 200 KB.`);
+                event.target.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                logoBase64Actual = e.target.result;
+                document.getElementById('previewLogo').src = logoBase64Actual;
+                document.getElementById('previewLogoContenedor').classList.remove('hidden');
+                document.getElementById('previewLogoContenedor').classList.add('flex');
+            };
+            reader.readAsDataURL(archivo);
+        }
+
+        function quitarLogo() {
+            logoBase64Actual = '';
+            document.getElementById('inputLogo').value = '';
+            document.getElementById('previewLogo').src = '';
+            document.getElementById('previewLogoContenedor').classList.add('hidden');
+            document.getElementById('previewLogoContenedor').classList.remove('flex');
         }
 
         async function guardarDatosComercio() {
@@ -361,6 +432,7 @@
             payload[obtenerClaveColumna('telefono')] = document.getElementById('editTelefono').value.trim();
             payload[obtenerClaveColumna('whatsapp')] = document.getElementById('editWhatsapp').value.trim();
             payload[obtenerClaveColumna('horarios')] = document.getElementById('editHorarios').value.trim();
+            payload[obtenerClaveColumna('logo')] = logoBase64Actual || null;
 
             try {
                 let guardadoExitoso = false;
@@ -536,7 +608,7 @@
         }
 
         async function guardarArticulo(e) {
-            e.preventDefault(); // ✅ Evita que la página se recargue
+            e.preventDefault();
             const btnGuardar = document.getElementById('btnGuardarArt');
             btnGuardar.disabled = true;
             btnGuardar.innerText = "Guardando...";
@@ -562,113 +634,4 @@
                 let ultimoError = null;
 
                 try {
-                    await consultarSupabase(`ARTICULOS${queryId}`, {
-                        method: metodo,
-                        body: JSON.stringify(payload)
-                    });
-                    guardadoExitoso = true;
-                } catch (err1) {
-                    ultimoError = err1;
-                }
-
-                if (!guardadoExitoso) {
-                    try {
-                        await consultarSupabase(`articulos${queryId}`, {
-                            method: metodo,
-                            body: JSON.stringify(payload)
-                        });
-                        guardadoExitoso = true;
-                    } catch (err2) {
-                        ultimoError = err2;
-                    }
-                }
-
-                if (!guardadoExitoso) {
-                    throw ultimoError;
-                }
-
-                mostrarMensaje(id ? "✅ Artículo actualizado correctamente." : "✅ Nuevo artículo guardado con éxito.");
-                limpiarFormulario();
-                await cargarArticulos(); // ✅ Solo recarga artículos, NO el panel completo
-            } catch (err) {
-                console.error("Error al guardar:", err);
-                mostrarMensaje(`Error al guardar: ${err.message}`, true);
-            } finally {
-                btnGuardar.disabled = false;
-                btnGuardar.innerText = "Guardar Artículo";
-            }
-        }
-
-        function prepararEdicion(id) {
-            const item = articulosLista.find(a => (a.id || a.ID) == id);
-            if (!item) return;
-
-            document.getElementById('artId').value = id;
-            document.getElementById('artCodigo').value = obtenerValorObjeto(item, ['codigo', 'CODIGO']);
-            document.getElementById('artNombre').value = obtenerValorObjeto(item, ['articulo', 'ARTICULO', 'nombre', 'NOMBRE']);
-            document.getElementById('artDescripcion').value = obtenerValorObjeto(item, ['descripcion', 'DESCRIPCION']);
-            document.getElementById('artDisponibilidad').value = obtenerValorObjeto(item, ['disponibilidad', 'DISPONIBILIDAD']);
-            document.getElementById('artPrecio').value = obtenerValorObjeto(item, ['precio', 'PRECIO']);
-            document.getElementById('artPromocion').value = obtenerValorObjeto(item, ['promocion', 'PROMOCION']);
-
-            document.getElementById('tituloFormArticulo').innerText = "✏️ Editar Artículo";
-            document.getElementById('btnCancelar').classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function limpiarFormulario() {
-            document.getElementById('artId').value = '';
-            document.getElementById('artCodigo').value = '';
-            document.getElementById('artNombre').value = '';
-            document.getElementById('artDescripcion').value = '';
-            document.getElementById('artDisponibilidad').value = '';
-            document.getElementById('artPrecio').value = '';
-            document.getElementById('artPromocion').value = '';
-
-            document.getElementById('tituloFormArticulo').innerText = "➕ Agregar Nuevo Artículo";
-            document.getElementById('btnCancelar').classList.add('hidden');
-        }
-
-        async function eliminarArticulo(id) {
-            if (confirm("¿Estás seguro de que deseas borrar este artículo?")) {
-                const campoId = obtenerClaveColumna('id');
-                try {
-                    try {
-                        await consultarSupabase(`ARTICULOS?${campoId}=eq.${id}`, { method: 'DELETE' });
-                    } catch (e) {
-                        await consultarSupabase(`articulos?${campoId}=eq.${id}`, { method: 'DELETE' });
-                    }
-                    mostrarMensaje("🗑️ Artículo eliminado.");
-                    await cargarArticulos();
-                } catch (err) {
-                    mostrarMensaje(`Error al borrar: ${err.message}`, true);
-                }
-            }
-        }
-
-        async function guardarColor(nuevoColor) {
-            document.getElementById('headerAdmin').style.backgroundColor = nuevoColor;
-            const idComercio = comercioActual.id || comercioActual.ID;
-            const campoId = obtenerClaveColumna('id');
-
-            try {
-                await consultarSupabase(`COMERCIOS?${campoId}=eq.${idComercio}`, {
-                    method: 'PATCH',
-                    body: JSON.stringify({ color: nuevoColor })
-                });
-            } catch (e) {
-                await consultarSupabase(`comercios?${campoId}=eq.${idComercio}`, {
-                    method: 'PATCH',
-                    body: JSON.stringify({ color: nuevoColor })
-                });
-            }
-        }
-
-        function cerrarSesion() {
-            comercioActual = null;
-            document.getElementById('seccionPanel').classList.add('hidden');
-            document.getElementById('seccionLogin').classList.remove('hidden');
-        }
-    </script>
-</body>
-</html>
+                    await consultarSupabase(`ARTICULOS${queryId}`,
