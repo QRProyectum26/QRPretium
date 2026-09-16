@@ -206,6 +206,14 @@
                         <input type="text" id="editWhatsapp" placeholder="Ej: 11 1234 5678" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
                     </div>
 
+                    <!-- ✅ NUEVO: SITIO WEB -->
+                    <div class="md:col-span-2">
+                        <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Sitio Web (opcional)</label>
+                        <input type="text" id="editWeb" placeholder="Ej: www.micomercio.com.ar" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+                        <p class="text-[10px] text-gray-400 mt-1">Si lo completás, aparece un botón "🌐 Sitio Web" en el modal "+" del catálogo.</p>
+                    </div>
+                    <!-- FIN SITIO WEB -->
+
                     <div class="md:col-span-2">
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Horarios de Atención</label>
                         <input type="text" id="editHorarios" placeholder="Ej: Lunes a Viernes 9:00-18:00, Sábados 10:00-14:00" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
@@ -344,6 +352,7 @@
             document.getElementById('editProvincia').value = obtenerValorObjeto(comercioActual, ['provincia', 'PROVINCIA']) || '';
             document.getElementById('editTelefono').value = obtenerValorObjeto(comercioActual, ['telefono', 'TELEFONO']) || '';
             document.getElementById('editWhatsapp').value = obtenerValorObjeto(comercioActual, ['whatsapp', 'WHATSAPP']) || '';
+            document.getElementById('editWeb').value = obtenerValorObjeto(comercioActual, ['web', 'WEB', 'sitio', 'SITIO', 'website', 'WEBSITE']) || '';
             document.getElementById('editHorarios').value = obtenerValorObjeto(comercioActual, ['horarios', 'HORARIOS']) || '';
 
             const logoGuardado = obtenerValorObjeto(comercioActual, ['logo', 'LOGO']);
@@ -412,6 +421,7 @@
             payload[obtenerClaveColumna('provincia')] = document.getElementById('editProvincia').value.trim();
             payload[obtenerClaveColumna('telefono')] = document.getElementById('editTelefono').value.trim();
             payload[obtenerClaveColumna('whatsapp')] = document.getElementById('editWhatsapp').value.trim();
+            payload[obtenerClaveColumna('web')] = document.getElementById('editWeb').value.trim();
             payload[obtenerClaveColumna('horarios')] = document.getElementById('editHorarios').value.trim();
             payload[obtenerClaveColumna('logo')] = logoBase64Actual || null;
 
