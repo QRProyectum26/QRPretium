@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Brochure - QRPretium</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Three.js CDN y RoundedBox (para el cubo IA) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/geometries/RoundedBoxGeometry.js"></script>
   <style>
@@ -24,116 +23,52 @@
     .card:hover { transform: translateY(-4px); border-color: #F97316; }
     .img-mockup { border-radius: 16px; border: 2px solid #334155; box-shadow: 0 8px 32px rgba(0,0,0,0.4); width: 100%; height: auto; }
     .img-small { max-width: 300px; margin: 0 auto; }
-    .qr-cartel { max-width: 280px; margin: 0 auto; }
-    .qr-cartel img { border-radius: 16px; border: 2px solid #475569; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
-    .cubo-ia-img { max-width: 280px; margin: 0 auto; }
+    .img-cubo-agrandada { max-width: 420px; width: 100%; }
+    @media (max-width: 768px) { .img-cubo-agrandada { max-width: 100%; } }
 
-    /* --- IMAGEN AGRANDADA EN SECCIÓN CUBO IA --- */
-    .img-cubo-agrandada {
-      max-width: 420px;
-      width: 100%;
-    }
-    @media (max-width: 768px) {
-      .img-cubo-agrandada { max-width: 100%; }
-    }
+    .imagen-expandible { cursor: zoom-in; transition: transform 0.3s, box-shadow 0.3s; }
+    .imagen-expandible:hover { transform: scale(1.02); box-shadow: 0 12px 40px rgba(249, 115, 22, 0.3); }
 
-    /* --- IMÁGENES EXPANDIBLES --- */
-    .imagen-expandible {
-      cursor: zoom-in;
-      transition: transform 0.3s, box-shadow 0.3s;
-    }
-    .imagen-expandible:hover {
-      transform: scale(1.02);
-      box-shadow: 0 12px 40px rgba(249, 115, 22, 0.3);
-    }
-
-    /* --- MODAL DE IMAGEN EXPANDIDA --- */
     .modal-imagen {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.95);
-      z-index: 9999;
-      cursor: zoom-out;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.95); z-index: 9999; cursor: zoom-out;
+      align-items: center; justify-content: center; padding: 20px;
     }
-    .modal-imagen.activo {
-      display: flex;
-    }
+    .modal-imagen.activo { display: flex; }
     .modal-imagen img {
-      max-width: 100%;
-      max-height: 100%;
-      border-radius: 12px;
-      box-shadow: 0 0 80px rgba(249, 115, 22, 0.3);
+      max-width: 100%; max-height: 100%; border-radius: 12px;
+      box-shadow: 0 0 80px rgba(249,115,22,0.3);
       animation: zoomIn 0.3s ease;
     }
-    @keyframes zoomIn {
-      from { transform: scale(0.85); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
+    @keyframes zoomIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     .modal-imagen .btn-cerrar-imagen {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: rgba(239, 68, 68, 0.9);
-      color: white;
-      border: none;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      font-size: 22px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: transform 0.2s, background 0.2s;
-      z-index: 10000;
+      position: absolute; top: 20px; right: 20px;
+      background: rgba(239,68,68,0.9); color: white; border: none;
+      width: 44px; height: 44px; border-radius: 50%;
+      font-size: 22px; font-weight: 700; cursor: pointer;
+      transition: transform 0.2s, background 0.2s; z-index: 10000;
     }
-    .modal-imagen .btn-cerrar-imagen:hover {
-      transform: scale(1.1);
-      background: #dc2626;
-    }
+    .modal-imagen .btn-cerrar-imagen:hover { transform: scale(1.1); background: #dc2626; }
 
-    /* --- CONTENEDOR DEL CUBO IA --- */
     #contenedorCuboIaBrochure {
-      width: 200px;
-      height: 200px;
-      margin: 0 auto;
-      border-radius: 50%;
-      border: 4px solid #86efac;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-      cursor: pointer;
-      box-shadow: 0 0 30px rgba(134, 239, 172, 0.45), inset 0 0 20px rgba(134, 239, 172, 0.25);
-      background: #0f172a;
-      transition: transform 0.3s;
+      width: 200px; height: 200px; margin: 0 auto;
+      border-radius: 50%; border: 4px solid #86efac;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden; cursor: pointer;
+      box-shadow: 0 0 30px rgba(134,239,172,0.45), inset 0 0 20px rgba(134,239,172,0.25);
+      background: #0f172a; transition: transform 0.3s;
     }
-    #contenedorCuboIaBrochure:hover {
-      transform: scale(1.05);
-    }
-    #cubo3d-ia-brochure {
-      width: 120px;
-      height: 120px;
-      position: relative;
-      z-index: 10;
-    }
+    #contenedorCuboIaBrochure:hover { transform: scale(1.05); }
+    #cubo3d-ia-brochure { width: 120px; height: 120px; position: relative; z-index: 10; }
     #fondo-espacio-brochure {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      border-radius: 50%;
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      z-index: 0; border-radius: 50%;
     }
 
     @media (max-width: 768px) {
       .section-title { font-size: 2rem; }
       .card { padding: 1.5rem; }
       .img-small { max-width: 100%; }
-      .cubo-ia-img { max-width: 100%; }
       #contenedorCuboIaBrochure { width: 160px; height: 160px; }
       #cubo3d-ia-brochure { width: 100px; height: 100px; }
     }
@@ -262,7 +197,6 @@
         <h2 class="section-title text-white">El cubo que <span class="text-naranja">habla</span> con tus clientes</h2>
       </div>
       <div class="grid md:grid-cols-2 gap-8 items-center max-w-5xl mx-auto">
-        <!-- CUBO IA ANIMADO (reemplaza la imagen estática) -->
         <div class="text-center">
           <div id="contenedorCuboIaBrochure">
             <canvas id="fondo-espacio-brochure"></canvas>
@@ -270,7 +204,6 @@
           </div>
           <p class="text-xs text-slate-400 mt-3">Asistente virtual en 3D (vista previa)</p>
         </div>
-        <!-- Celular con el catálogo -->
         <div class="text-center">
           <img src="img/imgx001.jpg" alt="Catálogo en el teléfono" class="img-cubo-agrandada rounded-2xl border-2 border-slate-700 shadow-xl mx-auto imagen-expandible">
           <p class="text-xs text-slate-400 mt-2">Vista del catálogo desde el teléfono</p>
@@ -310,7 +243,7 @@
     </div>
   </section>
 
-  <!-- 6. PERSONALIZACIÓN DEL DISPLAY QR GRÁFICO (con imágenes expandibles) -->
+  <!-- 6. PERSONALIZACIÓN DEL DISPLAY QR GRÁFICO -->
   <section class="py-20 bg-pizarra-claro">
     <div class="max-w-7xl mx-auto px-4 text-center mb-12">
       <span class="text-verde font-bold text-xs uppercase tracking-widest">Personalización</span>
@@ -321,46 +254,29 @@
       </p>
       <p class="text-xs text-slate-400 mt-2">💡 Hacé click en cada imagen para verla en pantalla completa</p>
     </div>
-
-    <!-- Grilla de 3 Opciones -->
     <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-3 gap-6">
-      
-      <!-- Opción 1: Standard -->
       <div class="card p-0 overflow-hidden flex flex-col">
         <img src="img/IMG0101555.jpg" alt="Vidriera Inmersiva Standard" class="w-full h-auto object-cover border-b border-slate-700 imagen-expandible">
         <div class="p-6 flex-grow">
           <h3 class="text-xl font-bold text-white mb-2">Opción Standard - Limpia y Elegante</h3>
-          <p class="text-slate-300 text-sm leading-relaxed">
-            Un Display QR Gráfico discreto y minimalista, sin textos descriptivos grandes.
-          </p>
+          <p class="text-slate-300 text-sm leading-relaxed">Un Display QR Gráfico discreto y minimalista, sin textos descriptivos grandes.</p>
         </div>
       </div>
-
-      <!-- Opción 2: Descripciones Externas -->
       <div class="card p-0 overflow-hidden flex flex-col">
         <img src="img/img010133.jpg" alt="Vidriera con Descripciones Externas" class="w-full h-auto object-cover border-b border-slate-700 imagen-expandible">
         <div class="p-6 flex-grow">
           <h3 class="text-xl font-bold text-white mb-2">Opción con Descripciones Externas</h3>
-          <p class="text-slate-300 text-sm leading-relaxed">
-            Textos descriptivos como 'VIDRIERA INMERSIVA' colocados en la vidriera o carteles externos.
-          </p>
+          <p class="text-slate-300 text-sm leading-relaxed">Textos descriptivos como 'VIDRIERA INMERSIVA' colocados en la vidriera o carteles externos.</p>
         </div>
       </div>
-
-      <!-- Opción 3: Descripciones Integradas -->
       <div class="card p-0 overflow-hidden flex flex-col">
         <img src="img/IMG010135.jpg" alt="Vidriera con Descripciones Integradas" class="w-full h-auto object-cover border-b border-slate-700 imagen-expandible">
         <div class="p-6 flex-grow">
           <h3 class="text-xl font-bold text-white mb-2">Opción con Descripciones Integradas</h3>
-          <p class="text-slate-300 text-sm leading-relaxed">
-            La leyenda y detalles descriptivos se integran directamente dentro de los gráficos y marcos del Display QR.
-          </p>
+          <p class="text-slate-300 text-sm leading-relaxed">La leyenda y detalles descriptivos se integran directamente dentro de los gráficos y marcos del Display QR.</p>
         </div>
       </div>
-
     </div>
-
-    <!-- Detalle final de personalización -->
     <div class="max-w-5xl mx-auto px-4 mt-12 text-center text-slate-300 bg-slate-900/50 p-6 rounded-2xl border border-slate-700">
       <h3 class="text-2xl font-bold text-white mb-4">Adáptelo a su comercio</h3>
       <ul class="space-y-3 inline-block text-left">
@@ -407,87 +323,54 @@
         </p>
       </div>
 
-      <!-- LÍNEA DE PASOS -->
       <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-
-        <!-- PASO 1 -->
         <div class="card flex flex-col relative">
           <span class="absolute -top-3 -left-3 w-10 h-10 rounded-full bg-naranja text-white font-black flex items-center justify-center shadow-lg">1</span>
           <div class="text-3xl mb-3">📝</div>
           <h3 class="text-lg font-bold text-white mb-2">Ficha de Alta</h3>
-          <p class="text-slate-300 text-sm leading-relaxed">
-            El propietario completa una ficha en papel o recibe por mail un formulario específico con todos los datos de su comercio para el alta.
-          </p>
+          <p class="text-slate-300 text-sm leading-relaxed">El propietario completa una ficha en papel o recibe por mail un formulario específico con todos los datos de su comercio para el alta.</p>
         </div>
-
-        <!-- PASO 2 -->
         <div class="card flex flex-col relative">
           <span class="absolute -top-3 -left-3 w-10 h-10 rounded-full bg-naranja text-white font-black flex items-center justify-center shadow-lg">2</span>
           <div class="text-3xl mb-3">🎯</div>
           <h3 class="text-lg font-bold text-white mb-2">Plan y Display</h3>
-          <p class="text-slate-300 text-sm leading-relaxed">
-            En el mismo formulario selecciona el <strong>tipo de plan</strong> (Standard, Power o Premium) y el <strong>tipo de Display QR</strong> que desea para su vidriera.
-          </p>
+          <p class="text-slate-300 text-sm leading-relaxed">En el mismo formulario selecciona el <strong>tipo de plan</strong> (Standard, Power o Premium) y el <strong>tipo de Display QR</strong> que desea para su vidriera.</p>
         </div>
-
-        <!-- PASO 3 -->
         <div class="card flex flex-col relative">
           <span class="absolute -top-3 -left-3 w-10 h-10 rounded-full bg-naranja text-white font-black flex items-center justify-center shadow-lg">3</span>
           <div class="text-3xl mb-3">✍️</div>
           <h3 class="text-lg font-bold text-white mb-2">Contrato Digital</h3>
-          <p class="text-slate-300 text-sm leading-relaxed">
-            Se anexa el <strong>Contrato de Servicios de QRPretium</strong>, que el propietario firma digitalmente dentro del mismo formulario.
-          </p>
+          <p class="text-slate-300 text-sm leading-relaxed">Se anexa el <strong>Contrato de Servicios de QRPretium</strong>, que el propietario firma digitalmente dentro del mismo formulario.</p>
         </div>
-
-        <!-- PASO 4 -->
         <div class="card flex flex-col relative">
           <span class="absolute -top-3 -left-3 w-10 h-10 rounded-full bg-emerald-500 text-slate-950 font-black flex items-center justify-center shadow-lg">4</span>
           <div class="text-3xl mb-3">✅</div>
           <h3 class="text-lg font-bold text-white mb-2">Confirmación de Alta</h3>
-          <p class="text-slate-300 text-sm leading-relaxed">
-            Recibe la confirmación del alta, su <strong>usuario y clave de acceso</strong> al Panel de Administración, más un PDF breve de ayuda y consejos.
-          </p>
+          <p class="text-slate-300 text-sm leading-relaxed">Recibe la confirmación del alta, su <strong>usuario y clave de acceso</strong> al Panel de Administración, más un PDF breve de ayuda y consejos.</p>
         </div>
-
       </div>
 
-      <!-- SEGUNDA FILA DE PASOS -->
       <div class="grid md:grid-cols-3 gap-6 mb-12">
-
-        <!-- PASO 5 -->
         <div class="card flex flex-col relative">
           <span class="absolute -top-3 -left-3 w-10 h-10 rounded-full bg-naranja text-white font-black flex items-center justify-center shadow-lg">5</span>
           <div class="text-3xl mb-3">📧</div>
           <h3 class="text-lg font-bold text-white mb-2">Mail con Archivos PDF</h3>
-          <p class="text-slate-300 text-sm leading-relaxed">
-            Recibe por mail los archivos PDF listos para <strong>imprimir dos Display QR</strong> para su vidriera, listos para girar a la imprenta.
-          </p>
+          <p class="text-slate-300 text-sm leading-relaxed">Recibe por mail los archivos PDF listos para <strong>imprimir dos Display QR</strong> para su vidriera, listos para girar a la imprenta.</p>
         </div>
-
-        <!-- PASO 6 -->
         <div class="card flex flex-col relative">
           <span class="absolute -top-3 -left-3 w-10 h-10 rounded-full bg-naranja text-white font-black flex items-center justify-center shadow-lg">6</span>
           <div class="text-3xl mb-3">📐</div>
           <h3 class="text-lg font-bold text-white mb-2">Guía de Colocación</h3>
-          <p class="text-slate-300 text-sm leading-relaxed">
-            Incluye un PDF breve con <strong>consejos de colocación y ubicación</strong> del Display en la vidriera, para máximo impacto visual.
-          </p>
+          <p class="text-slate-300 text-sm leading-relaxed">Incluye un PDF breve con <strong>consejos de colocación y ubicación</strong> del Display en la vidriera, para máximo impacto visual.</p>
         </div>
-
-        <!-- PASO 7 -->
         <div class="card flex flex-col relative">
           <span class="absolute -top-3 -left-3 w-10 h-10 rounded-full bg-emerald-500 text-slate-950 font-black flex items-center justify-center shadow-lg">7</span>
           <div class="text-3xl mb-3">🏷️</div>
           <h3 class="text-lg font-bold text-white mb-2">Etiquetas y Organización</h3>
-          <p class="text-slate-300 text-sm leading-relaxed">
-            Un PDF modelo con <strong>etiquetas de precio</strong> y criterios de colocación de códigos por tipo de artículo, para organizar su gestión digital.
-          </p>
+          <p class="text-slate-300 text-sm leading-relaxed">Un PDF modelo con <strong>etiquetas de precio</strong> y criterios de colocación de códigos por tipo de artículo, para organizar su gestión digital.</p>
         </div>
-
       </div>
 
-      <!-- ESTADO FINAL -->
       <div class="max-w-4xl mx-auto text-center bg-gradient-to-r from-pizarra to-slate-900 border border-emerald-500/40 rounded-2xl p-8">
         <div class="text-4xl mb-3">🚀</div>
         <h3 class="text-2xl font-black text-white mb-2">
@@ -497,6 +380,10 @@
           Una vez completado el flujo, la plataforma QRPretium queda <strong>corriendo y operativa</strong>, con la vidriera digital del comercio publicada, activa y lista para recibir clientes 24/7/365.
         </p>
       </div>
-
     </div>
-  </
+  </section>
+
+  <!-- 8. PLANES -->
+  <section class="py-20 bg-pizarra-claro">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <span class="text-verde font
