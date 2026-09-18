@@ -875,42 +875,51 @@
         }
 
         // ==================== CONFIRMAR Y ENVIAR ====================
-        async function confirmarYEnviar() {
-            const btn = document.getElementById('btnAceptarAcuerdo');
-            btn.disabled = true;
-            btn.innerText = 'Activando...';
+    async function confirmarYEnviar() {
+    const btn = document.getElementById('btnAceptarAcuerdo');
+    btn.disabled = true;
+    btn.innerText = 'Activando...';
 
-            try {
-                // 1. Verificar que no exista ya un comercio con ese CUIT
-                const cuitTexto = document.getElementById('campoCuit').value.trim();
-   const cuit = parseInt(cuitTexto.replace(/[-.\s]/g, ''), 10);
-                const { data: comercioExistente } = await supabaseClient
-                    .from('comercios')
-                    .select('cuit')
-                    .eq('cuit', cuit)
-                    .maybeSingle();
+    try {
+        // 1. Convertir CUIT a número (porque en comercios es numeric)
+        const cuitTexto = document.getElementById('campoCuit').value.trim();
+        const cuit = parseInt(cuitTexto.replace(/[-.\s]/g, ''), 10);
 
-                if (comercioExistente) {
-                    alert('⚠️ Ya existe un comercio con ese CUIT. Contactanos a contactox@qrpretium.com.ar');
-                    btn.disabled = false;
-                    btn.innerText = '✅ Aceptar y activar';
-                    return;
-                }
+        if (isNaN(cuit)) {
+            alert('⚠️ El CUIT no es válido. Contactanos a contactox@qrpretium.com.ar');
+            btn.disabled = false;
+            btn.innerText = '✅ Aceptar y activar';
+            return;
+        }
 
-                // 2. Preparar datos del comercio
-                const password = document.getElementById('campoPassword').value;
-                const tipoSolicitud = obtenerValorObjeto(solicitudActual, ['tipo_solicitud']) || 'Prueba Gratuita';
+        // 2. Verificar que no exista ya un comercio con ese CUIT
+        const { data: comercioExistente } = await supabaseClient
+            .from('comercios')
+            .select('cuit')
+            .eq('cuit', cuit)
+            .maybeSingle();
 
-                // Determinar el plan según el tipo de solicitud
-                let plan = 'Standard';
-                if (tipoSolicitud.toLowerCase().includes('power')) plan = 'Power';
-                else if (tipoSolicitud.toLowerCase().includes('premium')) plan = 'Premium';
-                else if (tipoSolicitud.toLowerCase().includes('prueba')) plan = 'Prueba Gratuita';
-                else if (tipoSolicitud.toLowerCase().includes('standard')) plan = 'Standard';
+        if (comercioExistente) {
+            alert('⚠️ Ya existe un comercio con ese CUIT. Contactanos a contactox@qrpretium.com.ar');
+            btn.disabled = false;
+            btn.innerText = '✅ Aceptar y activar';
+            return;
+        }
 
-                // Preparar payload de comercio
-                const nuevoComercio = {
-                    cuit: cuit,
+        // 3. Preparar datos del comercio
+        const password = document.getElementById('campoPassword').value;
+        const tipoSolicitud = obtenerValorObjeto(solicitudActual, ['tipo_solicitud']) || 'Prueba Gratuita';
+
+        // Determinar el plan según el tipo de solicitud
+        let plan = 'Standard';
+        if (tipoSolicitud.toLowerCase().includes('power')) plan = 'Power';
+        else if (tipoSolicitud.toLowerCase().includes('premium')) plan = 'Premium';
+        else if (tipoSolicitud.toLowerCase().includes('prueba')) plan = 'Prueba Gratuita';
+        else if (tipoSolicitud.toLowerCase().includes('standard')) plan = 'Standard';
+
+        // Preparar payload de comercio
+        const nuevoComercio = {
+            cuit: cuit,   // ← ahora es número
                     nombre: document.getElementById('campoNombreComercio').value.trim(),
                     responsable: document.getElementById('campoResponsable').value.trim(),
                     mail: document.getElementById('campoEmail').value.trim(),
