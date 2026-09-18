@@ -1000,7 +1000,7 @@
         const iconoEstadoPanel = document.getElementById('iconoEstadoPanel');
 
         const urlParams = new URLSearchParams(window.location.search);
-        const cuitParam = urlParams.get('cuit') ? urlParams.get('cuit').trim() : null;
+        const cuitParam = urlParams.get('cuit') ? parseInt(urlParams.get('cuit').trim().replace(/[-.\s]/g, ''), 10) : null;
 
         function abrirPanelIA() {
             panelChat.classList.add('abierto');
