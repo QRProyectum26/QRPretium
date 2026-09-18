@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alta de Comercio - QRPretium</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #0F172A;
+            color: #F1F5F9;
+        }
+        .bg-pizarra { background-color: #0F172A; }
+        .bg-pizarra-card { background-color: #1E293B; }
+        .bg-pizarra-input { background-color: #0F172A; }
+        .text-naranja { color: #F97316; }
+        .text-verde { color: #10B981; }
+        .border-pizarra { border-color: #334155; }
+        .border-naranja { border-color: #F97316; }
+        .border-verde { border-color: #10B981; }
+        .bg-naranja { background-color: #F97316; }
+        .bg-verde { background-color: #10B981; }
+
+        .input-base {
+            width: 100%;
+            background-color: #0F172A;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: #F1F5F9;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        .input-base:focus {
+            outline: none;
+            border-color: #F97316;
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+        }
+        .input-base:disabled {
+            background-color: #1E293B;
+            color: #64748B;
+            cursor: not-allowed;
+        }
+        .input-base::placeholder {
+            color: #64748B;
+        }
+
+        .btn-principal {
+            width: 100%;
+            background-color: #F97316;
+            color: white;
+            font-weight: 700;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 20px rgba(249, 115, 22, 0.3);
+        }
+        .btn-principal:hover:not(:disabled) {
+            background-color: #EA580C;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 24px rgba(249, 115, 22, 0.4);
+        }
+        .btn-principal:disabled {
+            background-color: #64748B;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .medidor-seguridad {
+            height: 4px;
+            border-radius: 4px;
+            background-color: #334155;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        .medidor-seguridad-barra {
+            height: 100%;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            width: 0%;
+        }
+
+        /* Modal */
+        .modal-acuerdo {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.85);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(4px);
+        }
+        .modal-acuerdo.activo {
+            display: flex;
+        }
+        .modal-acuerdo-contenido {
+            background-color: #1E293B;
+            border: 1px solid #334155;
+            border-radius: 20px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: zoomIn 0.3s ease;
+        }
+        @keyframes zoomIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .modal-acuerdo-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .modal-acuerdo-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex: 1;
+            font-size: 14px;
+            line-height: 1.7;
+            color: #CBD5E1;
+        }
+        .modal-acuerdo-body h3 {
+            color: #F1F5F9;
+            font-weight: 700;
+            font-size: 16px;
+            margin-top: 20px;
+            margin-bottom: 8px;
+        }
+        .modal-acuerdo-body p {
+            margin-bottom: 12px;
+        }
+        .modal-acuerdo-body ul {
+            margin-left: 20px;
+            margin-bottom: 12px;
+            list-style-type: disc;
+        }
+        .modal-acuerdo-body li {
+            margin-bottom: 4px;
+        }
+        .modal-acuerdo-body strong {
+            color: #F1F5F9;
+        }
+        .modal-acuerdo-footer {
+            padding: 20px 24px;
+            border-top: 1px solid #334155;
+            flex-shrink: 0;
+            background-color: #0F172A;
+        }
+        .checkbox-acuerdo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 12px;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+        .checkbox-acuerdo:hover {
+            border-color: #F97316;
+            background-color: rgba(249, 115, 22, 0.05);
+        }
+        .checkbox-acuerdo input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #F97316;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .modal-acuerdo-body {
+                padding: 16px;
+                font-size: 13px;
+            }
+            .modal-acuerdo-header {
+                padding: 16px;
+            }
+            .modal-acuerdo-footer {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-pizarra min-h-screen py-6 px-4">
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <div class="max-w-xl mx-auto">
+
+        <!-- HEADER -->
+        <header class="flex items-center gap-3 mb-8 pb-6 border-b border-pizarra">
+            <img src="img/logo_qrpretium.jpg" alt="QRPretium" class="h-12 w-12 rounded-xl object-cover">
+            <div>
+                <h1 class="text-xl font-black tracking-tight text-white">
+                    QR<span class="text-naranja font-light">Pretium</span>
+                </h1>
+                <p class="text-xs text-slate-400 font-medium">Vidriera Digital Inteligente</p>
+            </div>
+        </header>
+
+        <!-- ESTADO: CARGANDO -->
+        <div id="estadoCargando" class="text-center py-16">
+            <div class="inline-block w-10 h-10 border-4 border-slate-700 border-t-naranja rounded-full animate-spin"></div>
+            <p class="text-slate-400 text-sm mt-4">Verificando tu link de alta...</p>
+        </div>
+
+        <!-- ESTADO: ERROR -->
+        <div id="estadoError" class="hidden bg-pizarra-card border border-red-500/30 rounded-2xl p-8 text-center">
+            <div class="text-5xl mb-4">⚠️</div>
+            <h2 class="text-2xl font-black text-white mb-3" id="errorTitulo">Link inválido</h2>
+            <p class="text-slate-300 text-sm leading-relaxed mb-6" id="errorMensaje">
+                El link que estás intentando usar no es válido o ya expiró.
+            </p>
+            <a href="mailto:contactox@qrpretium.com.ar" class="inline-block bg-naranja hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-xl transition">
+                ✉️ Contactar a QRPretium
+            </a>
+        </div>
+
+        <!-- ESTADO: FORMULARIO -->
+        <div id="estadoFormulario" class="hidden">
+
+            <!-- TÍTULO -->
+            <div class="mb-8">
+                <h2 class="text-2xl sm:text-3xl font-black text-white leading-tight mb-2">
+                    Completá el alta de tu <span class="text-naranja">comercio</span>
+                </h2>
+                <p class="text-slate-400 text-sm">
+                    Estás a un paso de activar tu Vidriera Digital Inteligente 24/7/365.
+                </p>
+            </div>
+
+            <!-- SECCIÓN 1: DATOS DEL COMERCIO -->
+            <div class="bg-pizarra-card border border-pizarra rounded-2xl p-6 mb-6">
+                <div class="flex items-center gap-2 mb-5">
+                    <span class="w-8 h-8 rounded-full bg-naranja text-white font-black text-sm flex items-center justify-center">1</span>
+                    <h3 class="text-lg font-bold text-white">Datos del Comercio</h3>
+                </div>
+
+                <div class="space-y-4">
+
+                    <!-- CUIT (solo lectura) -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">CUIT (tu usuario)</label>
+                        <input type="text" id="campoCuit" disabled class="input-base font-mono">
+                    </div>
+
+                    <!-- Nombre del comercio -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Nombre del Comercio *</label>
+                        <input type="text" id="campoNombreComercio" class="input-base" placeholder="Ej: Tienda X" required>
+                    </div>
+
+                    <!-- Responsable (solo lectura) -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Nombre del Responsable</label>
+                        <input type="text" id="campoResponsable" disabled class="input-base">
+                    </div>
+
+                    <!-- Email (solo lectura) -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Email</label>
+                        <input type="email" id="campoEmail" disabled class="input-base">
+                    </div>
+
+                    <!-- Teléfono -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Teléfono *</label>
+                        <input type="tel" id="campoTelefono" class="input-base" placeholder="Ej: 11 1234 5678" required>
+                    </div>
+
+                    <!-- WhatsApp -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">WhatsApp *</label>
+                        <input type="tel" id="campoWhatsapp" class="input-base" placeholder="Ej: 5491112345678" required>
+                        <p class="text-[11px] text-slate-500 mt-1">Formato internacional: código país + área + número (sin espacios ni guiones)</p>
+                    </div>
+
+                    <!-- Rubro -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Rubro *</label>
+                        <select id="campoRubro" class="input-base" required>
+                            <option value="">Seleccioná tu rubro...</option>
+                            <option value="Indumentaria y Calzado">Indumentaria y Calzado</option>
+                            <option value="Vinoteca y Bebidas">Vinoteca y Bebidas</option>
+                            <option value="Tecnología y Electrónica">Tecnología y Electrónica</option>
+                            <option value="Gastronomía">Gastronomía</option>
+                            <option value="Perfumería y Farmacia">Perfumería y Farmacia</option>
+                            <option value="Ferretería y Bazar">Ferretería y Bazar</option>
+                            <option value="Otro">Otro Rubro</option>
+                        </select>
+                    </div>
+
+                    <!-- Dirección -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Dirección *</label>
+                        <input type="text" id="campoDireccion" class="input-base" placeholder="Ej: Av. Santa Fe 776" required>
+                    </div>
+
+                    <!-- Ciudad -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Ciudad *</label>
+                        <input type="text" id="campoCiudad" class="input-base" placeholder="Ej: Capital Federal" required>
+                    </div>
+
+                    <!-- Provincia -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Provincia *</label>
+                        <input type="text" id="campoProvincia" class="input-base" placeholder="Ej: Buenos Aires" required>
+                    </div>
+
+                    <!-- Sitio web (opcional) -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Sitio Web (opcional)</label>
+                        <input type="text" id="campoSitioWeb" class="input-base" placeholder="Ej: www.tiendax.com.ar">
+                    </div>
+
+                    <!-- Horarios (opcional) -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Horarios de Atención (opcional)</label>
+                        <input type="text" id="campoHorarios" class="input-base" placeholder="Ej: Lunes a Viernes 9-18 hs, Sábados 10-14 hs">
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- SECCIÓN 2: LOGO (opcional) -->
+            <div class="bg-pizarra-card border border-pizarra rounded-2xl p-6 mb-6">
+                <div class="flex items-center gap-2 mb-5">
+                    <span class="w-8 h-8 rounded-full bg-naranja text-white font-black text-sm flex items-center justify-center">2</span>
+                    <h3 class="text-lg font-bold text-white">Logo del Comercio <span class="text-slate-500 text-sm font-normal">(opcional)</span></h3>
+                </div>
+
+                <div class="flex items-center gap-4 flex-wrap">
+                    <input type="file" id="inputLogo" accept="image/png, image/jpeg, image/jpg, image/webp, image/svg+xml" class="hidden">
+                    <button type="button" onclick="document.getElementById('inputLogo').click()" 
+                        class="bg-naranja hover:bg-orange-600 text-white font-bold text-sm py-3 px-5 rounded-xl shadow transition whitespace-nowrap">
+                        📷 Subir Logo
+                    </button>
+                    <span class="text-xs text-slate-500">Máx. 200 KB · PNG, JPG, WEBP o SVG</span>
+
+                    <div id="previewLogoContenedor" class="hidden flex items-center gap-3 ml-auto">
+                        <img id="previewLogo" src="" alt="Logo" class="h-16 w-16 object-contain bg-slate-900 border border-slate-700 rounded-xl p-1">
+                        <button type="button" onclick="quitarLogo()" class="text-xs text-red-400 hover:underline font-bold">Quitar</button>
+                    </div>
+                </div>
+
+                <p class="text-[11px] text-slate-500 mt-3">
+                    Si no lo cargás ahora, podrás hacerlo después desde tu panel de administración.
+                </p>
+            </div>
+
+            <!-- SECCIÓN 3: CREDENCIALES -->
+            <div class="bg-pizarra-card border border-pizarra rounded-2xl p-6 mb-6">
+                <div class="flex items-center gap-2 mb-5">
+                    <span class="w-8 h-8 rounded-full bg-naranja text-white font-black text-sm flex items-center justify-center">3</span>
+                    <h3 class="text-lg font-bold text-white">Credenciales de Acceso</h3>
+                </div>
+
+                <div class="space-y-4">
+
+                    <!-- Usuario (CUIT, solo lectura) -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Usuario</label>
+                        <input type="text" id="campoUsuario" disabled class="input-base font-mono">
+                        <p class="text-[11px] text-slate-500 mt-1">Tu usuario es tu CUIT. Lo usás para ingresar al panel de administración.</p>
+                    </div>
+
+                    <!-- Contraseña -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Contraseña *</label>
+                        <div class="relative">
+                            <input type="password" id="campoPassword" class="input-base pr-12" placeholder="Mínimo 6 caracteres (letras y números)" required>
+                            <button type="button" onclick="togglePassword('campoPassword', 'ojo1')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+                                <span id="ojo1">👁</span>
+                            </button>
+                        </div>
+                        <div class="medidor-seguridad">
+                            <div id="medidorBarra" class="medidor-seguridad-barra"></div>
+                        </div>
+                        <p id="medidorTexto" class="text-[11px] text-slate-500 mt-1">Debe contener al menos 1 letra y 1 número.</p>
+                    </div>
+
+                    <!-- Confirmar contraseña -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Confirmar Contraseña *</label>
+                        <div class="relative">
+                            <input type="password" id="campoPasswordConfirm" class="input-base pr-12" placeholder="Repetí tu contraseña" required>
+                            <button type="button" onclick="togglePassword('campoPasswordConfirm', 'ojo2')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+                                <span id="ojo2">👁</span>
+                            </button>
+                        </div>
+                        <p id="coincideTexto" class="text-[11px] text-slate-500 mt-1"></p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- AVISO DEL ACUERDO -->
+            <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-4 mb-6">
+                <p class="text-xs text-slate-400 leading-relaxed">
+                    📄 Al confirmar tu alta vas a poder leer y aceptar el <strong class="text-slate-200">Acuerdo de Servicio de QRPretium</strong>. Una vez aceptado, tu comercio quedará activo y recibirás tus credenciales por email.
+                </p>
+            </div>
+
+            <!-- BOTÓN CONFIRMAR -->
+            <button id="btnConfirmarAlta" type="button" onclick="abrirModalAcuerdo()" class="btn-principal">
+                ✅ Confirmar alta y activar mi vidriera
+            </button>
+
+            <p class="text-[11px] text-slate-500 text-center mt-4">
+                ¿Problemas con el formulario? Escribinos a <a href="mailto:contactox@qrpretium.com.ar" class="text-naranja hover:underline">contactox@qrpretium.com.ar</a>
+            </p>
+
+        </div>
+
+        <!-- ESTADO: ÉXITO -->
+        <div id="estadoExito" class="hidden">
+
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-verde/20 border-2 border-verde mb-4">
+                    <span class="text-4xl">✅</span>
+                </div>
+                <h2 class="text-3xl font-black text-white mb-2">¡Listo!</h2>
+                <p class="text-slate-400 text-sm">Tu comercio ya está activo en QRPretium</p>
+            </div>
+
+            <!-- CREDENCIALES -->
+            <div class="bg-pizarra-card border border-verde/40 rounded-2xl p-6 mb-6">
+                <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    🔑 Tus credenciales de acceso
+                </h3>
+
+                <div class="space-y-3">
+                    <div class="bg-slate-900 border border-slate-700 rounded-xl p-4">
+                        <p class="text-xs text-slate-500 uppercase font-bold mb-1">Usuario</p>
+                        <p id="exitoUsuario" class="text-lg font-mono font-bold text-naranja"></p>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-700 rounded-xl p-4">
+                        <p class="text-xs text-slate-500 uppercase font-bold mb-1">Contraseña</p>
+                        <p id="exitoPassword" class="text-lg font-mono font-bold text-verde"></p>
+                    </div>
+                </div>
+
+                <div class="mt-4 p-3 bg-slate-900/50 rounded-xl border border-slate-700">
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        📧 Te enviamos un email con estos datos y el acuerdo que aceptaste.
+                    </p>
+                </div>
+            </div>
+
+            <!-- ACCIONES -->
+            <div class="space-y-3">
+                <a id="btnIrAlPanel" href="admin.html" class="block w-full text-center btn-principal">
+                    📊 Ir a mi panel de administración
+                </a>
+                <a href="https://qrpretium.com.ar" target="_blank" class="block w-full text-center bg-slate-800 hover:bg-slate-700 text-white font-bold py-3.5 rounded-xl transition border border-slate-700">
+                    🌐 Visitar sitio oficial QRPretium
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- MODAL DEL ACUERDO -->
+    <div id="modalAcuerdo" class="modal-acuerdo">
+        <div class="modal-acuerdo-contenido">
+            <div class="modal-acuerdo-header">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">📄</span>
+                    <h3 class="text-lg font-black text-white">Acuerdo de Servicio QRPretium</h3>
+                </div>
+                <button onclick="cerrarModalAcuerdo()" class="text-slate-400 hover:text-white text-2xl font-bold w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-700/50 transition">✕</button>
+            </div>
+
+            <div class="modal-acuerdo-body">
+                <p><strong>Entre QRPretium</strong> (en adelante "el Proveedor") <strong>y el Comercio</strong> (en adelante "el Cliente"), se celebra el presente acuerdo de servicio, sujeto a las siguientes cláusulas:</p>
+
+                <h3>1. OBJETO</h3>
+                <p>QRPretium provee al Cliente una plataforma digital que permite exhibir productos, precios, promociones y un asistente IA en la vidriera del comercio, accesible mediante código QR.</p>
+
+                <h3>2. CARACTERÍSTICAS DEL SERVICIO</h3>
+                <ul>
+                    <li>Catálogo digital 24/7/365</li>
+                    <li>Asistente IA por voz y texto</li>
+                    <li>Panel de administración web</li>
+                    <li>Actualización instantánea de productos</li>
+                    <li>Almacenamiento seguro en la nube</li>
+                    <li>Display QR personalizado</li>
+                </ul>
+
+                <h3>3. OBLIGACIONES DE QRPretium</h3>
+                <ul>
+                    <li>Mantener el servicio operativo 24/7/365</li>
+                    <li>Respaldar los datos del Cliente</li>
+                    <li>Brindar soporte técnico por email</li>
+                    <li>Notificar cambios importantes en el servicio</li>
+                    <li>Proteger los datos personales del Cliente</li>
+                </ul>
+
+                <h3>4. RESPONSABILIDADES DEL COMERCIO</h3>
+                <ul>
+                    <li>Proporcionar información veraz y actualizada</li>
+                    <li>Mantener actualizados precios y disponibilidad</li>
+                    <li>No usar el servicio para fines ilícitos</li>
+                    <li>Abonar el plan contratado en tiempo y forma</li>
+                    <li>Cumplir con las normativas vigentes de su rubro</li>
+                </ul>
+
+                <h3>5. PLANES Y PAGOS</h3>
+                <ul>
+                    <li><strong>Prueba Gratuita:</strong> 10 días sin cargo</li>
+                    <li><strong>Standard / Power / Premium:</strong> abono mensual</li>
+                    <li><strong>Forma de pago:</strong> transferencia bancaria</li>
+                    <li><strong>Sin contrato de permanencia:</strong> el Cliente puede cancelar cuando quiera</li>
+                </ul>
+
+                <h3>6. PROPIEDAD DE LOS DATOS</h3>
+                <p>Los datos cargados son propiedad exclusiva del Cliente. QRPretium no los comparte con terceros ni los usa para fines distintos al servicio.</p>
+
+                <h3>7. CANCELACIÓN</h3>
+                <p>Ambas partes pueden cancelar el servicio notificando con 15 días de anticipación. No hay penalidades.</p>
+
+                <h3>8. MODIFICACIONES</h3>
+                <p>QRPretium puede actualizar los términos del servicio notificando al Cliente con 30 días de anticipación.</p>
+
+                <h3>9. ACEPTACIÓN</h3>
+                <p>Al marcar la casilla "Leí y acepto los términos del acuerdo" y presionar "Aceptar y activar", el Cliente acepta todas las cláusulas del presente acuerdo, quedando formalizada la relación contractual.</p>
+
+                <p class="text-slate-500 text-xs mt-6 italic">Última actualización: Enero 2026</p>
+            </div>
+
+            <div class="modal-acuerdo-footer">
+                <label class="checkbox-acuerdo mb-4">
+                    <input type="checkbox" id="checkAcuerdo" onchange="toggleBtnAceptar()">
+                    <span class="text-sm text-slate-200 font-medium">Leí y acepto los términos del acuerdo de servicio</span>
+                </label>
+
+                <div class="flex gap-3">
+                    <button type="button" onclick="cerrarModalAcuerdo()" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-xl transition text-sm">
+                        Cancelar
+                    </button>
+                    <button type="button" id="btnAceptarAcuerdo" onclick="confirmarYEnviar()" disabled class="flex-1 bg-verde hover:bg-emerald-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition text-sm flex items-center justify-center gap-2">
+                        ✅ Aceptar y activar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PARTE 2 DEL CÓDIGO (JavaScript) SE PEGA ACÁ ABAJO -->
+<script>
+        // ==================== CONFIGURACIÓN ====================
+        const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ==================== ESTADO GLOBAL ====================
+        let solicitudActual = null;
+        let tokenActual = null;
+        let logoBase64Actual = '';
+
+        // ==================== UTILIDADES ====================
+        function obtenerValorObjeto(obj, listaClaves) {
+            if (!obj) return '';
+            const claveEncontrada = Object.keys(obj).find(k =>
+                listaClaves.some(l => l.toLowerCase() === k.toLowerCase())
+            );
+            return claveEncontrada ? obj[claveEncontrada] : '';
+        }
+
+        function mostrarEstado(estado) {
+            document.getElementById('estadoCargando').classList.add('hidden');
+            document.getElementById('estadoError').classList.add('hidden');
+            document.getElementById('estadoFormulario').classList.add('hidden');
+            document.getElementById('estadoExito').classList.add('hidden');
+
+            if (estado === 'cargando') document.getElementById('estadoCargando').classList.remove('hidden');
+            if (estado === 'error') document.getElementById('estadoError').classList.remove('hidden');
+            if (estado === 'formulario') document.getElementById('estadoFormulario').classList.remove('hidden');
+            if (estado === 'exito') document.getElementById('estadoExito').classList.remove('hidden');
+        }
+
+        function mostrarError(titulo, mensaje) {
+            document.getElementById('errorTitulo').innerText = titulo;
+            document.getElementById('errorMensaje').innerText = mensaje;
+            mostrarEstado('error');
+        }
+
+        function togglePassword(inputId, ojoId) {
+            const input = document.getElementById(inputId);
+            const ojo = document.getElementById(ojoId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                ojo.innerText = '🙈';
+            } else {
+                input.type = 'password';
+                ojo.innerText = '👁';
+            }
+        }
+
+        // ==================== VALIDACIÓN DEL TOKEN ====================
+        async function validarToken() {
+            const urlParams = new URLSearchParams(window.location.search);
+            tokenActual = urlParams.get('token');
+
+            // 1. ¿Hay token en la URL?
+            if (!tokenActual || tokenActual.trim() === '') {
+                mostrarError(
+                    'Link inválido',
+                    'El link no contiene un token de alta. Verificá que hayas copiado la URL completa del email.'
+                );
+                return false;
+            }
+
+            try {
+                // 2. Buscar la solicitud por token
+                const { data: solicitud, error } = await supabaseClient
+                    .from('solicitudes')
+                    .select('*')
+                    .eq('token_alta', tokenActual)
+                    .maybeSingle();
+
+                if (error) {
+                    console.error('Error al buscar solicitud:', error);
+                    mostrarError('Error de conexión', 'No pudimos verificar tu link. Intentá de nuevo en unos minutos.');
+                    return false;
+                }
+
+                if (!solicitud) {
+                    mostrarError(
+                        'Link inválido',
+                        'No encontramos una solicitud asociada a este link. Verificá que hayas copiado la URL completa del email.'
+                    );
+                    return false;
+                }
+
+                // 3. ¿token_usado es false?
+                if (solicitud.token_usado === true) {
+                    mostrarError(
+                        'Link ya utilizado',
+                        'Este link ya fue usado para completar el alta. Si necesitás modificaciones, contactanos a contactox@qrpretium.com.ar'
+                    );
+                    return false;
+                }
+
+                // 4. ¿estado es 'Aprobada'?
+                const estado = String(solicitud.estado || '').trim();
+                if (estado.toLowerCase() !== 'aprobada') {
+                    mostrarError(
+                        'Solicitud no aprobada',
+                        `Tu solicitud está en estado "${estado}". Contactanos a contactox@qrpretium.com.ar para más información.`
+                    );
+                    return false;
+                }
+
+                // 5. ¿fecha_aprobacion < 15 días?
+                if (solicitud.fecha_aprobacion) {
+                    const fechaAprobacion = new Date(solicitud.fecha_aprobacion);
+                    const ahora = new Date();
+                    const diasTranscurridos = (ahora - fechaAprobacion) / (1000 * 60 * 60 * 24);
+
+                    if (diasTranscurridos > 15) {
+                        mostrarError(
+                            'Link expirado',
+                            'Este link expiró (más de 15 días desde su aprobación). Contactanos a contactox@qrpretium.com.ar para recibir uno nuevo.'
+                        );
+                        return false;
+                    }
+                }
+
+                // ✅ Todo OK
+                solicitudActual = solicitud;
+                return true;
+
+            } catch (err) {
+                console.error('Error inesperado:', err);
+                mostrarError('Error inesperado', 'Algo salió mal. Por favor intentá de nuevo o contactanos.');
+                return false;
+            }
+        }
+
+        // ==================== PRE-CARGA DEL FORMULARIO ====================
+        function preCargarFormulario() {
+            const s = solicitudActual;
+
+            // Solo lectura
+            document.getElementById('campoCuit').value = obtenerValorObjeto(s, ['cuit']) || '';
+            document.getElementById('campoResponsable').value = obtenerValorObjeto(s, ['nombre_responsable']) || '';
+            document.getElementById('campoEmail').value = obtenerValorObjeto(s, ['email']) || '';
+            document.getElementById('campoUsuario').value = obtenerValorObjeto(s, ['cuit']) || '';
+
+            // Editables (pre-cargados pero modificables)
+            document.getElementById('campoNombreComercio').value = obtenerValorObjeto(s, ['nombre_comercio']) || '';
+            document.getElementById('campoTelefono').value = obtenerValorObjeto(s, ['telefono']) || '';
+            document.getElementById('campoDireccion').value = obtenerValorObjeto(s, ['direccion']) || '';
+            document.getElementById('campoCiudad').value = obtenerValorObjeto(s, ['ciudad']) || '';
+            document.getElementById('campoProvincia').value = obtenerValorObjeto(s, ['provincia']) || '';
+
+            // Rubro: intentar preseleccionar
+            const rubroSolicitud = obtenerValorObjeto(s, ['rubro']);
+            if (rubroSolicitud) {
+                const selectRubro = document.getElementById('campoRubro');
+                for (let i = 0; i < selectRubro.options.length; i++) {
+                    if (selectRubro.options[i].value === rubroSolicitud) {
+                        selectRubro.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // ==================== LOGO ====================
+        document.getElementById('inputLogo').addEventListener('change', function(event) {
+            const archivo = event.target.files[0];
+            if (!archivo) return;
+
+            const tiposPermitidos = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/svg+xml'];
+            if (!tiposPermitidos.includes(archivo.type)) {
+                alert('❌ Formato no permitido. Usá PNG, JPG, WEBP o SVG.');
+                event.target.value = '';
+                return;
+            }
+
+            const maxBytes = 200 * 1024;
+            if (archivo.size > maxBytes) {
+                alert(`❌ La imagen pesa ${(archivo.size / 1024).toFixed(1)} KB. El máximo permitido es 200 KB.`);
+                event.target.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                logoBase64Actual = e.target.result;
+                document.getElementById('previewLogo').src = logoBase64Actual;
+                document.getElementById('previewLogoContenedor').classList.remove('hidden');
+            };
+            reader.readAsDataURL(archivo);
+        });
+
+        function quitarLogo() {
+            logoBase64Actual = '';
+            document.getElementById('inputLogo').value = '';
+            document.getElementById('previewLogo').src = '';
+            document.getElementById('previewLogoContenedor').classList.add('hidden');
+        }
+
+        // ==================== MEDIDOR DE SEGURIDAD DE CONTRASEÑA ====================
+        document.getElementById('campoPassword').addEventListener('input', function() {
+            const valor = this.value;
+            const barra = document.getElementById('medidorBarra');
+            const texto = document.getElementById('medidorTexto');
+
+            let puntaje = 0;
+            if (valor.length >= 6) puntaje++;
+            if (valor.length >= 10) puntaje++;
+            if (/[a-z]/.test(valor)) puntaje++;
+            if (/[A-Z]/.test(valor)) puntaje++;
+            if (/[0-9]/.test(valor)) puntaje++;
+            if (/[^a-zA-Z0-9]/.test(valor)) puntaje++;
+
+            let ancho = 0;
+            let color = '';
+            let etiqueta = '';
+
+            if (valor.length === 0) {
+                ancho = 0;
+                etiqueta = 'Debe contener al menos 1 letra y 1 número.';
+                color = '';
+            } else if (puntaje <= 2) {
+                ancho = 33;
+                color = '#EF4444';
+                etiqueta = 'Contraseña débil';
+            } else if (puntaje <= 4) {
+                ancho = 66;
+                color = '#F59E0B';
+                etiqueta = 'Contraseña media';
+            } else {
+                ancho = 100;
+                color = '#10B981';
+                etiqueta = 'Contraseña fuerte ✅';
+            }
+
+            barra.style.width = ancho + '%';
+            barra.style.backgroundColor = color;
+            texto.innerText = etiqueta;
+            texto.style.color = color || '#64748B';
+        });
+
+        // ==================== VALIDACIÓN DE COINCIDENCIA ====================
+        document.getElementById('campoPasswordConfirm').addEventListener('input', function() {
+            const pass = document.getElementById('campoPassword').value;
+            const confirm = this.value;
+            const texto = document.getElementById('coincideTexto');
+
+            if (confirm.length === 0) {
+                texto.innerText = '';
+                return;
+            }
+
+            if (pass === confirm) {
+                texto.innerText = '✅ Las contraseñas coinciden';
+                texto.style.color = '#10B981';
+            } else {
+                texto.innerText = '❌ Las contraseñas no coinciden';
+                texto.style.color = '#EF4444';
+            }
+        });
+
+        // ==================== VALIDACIONES DEL FORMULARIO ====================
+        function validarFormulario() {
+            const nombre = document.getElementById('campoNombreComercio').value.trim();
+            const telefono = document.getElementById('campoTelefono').value.trim();
+            const whatsapp = document.getElementById('campoWhatsapp').value.trim();
+            const rubro = document.getElementById('campoRubro').value;
+            const direccion = document.getElementById('campoDireccion').value.trim();
+            const ciudad = document.getElementById('campoCiudad').value.trim();
+            const provincia = document.getElementById('campoProvincia').value.trim();
+            const password = document.getElementById('campoPassword').value;
+            const passwordConfirm = document.getElementById('campoPasswordConfirm').value;
+
+            if (!nombre) return { ok: false, msg: 'El nombre del comercio es obligatorio.' };
+            if (!telefono) return { ok: false, msg: 'El teléfono es obligatorio.' };
+            if (!whatsapp) return { ok: false, msg: 'El WhatsApp es obligatorio.' };
+            if (!rubro) return { ok: false, msg: 'Seleccioná un rubro.' };
+            if (!direccion) return { ok: false, msg: 'La dirección es obligatoria.' };
+            if (!ciudad) return { ok: false, msg: 'La ciudad es obligatoria.' };
+            if (!provincia) return { ok: false, msg: 'La provincia es obligatoria.' };
+
+            // Contraseña
+            if (!password) return { ok: false, msg: 'La contraseña es obligatoria.' };
+            if (password.length < 6) return { ok: false, msg: 'La contraseña debe tener al menos 6 caracteres.' };
+            if (!/[a-zA-Z]/.test(password)) return { ok: false, msg: 'La contraseña debe contener al menos 1 letra.' };
+            if (!/[0-9]/.test(password)) return { ok: false, msg: 'La contraseña debe contener al menos 1 número.' };
+
+            if (password !== passwordConfirm) return { ok: false, msg: 'Las contraseñas no coinciden.' };
+
+            return { ok: true };
+        }
+
+        // ==================== MODAL DEL ACUERDO ====================
+        function abrirModalAcuerdo() {
+            const validacion = validarFormulario();
+            if (!validacion.ok) {
+                alert('⚠️ ' + validacion.msg);
+                return;
+            }
+            document.getElementById('modalAcuerdo').classList.add('activo');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function cerrarModalAcuerdo() {
+            document.getElementById('modalAcuerdo').classList.remove('activo');
+            document.body.style.overflow = '';
+            // Resetear checkbox
+            document.getElementById('checkAcuerdo').checked = false;
+            document.getElementById('btnAceptarAcuerdo').disabled = true;
+        }
+
+        function toggleBtnAceptar() {
+            const check = document.getElementById('checkAcuerdo').checked;
+            document.getElementById('btnAceptarAcuerdo').disabled = !check;
+        }
+
+        // ==================== CONFIRMAR Y ENVIAR ====================
+        async function confirmarYEnviar() {
+            const btn = document.getElementById('btnAceptarAcuerdo');
+            btn.disabled = true;
+            btn.innerText = 'Activando...';
+
+            try {
+                // 1. Verificar que no exista ya un comercio con ese CUIT
+                const cuit = document.getElementById('campoCuit').value.trim();
+                const { data: comercioExistente } = await supabaseClient
+                    .from('comercios')
+                    .select('cuit')
+                    .eq('cuit', cuit)
+                    .maybeSingle();
+
+                if (comercioExistente) {
+                    alert('⚠️ Ya existe un comercio con ese CUIT. Contactanos a contactox@qrpretium.com.ar');
+                    btn.disabled = false;
+                    btn.innerText = '✅ Aceptar y activar';
+                    return;
+                }
+
+                // 2. Preparar datos del comercio
+                const password = document.getElementById('campoPassword').value;
+                const tipoSolicitud = obtenerValorObjeto(solicitudActual, ['tipo_solicitud']) || 'Prueba Gratuita';
+
+                // Determinar el plan según el tipo de solicitud
+                let plan = 'Standard';
+                if (tipoSolicitud.toLowerCase().includes('power')) plan = 'Power';
+                else if (tipoSolicitud.toLowerCase().includes('premium')) plan = 'Premium';
+                else if (tipoSolicitud.toLowerCase().includes('prueba')) plan = 'Prueba Gratuita';
+                else if (tipoSolicitud.toLowerCase().includes('standard')) plan = 'Standard';
+
+                // Preparar payload de comercio
+                const nuevoComercio = {
+                    cuit: cuit,
+                    nombre: document.getElementById('campoNombreComercio').value.trim(),
+                    responsable: document.getElementById('campoResponsable').value.trim(),
+                    mail: document.getElementById('campoEmail').value.trim(),
+                    telefono: document.getElementById('campoTelefono').value.trim(),
+                    whatsapp: document.getElementById('campoWhatsapp').value.trim(),
+                    rubro: document.getElementById('campoRubro').value,
+                    direccion: document.getElementById('campoDireccion').value.trim(),
+                    ciudad: document.getElementById('campoCiudad').value.trim(),
+                    provincia: document.getElementById('campoProvincia').value.trim(),
+                    web: document.getElementById('campoSitioWeb').value.trim() || null,
+                    horarios: document.getElementById('campoHorarios').value.trim() || null,
+                    password: password,
+                    plan: plan,
+                    color: '#334155',
+                    logo: logoBase64Actual || null,
+                    acuerdo_aceptado: true,
+                    fecha_acuerdo: new Date().toISOString(),
+                    fecha_alta: new Date().toISOString(),
+                    link_qr: `https://qrproyectum26.github.io/QRPretium/catalogo.html?cuit=${cuit}`
+                };
+
+                // Si es Prueba Gratuita, agregar fecha de vencimiento
+                if (plan === 'Prueba Gratuita') {
+                    const vencimiento = new Date();
+                    vencimiento.setDate(vencimiento.getDate() + 10);
+                    nuevoComercio.fecha_vencimiento_prueba = vencimiento.toISOString();
+                }
+
+                // 3. INSERT en comercios
+                const { error: errorInsert } = await supabaseClient
+                    .from('comercios')
+                    .insert([nuevoComercio]);
+
+                if (errorInsert) {
+                    console.error('Error al insertar comercio:', errorInsert);
+                    alert('❌ Error al crear el comercio: ' + errorInsert.message);
+                    btn.disabled = false;
+                    btn.innerText = '✅ Aceptar y activar';
+                    return;
+                }
+
+                // 4. UPDATE en solicitudes
+                const { error: errorUpdate } = await supabaseClient
+                    .from('solicitudes')
+                    .update({
+                        estado: 'Completada',
+                        token_usado: true,
+                        fecha_alta: new Date().toISOString()
+                    })
+                    .eq('id', solicitudActual.id);
+
+                if (errorUpdate) {
+                    console.error('Error al actualizar solicitud:', errorUpdate);
+                    // No bloqueamos al usuario por esto. El comercio ya está creado.
+                }
+
+                // 5. Mostrar pantalla de éxito
+                cerrarModalAcuerdo();
+
+                document.getElementById('exitoUsuario').innerText = cuit;
+                document.getElementById('exitoPassword').innerText = password;
+
+                mostrarEstado('exito');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            } catch (err) {
+                console.error('Error inesperado:', err);
+                alert('❌ Ocurrió un error inesperado. Por favor intentá de nuevo.');
+                btn.disabled = false;
+                btn.innerText = '✅ Aceptar y activar';
+            }
+        }
+
+        // ==================== CERRAR MODAL CON ESC ====================
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('modalAcuerdo');
+                if (modal.classList.contains('activo')) {
+                    cerrarModalAcuerdo();
+                }
+            }
+        });
+
+        // ==================== INICIALIZACIÓN ====================
+        window.addEventListener('DOMContentLoaded', async function() {
+            const tokenValido = await validarToken();
+            if (tokenValido) {
+                preCargarFormulario();
+                mostrarEstado('formulario');
+            }
+        });
+  
+    </script>
+</body>
+  
+</html>
