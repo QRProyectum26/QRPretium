@@ -882,7 +882,8 @@
 
             try {
                 // 1. Verificar que no exista ya un comercio con ese CUIT
-                const cuit = document.getElementById('campoCuit').value.trim();
+                const cuitTexto = document.getElementById('campoCuit').value.trim();
+   const cuit = parseInt(cuitTexto.replace(/[-.\s]/g, ''), 10);
                 const { data: comercioExistente } = await supabaseClient
                     .from('comercios')
                     .select('cuit')
