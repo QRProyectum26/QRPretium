@@ -979,6 +979,38 @@
                 // 5. Mostrar pantalla de éxito
                 cerrarModalAcuerdo();
 
+                               // 5. Llamar a la Edge Function enviar-credenciales
+                try {
+                    const credencialesRes = await fetch(
+                        'https://zbnuunaguciupyyzploq.supabase.co/functions/v1/enviar-credenciales',
+                        {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'apikey': 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB'
+                            },
+                            body: JSON.stringify({
+                                cuit: cuit,
+                                password: password,
+                                nombre_responsable: document.getElementById('campoResponsable').value.trim(),
+                                nombre_comercio: document.getElementById('campoNombreComercio').value.trim(),
+                                email: document.getElementById('campoEmail').value.trim(),
+                                plan: plan
+                            })
+                        }
+                    );
+
+                    const credencialesData = await credencialesRes.json();
+                    console.log('Credenciales enviadas:', credencialesData);
+
+                } catch (mailError) {
+                    console.error('Error al enviar credenciales:', mailError);
+                    // No bloqueamos al usuario por esto. El comercio ya está creado.
+                }
+
+                // 6. Mostrar pantalla de éxito
+                cerrarModalAcuerdo();
+
                 document.getElementById('exitoUsuario').innerText = cuit;
                 document.getElementById('exitoPassword').innerText = password;
 
