@@ -83,7 +83,6 @@
             width: 0%;
         }
 
-        /* Modal */
         .modal-acuerdo {
             display: none;
             position: fixed;
@@ -179,7 +178,6 @@
             flex-shrink: 0;
         }
 
-        /* Responsive */
         @media (max-width: 480px) {
             .modal-acuerdo-body {
                 padding: 16px;
@@ -250,44 +248,37 @@
 
                 <div class="space-y-4">
 
-                    <!-- CUIT (solo lectura) -->
                     <div>
                         <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">CUIT (tu usuario)</label>
                         <input type="text" id="campoCuit" disabled class="input-base font-mono">
                     </div>
 
-                    <!-- Nombre del comercio -->
                     <div>
                         <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Nombre del Comercio *</label>
                         <input type="text" id="campoNombreComercio" class="input-base" placeholder="Ej: Tienda X" required>
                     </div>
 
-                    <!-- Responsable (solo lectura) -->
                     <div>
                         <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Nombre del Responsable</label>
                         <input type="text" id="campoResponsable" disabled class="input-base">
                     </div>
 
-                    <!-- Email (solo lectura) -->
                     <div>
                         <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Email</label>
                         <input type="email" id="campoEmail" disabled class="input-base">
                     </div>
 
-                    <!-- Teléfono -->
                     <div>
                         <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Teléfono *</label>
                         <input type="tel" id="campoTelefono" class="input-base" placeholder="Ej: 11 1234 5678" required>
                     </div>
 
-                    <!-- WhatsApp -->
                     <div>
                         <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">WhatsApp *</label>
                         <input type="tel" id="campoWhatsapp" class="input-base" placeholder="Ej: 5491112345678" required>
                         <p class="text-[11px] text-slate-500 mt-1">Formato internacional: código país + área + número (sin espacios ni guiones)</p>
                     </div>
 
-                    <!-- Rubro -->
                     <div>
                         <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Rubro *</label>
                         <select id="campoRubro" class="input-base" required>
@@ -302,31 +293,26 @@
                         </select>
                     </div>
 
-                    <!-- Dirección -->
                     <div>
                         <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Dirección *</label>
                         <input type="text" id="campoDireccion" class="input-base" placeholder="Ej: Av. Santa Fe 776" required>
                     </div>
 
-                    <!-- Ciudad -->
                     <div>
                         <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Ciudad *</label>
                         <input type="text" id="campoCiudad" class="input-base" placeholder="Ej: Capital Federal" required>
                     </div>
 
-                    <!-- Provincia -->
                     <div>
                         <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Provincia *</label>
                         <input type="text" id="campoProvincia" class="input-base" placeholder="Ej: Buenos Aires" required>
                     </div>
 
-                    <!-- Sitio web (opcional) -->
                     <div>
                         <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Sitio Web (opcional)</label>
                         <input type="text" id="campoSitioWeb" class="input-base" placeholder="Ej: www.tiendax.com.ar">
                     </div>
 
-                    <!-- Horarios (opcional) -->
                     <div>
                         <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Horarios de Atención (opcional)</label>
                         <input type="text" id="campoHorarios" class="input-base" placeholder="Ej: Lunes a Viernes 9-18 hs, Sábados 10-14 hs">
@@ -370,14 +356,12 @@
 
                 <div class="space-y-4">
 
-                    <!-- Usuario (CUIT, solo lectura) -->
                     <div>
                         <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Usuario</label>
                         <input type="text" id="campoUsuario" disabled class="input-base font-mono">
                         <p class="text-[11px] text-slate-500 mt-1">Tu usuario es tu CUIT. Lo usás para ingresar al panel de administración.</p>
                     </div>
 
-                    <!-- Contraseña -->
                     <div>
                         <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Contraseña *</label>
                         <div class="relative">
@@ -392,7 +376,6 @@
                         <p id="medidorTexto" class="text-[11px] text-slate-500 mt-1">Debe contener al menos 1 letra y 1 número.</p>
                     </div>
 
-                    <!-- Confirmar contraseña -->
                     <div>
                         <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Confirmar Contraseña *</label>
                         <div class="relative">
@@ -436,7 +419,6 @@
                 <p class="text-slate-400 text-sm">Tu comercio ya está activo en QRPretium</p>
             </div>
 
-            <!-- CREDENCIALES -->
             <div class="bg-pizarra-card border border-verde/40 rounded-2xl p-6 mb-6">
                 <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
                     🔑 Tus credenciales de acceso
@@ -460,7 +442,6 @@
                 </div>
             </div>
 
-            <!-- ACCIONES -->
             <div class="space-y-3">
                 <a id="btnIrAlPanel" href="admin.html" class="block w-full text-center btn-principal">
                     📊 Ir a mi panel de administración
@@ -560,8 +541,7 @@
         </div>
     </div>
 
-    <!-- PARTE 2 DEL CÓDIGO (JavaScript) SE PEGA ACÁ ABAJO -->
-<script>
+    <script>
         // ==================== CONFIGURACIÓN ====================
         const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
@@ -616,7 +596,6 @@
             const urlParams = new URLSearchParams(window.location.search);
             tokenActual = urlParams.get('token');
 
-            // 1. ¿Hay token en la URL?
             if (!tokenActual || tokenActual.trim() === '') {
                 mostrarError(
                     'Link inválido',
@@ -626,7 +605,6 @@
             }
 
             try {
-                // 2. Buscar la solicitud por token
                 const { data: solicitud, error } = await supabaseClient
                     .from('solicitudes')
                     .select('*')
@@ -647,7 +625,6 @@
                     return false;
                 }
 
-                // 3. ¿token_usado es false?
                 if (solicitud.token_usado === true) {
                     mostrarError(
                         'Link ya utilizado',
@@ -656,7 +633,6 @@
                     return false;
                 }
 
-                // 4. ¿estado es 'Aprobada'?
                 const estado = String(solicitud.estado || '').trim();
                 if (estado.toLowerCase() !== 'aprobada') {
                     mostrarError(
@@ -666,7 +642,6 @@
                     return false;
                 }
 
-                // 5. ¿fecha_aprobacion < 15 días?
                 if (solicitud.fecha_aprobacion) {
                     const fechaAprobacion = new Date(solicitud.fecha_aprobacion);
                     const ahora = new Date();
@@ -681,7 +656,6 @@
                     }
                 }
 
-                // ✅ Todo OK
                 solicitudActual = solicitud;
                 return true;
 
@@ -696,20 +670,17 @@
         function preCargarFormulario() {
             const s = solicitudActual;
 
-            // Solo lectura
             document.getElementById('campoCuit').value = obtenerValorObjeto(s, ['cuit']) || '';
             document.getElementById('campoResponsable').value = obtenerValorObjeto(s, ['nombre_responsable']) || '';
             document.getElementById('campoEmail').value = obtenerValorObjeto(s, ['email']) || '';
             document.getElementById('campoUsuario').value = obtenerValorObjeto(s, ['cuit']) || '';
 
-            // Editables (pre-cargados pero modificables)
             document.getElementById('campoNombreComercio').value = obtenerValorObjeto(s, ['nombre_comercio']) || '';
             document.getElementById('campoTelefono').value = obtenerValorObjeto(s, ['telefono']) || '';
             document.getElementById('campoDireccion').value = obtenerValorObjeto(s, ['direccion']) || '';
             document.getElementById('campoCiudad').value = obtenerValorObjeto(s, ['ciudad']) || '';
             document.getElementById('campoProvincia').value = obtenerValorObjeto(s, ['provincia']) || '';
 
-            // Rubro: intentar preseleccionar
             const rubroSolicitud = obtenerValorObjeto(s, ['rubro']);
             if (rubroSolicitud) {
                 const selectRubro = document.getElementById('campoRubro');
@@ -757,7 +728,7 @@
             document.getElementById('previewLogoContenedor').classList.add('hidden');
         }
 
-        // ==================== MEDIDOR DE SEGURIDAD DE CONTRASEÑA ====================
+        // ==================== MEDIDOR DE SEGURIDAD ====================
         document.getElementById('campoPassword').addEventListener('input', function() {
             const valor = this.value;
             const barra = document.getElementById('medidorBarra');
@@ -839,7 +810,6 @@
             if (!ciudad) return { ok: false, msg: 'La ciudad es obligatoria.' };
             if (!provincia) return { ok: false, msg: 'La provincia es obligatoria.' };
 
-            // Contraseña
             if (!password) return { ok: false, msg: 'La contraseña es obligatoria.' };
             if (password.length < 6) return { ok: false, msg: 'La contraseña debe tener al menos 6 caracteres.' };
             if (!/[a-zA-Z]/.test(password)) return { ok: false, msg: 'La contraseña debe contener al menos 1 letra.' };
@@ -864,7 +834,6 @@
         function cerrarModalAcuerdo() {
             document.getElementById('modalAcuerdo').classList.remove('activo');
             document.body.style.overflow = '';
-            // Resetear checkbox
             document.getElementById('checkAcuerdo').checked = false;
             document.getElementById('btnAceptarAcuerdo').disabled = true;
         }
@@ -875,51 +844,49 @@
         }
 
         // ==================== CONFIRMAR Y ENVIAR ====================
-    async function confirmarYEnviar() {
-    const btn = document.getElementById('btnAceptarAcuerdo');
-    btn.disabled = true;
-    btn.innerText = 'Activando...';
+        async function confirmarYEnviar() {
+            const btn = document.getElementById('btnAceptarAcuerdo');
+            btn.disabled = true;
+            btn.innerText = 'Activando...';
 
-    try {
-        // 1. Convertir CUIT a número (porque en comercios es numeric)
-        const cuitTexto = document.getElementById('campoCuit').value.trim();
-        const cuit = parseInt(cuitTexto.replace(/[-.\s]/g, ''), 10);
+            try {
+                // 1. Obtener y validar CUIT
+                const cuitTexto = document.getElementById('campoCuit').value.trim();
+                const cuit = parseInt(cuitTexto.replace(/[-.\s]/g, ''), 10);
 
-        if (isNaN(cuit)) {
-            alert('⚠️ El CUIT no es válido. Contactanos a contactox@qrpretium.com.ar');
-            btn.disabled = false;
-            btn.innerText = '✅ Aceptar y activar';
-            return;
-        }
+                if (isNaN(cuit)) {
+                    alert('⚠️ El CUIT no es válido. Contactanos a contactox@qrpretium.com.ar');
+                    btn.disabled = false;
+                    btn.innerText = '✅ Aceptar y activar';
+                    return;
+                }
 
-        // 2. Verificar que no exista ya un comercio con ese CUIT
-        const { data: comercioExistente } = await supabaseClient
-            .from('comercios')
-            .select('cuit')
-            .eq('cuit', cuit)
-            .maybeSingle();
+                // 2. Verificar que no exista ya un comercio con ese CUIT
+                const { data: comercioExistente } = await supabaseClient
+                    .from('comercios')
+                    .select('cuit')
+                    .eq('cuit', cuit)
+                    .maybeSingle();
 
-        if (comercioExistente) {
-            alert('⚠️ Ya existe un comercio con ese CUIT. Contactanos a contactox@qrpretium.com.ar');
-            btn.disabled = false;
-            btn.innerText = '✅ Aceptar y activar';
-            return;
-        }
+                if (comercioExistente) {
+                    alert('⚠️ Ya existe un comercio con ese CUIT. Contactanos a contactox@qrpretium.com.ar');
+                    btn.disabled = false;
+                    btn.innerText = '✅ Aceptar y activar';
+                    return;
+                }
 
-        // 3. Preparar datos del comercio
-        const password = document.getElementById('campoPassword').value;
-        const tipoSolicitud = obtenerValorObjeto(solicitudActual, ['tipo_solicitud']) || 'Prueba Gratuita';
+                // 3. Preparar datos del comercio
+                const password = document.getElementById('campoPassword').value;
+                const tipoSolicitud = obtenerValorObjeto(solicitudActual, ['tipo_solicitud']) || 'Prueba Gratuita';
 
-        // Determinar el plan según el tipo de solicitud
-        let plan = 'Standard';
-        if (tipoSolicitud.toLowerCase().includes('power')) plan = 'Power';
-        else if (tipoSolicitud.toLowerCase().includes('premium')) plan = 'Premium';
-        else if (tipoSolicitud.toLowerCase().includes('prueba')) plan = 'Prueba Gratuita';
-        else if (tipoSolicitud.toLowerCase().includes('standard')) plan = 'Standard';
+                let plan = 'Standard';
+                if (tipoSolicitud.toLowerCase().includes('power')) plan = 'Power';
+                else if (tipoSolicitud.toLowerCase().includes('premium')) plan = 'Premium';
+                else if (tipoSolicitud.toLowerCase().includes('prueba')) plan = 'Prueba Gratuita';
+                else if (tipoSolicitud.toLowerCase().includes('standard')) plan = 'Standard';
 
-        // Preparar payload de comercio
-        const nuevoComercio = {
-            cuit: cuit,   // ← ahora es número
+                const nuevoComercio = {
+                    cuit: cuit,
                     nombre: document.getElementById('campoNombreComercio').value.trim(),
                     responsable: document.getElementById('campoResponsable').value.trim(),
                     mail: document.getElementById('campoEmail').value.trim(),
@@ -941,14 +908,13 @@
                     link_qr: `https://qrproyectum26.github.io/QRPretium/catalogo.html?cuit=${cuit}`
                 };
 
-                // Si es Prueba Gratuita, agregar fecha de vencimiento
                 if (plan === 'Prueba Gratuita') {
                     const vencimiento = new Date();
                     vencimiento.setDate(vencimiento.getDate() + 10);
                     nuevoComercio.fecha_vencimiento_prueba = vencimiento.toISOString();
                 }
 
-                // 3. INSERT en comercios
+                // 4. INSERT en comercios
                 const { error: errorInsert } = await supabaseClient
                     .from('comercios')
                     .insert([nuevoComercio]);
@@ -961,7 +927,7 @@
                     return;
                 }
 
-                // 4. UPDATE en solicitudes
+                // 5. UPDATE en solicitudes
                 const { error: errorUpdate } = await supabaseClient
                     .from('solicitudes')
                     .update({
@@ -973,13 +939,9 @@
 
                 if (errorUpdate) {
                     console.error('Error al actualizar solicitud:', errorUpdate);
-                    // No bloqueamos al usuario por esto. El comercio ya está creado.
                 }
 
-                // 5. Mostrar pantalla de éxito
-                cerrarModalAcuerdo();
-
-                               // 5. Llamar a la Edge Function enviar-credenciales
+                // 6. Llamar a la Edge Function enviar-credenciales
                 try {
                     const credencialesRes = await fetch(
                         'https://zbnuunaguciupyyzploq.supabase.co/functions/v1/enviar-credenciales',
@@ -1005,15 +967,12 @@
 
                 } catch (mailError) {
                     console.error('Error al enviar credenciales:', mailError);
-                    // No bloqueamos al usuario por esto. El comercio ya está creado.
                 }
 
-                // 6. Mostrar pantalla de éxito
+                // 7. Mostrar pantalla de éxito
                 cerrarModalAcuerdo();
-
                 document.getElementById('exitoUsuario').innerText = cuit;
                 document.getElementById('exitoPassword').innerText = password;
-
                 mostrarEstado('exito');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -1043,8 +1002,6 @@
                 mostrarEstado('formulario');
             }
         });
-  
     </script>
 </body>
-  
 </html>
