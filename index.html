@@ -46,6 +46,63 @@
       opacity: 1;
       visibility: visible;
     }
+
+    /* --- IMÁGENES EXPANDIBLES --- */
+    .imagen-expandible {
+      cursor: zoom-in;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .imagen-expandible:hover {
+      transform: scale(1.02);
+      box-shadow: 0 12px 40px rgba(249, 115, 22, 0.3);
+    }
+
+    /* --- MODAL DE IMAGEN EXPANDIDA --- */
+    .modal-imagen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 9999;
+      cursor: zoom-out;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-imagen.activo {
+      display: flex;
+    }
+    .modal-imagen img {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 12px;
+      box-shadow: 0 0 80px rgba(249, 115, 22, 0.3);
+      animation: zoomIn 0.3s ease;
+    }
+    @keyframes zoomIn {
+      from { transform: scale(0.85); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .modal-imagen .btn-cerrar-imagen {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(239, 68, 68, 0.9);
+      color: white;
+      border: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      font-size: 22px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s;
+      z-index: 10000;
+    }
+    .modal-imagen .btn-cerrar-imagen:hover {
+      transform: scale(1.1);
+      background: #dc2626;
+    }
   </style>
 </head>
 <body class="bg-pizarraOscura text-slate-100 font-sans antialiased selection:bg-naranja selection:text-white">
@@ -83,6 +140,7 @@
           <a href="#soluciones" class="hover:text-naranja transition">Soluciones</a>
           <a href="#asistente-ia" class="hover:text-naranja transition">Asistente IA</a>
           <a href="#seguridad" class="hover:text-naranja transition">Seguridad</a>
+          <a href="#codigos-etiquetas" class="hover:text-naranja transition">Etiquetas</a>
           <a href="#planes" class="hover:text-naranja transition">Planes</a>
           <a href="nosotros.html" class="hover:text-naranja transition">Nosotros</a>
         </nav>
@@ -107,6 +165,7 @@
           <a href="#soluciones" class="hover:text-naranja transition py-1">Soluciones</a>
           <a href="#asistente-ia" class="hover:text-naranja transition py-1">Asistente IA</a>
           <a href="#seguridad" class="hover:text-naranja transition py-1">Seguridad</a>
+          <a href="#codigos-etiquetas" class="hover:text-naranja transition py-1">Etiquetas</a>
           <a href="#planes" class="hover:text-naranja transition py-1">Planes</a>
           <a href="nosotros.html" class="hover:text-naranja transition py-1">Nosotros</a>
         </div>
@@ -131,7 +190,6 @@
           <a href="https://qrpretium.com.ar/catalogo.html?cuit=30697294895" target="_blank" rel="noopener noreferrer" class="bg-verdeVivo hover:bg-emerald-600 text-slate-950 font-bold px-5 py-3 md:px-6 md:py-3.5 rounded-xl transition shadow-lg shadow-verdeVivo/20 flex items-center gap-2 text-sm md:text-base">
             <i class="fa-solid fa-mobile-screen-button"></i> Ver Catálogo Demo !
           </a>
-          <!-- ✅ ELIMINADO: botón "Solicitar Visita" -->
         </div>
       </div>
       <div class="md:col-span-2 relative">
@@ -259,8 +317,8 @@
       </div>
     </div>
   </section>
-  
- <!-- SECCIÓN FAMILIA -->
+
+  <!-- SECCIÓN FAMILIA -->
   <section class="py-16 bg-pizarraOscura border-t border-slate-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="bg-pizarra rounded-3xl border border-slate-700/80 overflow-hidden shadow-2xl grid lg:grid-cols-2 items-center">
@@ -283,571 +341,72 @@
       </div>
     </div>
   </section>
-  
-  <!-- PLANES -->
-  <section id="planes" class="py-20">
+
+  <!-- SECCIÓN CÓDIGOS Y ETIQUETAS -->
+  <section id="codigos-etiquetas" class="py-16 bg-pizarraOscura border-t border-slate-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center max-w-3xl mx-auto mb-10">
-        <h2 class="text-3xl font-extrabold text-white mb-4">Planes diseñados para tu <span class="text-slate-400">Vidriera Inmersiva Inteligente</span></h2>
-        <p class="text-slate-400 mb-6">El valor mensual disminuye según la cantidad de meses contratados. Todos los precios expresados son de abono mensual.</p>
-        <div class="inline-flex items-center justify-center p-1 bg-pizarra rounded-2xl border border-slate-700 gap-1">
-          <button type="button" onclick="cambiarPeriodo(1)" id="btn-1m" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition bg-naranja text-white shadow-md">1 Mes</button>
-          <button type="button" onclick="cambiarPeriodo(3)" id="btn-3m" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition text-slate-300 hover:text-white">3 Meses <span class="text-[10px] bg-verdeVivo/20 text-verdeVivo px-1.5 py-0.5 rounded ml-1 font-semibold">-10%</span></button>
-          <button type="button" onclick="cambiarPeriodo(6)" id="btn-6m" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition text-slate-300 hover:text-white">6 Meses <span class="text-[10px] bg-verdeVivo/20 text-verdeVivo px-1.5 py-0.5 rounded ml-1 font-semibold">-20%</span></button>
-          <button type="button" onclick="cambiarPeriodo(12)" id="btn-12m" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition text-slate-300 hover:text-white">12 Meses <span class="text-[10px] bg-verdeVivo/20 text-verdeVivo px-1.5 py-0.5 rounded ml-1 font-semibold">-30%</span></button>
-        </div>
-      </div>
-      <div class="grid md:grid-cols-3 gap-8">
-        <div class="bg-pizarra p-8 rounded-2xl border border-slate-800 flex flex-col justify-between h-full">
-          <div>
-            <h3 class="text-xl font-bold text-white mb-1">Standard</h3>
-            <p class="text-slate-400 text-xs mb-4">Ideal para el comercio Minorista/Retail.</p>
-            <div class="my-4 p-4 bg-slate-900/80 rounded-xl border border-slate-700/80 text-center">
-              <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Abono Mensual</span>
-              <div class="text-3xl font-black text-white mt-1">$<span id="precio-std">10.000</span> <span class="text-xs text-slate-400 font-normal">/mes</span></div>
-              <span id="sub-std" class="text-[11px] text-slate-500 mt-1 block font-medium">Facturación mensual</span>
-            </div>
-            <ul class="space-y-3 text-sm text-slate-300 mb-8 mt-6">
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Catálogo QR Vidriera hasta 35 artículos</li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Panel Admin de precios</li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> <strong>Asistente IA por Voz</strong></li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Soporte por Email</li>
-            </ul>
-          </div>
-          <a href="#solicitar-prueba" class="w-full text-center bg-slate-800 hover:bg-slate-700 text-white font-semibold py-3 rounded-xl transition border border-slate-700">Elegir Standard</a>
-        </div>
-        <div class="bg-pizarra p-8 rounded-2xl border-2 border-naranja relative flex flex-col justify-between h-full shadow-xl shadow-naranja/10">
-          <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-naranja text-white font-bold text-xs px-3 py-1 rounded-full uppercase tracking-wider">Más Popular</span>
-          <div>
-            <h3 class="text-xl font-bold text-white mb-1">Power 🚀</h3>
-            <p class="text-slate-400 text-xs mb-4">Para comercios Retail/Multisectorial.</p>
-            <div class="my-4 p-4 bg-slate-900/90 rounded-xl border border-naranja/40 text-center">
-              <span class="text-xs font-semibold text-naranja uppercase tracking-wider block">Abono Mensual</span>
-              <div class="text-3xl font-black text-white mt-1">$<span id="precio-pwr">25.000</span> <span class="text-xs text-slate-400 font-normal">/mes</span></div>
-              <span id="sub-pwr" class="text-[11px] text-naranja/80 mt-1 block font-medium">Facturación mensual</span>
-            </div>
-            <ul class="space-y-3 text-sm text-slate-300 mb-8 mt-6">
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Catálogo QR Vidriera hasta 350 artículos</li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Hasta 3 sucursales</li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> <strong>Asistente IA Avanzado</strong></li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Personalización de Marca</li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Reporte de consultas a la IA</li>
-            </ul>
-          </div>
-          <a href="#solicitar-prueba" class="w-full text-center bg-naranja hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-naranja/20">Elegir Power</a>
-        </div>
-        <div class="bg-pizarra p-8 rounded-2xl border border-slate-800 flex flex-col justify-between h-full">
-          <div>
-            <h3 class="text-xl font-bold text-white mb-1">Premium 💎</h3>
-            <p class="text-slate-400 text-xs mb-4">Solución para Cadenas y Franquicias.</p>
-            <div class="my-4 p-4 bg-slate-900/80 rounded-xl border border-slate-700/80 text-center">
-              <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Abono Mensual</span>
-              <div class="text-3xl font-black text-white mt-1">$<span id="precio-prm">70.000</span> <span class="text-xs text-slate-400 font-normal">/mes</span></div>
-              <span id="sub-prm" class="text-[11px] text-slate-500 mt-1 block font-medium">Facturación mensual</span>
-            </div>
-            <ul class="space-y-3 text-sm text-slate-300 mb-8 mt-6">
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Catálogo QR Vidriera hasta 2800 artículos</li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> <strong>IA Personalizada a medida</strong></li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Soporte Prioritario 24/7</li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Integraciones a medida-Sectorización</li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-verdeVivo"></i> Consulte Plan Multi-Sucursal !</li>
-            </ul>
-          </div>
-          <a href="#solicitar-prueba" class="w-full text-center bg-slate-800 hover:bg-slate-700 text-white font-semibold py-3 rounded-xl transition border border-slate-700">Elegir Premium</a>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- FORMULARIO CENTRAL (MODIFICADO) -->
-  <section id="solicitar-prueba" class="py-16 bg-gradient-to-r from-pizarra to-slate-900 border-y border-naranja/40 relative overflow-hidden">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex flex-col md:flex-row items-center justify-between gap-8 mb-12">
-        <div class="text-center md:text-left md:w-2/3">
-          <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold bg-verdeVivo/10 text-verdeVivo border border-verdeVivo/30 mb-3 uppercase tracking-wider">
-            <i class="fa-solid fa-gift"></i> Prueba Gratuita Sin Compromiso
-          </span>
-          <h2 class="text-3xl sm:text-4xl font-black text-white mb-3">Solicitar la <span class="text-naranja">Vidriera Inmersiva Inteligente</span> Completa de Prueba !</h2>
-          <p class="text-slate-300 text-sm sm:text-base leading-relaxed">Experimentá el servicio con <strong>todas las funcionalidades habilitadas durante 10 días totalmente gratis</strong>. Una vez finalizada la prueba, si decidís continuar, podrás abonar mediante transferencia bancaria a la cuenta asignada.</p>
-        </div>
-        <div class="text-center md:w-1/3 flex-shrink-0">
-          <img src="img/qrvidriera.png" alt="Muestra Cartel QR Vidriera 12.5x17.5" class="max-w-[200px] sm:max-w-xs mx-auto rounded-2xl shadow-2xl border border-slate-700">
-          <span class="block text-xs text-slate-400 mt-2">Medida del cartel físico: 12.5 x 17.5 cm</span>
-        </div>
+      <!-- TÍTULO -->
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-verdeVivo/10 text-naranja border border-verdeVivo/20 mb-4">
+          <i class="fa-solid fa-tags"></i> Personalización Total
+        </span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-4">
+          Códigos y Etiquetas <span class="text-naranja">a tu medida</span>
+        </h2>
+        <p class="text-slate-400 text-sm sm:text-base">
+          Lleve su vidriera al siguiente nivel. Cada etiqueta y código de artículos puede ser personalizado según el estilo de su marca.
+        </p>
       </div>
 
-      <div class="mb-14">
-        <h3 class="text-xl font-extrabold text-white text-center mb-6 flex items-center justify-center gap-2">
-          <i class="fa-solid fa-route text-naranja"></i> ¿Cómo funciona el proceso de prueba?
-        </h3>
-        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="bg-pizarra/80 p-5 rounded-2xl border border-slate-700/80 relative flex flex-col justify-between">
-            <div>
-              <span class="w-8 h-8 rounded-full bg-naranja text-white font-black text-xs flex items-center justify-center mb-3 shadow-md shadow-naranja/20">01</span>
-              <h4 class="text-sm font-bold text-white mb-1">Solicitud Inicial</h4>
-              <p class="text-xs text-slate-400 leading-relaxed">Completás el formulario de esta sección con los datos de tu comercio y contacto.</p>
-            </div>
-          </div>
-          <div class="bg-pizarra/80 p-5 rounded-2xl border border-slate-700/80 relative flex flex-col justify-between">
-            <div>
-              <span class="w-8 h-8 rounded-full bg-naranja text-white font-black text-xs flex items-center justify-center mb-3 shadow-md shadow-naranja/20">02</span>
-              <h4 class="text-sm font-bold text-white mb-1">Alta y Credenciales</h4>
-              <p class="text-xs text-slate-400 leading-relaxed">Generamos tu espacio, tu código QR personalizado y tus datos de acceso al Panel Admin.Envio por Mail de tu Cartel QR,mas instructivos,y Pasword de acceso</p>
-            </div>
-          </div>
-          <div class="bg-pizarra/80 p-5 rounded-2xl border border-slate-700/80 relative flex flex-col justify-between">
-            <div>
-              <span class="w-8 h-8 rounded-full bg-verdeVivo text-slate-950 font-black text-xs flex items-center justify-center mb-3 shadow-md shadow-verdeVivo/20">03</span>
-              <h4 class="text-sm font-bold text-white mb-1">10 Días Full 24/7</h4>
-              <p class="text-xs text-slate-400 leading-relaxed">Imprimis y colocas segun instructivo el Archivo/Cartel QR. Ingresa a tu Panel y cargás tus artículos y probás el Asistente IA interactuando en vivo desde la vidriera.</p>
-            </div>
-          </div>
-          <div class="bg-pizarra/80 p-5 rounded-2xl border border-slate-700/80 relative flex flex-col justify-between">
-            <div>
-              <span class="w-8 h-8 rounded-full bg-slate-700 text-slate-200 font-black text-xs flex items-center justify-center mb-3">04</span>
-              <h4 class="text-sm font-bold text-white mb-1">Continuidad Opcional</h4>
-              <p class="text-xs text-slate-400 leading-relaxed">Finalizados los 10 días, si elegís continuar, abonás vía transferencia bancaria. ¡Sin ataduras!</p>
-            </div>
-          </div>
-        </div>
+      <!-- 1. IMAGEN GRANDE -->
+      <div class="mb-14 max-w-5xl mx-auto">
+        <img src="img/img2220926.jpg"
+             alt="Vidriera con códigos versátiles y etiquetas personalizadas"
+             class="imagen-expandible w-full rounded-2xl border-2 border-slate-700 shadow-2xl cursor-zoom-in hover:border-naranja/50 transition">
+        <p class="text-xs text-slate-500 text-center mt-3 italic">
+          💡 Ejemplo de vidriera con códigos numéricos, alfanuméricos y estilizados
+        </p>
       </div>
 
-      <!-- ✅ TÍTULO DEL FORMULARIO -->
-      <h3 class="text-xl font-extrabold text-white text-left mb-4">Complete el Formulario</h3>
+      <!-- 2. PITCH -->
+      <div class="max-w-4xl mx-auto mb-14 space-y-5 text-slate-300 leading-relaxed">
 
-      <!-- ✅ FORMULARIO MODIFICADO CON SELECTORES -->
-      <form id="formSolicitud" action="https://zbnuunaguciupyyzploq.supabase.co/functions/v1/solicitar" method="POST" class="bg-pizarra/90 p-6 sm:p-8 rounded-3xl border border-slate-700/80 shadow-2xl space-y-4 backdrop-blur-sm">
-
-        <!-- DESPLEGABLE: "Solicitar" -->
-        <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Solicitar *</label>
-          <select name="tipo_solicitud" id="tipo_solicitud" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition">
-            <option value="Brochure">Brochure</option>
-            <option value="Visita">Visita</option>
-            <option value="Plan Standard">Plan Standard</option>
-            <option value="Plan Power">Plan Power</option>
-            <option value="Plan Premium">Plan Premium</option>
-            <option value="Prueba Gratuita" selected>Prueba Gratuita</option>
-          </select>
+        <div class="bg-pizarra rounded-2xl p-6 sm:p-8 border border-slate-700/80">
+          <h3 class="text-xl font-extrabold text-white mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-wand-magic-sparkles text-naranja"></i>
+            Personalización según tu marca
+          </h3>
+          <p class="mb-4">
+            Cada etiqueta y código de artículos puede ser personalizado según el estilo de su marca, de su negocio, o de su plan de escaparate visual & layout.
+          </p>
+          <p class="mb-4">
+            Las etiquetas de códigos numéricos y alfanuméricos pueden llevar el <strong class="text-white">logo de su empresa</strong>, diferentes estilos de <strong class="text-white">tipografías</strong>, <strong class="text-white">colores</strong>, <strong class="text-white">color de fondo</strong> y <strong class="text-white">sustratos</strong> (cartón, cartulina, papeles especiales, plásticos, madera, vidrio u otros materiales si lo prefiere), para un eficaz <strong class="text-white">Cross-merchandising</strong>.
+          </p>
+          <p class="mb-4">
+            Recomendamos la inserción de <strong class="text-naranja">códigos cortos (máx. 4 cifras)</strong> para una fácil memorización de parte de los clientes.
+          </p>
+          <p class="mb-4">
+            Cada etiqueta o categoría puede ir personalizada también con alguna <strong class="text-white">frase</strong>, por ejemplo: <em class="text-verdeVivo">"Estilo y Audacia"</em>, para el código <strong class="text-verdeVivo font-mono">F012</strong>, que identifica la categoría <em>"Zapatillas Urbanas"</em>.
+          </p>
+          <p>
+            Cada código de artículos puede enlazarse luego con su <strong class="text-white">plan de inventarios</strong> ya sea por codificación directa o indirecta. Cada categoría de productos puede llevar un código alfanumérico único, y luego controlar toda la información de vidriera desde su panel Admin: precios, ofertas, promociones, descripción, talles y disponibles en stock.
+          </p>
         </div>
 
-        <div class="grid md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Nombre y Apellido *</label>
-            <input type="text" name="nombre_responsable" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="Ej: Carlos Pérez">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Nombre Fantasía del Comercio *</label>
-            <input type="text" name="nombre_comercio" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="Ej: Vinoteca San Martín">
-          </div>
-        </div>
-
-        <div class="grid md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Teléfono / WhatsApp *</label>
-            <input type="tel" name="telefono" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="Ej: 11 1234 5678">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Correo Electrónico *</label>
-            <input type="email" name="email" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="Ej: contacto@micomercio.com">
-          </div>
-        </div>
-
-        <div class="grid md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Rubro Comercial *</label>
-            <select name="rubro" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition">
-              <option value="">Seleccioná tu rubro...</option>
-              <option value="Indumentaria y Calzado">Indumentaria y Calzado</option>
-              <option value="Vinoteca y Bebidas">Vinoteca y Bebidas</option>
-              <option value="Tecnología y Electrónica">Tecnología y Electrónica</option>
-              <option value="Gastronomía">Gastronomía</option>
-              <option value="Perfumería y Farmacia">Perfumería y Farmacia</option>
-              <option value="Ferretería y Bazar">Ferretería y Bazar</option>
-              <option value="Otro">Otro Rubro</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1.5">CUIT *</label>
-            <input type="text" name="cuit" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="Ej: 30-12345678-9">
-          </div>
-        </div>
-
-        <!-- ✅ CAMPOS DE DIRECCIÓN, PROVINCIA Y CIUDAD CON SELECTORES -->
-        <div class="grid md:grid-cols-3 gap-4">
-          <!-- Dirección (input de texto) -->
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Dirección</label>
-            <input type="text" name="direccion" id="direccion" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="Calle y número">
-          </div>
-          <!-- Provincia (selector) -->
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Provincia *</label>
-            <select name="provincia" id="provincia" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition">
-              <option value="">Seleccioná tu provincia...</option>
-              <!-- Se llenará con JavaScript -->
-            </select>
-          </div>
-          <!-- Ciudad (selector) -->
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Ciudad *</label>
-            <select name="ciudad" id="ciudad" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition">
-              <option value="">Seleccioná tu ciudad...</option>
-              <!-- Se llenará con JavaScript -->
-            </select>
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Comentarios adicionales</label>
-          <textarea name="mensaje" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="¿Querés contarnos algo más?"></textarea>
-        </div>
-
-        <!-- ✅ BOTÓN MODIFICADO (texto y altura reducida) -->
-        <button type="submit" class="w-full bg-naranja hover:bg-orange-600 text-white font-bold py-2 rounded-xl transition shadow-lg shadow-naranja/20 text-base flex items-center justify-center gap-2">
-          <i class="fa-solid fa-paper-plane"></i> Enviar Solicitud
-        </button>
-      </form>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer class="bg-pizarra border-t border-slate-800 py-8 text-center text-xs text-slate-400">
-    <div class="max-w-7xl mx-auto px-4 space-y-3">
-      <p>Contacto Institucional: <a href="mailto:contactox@qrpretium.com.ar" class="text-verdeVivo hover:underline">contactox@qrpretium.com.ar</a></p>
-      <p>© QRPretium - Todos los Derechos Reservados - 2026.</p>
-    </div>
-  </footer>
-
-  <!-- SCRIPTS -->
-  <script>
-    // Menú hamburguesa
-    const btnMenu = document.getElementById('btnMenu');
-    const menuMovil = document.getElementById('menuMovil');
-
-    btnMenu.addEventListener('click', () => {
-      menuMovil.classList.toggle('abierto');
-      const icono = btnMenu.querySelector('i');
-      if (menuMovil.classList.contains('abierto')) {
-        icono.className = 'fa-solid fa-xmark text-2xl';
-      } else {
-        icono.className = 'fa-solid fa-bars text-2xl';
-      }
-    });
-
-    document.querySelectorAll('#menuMovil a').forEach(enlace => {
-      enlace.addEventListener('click', () => {
-        menuMovil.classList.remove('abierto');
-        const icono = btnMenu.querySelector('i');
-        icono.className = 'fa-solid fa-bars text-2xl';
-      });
-    });
-
-    // Selector de planes
-    function cambiarPeriodo(meses) {
-      const btn1 = document.getElementById('btn-1m');
-      const btn3 = document.getElementById('btn-3m');
-      const btn6 = document.getElementById('btn-6m');
-      const btn12 = document.getElementById('btn-12m');
-      const precios = {
-        1:  { std: "10.000", pwr: "25.000", prm: "70.000", sub: "Facturación mensual" },
-        3:  { std: "9.000",  pwr: "22.500", prm: "63.000", sub: "Abonando 3 meses juntos" },
-        6:  { std: "8.000",  pwr: "20.000", prm: "56.000", sub: "Abonando 6 meses juntos" },
-        12: { std: "7.000",  pwr: "17.500", prm: "49.000", sub: "Abonando 12 meses juntos" }
-      };
-      [btn1, btn3, btn6, btn12].forEach(btn => {
-        btn.className = "px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition text-slate-300 hover:text-white";
-      });
-      const btnActivo = document.getElementById('btn-' + meses + 'm');
-      btnActivo.className = "px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition bg-naranja text-white shadow-md";
-      document.getElementById('precio-std').innerText = precios[meses].std;
-      document.getElementById('precio-pwr').innerText = precios[meses].pwr;
-      document.getElementById('precio-prm').innerText = precios[meses].prm;
-      document.getElementById('sub-std').innerText = precios[meses].sub;
-      document.getElementById('sub-pwr').innerText = precios[meses].sub;
-      document.getElementById('sub-prm').innerText = precios[meses].sub;
-    }
-
-    // Nebulosa
-    (function dibujarNebulosaRealista() {
-      const canvas = document.getElementById('fondo-espacio');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      const size = 350;
-      canvas.width = size;
-      canvas.height = size;
-      ctx.fillStyle = '#010308';
-      ctx.fillRect(0, 0, size, size);
-      function dibujarNubeGas(x, y, r1, r2, colorInner, colorOuter) {
-        const grad = ctx.createRadialGradient(x, y, r1, x, y, r2);
-        grad.addColorStop(0, colorInner);
-        grad.addColorStop(0.5, colorInner.replace(/[\d\.]+\)$/, '0.15)'));
-        grad.addColorStop(1, colorOuter);
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.arc(x, y, r2, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.globalCompositeOperation = 'screen';
-      dibujarNubeGas(175, 175, 10, 160, 'rgba(14, 116, 144, 0.4)', 'rgba(0,0,0,0)');
-      dibujarNubeGas(110, 120, 5, 130, 'rgba(6, 182, 212, 0.35)', 'rgba(0,0,0,0)');
-      dibujarNubeGas(220, 210, 10, 140, 'rgba(16, 185, 129, 0.35)', 'rgba(0,0,0,0)');
-      dibujarNubeGas(130, 240, 5, 100, 'rgba(52, 211, 153, 0.25)', 'rgba(0,0,0,0)');
-      dibujarNubeGas(210, 110, 2, 80, 'rgba(245, 158, 11, 0.25)', 'rgba(0,0,0,0)');
-      dibujarNubeGas(260, 150, 1, 60, 'rgba(251, 146, 60, 0.2)', 'rgba(0,0,0,0)');
-      ctx.globalCompositeOperation = 'source-over';
-      for (let i = 0; i < 180; i++) {
-        const x = Math.random() * size;
-        const y = Math.random() * size;
-        const radius = Math.random() * 1.1;
-        const opacity = Math.random() * 0.7 + 0.1;
-        ctx.beginPath();
-        ctx.arc(x, y, radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
-        ctx.fill();
-      }
-    })();
-
-    // Cubo 3D
-    (function crearCubo3D() {
-      const canvas = document.getElementById('cubo3d-ia');
-      if (!canvas) return;
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
-      camera.position.z = 2.8;
-      const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-      renderer.setSize(128, 128);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-      function dibujarIconoVectorial(ctx, tipo, color) {
-        ctx.save();
-        ctx.strokeStyle = color;
-        ctx.fillStyle = color;
-        ctx.lineWidth = 8;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        if (tipo === 'mic') {
-          ctx.beginPath();
-          ctx.arc(128, 90, 18, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.beginPath();
-          ctx.arc(128, 90, 28, 0, Math.PI);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(128, 118); ctx.lineTo(128, 135);
-          ctx.moveTo(108, 135); ctx.lineTo(148, 135);
-          ctx.stroke();
-        } else if (tipo === 'cerebro') {
-          ctx.lineWidth = 6;
-          ctx.beginPath();
-          ctx.arc(108, 90, 20, Math.PI * 0.5, Math.PI * 1.8);
-          ctx.arc(118, 75, 12, Math.PI, Math.PI * 1.9);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.arc(148, 90, 20, Math.PI * 1.2, Math.PI * 0.5);
-          ctx.arc(138, 75, 12, Math.PI * 1.1, 0);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(128, 70); ctx.lineTo(128, 115);
-          ctx.stroke();
-        } else if (tipo === 'ok') {
-          ctx.lineWidth = 12;
-          ctx.beginPath();
-          ctx.moveTo(95, 100); ctx.lineTo(118, 122); ctx.lineTo(165, 75);
-          ctx.stroke();
-        } else if (tipo === 'error') {
-          ctx.lineWidth = 12;
-          ctx.beginPath();
-          ctx.moveTo(100, 75); ctx.lineTo(156, 125);
-          ctx.moveTo(156, 75); ctx.lineTo(100, 125);
-          ctx.stroke();
-        } else if (tipo === 'robot') {
-          ctx.lineWidth = 6;
-          ctx.beginPath();
-          ctx.roundRect(98, 75, 60, 48, 8);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.arc(113, 93, 5, 0, Math.PI * 2);
-          ctx.arc(143, 93, 5, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.beginPath();
-          ctx.moveTo(128, 75); ctx.lineTo(128, 62);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.arc(128, 60, 4, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.beginPath();
-          ctx.moveTo(112, 110); ctx.lineTo(144, 110);
-          ctx.stroke();
-        } else if (tipo === 'lupa') {
-          ctx.lineWidth = 8;
-          ctx.beginPath();
-          ctx.arc(118, 92, 22, 0, Math.PI * 2);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(134, 108); ctx.lineTo(158, 130);
-          ctx.stroke();
-        }
-        ctx.restore();
-      }
-
-      function crearTexturaCara(tipoIcono, texto, colorElemento) {
-        const c = document.createElement('canvas');
-        c.width = 256;
-        c.height = 256;
-        const ctx = c.getContext('2d');
-        ctx.fillStyle = '#475569';
-        ctx.fillRect(0, 0, 256, 256);
-        ctx.strokeStyle = '#F97316';
-        ctx.lineWidth = 12;
-        const r = 30;
-        ctx.beginPath();
-        ctx.moveTo(10 + r, 10);
-        ctx.arcTo(246, 10, 246, 246, r);
-        ctx.arcTo(246, 246, 10, 246, r);
-        ctx.arcTo(10, 246, 10, 10, r);
-        ctx.arcTo(10, 10, 246, 10, r);
-        ctx.closePath();
-        ctx.stroke();
-        dibujarIconoVectorial(ctx, tipoIcono, colorElemento);
-        ctx.font = 'bold 22px sans-serif';
-        ctx.fillStyle = colorElemento;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(texto, 128, 195);
-        return new THREE.CanvasTexture(c);
-      }
-
-      const materiales = [
-        new THREE.MeshStandardMaterial({ map: crearTexturaCara('mic', 'ESCUCHANDO', '#10B981'), roughness: 0.2, metalness: 0.5 }),
-        new THREE.MeshStandardMaterial({ map: crearTexturaCara('cerebro', 'PENSANDO', '#F97316'), roughness: 0.2, metalness: 0.5 }),
-        new THREE.MeshStandardMaterial({ map: crearTexturaCara('ok', 'OK', '#22C55E'), roughness: 0.2, metalness: 0.5 }),
-        new THREE.MeshStandardMaterial({ map: crearTexturaCara('error', 'ERROR', '#EF4444'), roughness: 0.2, metalness: 0.5 }),
-        new THREE.MeshStandardMaterial({ map: crearTexturaCara('robot', 'VOZ', '#38BDF8'), roughness: 0.2, metalness: 0.5 }),
-        new THREE.MeshStandardMaterial({ map: crearTexturaCara('lupa', 'BUSCANDO', '#3B82F6'), roughness: 0.2, metalness: 0.5 })
-      ];
-
-      const geometry = new THREE.RoundedBoxGeometry(1.2, 1.2, 1.2, 6, 0.2);
-      const cubo = new THREE.Mesh(geometry, materiales);
-      scene.add(cubo);
-
-      const ambientLight = new THREE.AmbientLight(0xffffff, 1.1);
-      scene.add(ambientLight);
-      const pointLight1 = new THREE.PointLight(0xF97316, 2, 10);
-      pointLight1.position.set(3, 3, 3);
-      scene.add(pointLight1);
-
-      let velocidadX = 0.008;
-      let velocidadY = 0.012;
-
-      function animate() {
-        requestAnimationFrame(animate);
-        cubo.rotation.x += velocidadX;
-        cubo.rotation.y += velocidadY;
-        renderer.render(scene, camera);
-      }
-      animate();
-
-      canvas.parentElement.addEventListener('mouseenter', () => {
-        velocidadX = 0.025;
-        velocidadY = 0.03;
-      });
-      canvas.parentElement.addEventListener('mouseleave', () => {
-        velocidadX = 0.008;
-        velocidadY = 0.012;
-      });
-    })();
-
-    // ✅ SCRIPT PARA POBLAR PROVINCIAS Y CIUDADES EN EL FORMULARIO
-    document.addEventListener('DOMContentLoaded', function() {
-      // Provincias y ciudades de Argentina
-      const provinciasYCiudades = {
-        "Buenos Aires": ["La Plata", "Mar del Plata", "Bahía Blanca", "San Nicolás", "Tandil", "Junín", "Pergamino", "Campana", "Zárate", "Luján", "Mercedes", "Chivilcoy", "Azul", "Olavarría", "Necochea", "Tres Arroyos", "Pehuajó", "Lincoln", "Chacabuco", "Chivilcoy", "San Miguel", "Temperley", "Lomas de Zamora", "Avellaneda", "Lanús", "Quilmes", "Berazategui", "Florencio Varela", "Almirante Brown", "Esteban Echeverría", "Ezeiza", "Hurlingham", "Ituzaingó", "Merlo", "Morón", "Tres de Febrero", "Vicente López", "San Isidro", "San Fernando", "Tigre", "Pilar", "Escobar", "Campana", "Zárate", "Baradero", "San Pedro", "Arrecifes", "Carmen de Areco", "Exaltación de la Cruz", "Capilla del Señor"],
-        "CABA": ["CABA", "Ciudad Autónoma de Buenos Aires", "Capital Federal"],
-        "Córdoba": ["Córdoba", "Villa Carlos Paz", "Río Cuarto", "Villa María", "San Francisco", "Jesús María", "Alta Gracia", "Bell Ville", "Cosquín", "La Falda", "Capilla del Monte", "Mina Clavero", "Villa Dolores", "Cruz del Eje", "Deán Funes"],
-        "Santa Fe": ["Rosario", "Santa Fe", "Rafaela", "Venado Tuerto", "Sunchales", "Casilda", "Esperanza", "San Lorenzo", "Capitán Bermúdez", "Granadero Baigorria", "Pérez", "Funes", "Roldán", "Cañada de Gómez", "Armstrong", "Las Parejas"],
-        "Mendoza": ["Mendoza", "San Rafael", "Tunuyán", "Luján de Cuyo", "Guaymallén", "Las Heras", "Godoy Cruz", "Maipú", "Rivadavia", "San Martín", "La Paz", "General Alvear", "Tupungato"],
-        "Tucumán": ["San Miguel de Tucumán", "Concepción", "Yerba Buena", "Tafí Viejo", "Aguilares", "Monteros", "Famaillá", "Lules", "Simoca", "Banda del Río Salí", "Alderetes"],
-        "Salta": ["Salta", "Tartagal", "Orán", "General Güemes", "Cafayate", "San José de Metán", "Rosario de la Frontera", "Embarcación", "San Ramón de la Nueva Orán"],
-        "Entre Ríos": ["Paraná", "Concordia", "Gualeguaychú", "Concepción del Uruguay", "Villa Elisa", "Chajarí", "Federación", "Colón", "San José de Feliciano", "La Paz", "Diamante", "Victoria"],
-        "Chaco": ["Resistencia", "Presidencia Roque Sáenz Peña", "Villa Ángela", "Charata", "General Pinedo", "Machagai", "Quitilipi", "Castelli", "Juan José Castelli", "Las Breñas"],
-        "Corrientes": ["Corrientes", "Goya", "Mercedes", "Curuzú Cuatiá", "Monte Caseros", "Esquina", "Paso de los Libres", "Santo Tomé", "Bella Vista", "Saladas", "Mburucuyá"],
-        "Misiones": ["Posadas", "Oberá", "Eldorado", "Puerto Iguazú", "Apóstoles", "San Vicente", "Montecarlo", "Aristóbulo del Valle", "Leandro N. Alem", "San Pedro", "Jardín América"],
-        "San Juan": ["San Juan", "Rawson", "Caucete", "San José de Jáchal", "Albardón", "Rivadavia", "Chimbas", "Santa Lucía", "Pocito", "Sarmiento", "Calingasta", "Iglesia"],
-        "San Luis": ["San Luis", "Villa Mercedes", "La Punta", "Merlo", "Juana Koslay", "La Toma", "Concarán", "Nogolí", "Candelaria", "San Francisco del Monte de Oro"],
-        "La Rioja": ["La Rioja", "Chamical", "Chepes", "Villa Unión", "Arauco", "Famatina", "Chilecito", "Castro Barros", "General Belgrano", "San Blas"],
-        "Catamarca": ["San Fernando del Valle de Catamarca", "Andalgalá", "Tinogasta", "Recreo", "Belén", "Santa María", "Fiambalá", "Poman", "El Alto", "Ancasti"],
-        "Santiago del Estero": ["Santiago del Estero", "Añatuya", "Villa Ojo de Agua", "Fernández", "Termas de Río Hondo", "Frías", "Loreto", "Sumampa", "Pinto", "Bandera", "Campo Gallo"],
-        "Jujuy": ["San Salvador de Jujuy", "Palpalá", "La Quiaca", "Libertador General San Martín", "Perico", "Monterrico", "El Carmen", "San Pedro", "Humahuaca", "Tilcara"],
-        "Neuquén": ["Neuquén", "Centenario", "Plottier", "San Martín de los Andes", "Villa la Angostura", "Zapala", "Cutral Có", "Chos Malal", "Junín de los Andes", "Rincón de los Sauces"],
-        "Río Negro": ["Viedma", "Bariloche", "General Roca", "Cipolletti", "Allen", "Cinco Saltos", "Catriel", "El Bolsón", "San Antonio Oeste", "Sierra Grande", "Ingeniero Jacobacci"],
-        "Chubut": ["Rawson", "Comodoro Rivadavia", "Trelew", "Puerto Madryn", "Esquel", "Gaiman", "Dolavon", "Sarmiento", "José de San Martín", "Rada Tilly", "Camarones"],
-        "Santa Cruz": ["Río Gallegos", "Caleta Olivia", "El Calafate", "Puerto Deseado", "Gobernador Gregores", "Las Heras", "Pico Truncado", "Perito Moreno", "El Chaltén"],
-        "Tierra del Fuego": ["Ushuaia", "Río Grande", "Tolhuin"],
-        "Formosa": ["Formosa", "Clorinda", "Pirané", "El Colorado", "Laguna Blanca", "Ibarreta", "Espinillo", "Las Lomitas"],
-        "La Pampa": ["Santa Rosa", "General Pico", "Carlos Casares", "Realicó", "Victorica", "General Acha", "Guatraché", "Trenel", "Alpachiri", "Doblas"]
-      };
-
-      const provinciaSelect = document.getElementById('provincia');
-      const ciudadSelect = document.getElementById('ciudad');
-
-      if (provinciaSelect && ciudadSelect) {
-        // Agregar opciones de provincias
-        const provincias = Object.keys(provinciasYCiudades).sort();
-        provincias.forEach(p => {
-          const option = document.createElement('option');
-          option.value = p;
-          option.textContent = p;
-          provinciaSelect.appendChild(option);
-        });
-
-        // Evento para actualizar ciudades al seleccionar provincia
-        provinciaSelect.addEventListener('change', function() {
-          const provincia = this.value;
-          ciudadSelect.innerHTML = '<option value="">Seleccioná tu ciudad...</option>';
-          if (provincia && provinciasYCiudades[provincia]) {
-            const ciudades = provinciasYCiudades[provincia].sort();
-            ciudades.forEach(c => {
-              const option = document.createElement('option');
-              option.value = c;
-              option.textContent = c;
-              ciudadSelect.appendChild(option);
-            });
-          }
-        });
-      }
-    });
-
-    // ✅ SCRIPT PARA ENVIAR EL FORMULARIO COMO JSON (ya existente)
-    document.getElementById('formSolicitud').addEventListener('submit', async function(e) {
-      e.preventDefault(); // Evita el envío tradicional
-
-      // Recoge los datos del formulario
-      const formData = new FormData(this);
-      const data = Object.fromEntries(formData.entries());
-
-      try {
-        const response = await fetch(this.action, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-          alert('✅ Solicitud enviada con éxito. Te contactaremos pronto.');
-          this.reset(); // Limpia el formulario
-        } else {
-          alert('❌ Error: ' + (result.error || 'Intenta de nuevo más tarde.'));
-        }
-      } catch (error) {
-        alert('❌ Error de conexión. Verifica tu internet e intenta de nuevo.');
-        console.error(error);
-      }
-    });
-  </script>
-</body>
-</html>
+        <div class="bg-pizarra rounded-2xl p-6 sm:p-8 border border-slate-700/80">
+          <h3 class="text-xl font-extrabold text-white mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-eye text-naranja"></i>
+            Elementos del marketing visual
+          </h3>
+          <p class="mb-5 text-sm text-slate-400">
+            Una vidriera desde el punto de vista del marketing tiene los siguientes elementos a tener en cuenta:
+          </p>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-700/60">
+              <h4 class="text-sm font-bold text-naranja mb-1.5">1. Punto Focal</h4>
+              <p class="text-xs text-slate-400 leading-relaxed">El elemento visual principal diseñado para captar la atención inmediata del transeúnte en los primeros 3 a 5 segundos.</p>
+            </div>
+            <div class="bg-slate-900/50 rounded-xl p-4 border border-slate-700/60">
+              <h4 class="text-sm font-bold text-naranja mb-1.5">2. Hot Spot (Punto Caliente)</h4>
+              <p class="text-xs text-slate-400 leading-relaxed">Área de la vitrina con mayor tasa de impacto visual y fijación de mirada por parte del público (generalmente a la altura de los ojos
