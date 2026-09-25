@@ -648,456 +648,115 @@
         <div>
           <label class="block text-xs font-semibold text-slate-300 mb-1.5">Solicitar *</label>
           <select name="tipo_solicitud" id="tipo_solicitud" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition">
-            <option value="Brochure">Brochure</option>
-            <option value="Visita">Visita</option>
-            <option value="Plan Standard">Plan Standard</option>
-            <option value="Plan Power">Plan Power</option>
-            <option value="Plan Premium">Plan Premium</option>
-            <option value="Prueba Gratuita" selected>Prueba Gratuita</option>
+            <option value="Prueba 10 Días">Prueba Gratuita de 10 Días</option>
+            <option value="Brochure">Solicitar Brochure Comercial</option>
+            <option value="Suscripción Directa">Suscripción Directa a Plan</option>
           </select>
         </div>
 
-        <div class="grid md:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Nombre y Apellido *</label>
-            <input type="text" name="nombre_responsable" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="Ej: Carlos Pérez">
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Nombre del Comercio / Empresa *</label>
+            <input type="text" name="nombre_comercio" required placeholder="Ej: Moda & Estilo" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Nombre Fantasía del Comercio *</label>
-            <input type="text" name="nombre_comercio" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="Ej: Vinoteca San Martín">
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Nombre de Contacto *</label>
+            <input type="text" name="nombre_contacto" required placeholder="Ej: María Pérez" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition">
           </div>
         </div>
 
-        <div class="grid md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Teléfono / WhatsApp *</label>
-            <input type="tel" name="telefono" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="Ej: 11 1234 5678">
-          </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-semibold text-slate-300 mb-1.5">Correo Electrónico *</label>
-            <input type="email" name="email" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="Ej: contacto@micomercio.com">
-          </div>
-        </div>
-
-        <div class="grid md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Rubro Comercial *</label>
-            <select name="rubro" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition">
-              <option value="">Seleccioná tu rubro...</option>
-              <option value="Indumentaria y Calzado">Indumentaria y Calzado</option>
-              <option value="Vinoteca y Bebidas">Vinoteca y Bebidas</option>
-              <option value="Tecnología y Electrónica">Tecnología y Electrónica</option>
-              <option value="Gastronomía">Gastronomía</option>
-              <option value="Perfumería y Farmacia">Perfumería y Farmacia</option>
-              <option value="Ferretería y Bazar">Ferretería y Bazar</option
-              <option value="Hogar y Decoracoración">Hogar y Decoración</option>
-              <option value="Libreria y Jugueteria">Libreria y Jugueteria</option>
-              <option value="PetShops Mascotas">PetShops Mascotas</option>
-              <option value="Otro">Otro Rubro</option>
-            </select>
+            <input type="email" name="email" required placeholder="ejemplo@comercio.com" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1.5">CUIT *</label>
-            <input type="text" name="cuit" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="Ej: 30-12345678-9">
-          </div>
-        </div>
-
-        <div class="grid md:grid-cols-3 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Dirección</label>
-            <input type="text" name="direccion" id="direccion" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="Calle y número">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Provincia *</label>
-            <select name="provincia" id="provincia" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition">
-              <option value="">Seleccioná tu provincia...</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Ciudad *</label>
-            <select name="ciudad" id="ciudad" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition">
-              <option value="">Seleccioná tu ciudad...</option>
-            </select>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Teléfono / WhatsApp *</label>
+            <input type="tel" name="telefono" required placeholder="+54 11 1234-5678" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition">
           </div>
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Comentarios adicionales</label>
-          <textarea name="mensaje" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition" placeholder="¿Querés contarnos algo más?"></textarea>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Mensaje o Consulta Adicional</label>
+          <textarea name="mensaje" rows="3" placeholder="Comentarios o dudas específicas..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-verdeVivo transition"></textarea>
         </div>
 
-        <button type="submit" class="w-full bg-naranja hover:bg-orange-600 text-white font-bold py-2 rounded-xl transition shadow-lg shadow-naranja/20 text-base flex items-center justify-center gap-2">
+        <button type="submit" class="w-full bg-naranja hover:bg-orange-600 text-white font-bold py-4 rounded-xl transition shadow-lg shadow-naranja/20 text-base uppercase tracking-wider flex items-center justify-center gap-2">
           <i class="fa-solid fa-paper-plane"></i> Enviar Solicitud
         </button>
       </form>
     </div>
   </section>
 
-  <!-- MODAL DE IMAGEN EXPANDIDA -->
-  <div id="modalImagen" class="modal-imagen" onclick="cerrarImagen()">
-    <button class="btn-cerrar-imagen" onclick="event.stopPropagation(); cerrarImagen();">✕</button>
-    <img id="imagenExpandida" src="" alt="Imagen expandida" onclick="event.stopPropagation();">
+  <!-- MODAL PARA IMÁGENES EXPANDIDAS -->
+  <div id="modalImagen" class="modal-imagen" onclick="cerrarModalImagen()">
+    <button class="btn-cerrar-imagen" aria-label="Cerrar">&times;</button>
+    <img id="imgModal" src="" alt="Imagen Ampliada">
   </div>
 
   <!-- FOOTER -->
-  <footer class="bg-pizarra border-t border-slate-800 py-8 text-center text-xs text-slate-400">
-    <div class="max-w-7xl mx-auto px-4 space-y-3">
-      <p>Contacto Institucional: <a href="mailto:contactox@qrpretium.com.ar" class="text-verdeVivo hover:underline">contactox@qrpretium.com.ar</a></p>
-      <p>© QRPretium - Todos los Derechos Reservados - 2026.</p>
+  <footer class="bg-pizarraOscura py-10 border-t border-slate-800 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <p>&copy; 2026 QRPretium. Todos los derechos reservados. Vidrieras Inteligentes 24/7 & Asistente IA.</p>
     </div>
   </footer>
 
-  <!-- SCRIPTS -->
+  <!-- SCRIPT DE INTERACCIÓN -->
   <script>
-    // Menú hamburguesa
+    // Menú Hamburguesa Móvil
     const btnMenu = document.getElementById('btnMenu');
     const menuMovil = document.getElementById('menuMovil');
 
     btnMenu.addEventListener('click', () => {
       menuMovil.classList.toggle('abierto');
-      const icono = btnMenu.querySelector('i');
-      if (menuMovil.classList.contains('abierto')) {
-        icono.className = 'fa-solid fa-xmark text-2xl';
-      } else {
-        icono.className = 'fa-solid fa-bars text-2xl';
-      }
     });
 
-    document.querySelectorAll('#menuMovil a').forEach(enlace => {
-      enlace.addEventListener('click', () => {
-        menuMovil.classList.remove('abierto');
-        const icono = btnMenu.querySelector('i');
-        icono.className = 'fa-solid fa-bars text-2xl';
+    // Función Modal de Imágenes
+    const modalImagen = document.getElementById('modalImagen');
+    const imgModal = document.getElementById('imgModal');
+
+    document.querySelectorAll('.imagen-expandible').forEach(img => {
+      img.addEventListener('click', (e) => {
+        e.stopPropagation();
+        imgModal.src = img.src;
+        imgModal.alt = img.alt;
+        modalImagen.classList.add('activo');
       });
     });
 
-    // Selector de planes
+    function cerrarModalImagen() {
+      modalImagen.classList.remove('activo');
+    }
+
+    // Cálculo dinámico de Planes
+    const preciosBase = { std: 10000, pwr: 25000, prm: 70000 };
+    const descuentos = { 1: 0, 3: 0.10, 6: 0.20, 12: 0.30 };
+
     function cambiarPeriodo(meses) {
-      const btn1 = document.getElementById('btn-1m');
-      const btn3 = document.getElementById('btn-3m');
-      const btn6 = document.getElementById('btn-6m');
-      const btn12 = document.getElementById('btn-12m');
-      const precios = {
-        1:  { std: "10.000", pwr: "25.000", prm: "70.000", sub: "Facturación mensual" },
-        3:  { std: "9.000",  pwr: "22.500", prm: "63.000", sub: "Abonando 3 meses juntos" },
-        6:  { std: "8.000",  pwr: "20.000", prm: "56.000", sub: "Abonando 6 meses juntos" },
-        12: { std: "7.000",  pwr: "17.500", prm: "49.000", sub: "Abonando 12 meses juntos" }
-      };
-      [btn1, btn3, btn6, btn12].forEach(btn => {
-        btn.className = "px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition text-slate-300 hover:text-white";
-      });
-      const btnActivo = document.getElementById('btn-' + meses + 'm');
-      btnActivo.className = "px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition bg-naranja text-white shadow-md";
-      document.getElementById('precio-std').innerText = precios[meses].std;
-      document.getElementById('precio-pwr').innerText = precios[meses].pwr;
-      document.getElementById('precio-prm').innerText = precios[meses].prm;
-      document.getElementById('sub-std').innerText = precios[meses].sub;
-      document.getElementById('sub-pwr').innerText = precios[meses].sub;
-      document.getElementById('sub-prm').innerText = precios[meses].sub;
-    }
-
-    // Nebulosa
-    (function dibujarNebulosaRealista() {
-      const canvas = document.getElementById('fondo-espacio');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      const size = 350;
-      canvas.width = size;
-      canvas.height = size;
-      ctx.fillStyle = '#010308';
-      ctx.fillRect(0, 0, size, size);
-      function dibujarNubeGas(x, y, r1, r2, colorInner, colorOuter) {
-        const grad = ctx.createRadialGradient(x, y, r1, x, y, r2);
-        grad.addColorStop(0, colorInner);
-        grad.addColorStop(0.5, colorInner.replace(/[\d\.]+\)$/, '0.15)'));
-        grad.addColorStop(1, colorOuter);
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.arc(x, y, r2, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.globalCompositeOperation = 'screen';
-      dibujarNubeGas(175, 175, 10, 160, 'rgba(14, 116, 144, 0.4)', 'rgba(0,0,0,0)');
-      dibujarNubeGas(110, 120, 5, 130, 'rgba(6, 182, 212, 0.35)', 'rgba(0,0,0,0)');
-      dibujarNubeGas(220, 210, 10, 140, 'rgba(16, 185, 129, 0.35)', 'rgba(0,0,0,0)');
-      dibujarNubeGas(130, 240, 5, 100, 'rgba(52, 211, 153, 0.25)', 'rgba(0,0,0,0)');
-      dibujarNubeGas(210, 110, 2, 80, 'rgba(245, 158, 11, 0.25)', 'rgba(0,0,0,0)');
-      dibujarNubeGas(260, 150, 1, 60, 'rgba(251, 146, 60, 0.2)', 'rgba(0,0,0,0)');
-      ctx.globalCompositeOperation = 'source-over';
-      for (let i = 0; i < 180; i++) {
-        const x = Math.random() * size;
-        const y = Math.random() * size;
-        const radius = Math.random() * 1.1;
-        const opacity = Math.random() * 0.7 + 0.1;
-        ctx.beginPath();
-        ctx.arc(x, y, radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
-        ctx.fill();
-      }
-    })();
-
-    // Cubo 3D
-    (function crearCubo3D() {
-      const canvas = document.getElementById('cubo3d-ia');
-      if (!canvas) return;
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
-      camera.position.z = 2.8;
-      const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-      renderer.setSize(128, 128);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-      function dibujarIconoVectorial(ctx, tipo, color) {
-        ctx.save();
-        ctx.strokeStyle = color;
-        ctx.fillStyle = color;
-        ctx.lineWidth = 8;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        if (tipo === 'mic') {
-          ctx.beginPath();
-          ctx.arc(128, 90, 18, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.beginPath();
-          ctx.arc(128, 90, 28, 0, Math.PI);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(128, 118); ctx.lineTo(128, 135);
-          ctx.moveTo(108, 135); ctx.lineTo(148, 135);
-          ctx.stroke();
-        } else if (tipo === 'cerebro') {
-          ctx.lineWidth = 6;
-          ctx.beginPath();
-          ctx.arc(108, 90, 20, Math.PI * 0.5, Math.PI * 1.8);
-          ctx.arc(118, 75, 12, Math.PI, Math.PI * 1.9);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.arc(148, 90, 20, Math.PI * 1.2, Math.PI * 0.5);
-          ctx.arc(138, 75, 12, Math.PI * 1.1, 0);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(128, 70); ctx.lineTo(128, 115);
-          ctx.stroke();
-        } else if (tipo === 'ok') {
-          ctx.lineWidth = 12;
-          ctx.beginPath();
-          ctx.moveTo(95, 100); ctx.lineTo(118, 122); ctx.lineTo(165, 75);
-          ctx.stroke();
-        } else if (tipo === 'error') {
-          ctx.lineWidth = 12;
-          ctx.beginPath();
-          ctx.moveTo(100, 75); ctx.lineTo(156, 125);
-          ctx.moveTo(156, 75); ctx.lineTo(100, 125);
-          ctx.stroke();
-        } else if (tipo === 'robot') {
-          ctx.lineWidth = 6;
-          ctx.beginPath();
-          ctx.roundRect(98, 75, 60, 48, 8);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.arc(113, 93, 5, 0, Math.PI * 2);
-          ctx.arc(143, 93, 5, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.beginPath();
-          ctx.moveTo(128, 75); ctx.lineTo(128, 62);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.arc(128, 60, 4, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.beginPath();
-          ctx.moveTo(112, 110); ctx.lineTo(144, 110);
-          ctx.stroke();
-        } else if (tipo === 'lupa') {
-          ctx.lineWidth = 8;
-          ctx.beginPath();
-          ctx.arc(118, 92, 22, 0, Math.PI * 2);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(134, 108); ctx.lineTo(158, 130);
-          ctx.stroke();
-        }
-        ctx.restore();
-      }
-
-      function crearTexturaCara(tipoIcono, texto, colorElemento) {
-        const c = document.createElement('canvas');
-        c.width = 256;
-        c.height = 256;
-        const ctx = c.getContext('2d');
-        ctx.fillStyle = '#475569';
-        ctx.fillRect(0, 0, 256, 256);
-        ctx.strokeStyle = '#F97316';
-        ctx.lineWidth = 12;
-        const r = 30;
-        ctx.beginPath();
-        ctx.moveTo(10 + r, 10);
-        ctx.arcTo(246, 10, 246, 246, r);
-        ctx.arcTo(246, 246, 10, 246, r);
-        ctx.arcTo(10, 246, 10, 10, r);
-        ctx.arcTo(10, 10, 246, 10, r);
-        ctx.closePath();
-        ctx.stroke();
-        dibujarIconoVectorial(ctx, tipoIcono, colorElemento);
-        ctx.font = 'bold 22px sans-serif';
-        ctx.fillStyle = colorElemento;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(texto, 128, 195);
-        return new THREE.CanvasTexture(c);
-      }
-
-      const materiales = [
-        new THREE.MeshStandardMaterial({ map: crearTexturaCara('mic', 'ESCUCHANDO', '#10B981'), roughness: 0.2, metalness: 0.5 }),
-        new THREE.MeshStandardMaterial({ map: crearTexturaCara('cerebro', 'PENSANDO', '#F97316'), roughness: 0.2, metalness: 0.5 }),
-        new THREE.MeshStandardMaterial({ map: crearTexturaCara('ok', 'OK', '#22C55E'), roughness: 0.2, metalness: 0.5 }),
-        new THREE.MeshStandardMaterial({ map: crearTexturaCara('error', 'ERROR', '#EF4444'), roughness: 0.2, metalness: 0.5 }),
-        new THREE.MeshStandardMaterial({ map: crearTexturaCara('robot', 'VOZ', '#38BDF8'), roughness: 0.2, metalness: 0.5 }),
-        new THREE.MeshStandardMaterial({ map: crearTexturaCara('lupa', 'BUSCANDO', '#3B82F6'), roughness: 0.2, metalness: 0.5 })
-      ];
-
-      const geometry = new THREE.RoundedBoxGeometry(1.2, 1.2, 1.2, 6, 0.2);
-      const cubo = new THREE.Mesh(geometry, materiales);
-      scene.add(cubo);
-
-      const ambientLight = new THREE.AmbientLight(0xffffff, 1.1);
-      scene.add(ambientLight);
-      const pointLight1 = new THREE.PointLight(0xF97316, 2, 10);
-      pointLight1.position.set(3, 3, 3);
-      scene.add(pointLight1);
-
-      let velocidadX = 0.008;
-      let velocidadY = 0.012;
-
-      function animate() {
-        requestAnimationFrame(animate);
-        cubo.rotation.x += velocidadX;
-        cubo.rotation.y += velocidadY;
-        renderer.render(scene, camera);
-      }
-      animate();
-
-      canvas.parentElement.addEventListener('mouseenter', () => {
-        velocidadX = 0.025;
-        velocidadY = 0.03;
-      });
-      canvas.parentElement.addEventListener('mouseleave', () => {
-        velocidadX = 0.008;
-        velocidadY = 0.012;
-      });
-    })();
-
-    // Provincias y ciudades
-    document.addEventListener('DOMContentLoaded', function() {
-      const provinciasYCiudades = {
-        "Buenos Aires": ["La Plata", "Mar del Plata", "Bahía Blanca", "San Nicolás", "Tandil", "Junín", "Pergamino", "Campana", "Zárate", "Luján", "Mercedes", "Chivilcoy", "Azul", "Olavarría", "Necochea", "Tres Arroyos", "Pehuajó", "Lincoln", "Chacabuco", "San Miguel", "Temperley", "Lomas de Zamora", "Avellaneda", "Lanús", "Quilmes", "Berazategui", "Florencio Varela", "Almirante Brown", "Esteban Echeverría", "Ezeiza", "Hurlingham", "Ituzaingó", "Merlo", "Morón", "Tres de Febrero", "Vicente López", "San Isidro", "San Fernando", "Tigre", "Pilar", "Escobar", "Baradero", "San Pedro", "Arrecifes", "Carmen de Areco", "Exaltación de la Cruz", "Capilla del Señor"],
-        "CABA": ["CABA", "Ciudad Autónoma de Buenos Aires", "Capital Federal"],
-        "Córdoba": ["Córdoba", "Villa Carlos Paz", "Río Cuarto", "Villa María", "San Francisco", "Jesús María", "Alta Gracia", "Bell Ville", "Cosquín", "La Falda", "Capilla del Monte", "Mina Clavero", "Villa Dolores", "Cruz del Eje", "Deán Funes"],
-        "Santa Fe": ["Rosario", "Santa Fe", "Rafaela", "Venado Tuerto", "Sunchales", "Casilda", "Esperanza", "San Lorenzo", "Capitán Bermúdez", "Granadero Baigorria", "Pérez", "Funes", "Roldán", "Cañada de Gómez", "Armstrong"],
-        "Mendoza": ["Mendoza", "San Rafael", "Tunuyán", "Luján de Cuyo", "Guaymallén", "Las Heras", "Godoy Cruz", "Maipú", "Rivadavia", "San Martín", ],
-        "Tucumán": ["San Miguel de Tucumán", "Concepción", "Yerba Buena", "Tafí Viejo", "Aguilares", "Monteros", "Famaillá", "Lules", "Simoca", "Banda del Río Salí", "Alderetes"],
-        "Salta": ["Salta", "Tartagal", "Orán", "General Güemes", "Cafayate", "San José de Metán", "Rosario de la Frontera", "Embarcación", "San Ramón de la Nueva Orán"],
-        "Entre Ríos": ["Paraná", "Concordia", "Gualeguaychú", "Concepción del Uruguay", "Villa Elisa", "Chajarí", "Federación", "Colón", "San José de Feliciano", "La Paz", "Diamante", "Victoria"],
-        "Chaco": ["Resistencia", "Presidencia Roque Sáenz Peña", "Villa Ángela", "Charata", "General Pinedo", "Machagai", "Castelli", "Juan José Castelli"],
-        "Corrientes": ["Corrientes", "Goya", "Mercedes", "Curuzú Cuatiá","Esquina", "Paso de los Libres", "Santo Tomé", "Bella Vista", ],
-        "Misiones": ["Posadas", "Oberá", "Eldorado", "Puerto Iguazú", "Apóstoles", "San Vicente", "Montecarlo", "Aristóbulo del Valle", "Leandro N. Alem",],
-        "San Juan": ["San Juan", "Rawson", "Caucete", "San José de Jáchal", "Albardón", "Rivadavia", "Chimbas", ],
-        "San Luis": ["San Luis", "Villa Mercedes", "La Punta", "Merlo", "Juana Koslay",],
-        "La Rioja": ["La Rioja", "Chamical", "Chepes", "Villa Unión", "Arauco", "Famatina", "Chilecito",],
-        "Catamarca": ["San Fernando del Valle de Catamarca", "Andalgalá", "Tinogasta","Belén", "Santa María", "Fiambalá",],
-        "Santiago del Estero": ["Santiago del Estero", "Villa Ojo de Agua", "Fernández", "Termas de Río Hondo", "Frías",],
-        "Jujuy": ["San Salvador de Jujuy", "Palpalá", "La Quiaca", "Libertador General San Martín", "Perico", "Monterrico", "El Carmen", "San Pedro", "Humahuaca", "Tilcara"],
-        "Neuquén": ["Neuquén", "Centenario", "Plottier", "San Martín de los Andes", "Villa la Angostura", "Zapala", "Cutral Có", "Chos Malal", "Junín de los Andes", "Rincón de los Sauces"],
-        "Río Negro": ["Viedma", "Bariloche", "General Roca", "Cipolletti", "Catriel", "El Bolsón", "San Antonio Oeste", "Sierra Grande", "Ingeniero Jacobacci"],
-        "Chubut": ["Rawson", "Comodoro Rivadavia", "Trelew", "Puerto Madryn", "Esquel", "Gaiman", "Dolavon", "Sarmiento", "José de San Martín", "Rada Tilly", "Camarones"],
-        "Santa Cruz": ["Río Gallegos", "Caleta Olivia", "El Calafate", "Puerto Deseado", "Gobernador Gregores", "Las Heras", "Pico Truncado", "Perito Moreno", "El Chaltén"],
-        "Tierra del Fuego": ["Ushuaia", "Río Grande", "Tolhuin"],
-        "Formosa": ["Formosa", "Clorinda", "Pirané", "El Colorado", "Laguna Blanca", "Ibarreta"],
-        "La Pampa": ["Santa Rosa", "General Pico", "Carlos Casares", "Victorica", "General Acha", "Guatraché", "Trenel"]
-      };
-
-      const provinciaSelect = document.getElementById('provincia');
-      const ciudadSelect = document.getElementById('ciudad');
-
-      if (provinciaSelect && ciudadSelect) {
-        const provincias = Object.keys(provinciasYCiudades).sort();
-        provincias.forEach(p => {
-          const option = document.createElement('option');
-          option.value = p;
-          option.textContent = p;
-          provinciaSelect.appendChild(option);
-        });
-
-        provinciaSelect.addEventListener('change', function() {
-          const provincia = this.value;
-          ciudadSelect.innerHTML = '<option value="">Seleccioná tu ciudad...</option>';
-          if (provincia && provinciasYCiudades[provincia]) {
-            const ciudades = provinciasYCiudades[provincia].sort();
-            ciudades.forEach(c => {
-              const option = document.createElement('option');
-              option.value = c;
-              option.textContent = c;
-              ciudadSelect.appendChild(option);
-            });
-          }
-        });
-      }
-    });
-
-    // Enviar formulario
-    document.getElementById('formSolicitud').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const formData = new FormData(this);
-      const data = Object.fromEntries(formData.entries());
-
-      try {
-        const response = await fetch(this.action, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-          alert('✅ Felicitaciones !!.Solicitud enviada con éxito !. Te contactaremos pronto.');
-          this.reset();
+      const desc = descuentos[meses];
+      
+      ['1m', '3m', '6m', '12m'].forEach(id => {
+        const btn = document.getElementById('btn-' + id);
+        if (id === meses + 'm') {
+          btn.className = 'px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition bg-naranja text-white shadow-md';
         } else {
-          alert('❌ Error: ' + (result.error || 'Intenta de nuevo más tarde.'));
+          btn.className = 'px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition text-slate-300 hover:text-white';
         }
-      } catch (error) {
-        alert('❌ Error de conexión. Verifica tu internet e intenta de nuevo.');
-        console.error(error);
-      }
-    });
-
-    // ==================== IMÁGENES EXPANDIBLES ====================
-    function expandirImagen(src) {
-      const modal = document.getElementById('modalImagen');
-      const img = document.getElementById('imagenExpandida');
-      img.src = src;
-      modal.classList.add('activo');
-      document.body.style.overflow = 'hidden';
-    }
-
-    function cerrarImagen() {
-      const modal = document.getElementById('modalImagen');
-      modal.classList.remove('activo');
-      document.getElementById('imagenExpandida').src = '';
-      document.body.style.overflow = '';
-    }
-
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') cerrarImagen();
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-      document.querySelectorAll('.imagen-expandible').forEach(img => {
-        img.addEventListener('click', function(e) {
-          e.stopPropagation();
-          expandirImagen(this.src);
-        });
       });
-    });
+
+      ['std', 'pwr', 'prm'].forEach(plan => {
+        const base = preciosBase[plan];
+        const finalPrice = Math.round(base * (1 - desc));
+        document.getElementById('precio-' + plan).innerText = finalPrice.toLocaleString('es-AR');
+        
+        const sub = document.getElementById('sub-' + plan);
+        if (meses === 1) {
+          sub.innerText = 'Facturación mensual';
+        } else {
+          sub.innerText = `Facturado $${(finalPrice * meses).toLocaleString('es-AR')} cada ${meses} meses`;
+        }
+      });
+    }
   </script>
 </body>
 </html>
