@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitudes - QRPretium Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #0F172A;
+            color: #F1F5F9;
+        }
+        .bg-pizarra { background-color: #0F172A; }
+        .bg-pizarra-card { background-color: #1E293B; }
+        .text-naranja { color: #F97316; }
+        .text-verde { color: #10B981; }
+        .input-base {
+            width: 100%;
+            background-color: #0F172A;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: #F1F5F9;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        .input-base:focus {
+            outline: none;
+            border-color: #F97316;
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+        }
+        .input-base::placeholder {
+            color: #64748B;
+        }
+        .btn-principal {
+            background-color: #F97316;
+            color: white;
+            font-weight: 700;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 20px rgba(249, 115, 22, 0.3);
+        }
+        .btn-principal:hover:not(:disabled) {
+            background-color: #EA580C;
+            transform: translateY(-1px);
+        }
+        .btn-principal:disabled {
+            background-color: #64748B;
+            cursor: not-allowed;
+        }
+        .btn-aprobar {
+            background-color: #10B981;
+            color: white;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+        .btn-aprobar:hover:not(:disabled) {
+            background-color: #059669;
+        }
+        .btn-rechazar {
+            background-color: #EF4444;
+            color: white;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+        .btn-rechazar:hover:not(:disabled) {
+            background-color: #DC2626;
+        }
+        .btn-aprobar:disabled, .btn-rechazar:disabled {
+            background-color: #64748B;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        .badge-estado {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .badge-pendiente {
+            background-color: rgba(245, 158, 11, 0.15);
+            color: #F59E0B;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        .badge-aprobada {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: #10B981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .badge-completada {
+            background-color: rgba(56, 189, 248, 0.15);
+            color: #38BDF8;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+        .badge-rechazada {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #EF4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        .tab-filtro {
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background-color: #1E293B;
+            color: #94A3B8;
+            border: 1px solid #334155;
+        }
+        .tab-filtro:hover {
+            color: #F1F5F9;
+            border-color: #475569;
+        }
+        .tab-filtro.activo {
+            background-color: #F97316;
+            color: white;
+            border-color: #F97316;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+        }
+        .mensaje-estado {
+            display: none;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        .mensaje-exito {
+            display: block;
+            background-color: rgba(16, 185, 129, 0.15);
+            color: #10B981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .mensaje-error {
+            display: block;
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #EF4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        .tabla-solicitudes {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .tabla-solicitudes th {
+            text-align: left;
+            padding: 12px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94A3B8;
+            border-bottom: 1px solid #334155;
+            background-color: rgba(15, 23, 42, 0.4);
+        }
+        .tabla-solicitudes td {
+            padding: 14px 10px;
+            font-size: 13px;
+            border-bottom: 1px solid #1E293B;
+            vertical-align: top;
+        }
+        .tabla-solicitudes tr:hover td {
+            background-color: rgba(30, 41, 59, 0.5);
+        }
+        /* Mobile: cards */
+        @media (max-width: 1024px) {
+            .tabla-solicitudes thead { display: none; }
+            .tabla-solicitudes tr { display: block; margin-bottom: 16px; border: 1px solid #334155; border-radius: 12px; overflow: hidden; }
+            .tabla-solicitudes td { display: block; padding: 10px 16px; border-bottom: 1px solid #1E293B; }
+            .tabla-solicitudes td:last-child { border-bottom: none; }
+            .tabla-solicitudes td::before {
+                content: attr(data-label);
+                display: inline-block;
+                font-size: 10px;
+                font-weight: 700;
+                text-transform: uppercase;
+                color: #64748B;
+                width: 110px;
+                margin-right: 8px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-pizarra min-h-screen py-6 px-4">
+
+    <!-- SECCIÓN 1: LOGIN -->
+    <div id="seccionLogin" class="max-w-md mx-auto mt-16 p-6 sm:p-8 bg-pizarra-card rounded-2xl shadow-2xl border border-slate-700">
+        <div class="text-center mb-6">
+            <img src="img/logoqrpretium1.jpg" alt="QRPretium" class="w-16 h-16 mx-auto mb-3 rounded-xl object-cover shadow-md">
+            <h1 class="text-2xl font-black text-white tracking-tight">QRPretium Admin</h1>
+            <p class="text-xs text-slate-400 mt-1">Panel de Gestión de Solicitudes</p>
+        </div>
+
+        <form onsubmit="iniciarSesion(event)" class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Usuario</label>
+                <input type="text" id="loginUsuario" required placeholder="Ej: qrpretium" class="input-base">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-400 uppercase mb-1.5">Contraseña</label>
+                <input type="password" id="loginPassword" required placeholder="••••••••" class="input-base">
+            </div>
+
+            <div id="errorLogin" class="hidden text-red-400 text-xs text-center font-bold p-3 bg-red-500/10 rounded-lg border border-red-500/30 leading-relaxed"></div>
+
+            <button type="submit" id="btnIngresar" class="btn-principal w-full">
+                Iniciar Sesión
+            </button>
+        </form>
+    </div>
+
+    <!-- SECCIÓN 2: PANEL -->
+    <div id="seccionPanel" class="hidden">
+        <div class="max-w-7xl mx-auto">
+
+            <!-- HEADER -->
+            <header class="bg-pizarra-card p-4 sm:p-6 rounded-2xl border border-slate-700 shadow-lg mb-6">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <img src="img/logoqrpretium1.jpg" alt="QRPretium" class="w-10 h-10 rounded-xl object-cover shadow-md">
+                        <div>
+                            <h1 class="text-xl font-black text-white">Panel de Solicitudes</h1>
+                            <p class="text-xs text-slate-400">Gestión de altas QRPretium</p>
+                        </div>
+                    </div>
+                    <button onclick="cerrarSesion()" class="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-lg shadow transition">
+                        Cerrar Sesión
+                    </button>
+                </div>
+            </header>
+
+            <!-- MENSAJES DE ESTADO -->
+            <div id="mensajeEstado" class="mensaje-estado"></div>
+
+            <!-- FILTROS -->
+            <div class="flex flex-wrap gap-2 mb-6">
+                <button class="tab-filtro activo" data-filtro="todos" onclick="cambiarFiltro('todos')">
+                    Todas <span id="count-todos" class="ml-1 text-[10px] opacity-70">0</span>
+                </button>
+                <button class="tab-filtro" data-filtro="Pendiente" onclick="cambiarFiltro('Pendiente')">
+                    Pendientes <span id="count-Pendiente" class="ml-1 text-[10px] opacity-70">0</span>
+                </button>
+                <button class="tab-filtro" data-filtro="Aprobada" onclick="cambiarFiltro('Aprobada')">
+                    Aprobadas <span id="count-Aprobada" class="ml-1 text-[10px] opacity-70">0</span>
+                </button>
+                <button class="tab-filtro" data-filtro="Completada" onclick="cambiarFiltro('Completada')">
+                    Completadas <span id="count-Completada" class="ml-1 text-[10px] opacity-70">0</span>
+                </button>
+                <button class="tab-filtro" data-filtro="Rechazada" onclick="cambiarFiltro('Rechazada')">
+                    Rechazadas <span id="count-Rechazada" class="ml-1 text-[10px] opacity-70">0</span>
+                </button>
+            </div>
+
+            <!-- TABLA -->
+            <div class="bg-pizarra-card rounded-2xl border border-slate-700 overflow-hidden shadow-xl">
+                <div class="overflow-x-auto">
+                    <table class="tabla-solicitudes">
+                        <thead>
+                            <tr>
+                                <th>Ciudad</th>
+                                <th>Rubro</th>
+                                <th>CUIT</th>
+                                <th>Nombre Comercio</th>
+                                <th>Responsable</th>
+                                <th>Email</th>
+                                <th>Teléfono</th>
+                                <th>Tipo</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th class="text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodySolicitudes">
+                            <tr><td colspan="11" class="text-center py-8 text-slate-500">Cargando solicitudes...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- INFO FINAL -->
+            <p class="text-xs text-slate-500 text-center mt-6">
+                Total: <span id="totalSolicitudes" class="font-bold text-slate-300">0</span> solicitudes
+            </p>
+
+        </div>
+    </div>
+
+    <script>
+        // ==================== CONFIGURACIÓN ====================
+        const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const URL_APROBAR = 'https://zbnuunaguciupyyzploq.supabase.co/functions/v1/aprobar-solicitud';
+        const URL_RECHAZAR = 'https://zbnuunaguciupyyzploq.supabase.co/functions/v1/rechazar-solicitud';
+
+        // ==================== ESTADO GLOBAL ====================
+        let solicitudesTodas = [];
+        let filtroActual = 'todos';
+        let usuarioActual = '';
+
+        // ==================== LOGIN ====================
+        async function iniciarSesion(e) {
+            e.preventDefault();
+            const usuario = document.getElementById('loginUsuario').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            const divError = document.getElementById('errorLogin');
+            const btn = document.getElementById('btnIngresar');
+
+            divError.classList.add('hidden');
+            btn.disabled = true;
+            btn.innerText = 'Verificando...';
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('admin_credenciales')
+                    .select('*')
+                    .eq('id', 1)
+                    .maybeSingle();
+
+                if (error) throw error;
+
+                if (!data) {
+                    divError.innerText = 'No hay credenciales configuradas.';
+                    divError.classList.remove('hidden');
+                    return;
+                }
+
+                if (data.usuario !== usuario || data.password !== password) {
+                    divError.innerText = 'Usuario o contraseña incorrectos.';
+                    divError.classList.remove('hidden');
+                    return;
+                }
+
+                // Login exitoso
+                usuarioActual = usuario;
+                document.getElementById('seccionLogin').classList.add('hidden');
+                document.getElementById('seccionPanel').classList.remove('hidden');
+                await cargarSolicitudes();
+
+            } catch (err) {
+                console.error('Error en login:', err);
+                divError.innerText = 'Error al conectar: ' + err.message;
+                divError.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Iniciar Sesión';
+            }
+        }
+
+        function cerrarSesion() {
+            usuarioActual = '';
+            solicitudesTodas = [];
+            document.getElementById('seccionPanel').classList.add('hidden');
+            document.getElementById('seccionLogin').classList.remove('hidden');
+            document.getElementById('loginUsuario').value = '';
+            document.getElementById('loginPassword').value = '';
+        }
+
+        // ==================== CARGAR SOLICITUDES ====================
+        async function cargarSolicitudes() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('solicitudes')
+                    .select('*')
+                    .order('fecha', { ascending: false });
+
+                if (error) throw error;
+
+                solicitudesTodas = data || [];
+                actualizarContadores();
+                renderizarTabla();
+            } catch (err) {
+                console.error('Error al cargar solicitudes:', err);
+                mostrarMensaje('Error al cargar solicitudes: ' + err.message, 'error');
+            }
+        }
+
+        function actualizarContadores() {
+            document.getElementById('count-todos').innerText = solicitudesTodas.length;
+            ['Pendiente', 'Aprobada', 'Completada', 'Rechazada'].forEach(estado => {
+                const count = solicitudesTodas.filter(s => s.estado === estado).length;
+                const el = document.getElementById('count-' + estado);
+                if (el) el.innerText = count;
+            });
+        }
+
+        // ==================== CAMBIAR FILTRO ====================
+        function cambiarFiltro(filtro) {
+            filtroActual = filtro;
+            document.querySelectorAll('.tab-filtro').forEach(btn => {
+                if (btn.dataset.filtro === filtro) {
+                    btn.classList.add('activo');
+                } else {
+                    btn.classList.remove('activo');
+                }
+            });
+            renderizarTabla();
+        }
+
+        // ==================== RENDERIZAR TABLA ====================
+        function renderizarTabla() {
+            const tbody = document.getElementById('tbodySolicitudes');
+            tbody.innerHTML = '';
+
+            let solicitudesFiltradas = filtroActual === 'todos'
+                ? solicitudesTodas
+                : solicitudesTodas.filter(s => s.estado === filtroActual);
+
+            document.getElementById('totalSolicitudes').innerText = solicitudesFiltradas.length;
+
+            if (solicitudesFiltradas.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="11" class="text-center py-8 text-slate-500">No hay solicitudes ${filtroActual === 'todos' ? '' : 'con estado "' + filtroActual + '"'}.</td></tr>`;
+                return;
+            }
+
+            solicitudesFiltradas.forEach(s => {
+                const estadoBadge = obtenerBadgeEstado(s.estado);
+                const fechaFormato = s.fecha
+                    ? new Date(s.fecha).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+                    : '-';
+                const cuit = s.cuit ? String(s.cuit) : '-';
+                const esPendiente = s.estado === 'Pendiente';
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td data-label="Ciudad">${s.ciudad || '-'}</td>
+                        <td data-label="Rubro">${s.rubro || '-'}</td>
+                        <td data-label="CUIT"><span class="font-mono text-xs">${cuit}</span></td>
+                        <td data-label="Comercio"><strong class="text-white">${s.nombre_comercio || '-'}</strong></td>
+                        <td data-label="Responsable">${s.nombre_responsable || '-'}</td>
+                        <td data-label="Email"><a href="mailto:${s.email}" class="text-naranja hover:underline text-xs">${s.email || '-'}</a></td>
+                        <td data-label="Teléfono"><a href="tel:${s.telefono}" class="text-slate-300 text-xs">${s.telefono || '-'}</a></td>
+                        <td data-label="Tipo"><span class="text-xs">${s.tipo_solicitud || '-'}</span></td>
+                        <td data-label="Fecha"><span class="text-xs">${fechaFormato}</span></td>
+                        <td data-label="Estado">${estadoBadge}</td>
+                        <td data-label="Acciones" class="text-right">
+                            ${esPendiente ? `
+                                <button onclick="aprobarSolicitud(${s.id})" class="btn-aprobar" id="btnAprobar-${s.id}">✅ Aprobar</button>
+                                <button onclick="rechazarSolicitud(${s.id})" class="btn-rechazar ml-1" id="btnRechazar-${s.id}">❌ Rechazar</button>
+                            ` : `
+                                <span class="text-slate-600 text-xs italic">—</span>
+                            `}
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function obtenerBadgeEstado(estado) {
+            const est = (estado || '').toLowerCase();
+            let clase = 'badge-pendiente';
+            if (est === 'aprobada') clase = 'badge-aprobada';
+            else if (est === 'completada') clase = 'badge-completada';
+            else if (est === 'rechazada') clase = 'badge-rechazada';
+            return `<span class="badge-estado ${clase}">${estado || '-'}</span>`;
+        }
+
+        // ==================== APROBAR ====================
+        async function aprobarSolicitud(id) {
+            const confirmar = confirm('¿Aprobar esta solicitud? Se enviará el mail de alta al solicitante.');
+            if (!confirmar) return;
+
+            const btn = document.getElementById('btnAprobar-' + id);
+            const btnRechazar = document.getElementById('btnRechazar-' + id);
+            if (btn) { btn.disabled = true; btn.innerText = '⏳'; }
+            if (btnRechazar) btnRechazar.disabled = true;
+
+            try {
+                const res = await fetch(URL_APROBAR, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_ANON_KEY
+                    },
+                    body: JSON.stringify({ solicitud_id: id })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    mostrarMensaje('✅ Solicitud aprobada. Mail enviado al solicitante.', 'exito');
+                    await cargarSolicitudes();
+                } else {
+                    mostrarMensaje('❌ Error: ' + (data.error || 'No se pudo aprobar'), 'error');
+                    if (btn) { btn.disabled = false; btn.innerText = '✅ Aprobar'; }
+                    if (btnRechazar) btnRechazar.disabled = false;
+                }
+            } catch (err) {
+                console.error('Error al aprobar:', err);
+                mostrarMensaje('❌ Error de conexión al aprobar', 'error');
+                if (btn) { btn.disabled = false; btn.innerText = '✅ Aprobar'; }
+                if (btnRechazar) btnRechazar.disabled = false;
+            }
+        }
+
+        // ==================== RECHAZAR ====================
+        async function rechazarSolicitud(id) {
+            const confirmar = confirm('¿Rechazar esta solicitud? Esta acción no envía mail al solicitante.');
+            if (!confirmar) return;
+
+            const btn = document.getElementById('btnRechazar-' + id);
+            const btnAprobar = document.getElementById('btnAprobar-' + id);
+            if (btn) { btn.disabled = true; btn.innerText = '⏳'; }
+            if (btnAprobar) btnAprobar.disabled = true;
+
+            try {
+                const res = await fetch(URL_RECHAZAR, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_ANON_KEY
+                    },
+                    body: JSON.stringify({ solicitud_id: id })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    mostrarMensaje('🗑️ Solicitud marcada como Rechazada.', 'exito');
+                    await cargarSolicitudes();
+                } else {
+                    mostrarMensaje('❌ Error: ' + (data.error || 'No se pudo rechazar'), 'error');
+                    if (btn) { btn.disabled = false; btn.innerText = '❌ Rechazar'; }
+                    if (btnAprobar) btnAprobar.disabled = false;
+                }
+            } catch (err) {
+                console.error('Error al rechazar:', err);
+                mostrarMensaje('❌ Error de conexión al rechazar', 'error');
+                if (btn) { btn.disabled = false; btn.innerText = '❌ Rechazar'; }
+                if (btnAprobar) btnAprobar.disabled = false;
+            }
+        }
+
+        // ==================== MENSAJES ====================
+        function mostrarMensaje(texto, tipo) {
+            const div = document.getElementById('mensajeEstado');
+            div.innerText = texto;
+            div.className = 'mensaje-estado ' + (tipo === 'exito' ? 'mensaje-exito' : 'mensaje-error');
+            setTimeout(() => {
+                div.className = 'mensaje-estado';
+            }, 6000);
+        }
+    </script>
+</body>
+</html>
