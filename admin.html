@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Administración - QRPretium</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- QRCode.js para generar el QR -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <!-- html2canvas para descargar el cartel como imagen -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen pb-12">
 
@@ -126,7 +130,7 @@
             </div>
 
             <!-- TABLA DE PRODUCTOS -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-6">
                 <div class="p-4 border-b border-gray-100 flex justify-between items-center">
                     <h3 class="font-bold text-slate-800 text-sm">Artículos Publicados</h3>
                     <span id="cantArticulos" class="text-xs font-bold bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full">0 productos</span>
@@ -150,7 +154,59 @@
                 </div>
             </div>
 
-            <!-- SECCIÓN: DATOS DEL LOCAL -->
+            <!-- ============================================
+                 SECCIÓN: MI QR
+                 ============================================ -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 mb-6">
+                <h2 class="text-base font-bold text-emerald-600 mb-4 flex items-center gap-2">
+                    <span>📱</span> Mi QR de Vidriera
+                </h2>
+                <p class="text-xs text-gray-500 mb-4">Este es tu código QR personalizado. Tus clientes lo escanean para acceder a tu catálogo digital en vidriera.</p>
+
+                <!-- Link del catálogo -->
+                <div class="mb-5">
+                    <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1.5">Tu link de catálogo</label>
+                    <div class="flex flex-wrap gap-2">
+                        <input type="text" id="linkQrInput" readonly
+                            class="flex-1 min-w-[200px] px-3 py-2 border rounded-xl text-xs bg-gray-50 focus:ring-2 focus:ring-slate-600 font-mono">
+                        <button type="button" onclick="copiarLinkQr()" 
+                            class="px-4 py-2 bg-slate-700 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow transition whitespace-nowrap">
+                            📋 Copiar
+                        </button>
+                        <a id="linkQrAbrir" href="#" target="_blank" rel="noopener noreferrer"
+                            class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition whitespace-nowrap">
+                            🔗 Abrir en nueva ventana
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Previsualización del cartel -->
+                <div class="mb-5">
+                    <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1.5">Previsualización del Cartel</label>
+                    <div class="flex justify-center">
+                        <div id="cartelQrContenedor" class="inline-block shadow-lg rounded-2xl overflow-hidden border border-gray-200">
+                            <!-- El cartel se genera dinámicamente acá -->
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-gray-400 text-center mt-2">
+                        💡 Este cartel es una vista previa. La versión definitiva para imprenta se enviará por mail.
+                    </p>
+                </div>
+
+                <!-- Botones de acción -->
+                <div class="flex flex-wrap gap-2 justify-center">
+                    <button type="button" onclick="descargarCartelQr()" 
+                        class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs rounded-xl shadow transition">
+                        💾 Descargar Imagen
+                    </button>
+                    <button type="button" onclick="imprimirCartelQr()" 
+                        class="px-4 py-2 bg-slate-700 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow transition">
+                        🖨️ Imprimir
+                    </button>
+                </div>
+            </div>
+
+            <!-- SECCIÓN: DATOS DEL LOCAL (ahora al final) -->
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 mt-6">
                 <h2 class="text-base font-bold text-orange-500 mb-4 flex items-center gap-2">
                     <span>🏪</span> Datos del Local
@@ -206,13 +262,11 @@
                         <input type="text" id="editWhatsapp" placeholder="Ej: 11 1234 5678" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
                     </div>
 
-                    <!-- ✅ NUEVO: SITIO WEB -->
                     <div class="md:col-span-2">
                         <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Sitio Web (opcional)</label>
                         <input type="text" id="editWeb" placeholder="Ej: www.micomercio.com.ar" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
                         <p class="text-[10px] text-gray-400 mt-1">Si lo completás, aparece un botón "🌐 Sitio Web" en el modal "+" del catálogo.</p>
                     </div>
-                    <!-- FIN SITIO WEB -->
 
                     <div class="md:col-span-2">
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Horarios de Atención</label>
@@ -342,6 +396,7 @@
 
             await cargarArticulos();
             cargarDatosComercioEnFormulario();
+            await generarCartelQr();  // ← NUEVO
         }
 
         function cargarDatosComercioEnFormulario() {
@@ -458,6 +513,9 @@
                 comercioActual = { ...comercioActual, ...payload };
                 cargarDatosComercioEnFormulario();
 
+                // Regenerar el cartel con el nuevo nombre/color
+                await generarCartelQr();
+
                 mensaje.className = 'mt-3 p-3 text-xs font-bold rounded-xl text-center leading-relaxed bg-emerald-50 text-emerald-700 border border-emerald-200';
                 mensaje.innerText = '✅ Datos del local actualizados correctamente.';
                 mensaje.classList.remove('hidden');
@@ -474,6 +532,191 @@
                 btn.disabled = false;
                 btn.innerText = "Guardar Datos del Local";
             }
+        }
+
+        // ================== MI QR ==================
+        async function generarCartelQr() {
+            try {
+                const linkQr = comercioActual.link_qr ||
+                    `https://qrproyectum26.github.io/QRPretium/catalogo.html?cuit=${cuitLimpioActual}`;
+                const nombreComercio = obtenerValorObjeto(comercioActual, ['nombre', 'NOMBRE']) || 'Mi Comercio';
+                const colorFranja = obtenerValorObjeto(comercioActual, ['color', 'COLOR']) || '#334155';
+
+                // Actualizar input y link de abrir
+                const input = document.getElementById('linkQrInput');
+                const linkAbrir = document.getElementById('linkQrAbrir');
+                if (input) input.value = linkQr;
+                if (linkAbrir) linkAbrir.href = linkQr;
+
+                // Generar QR en un canvas temporal
+                const canvasTemp = document.createElement('canvas');
+                await QRCode.toCanvas(canvasTemp, linkQr, {
+                    width: 280,
+                    margin: 1,
+                    color: {
+                        dark: '#0F172A',
+                        light: '#FFFFFF'
+                    },
+                    errorCorrectionLevel: 'H'
+                });
+                const qrDataUrl = canvasTemp.toDataURL('image/png');
+
+                // Generar el cartel completo (HTML/CSS)
+                const contenedor = document.getElementById('cartelQrContenedor');
+                contenedor.innerHTML = `
+                    <div id="cartelQr" style="
+                        width: 380px;
+                        background: #F8FAFC;
+                        padding: 24px;
+                        font-family: Arial, sans-serif;
+                        text-align: center;
+                        border: 1px solid #E2E8F0;
+                    ">
+                        <!-- Nombre del comercio (con color del comercio) -->
+                        <div style="
+                            background: ${colorFranja};
+                            color: #FFFFFF;
+                            padding: 14px 16px;
+                            border-radius: 12px;
+                            margin-bottom: 20px;
+                            font-size: 18px;
+                            font-weight: 900;
+                            text-transform: uppercase;
+                            letter-spacing: 0.5px;
+                            word-break: break-word;
+                        ">
+                            ${nombreComercio}
+                        </div>
+
+                        <!-- QR con borde naranja -->
+                        <div style="
+                            display: inline-block;
+                            padding: 12px;
+                            background: #FFFFFF;
+                            border: 4px solid #F97316;
+                            border-radius: 16px;
+                            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
+                        ">
+                            <img src="${qrDataUrl}" alt="QR" style="display: block; width: 260px; height: 260px;">
+                        </div>
+
+                        <!-- Texto "Escaneame" -->
+                        <p style="
+                            margin-top: 18px;
+                            font-size: 22px;
+                            font-weight: 900;
+                            color: #0F172A;
+                            text-transform: uppercase;
+                            letter-spacing: 1px;
+                        ">
+                            ¡Escaneame!
+                        </p>
+                        <p style="
+                            margin-top: 6px;
+                            font-size: 13px;
+                            color: #64748B;
+                            font-weight: 500;
+                        ">
+                            y mirá mi catálogo en vivo
+                        </p>
+
+                        <!-- Branding QRPretium -->
+                        <p style="
+                            margin-top: 16px;
+                            font-size: 11px;
+                            color: #94A3B8;
+                            border-top: 1px solid #E2E8F0;
+                            padding-top: 10px;
+                            letter-spacing: 0.5px;
+                        ">
+                            QRPretium · Vidriera Digital Inteligente 24/7
+                        </p>
+                    </div>
+                `;
+
+                console.log('Cartel QR generado para:', linkQr);
+
+            } catch (err) {
+                console.error('Error al generar cartel QR:', err);
+            }
+        }
+
+        function copiarLinkQr() {
+            const input = document.getElementById('linkQrInput');
+            if (!input || !input.value) return;
+            input.select();
+            input.setSelectionRange(0, 99999);
+            try {
+                document.execCommand('copy');
+                alert('✅ Link copiado al portapapeles');
+            } catch (err) {
+                navigator.clipboard.writeText(input.value).then(() => {
+                    alert('✅ Link copiado al portapapeles');
+                }).catch(() => {
+                    alert('⚠️ No se pudo copiar. Copialo manualmente.');
+                });
+            }
+        }
+
+        async function descargarCartelQr() {
+            const cartel = document.getElementById('cartelQr');
+            if (!cartel) {
+                alert('⚠️ No hay cartel para descargar.');
+                return;
+            }
+            try {
+                const canvas = await html2canvas(cartel, {
+                    backgroundColor: '#F8FAFC',
+                    scale: 2,
+                    useCORS: true
+                });
+                const link = document.createElement('a');
+                link.download = `Cartel-QR-${cuitLimpioActual}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } catch (err) {
+                console.error('Error al descargar:', err);
+                alert('⚠️ No se pudo descargar el cartel.');
+            }
+        }
+
+        function imprimirCartelQr() {
+            const cartel = document.getElementById('cartelQr');
+            if (!cartel) {
+                alert('⚠️ No hay cartel para imprimir.');
+                return;
+            }
+            const ventana = window.open('', '_blank');
+            ventana.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Imprimir Cartel QR - QRPretium</title>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            min-height: 100vh;
+                            margin: 0;
+                            padding: 20px;
+                            background: #FFFFFF;
+                        }
+                        @media print {
+                            body { padding: 0; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${cartel.outerHTML}
+                </body>
+                </html>
+            `);
+            ventana.document.close();
+            setTimeout(() => {
+                ventana.print();
+            }, 500);
         }
 
         async function cargarArticulos() {
@@ -725,6 +968,10 @@
                     body: JSON.stringify({ color: nuevoColor })
                 });
             }
+
+            // Actualizar comercioActual y regenerar cartel
+            comercioActual = { ...comercioActual, color: nuevoColor };
+            await generarCartelQr();
         }
 
         function cerrarSesion() {
