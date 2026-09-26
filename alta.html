@@ -396,7 +396,62 @@
                     📄 Al confirmar tu alta vas a poder leer y aceptar el <strong class="text-slate-200">Acuerdo de Servicio de QRPretium</strong>. Una vez aceptado, tu comercio quedará activo y recibirás tus credenciales por email.
                 </p>
             </div>
+                    // ==================== VALIDACIÓN DE CUIT ====================
+        function validarCuit(cuit) {
+            // 1. Limpiar guiones, puntos y espacios
+            const cuitLimpio = String(cuit).replace(/[-.\s]/g, '');
 
+            // 2. Verificar que tenga 11 dígitos numéricos
+            if (!/^\d{11}$/.test(cuitLimpio)) {
+                return { 
+                    ok: false, 
+                    msg: 'El CUIT debe tener 11 dígitos numéricos (sin guiones ni puntos).' 
+                };
+            }
+
+            // 3. Verificar el prefijo
+            const prefijo = cuitLimpio.substring(0, 2);
+            const prefijosValidos = ['20', '23', '24', '27', '30', '33', '34'];
+            if (!prefijosValidos.includes(prefijo)) {
+                return { 
+                    ok: false, 
+                    msg: 'El CUIT tiene un prefijo inválido. Los prefijos válidos son: 20, 23, 24, 27 (personas) y 30, 33, 34 (empresas).' 
+                };
+            }
+
+            // 4. Validar el dígito verificador (algoritmo oficial AFIP)
+            const multiplicadores = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2];
+            let suma = 0;
+            for (let i = 0; i < 10; i++) {
+                suma += parseInt(cuitLimpio[i]) * multiplicadores[i];
+            }
+
+            const resto = suma % 11;
+            let digitoVerificador;
+
+            if (resto === 0) {
+                digitoVerificador = 0;
+            } else if (resto === 1) {
+                // Caso especial según AFIP
+                if (['20', '23', '24', '27'].includes(prefijo)) {
+                    digitoVerificador = 9;
+                } else {
+                    digitoVerificador = 4;
+                }
+            } else {
+                digitoVerificador = 11 - resto;
+            }
+
+            const digitoIngresado = parseInt(cuitLimpio[10]);
+            if (digitoVerificador !== digitoIngresado) {
+                return { 
+                    ok: false, 
+                    msg: 'El CUIT no es válido (dígito verificador incorrecto). Verificalo y volvé a intentar.' 
+                };
+            }
+
+            return { ok: true, cuitLimpio: cuitLimpio };
+        }
             <!-- BOTÓN CONFIRMAR -->
             <button id="btnConfirmarAlta" type="button" onclick="abrirModalAcuerdo()" class="btn-principal">
                 ✅ Confirmar alta y activar mi vidriera
@@ -821,12 +876,24 @@
         }
 
         // ==================== MODAL DEL ACUERDO ====================
-        function abrirModalAcuerdo() {
+                function abrirModalAcuerdo() {
+            // 1. Validar formulario
             const validacion = validarFormulario();
             if (!validacion.ok) {
                 alert('⚠️ ' + validacion.msg);
                 return;
             }
+
+            // 2. Validar CUIT (validación adicional y crítica)
+            const cuitTexto = document.getElementById('campoCuit').value.trim();
+            const cuitValidacion = validarCuit(cuitTexto);
+            if (!cuitValidacion.ok) {
+                alert('⚠️ ' + cuitValidacion.msg);
+                document.getElementById('campoCuit').focus();
+                return;
+            }
+
+            // 3. Todo OK → abrir modal
             document.getElementById('modalAcuerdo').classList.add('activo');
             document.body.style.overflow = 'hidden';
         }
