@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acuerdo de Servicio - QRPretium</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            color: #0F172A;
+            background: #FFFFFF;
+            line-height: 1.6;
+            font-size: 11pt;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Barra de acciones (no se imprime) */
+        .acciones {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .acciones button {
+            background: #F97316;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .acciones button:hover {
+            background: #EA580C;
+            transform: translateY(-1px);
+        }
+
+        .acciones button.secundario {
+            background: #334155;
+            box-shadow: 0 4px 12px rgba(51, 65, 85, 0.3);
+        }
+
+        .acciones button.secundario:hover {
+            background: #1E293B;
+        }
+
+        /* Encabezado */
+        .encabezado {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #F97316;
+            margin-bottom: 30px;
+        }
+
+        .encabezado img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        .encabezado .info h1 {
+            font-size: 22pt;
+            font-weight: 900;
+            color: #0F172A;
+            line-height: 1.1;
+            margin-bottom: 4px;
+        }
+
+        .encabezado .info p {
+            font-size: 10pt;
+            color: #64748B;
+            font-weight: 500;
+        }
+
+        /* Título del acuerdo */
+        .titulo-acuerdo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .titulo-acuerdo h2 {
+            font-size: 16pt;
+            font-weight: 900;
+            color: #0F172A;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .titulo-acuerdo .subtitulo {
+            font-size: 10pt;
+            color: #64748B;
+            font-style: italic;
+        }
+
+        /* Introducción */
+        .introduccion {
+            background: #F8FAFC;
+            border-left: 4px solid #F97316;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 10pt;
+        }
+
+        /* Cláusulas */
+        .clausula {
+            margin-bottom: 22px;
+            page-break-inside: avoid;
+        }
+
+        .clausula h3 {
+            font-size: 12pt;
+            font-weight: 800;
+            color: #0F172A;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .clausula p {
+            font-size: 10.5pt;
+            color: #334155;
+            margin-bottom: 8px;
+            text-align: justify;
+        }
+
+        .clausula ul {
+            margin-left: 20px;
+            margin-bottom: 8px;
+        }
+
+        .clausula ul li {
+            font-size: 10.5pt;
+            color: #334155;
+            margin-bottom: 4px;
+        }
+
+        .clausula strong {
+            color: #0F172A;
+            font-weight: 700;
+        }
+
+        /* Pie de página */
+        .pie {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #E2E8F0;
+            text-align: center;
+            font-size: 9pt;
+            color: #94A3B8;
+        }
+
+        .pie .version {
+            font-weight: 600;
+            color: #64748B;
+            margin-bottom: 4px;
+        }
+
+        /* Firma */
+        .firma {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            page-break-inside: avoid;
+        }
+
+        .firma .bloque {
+            text-align: center;
+        }
+
+        .firma .linea {
+            border-top: 1px solid #0F172A;
+            margin-bottom: 6px;
+            padding-top: 40px;
+        }
+
+        .firma .bloque p {
+            font-size: 9pt;
+            color: #64748B;
+        }
+
+        .firma .bloque p strong {
+            display: block;
+            font-size: 10pt;
+            color: #0F172A;
+            margin-bottom: 2px;
+        }
+
+        @media print {
+            .acciones {
+                display: none;
+            }
+            body {
+                padding: 0;
+                max-width: 100%;
+            }
+            .clausula {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Barra de acciones (no se imprime) -->
+    <div class="acciones">
+        <button onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+        <button class="secundario" onclick="window.close()">✕ Cerrar</button>
+    </div>
+
+    <!-- Encabezado -->
+    <div class="encabezado">
+        <img src="img/logoqrpretium1.jpg" alt="QRPretium">
+        <div class="info">
+            <h1>QRPretium</h1>
+            <p>Vidriera Digital Inteligente 24/7/365</p>
+        </div>
+    </div>
+
+    <!-- Título -->
+    <div class="titulo-acuerdo">
+        <h2>Acuerdo de Servicio</h2>
+        <p class="subtitulo">Contrato de prestación de servicios digitales</p>
+    </div>
+
+    <!-- Introducción -->
+    <div class="introduccion">
+        <strong>Entre QRPretium</strong> (en adelante "el Proveedor") <strong>y el Comercio</strong> (en adelante "el Cliente"), se celebra el presente acuerdo de servicio, sujeto a las siguientes cláusulas:
+    </div>
+
+    <!-- Cláusulas -->
+    <div class="clausula">
+        <h3>1. OBJETO</h3>
+        <p>QRPretium provee al Cliente una plataforma digital que permite exhibir productos, precios, promociones y un asistente IA en la vidriera del comercio, accesible mediante código QR.</p>
+    </div>
+
+    <div class="clausula">
+        <h3>2. CARACTERÍSTICAS DEL SERVICIO</h3>
+        <ul>
+            <li>Catálogo digital 24/7/365</li>
+            <li>Asistente IA por voz y texto</li>
+            <li>Panel de administración web</li>
+            <li>Actualización instantánea de productos</li>
+            <li>Almacenamiento seguro en la nube</li>
+            <li>Display QR personalizado</li>
+        </ul>
+    </div>
+
+    <div class="clausula">
+        <h3>3. OBLIGACIONES DE QRPretium</h3>
+        <ul>
+            <li>Mantener el servicio operativo 24/7/365</li>
+            <li>Respaldar los datos del Cliente</li>
+            <li>Brindar soporte técnico por email</li>
+            <li>Notificar cambios importantes en el servicio</li>
+            <li>Proteger los datos personales del Cliente</li>
+        </ul>
+    </div>
+
+    <div class="clausula">
+        <h3>4. RESPONSABILIDADES DEL COMERCIO</h3>
+        <ul>
+            <li>Proporcionar información veraz y actualizada</li>
+            <li>Mantener actualizados precios y disponibilidad</li>
+            <li>No usar el servicio para fines ilícitos</li>
+            <li>Abonar el plan contratado en tiempo y forma</li>
+            <li>Cumplir con las normativas vigentes de su rubro</li>
+        </ul>
+    </div>
+
+    <div class="clausula">
+        <h3>5. PLANES Y PAGOS</h3>
+        <ul>
+            <li><strong>Prueba Gratuita:</strong> 10 días sin cargo</li>
+            <li><strong>Standard / Power / Premium:</strong> abono mensual</li>
+            <li><strong>Forma de pago:</strong> transferencia bancaria</li>
+            <li><strong>Sin contrato de permanencia:</strong> el Cliente puede cancelar cuando quiera</li>
+        </ul>
+    </div>
+
+    <div class="clausula">
+        <h3>6. PROPIEDAD DE LOS DATOS</h3>
+        <p>Los datos cargados son propiedad exclusiva del Cliente. QRPretium no los comparte con terceros ni los usa para fines distintos al servicio.</p>
+    </div>
+
+    <div class="clausula">
+        <h3>7. CANCELACIÓN</h3>
+        <p>Ambas partes pueden cancelar el servicio notificando con 15 días de anticipación. No hay penalidades.</p>
+    </div>
+
+    <div class="clausula">
+        <h3>8. MODIFICACIONES</h3>
+        <p>QRPretium puede actualizar los términos del servicio notificando al Cliente con 30 días de anticipación.</p>
+    </div>
+
+    <div class="clausula">
+        <h3>9. ACEPTACIÓN</h3>
+        <p>Al marcar la casilla "Leí y acepto los términos del acuerdo" y presionar "Aceptar y activar", el Cliente acepta todas las cláusulas del presente acuerdo, quedando formalizada la relación contractual.</p>
+    </div>
+
+    <!-- Firma -->
+    <div class="firma">
+        <div class="bloque">
+            <div class="linea"></div>
+            <p><strong>QRPretium</strong>El Proveedor</p>
+        </div>
+        <div class="bloque">
+            <div class="linea"></div>
+            <p><strong>El Cliente</strong>Firma digital</p>
+        </div>
+    </div>
+
+    <!-- Pie de página -->
+    <div class="pie">
+        <p class="version">Última actualización: Enero 2026</p>
+        <p>QRPretium · qrpretium.com.ar · contactox@qrpretium.com.ar</p>
+    </div>
+
+</body>
+</html>
