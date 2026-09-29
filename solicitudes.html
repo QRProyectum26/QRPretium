@@ -325,30 +325,28 @@
 
             try {
                 const { data, error } = await supabaseClient
-                    .from('admin_credenciales')
-                    .select('*')
-                    .eq('id', 1)
-                    .maybeSingle();
+    .rpc('login_admin_solicitudes', {
+        usuario_input: usuario,
+        password_input: password
+    });
 
-                if (error) throw error;
+                if (error) {
+    divError.innerText = 'Error al conectar: ' + error.message;
+    divError.classList.remove('hidden');
+    return;
+}
 
-                if (!data) {
-                    divError.innerText = 'No hay credenciales configuradas.';
-                    divError.classList.remove('hidden');
-                    return;
-                }
+if (!data.success) {
+    divError.innerText = data.error || 'Usuario o contraseña incorrectos.';
+    divError.classList.remove('hidden');
+    return;
+}
 
-                if (data.usuario !== usuario || data.password !== password) {
-                    divError.innerText = 'Usuario o contraseña incorrectos.';
-                    divError.classList.remove('hidden');
-                    return;
-                }
-
-                // Login exitoso
-                usuarioActual = usuario;
-                document.getElementById('seccionLogin').classList.add('hidden');
-                document.getElementById('seccionPanel').classList.remove('hidden');
-                await cargarSolicitudes();
+// Login exitoso
+usuarioActual = data.usuario;
+document.getElementById('seccionLogin').classList.add('hidden');
+document.getElementById('seccionPanel').classList.remove('hidden');
+await cargarSolicitudes();
 
             } catch (err) {
                 console.error('Error en login:', err);
