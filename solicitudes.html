@@ -374,7 +374,7 @@ await cargarSolicitudes();
     .rpc('listar_solicitudes');
 
 if (error) throw error;
-
+const respuesta = data && data.listar_solicitudes ? data.listar_solicitudes : data;
 if (!respuesta || !respuesta.success) {
     console.error('Error al listar solicitudes:', respuesta?.error);
     solicitudesTodas = [];
