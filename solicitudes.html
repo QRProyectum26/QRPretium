@@ -370,16 +370,33 @@ await cargarSolicitudes();
         // ==================== CARGAR SOLICITUDES ====================
         async function cargarSolicitudes() {
             try {
-                const { data, error } = await supabaseClient
-                    .from('solicitudes')
-                    .select('*')
-                    .order('fecha', { ascending: false });
+             const { data: respuesta, error } = await supabaseClient
+    .rpc('listar_solicitudes');
 
-                if (error) throw error;
+if (error) throw error;
 
-                solicitudesTodas = data || [];
-                actualizarContadores();
-                renderizarTabla();
+if (!respuesta || !respuesta.success) {
+    console.error('Error al listar solicitudes:', respuesta?.error);
+    solicitudesTodas = [];
+} else {
+    // respuesta.solicitudes viene como string JSON o array
+    let listaSolicitudes = respuesta.solicitudes;
+    
+    // Si viene como string, parsearlo
+    if (typeof listaSolicitudes === 'string') {
+        try {
+            listaSolicitudes = JSON.parse(listaSolicitudes);
+        } catch (e) {
+            console.error('Error al parsear solicitudes:', e);
+            listaSolicitudes = [];
+        }
+    }
+    
+    solicitudesTodas = Array.isArray(listaSolicitudes) ? listaSolicitudes : [];
+}
+
+actualizarContadores();
+renderizarTabla();
             } catch (err) {
                 console.error('Error al cargar solicitudes:', err);
                 mostrarMensaje('Error al cargar solicitudes: ' + err.message, 'error');
