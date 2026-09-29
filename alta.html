@@ -660,26 +660,25 @@
                 return false;
             }
 
-            try {
-                const { data: solicitud, error } = await supabaseClient
-                    .from('solicitudes')
-                    .select('*')
-                    .eq('token_alta', tokenActual)
-                    .maybeSingle();
+            try
+            {const { data: respuesta, error } = await supabaseClient
+    .rpc('get_solicitud_by_token', { p_token: tokenActual });
 
-                if (error) {
-                    console.error('Error al buscar solicitud:', error);
-                    mostrarError('Error de conexión', 'No pudimos verificar tu link. Intentá de nuevo en unos minutos.');
-                    return false;
-                }
+if (error) {
+    console.error('Error al buscar solicitud:', error);
+    mostrarError('Error de conexión', 'No pudimos verificar tu link. Intentá de nuevo en unos minutos.');
+    return false;
+}
 
-                if (!solicitud) {
-                    mostrarError(
-                        'Link inválido',
-                        'No encontramos una solicitud asociada a este link. Verificá que hayas copiado la URL completa del email.'
-                    );
-                    return false;
-                }
+if (!respuesta || !respuesta.success) {
+    mostrarError(
+        'Link inválido',
+        'No encontramos una solicitud asociada a este link. Verificá que hayas copiado la URL completa del email.'
+    );
+    return false;
+}
+
+const solicitud = respuesta.solicitud;
 
                 if (solicitud.token_usado === true) {
                     mostrarError(
@@ -995,15 +994,17 @@
                     return;
                 }
 
-                // 5. UPDATE en solicitudes
-                const { error: errorUpdate } = await supabaseClient
-                    .from('solicitudes')
-                    .update({
-                        estado: 'Completada',
-                        token_usado: true,
-                        fecha_alta: new Date().toISOString()
-                    })
-                    .eq('id', solicitudActual.id);
+             // UPDATE en solicitudes via RPC
+          const { data: respuestaUpdate, error: errorUpdate } = await supabaseClient
+              .rpc('actualizar_solicitud_alta', {
+              p_id: solicitudActual.id,
+              p_token: tokenActual
+    });
+
+           if (errorUpdate || !respuestaUpdate?.success) {
+              console.error('Error al actualizar solicitud:', errorUpdate || respuestaUpdate?.error);
+              // No bloqueamos al usuario por esto. El comercio ya está creado.
+}
 
                 if (errorUpdate) {
                     console.error('Error al actualizar solicitud:', errorUpdate);
