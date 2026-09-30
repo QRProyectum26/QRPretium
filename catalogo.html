@@ -1003,15 +1003,20 @@
         const urlParams = new URLSearchParams(window.location.search);
         const cuitParam = urlParams.get('cuit') ? parseInt(urlParams.get('cuit').trim().replace(/[-.\s]/g, ''), 10) : null;
 
-        function abrirPanelIA() {
+              function abrirPanelIA() {
             panelChat.classList.add('abierto');
             overlayPanel.classList.add('activo');
             document.body.style.overflow = 'hidden';
-            setTimeout(() => {
-                if (!estaEscuchando && !estaHablando) {
-                    iniciarEscucha();
+            
+            // Iniciar escucha INMEDIATAMENTE (dentro del user gesture del click)
+            if (!estaEscuchando && !estaHablando) {
+                try {
+                    if (reconocedorVoz) reconocedorVoz.start();
+                } catch (e) {
+                    // Si ya estaba corriendo, ignorar
+                    console.warn('Mic ya activo o error al iniciar:', e);
                 }
-            }, 400);
+            }
         }
 
         function cerrarPanelIA() {
@@ -1277,11 +1282,32 @@
                 }
             };
 
-            reconocedorVoz.onerror = (event) => {
+                       reconocedorVoz.onerror = (event) => {
                 console.error("Error de voz:", event.error);
                 estaEscuchando = false;
+                
+                if (event.error === 'aborted') {
+                    aplicarEfectoCubo('normal');
+                    actualizarEstadoPanel('normal');
+                    return;
+                }
+                
                 aplicarEfectoCubo('error');
                 actualizarEstadoPanel('error');
+                
+                let mensaje = "Error de micrófono. Intenta de nuevo.";
+                if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+                    mensaje = "🚫 Habilitá el micrófono en tu navegador para usar el asistente de voz.";
+                } else if (event.error === 'no-speech') {
+                    mensaje = "🎤 No escuché nada. ¿Probás de nuevo?";
+                } else if (event.error === 'audio-capture') {
+                    mensaje = "🎤 No se detectó micrófono. Verificá tu dispositivo.";
+                } else if (event.error === 'network') {
+                    mensaje = "📡 Error de red. Verificá tu conexión.";
+                }
+                
+                agregarMensajePanel('ia', mensaje);
+                
                 setTimeout(() => {
                     if (!estaEscuchando && !estaHablando) {
                         aplicarEfectoCubo('normal');
