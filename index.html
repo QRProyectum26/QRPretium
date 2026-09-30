@@ -642,7 +642,11 @@
         </div>
       </div>
 
-      <h3 class="text-xl font-extrabold text-white text-left mb-4">Complete el Formulario</h3>
+            <h3 class="text-xl font-extrabold text-white text-left mb-2">Complete el Formulario</h3>
+      <p class="text-xs text-amber-400 text-left mb-6 italic flex items-center gap-2">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        Por Favor,verifique sus datos antes de enviar. Una vez enviados, no podrá modificar la solicitud.
+      </p>
 
       <!-- FORMULARIO ORIGINAL (REVERTIDO) -->
       <form id="formSolicitud" action="https://zbnuunaguciupyyzploq.supabase.co/functions/v1/solicitar" method="POST" class="bg-pizarra/90 p-6 sm:p-8 rounded-3xl border border-slate-700/80 shadow-2xl space-y-4 backdrop-blur-sm">
@@ -1089,14 +1093,32 @@
       }
     });
 
-    // Enviar formulario
+    // Enviar formulario (CON PROTECCIÓN ANTI-DOBLE-SUBMIT)
+    let enviandoSolicitud = false; // Bandera global
+
     document.getElementById('formSolicitud').addEventListener('submit', async function(e) {
       e.preventDefault();
-      const formData = new FormData(this);
+      
+      // 🛡️ Prevenir múltiples envíos
+      if (enviandoSolicitud) {
+        console.warn('Ya hay un envío en curso, ignorando click duplicado');
+        return;
+      }
+      
+      const form = this;
+      const btnSubmit = form.querySelector('button[type="submit"]');
+      const textoOriginal = btnSubmit.innerHTML;
+      
+      // 🛡️ Marcar como enviando + deshabilitar botón
+      enviandoSolicitud = true;
+      btnSubmit.disabled = true;
+      btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando solicitud...';
+      
+      const formData = new FormData(form);
       const data = Object.fromEntries(formData.entries());
 
       try {
-        const response = await fetch(this.action, {
+        const response = await fetch(form.action, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
@@ -1105,14 +1127,33 @@
         const result = await response.json();
 
         if (response.ok) {
+          // ✅ Éxito: NO rehabilitamos el botón
           alert('✅ Solicitud enviada con éxito. Te contactaremos pronto.');
-          this.reset();
+          form.reset();
+          btnSubmit.innerHTML = '<i class="fa-solid fa-check"></i> Solicitud enviada';
+          // El botón queda deshabilitado intencionalmente
+          
+          // Opcional: rehabilitar después de 10 seg para permitir un nuevo envío
+          setTimeout(() => {
+            enviandoSolicitud = false;
+            btnSubmit.disabled = false;
+            btnSubmit.innerHTML = textoOriginal;
+          }, 10000);
+          
         } else {
+          // ❌ Error del servidor: rehabilitar
           alert('❌ Error: ' + (result.error || 'Intenta de nuevo más tarde.'));
+          enviandoSolicitud = false;
+          btnSubmit.disabled = false;
+          btnSubmit.innerHTML = textoOriginal;
         }
       } catch (error) {
+        // ❌ Error de red: rehabilitar
         alert('❌ Error de conexión. Verifica tu internet e intenta de nuevo.');
         console.error(error);
+        enviandoSolicitud = false;
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = textoOriginal;
       }
     });
 
