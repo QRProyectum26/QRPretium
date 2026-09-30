@@ -982,7 +982,7 @@
     <script>
         const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let productosGlobales = [];
         let datosComercioGlobal = null;
@@ -1168,10 +1168,10 @@
             let contexto = "Eres un asistente de ventas experto en productos de un comercio. ";
             contexto += "Los productos disponibles son:\n";
             productosGlobales.forEach((p, i) => {
-                const nombre = p.articulo || p.ARTICULO || p.nombre || p.NOMBRE || 'Producto';
-                const precio = p.precio || p.PRECIO || 0;
-                const desc = p.descripcion || p.DESCRIPCION || '';
-                const cod = p.codigo || p.CODIGO || '';
+                const nombre = p.articulo || 'Producto';
+                const precio = p.precio || 0;
+                const desc = p.descripcion || '';
+                const cod = p.codigo || '';
                 contexto += `${i+1}. ${nombre} - $${Number(precio).toLocaleString('es-AR')}`;
                 if (desc) contexto += ` (${desc})`;
                 if (cod) contexto += ` [Código: ${cod}]`;
@@ -1298,13 +1298,14 @@
             }
 
             try {
-                let comercio = null;
-                let res1 = await supabaseClient.from('comercios').select('*').eq('cuit', cuitParam).maybeSingle();
-                if (res1.data) comercio = res1.data;
-                else {
-                    let res2 = await supabaseClient.from('comercios').select('*').eq('CUIT', cuitParam).maybeSingle();
-                    if (res2.data) comercio = res2.data;
-                }
+                // 1) Traer datos del comercio
+                const { data: comercio, error: errComercio } = await supabaseClient
+                    .from('comercios')
+                    .select('*')
+                    .eq('cuit', cuitParam)
+                    .maybeSingle();
+
+                if (errComercio) throw errComercio;
 
                 if (!comercio) {
                     document.getElementById('nombreComercio').innerText = 'Comercio no encontrado';
@@ -1312,40 +1313,48 @@
                 }
 
                 datosComercioGlobal = comercio;
-                document.getElementById('nombreComercio').innerText = comercio.nombre || comercio.NOMBRE || 'Mi Comercio';
-                document.getElementById('modalNombreComercio').innerText = comercio.nombre || comercio.NOMBRE || 'Mi Comercio';
-                
-                const color = comercio.color || comercio.COLOR || comercio.color_hex || comercio.COLOR_HEX;
-                if (color) document.getElementById('headerComercio').style.backgroundColor = color;
-                
-                const logo = comercio.logo || comercio.LOGO;
-                if (logo && logo.trim() !== '') document.getElementById('imgLogo').src = logo;
+                document.getElementById('nombreComercio').innerText = comercio.nombre || 'Mi Comercio';
+                document.getElementById('modalNombreComercio').innerText = comercio.nombre || 'Mi Comercio';
+
+                if (comercio.color) {
+                    document.getElementById('headerComercio').style.backgroundColor = comercio.color;
+                }
+
+                if (comercio.logo && String(comercio.logo).trim() !== '') {
+                    document.getElementById('imgLogo').src = comercio.logo;
+                }
 
                 configurarModalComercio(comercio);
 
-              // RPC listar_articulos_by_cuit
-let productos = null;
-try {
-    const { data: rpcData, error: rpcError } = await supabaseClient.rpc('listar_articulos_by_cuit', {
-        p_cuit: String(cuitParam)
-    });
+                // 2) Traer artículos vía RPC
+                const { data: rpcData, error: rpcError } = await supabaseClient.rpc(
+                    'listar_articulos_by_cuit',
+                    { p_cuit: String(cuitParam) }
+                );
 
-    if (!rpcError && rpcData) {
-        const respuesta = rpcData.listar_articulos_by_cuit ? rpcData.listar_articulos_by_cuit : rpcData;
-        let lista = respuesta?.articulos;
-        if (typeof lista === 'string') {
-            try { lista = JSON.parse(lista); } catch(e) { lista = []; }
-        }
-        if (Array.isArray(lista) && lista.length > 0) {
-            productos = lista;
-        }
-    }
-} catch (e) {
-    console.warn('Error al cargar artículos con RPC:', e);
-}
+                if (rpcError) throw rpcError;
 
-                if (!productos || productos.length === 0) {
-                    document.getElementById('listaProductos').innerHTML = '<p class="text-center text-gray-400 py-8">Este comercio aún no tiene artículos cargados.</p>';
+                // Desanidar respuesta
+                let respuesta = rpcData;
+                if (rpcData && rpcData.listar_articulos_by_cuit) {
+                    respuesta = rpcData.listar_articulos_by_cuit;
+                }
+
+                let productos = [];
+                if (respuesta && respuesta.success) {
+                    productos = respuesta.articulos;
+                    if (typeof productos === 'string') {
+                        try { productos = JSON.parse(productos); } catch (e) { productos = []; }
+                    }
+                } else if (respuesta && respuesta.error) {
+                    throw new Error(respuesta.error);
+                }
+
+                productos = Array.isArray(productos) ? productos : [];
+
+                if (productos.length === 0) {
+                    document.getElementById('listaProductos').innerHTML =
+                        '<p class="text-center text-gray-400 py-8">Este comercio aún no tiene artículos cargados.</p>';
                     return;
                 }
 
@@ -1354,17 +1363,19 @@ try {
                 inicializarReconocimientoVoz();
 
             } catch (err) {
-                console.error("Error:", err);
+                console.error("Error al cargar datos:", err);
                 document.getElementById('nombreComercio').innerText = 'Error de conexión';
+                document.getElementById('listaProductos').innerHTML =
+                    `<p class="text-center text-red-400 py-8">Error al cargar: ${err.message}</p>`;
             }
         }
 
         function configurarModalComercio(com) {
-            const horarios = com.horarios || com.HORARIOS || com.horario || com.HORARIO;
+            const horarios = com.horarios;
             if (horarios) document.getElementById('modalHorarios').innerText = horarios;
 
-            const direccion = com.direccion || com.DIRECCION;
-            const ciudad = com.ciudad || com.CIUDAD || '';
+            const direccion = com.direccion;
+            const ciudad = com.ciudad || '';
             if (direccion) {
                 document.getElementById('modalDireccion').innerText = ciudad ? `${direccion}, ${ciudad}` : direccion;
                 const linkMapa = document.getElementById('linkMapa');
@@ -1373,15 +1384,12 @@ try {
                 linkMapa.classList.remove('hidden');
             }
 
-            // ✅ NUEVO: Sitio Web
-            const web = com.web || com.WEB || com.sitio || com.SITIO || com.website || com.WEBSITE;
+            const web = com.web;
             const bloqueWeb = document.getElementById('bloqueWeb');
             const linkWeb = document.getElementById('linkWeb');
             if (web && String(web).trim() !== '') {
                 let urlWeb = String(web).trim();
-                if (!/^https?:\/\//i.test(urlWeb)) {
-                    urlWeb = 'https://' + urlWeb;
-                }
+                if (!/^https?:\/\//i.test(urlWeb)) urlWeb = 'https://' + urlWeb;
                 linkWeb.href = urlWeb;
                 const dominioLimpio = urlWeb.replace(/^https?:\/\//i, '').replace(/\/$/, '');
                 linkWeb.innerText = dominioLimpio + ' →';
@@ -1391,20 +1399,18 @@ try {
                 bloqueWeb.classList.add('hidden');
                 bloqueWeb.classList.remove('flex');
             }
-            // FIN Sitio Web
 
-            const telefono = com.telefono || com.TELEFONO;
-            const whatsapp = com.whatsapp || com.WHATSAPP || telefono;
+            const telefono = com.telefono;
+            const whatsapp = com.whatsapp || telefono;
             if (telefono || whatsapp) document.getElementById('modalTelefono').innerText = whatsapp || telefono;
             if (whatsapp) {
-                const numLimpio = whatsapp.replace(/[^0-9]/g, '');
+                const numLimpio = String(whatsapp).replace(/[^0-9]/g, '');
                 const btnWa = document.getElementById('btnWhatsappModal');
                 btnWa.href = `https://wa.me/${numLimpio}`;
                 btnWa.classList.remove('hidden');
             }
         }
 
-        // ✅ renderizarProductos con todas las mejoras
         function renderizarProductos(lista) {
             const contenedor = document.getElementById('listaProductos');
             contenedor.innerHTML = '';
@@ -1413,12 +1419,12 @@ try {
                 return;
             }
             lista.forEach(item => {
-                const codigo = item.codigo || item.CODIGO || '';
-                const articulo = item.articulo || item.ARTICULO || item.nombre || item.NOMBRE || item.descripcion || item.DESCRIPCION || 'Artículo';
-                const descripcion = (item.articulo || item.ARTICULO || item.nombre || item.NOMBRE) ? (item.descripcion || item.DESCRIPCION || '') : '';
-                const disponibilidad = item.disponibilidad || item.DISPONIBILIDAD || '';
-                const precio = item.precio || item.PRECIO || 0;
-                const promocion = item.promocion || item.PROMOCION || '';
+                const codigo = item.codigo || '';
+                const articulo = item.articulo || item.descripcion || 'Artículo';
+                const descripcion = item.articulo ? (item.descripcion || '') : '';
+                const disponibilidad = item.disponibilidad || '';
+                const precio = item.precio || 0;
+                const promocion = item.promocion || '';
 
                 const tarjeta = `
                     <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200 relative overflow-hidden">
@@ -1444,9 +1450,9 @@ try {
         function filtrarProductos() {
             const busqueda = document.getElementById('inputBuscar').value.toLowerCase();
             const filtrados = productosGlobales.filter(prod => {
-                const cod = (prod.codigo || prod.CODIGO || '').toString().toLowerCase();
-                const art = (prod.articulo || prod.ARTICULO || prod.nombre || prod.NOMBRE || '').toLowerCase();
-                const desc = (prod.descripcion || prod.DESCRIPCION || '').toLowerCase();
+                const cod = (prod.codigo || '').toString().toLowerCase();
+                const art = (prod.articulo || '').toLowerCase();
+                const desc = (prod.descripcion || '').toLowerCase();
                 return cod.includes(busqueda) || art.includes(busqueda) || desc.includes(busqueda);
             });
             renderizarProductos(filtrados);
