@@ -972,14 +972,43 @@
                     nuevoComercio.fecha_vencimiento_prueba = vencimiento.toISOString();
                 }
 
-                // 4. INSERT en comercios
-                const { error: errorInsert } = await supabaseClient
-                    .from('comercios')
-                    .insert([nuevoComercio]);
+                              // 4. Llamar RPC para crear el comercio
+                const { data: rpcData, error: rpcError } = await supabaseClient
+                    .rpc('crear_comercio_desde_alta', {
+                        p_cuit: cuitTexto,
+                        p_nombre: nuevoComercio.nombre,
+                        p_responsable: nuevoComercio.responsable,
+                        p_mail: nuevoComercio.mail,
+                        p_telefono: nuevoComercio.telefono,
+                        p_whatsapp: nuevoComercio.whatsapp,
+                        p_rubro: nuevoComercio.rubro,
+                        p_direccion: nuevoComercio.direccion,
+                        p_ciudad: nuevoComercio.ciudad,
+                        p_provincia: nuevoComercio.provincia,
+                        p_web: nuevoComercio.web,
+                        p_horarios: nuevoComercio.horarios,
+                        p_password: nuevoComercio.password,
+                        p_plan: nuevoComercio.plan,
+                        p_logo: nuevoComercio.logo,
+                        p_token: tokenActual
+                    });
 
-                if (errorInsert) {
-                    console.error('Error al insertar comercio:', errorInsert);
-                    alert('❌ Error al crear el comercio: ' + errorInsert.message);
+                if (rpcError) {
+                    console.error('Error al crear comercio:', rpcError);
+                    alert('❌ Error al crear el comercio: ' + rpcError.message);
+                    btn.disabled = false;
+                    btn.innerText = '✅ Aceptar y activar';
+                    return;
+                }
+
+                // Manejar anidación
+                const respInsert = rpcData && rpcData.crear_comercio_desde_alta 
+                    ? rpcData.crear_comercio_desde_alta 
+                    : rpcData;
+
+                if (!respInsert || !respInsert.success) {
+                    console.error('Error al crear comercio:', respInsert?.error);
+                    alert('❌ Error al crear el comercio: ' + (respInsert?.error || 'Error desconocido'));
                     btn.disabled = false;
                     btn.innerText = '✅ Aceptar y activar';
                     return;
