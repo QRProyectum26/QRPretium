@@ -661,7 +661,7 @@
             }
 
             try
-            {const { data: respuesta, error } = await supabaseClient
+            const { data, error } = await supabaseClient
     .rpc('get_solicitud_by_token', { p_token: tokenActual });
 
 if (error) {
@@ -669,6 +669,9 @@ if (error) {
     mostrarError('Error de conexión', 'No pudimos verificar tu link. Intentá de nuevo en unos minutos.');
     return false;
 }
+
+// ✅ CORRECCIÓN: manejar el nivel extra de anidación
+const respuesta = data && data.get_solicitud_by_token ? data.get_solicitud_by_token : data;
 
 if (!respuesta || !respuesta.success) {
     mostrarError(
