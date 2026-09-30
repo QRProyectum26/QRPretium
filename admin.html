@@ -820,11 +820,10 @@
             const precio = parseFloat(document.getElementById('artPrecio').value) || 0;
             const promocion = document.getElementById('artPromocion').value.trim();
 
-            try {
+                        try {
+                const token = localStorage.getItem('qrpretium_token');
                 let resultado = null;
                 let error = null;
-
-                                const token = localStorage.getItem('qrpretium_token');
 
                 if (id) {
                     const res = await supabaseClient.rpc('actualizar_articulo', {
@@ -853,19 +852,7 @@
                     });
                     resultado = res.data;
                     error = res.error;
-                } else {
-                    const res = await supabaseClient.rpc('crear_articulo', {
-                        p_cuit: cuitLimpioActual,
-                        p_codigo: codigo,
-                        p_articulo: articulo,
-                        p_descripcion: descripcion,
-                        p_disponibilidad: disponibilidad,
-                        p_precio: precio,
-                        p_promocion: promocion
-                    });
-                    resultado = res.data;
-                    error = res.error;
-                }
+                } 
 
                 if (error) throw error;
 
