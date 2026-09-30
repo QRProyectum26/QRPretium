@@ -397,62 +397,7 @@
                     📄 Al confirmar tu alta vas a poder leer y aceptar el <strong class="text-slate-200">Acuerdo de Servicio de QRPretium</strong>. Una vez aceptado, tu comercio quedará activo y recibirás tus credenciales por email.
                 </p>
             </div>
-                    // ==================== VALIDACIÓN DE CUIT ====================
-        function validarCuit(cuit) {
-            // 1. Limpiar guiones, puntos y espacios
-            const cuitLimpio = String(cuit).replace(/[-.\s]/g, '');
 
-            // 2. Verificar que tenga 11 dígitos numéricos
-            if (!/^\d{11}$/.test(cuitLimpio)) {
-                return { 
-                    ok: false, 
-                    msg: 'El CUIT debe tener 11 dígitos numéricos (sin guiones ni puntos).' 
-                };
-            }
-
-            // 3. Verificar el prefijo
-            const prefijo = cuitLimpio.substring(0, 2);
-            const prefijosValidos = ['20', '23', '24', '27', '30', '33', '34'];
-            if (!prefijosValidos.includes(prefijo)) {
-                return { 
-                    ok: false, 
-                    msg: 'El CUIT tiene un prefijo inválido. Los prefijos válidos son: 20, 23, 24, 27 (personas) y 30, 33, 34 (empresas).' 
-                };
-            }
-
-            // 4. Validar el dígito verificador (algoritmo oficial AFIP)
-            const multiplicadores = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2];
-            let suma = 0;
-            for (let i = 0; i < 10; i++) {
-                suma += parseInt(cuitLimpio[i]) * multiplicadores[i];
-            }
-
-            const resto = suma % 11;
-            let digitoVerificador;
-
-            if (resto === 0) {
-                digitoVerificador = 0;
-            } else if (resto === 1) {
-                // Caso especial según AFIP
-                if (['20', '23', '24', '27'].includes(prefijo)) {
-                    digitoVerificador = 9;
-                } else {
-                    digitoVerificador = 4;
-                }
-            } else {
-                digitoVerificador = 11 - resto;
-            }
-
-            const digitoIngresado = parseInt(cuitLimpio[10]);
-            if (digitoVerificador !== digitoIngresado) {
-                return { 
-                    ok: false, 
-                    msg: 'El CUIT no es válido (dígito verificador incorrecto). Verificalo y volvé a intentar.' 
-                };
-            }
-
-            return { ok: true, cuitLimpio: cuitLimpio };
-        }
             <!-- BOTÓN CONFIRMAR -->
             <button id="btnConfirmarAlta" type="button" onclick="abrirModalAcuerdo()" class="btn-principal">
                 ✅ Confirmar alta y activar mi vidriera
@@ -647,6 +592,49 @@
             }
         }
 
+        // ==================== VALIDACIÓN DE CUIT ====================
+        function validarCuit(cuit) {
+            const cuitLimpio = String(cuit).replace(/[-.\s]/g, '');
+
+            if (!/^\d{11}$/.test(cuitLimpio)) {
+                return { ok: false, msg: 'El CUIT debe tener 11 dígitos numéricos (sin guiones ni puntos).' };
+            }
+
+            const prefijo = cuitLimpio.substring(0, 2);
+            const prefijosValidos = ['20', '23', '24', '27', '30', '33', '34'];
+            if (!prefijosValidos.includes(prefijo)) {
+                return { ok: false, msg: 'El CUIT tiene un prefijo inválido. Los prefijos válidos son: 20, 23, 24, 27 (personas) y 30, 33, 34 (empresas).' };
+            }
+
+            const multiplicadores = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2];
+            let suma = 0;
+            for (let i = 0; i < 10; i++) {
+                suma += parseInt(cuitLimpio[i]) * multiplicadores[i];
+            }
+
+            const resto = suma % 11;
+            let digitoVerificador;
+
+            if (resto === 0) {
+                digitoVerificador = 0;
+            } else if (resto === 1) {
+                if (['20', '23', '24', '27'].includes(prefijo)) {
+                    digitoVerificador = 9;
+                } else {
+                    digitoVerificador = 4;
+                }
+            } else {
+                digitoVerificador = 11 - resto;
+            }
+
+            const digitoIngresado = parseInt(cuitLimpio[10]);
+            if (digitoVerificador !== digitoIngresado) {
+                return { ok: false, msg: 'El CUIT no es válido (dígito verificador incorrecto). Verificalo y volvé a intentar.' };
+            }
+
+            return { ok: true, cuitLimpio: cuitLimpio };
+        }
+
         // ==================== VALIDACIÓN DEL TOKEN ====================
         async function validarToken() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -660,28 +648,28 @@
                 return false;
             }
 
-            try
-            const { data, error } = await supabaseClient
-    .rpc('get_solicitud_by_token', { p_token: tokenActual });
+            try {
+                const { data, error } = await supabaseClient
+                    .rpc('get_solicitud_by_token', { p_token: tokenActual });
 
-if (error) {
-    console.error('Error al buscar solicitud:', error);
-    mostrarError('Error de conexión', 'No pudimos verificar tu link. Intentá de nuevo en unos minutos.');
-    return false;
-}
+                if (error) {
+                    console.error('Error al buscar solicitud:', error);
+                    mostrarError('Error de conexión', 'No pudimos verificar tu link. Intentá de nuevo en unos minutos.');
+                    return false;
+                }
 
-// ✅ CORRECCIÓN: manejar el nivel extra de anidación
-const respuesta = data && data.get_solicitud_by_token ? data.get_solicitud_by_token : data;
+                // ✅ Manejar el nivel extra de anidación
+                const respuesta = data && data.get_solicitud_by_token ? data.get_solicitud_by_token : data;
 
-if (!respuesta || !respuesta.success) {
-    mostrarError(
-        'Link inválido',
-        'No encontramos una solicitud asociada a este link. Verificá que hayas copiado la URL completa del email.'
-    );
-    return false;
-}
+                if (!respuesta || !respuesta.success) {
+                    mostrarError(
+                        'Link inválido',
+                        'No encontramos una solicitud asociada a este link. Verificá que hayas copiado la URL completa del email.'
+                    );
+                    return false;
+                }
 
-const solicitud = respuesta.solicitud;
+                const solicitud = respuesta.solicitud;
 
                 if (solicitud.token_usado === true) {
                     mostrarError(
@@ -879,7 +867,7 @@ const solicitud = respuesta.solicitud;
         }
 
         // ==================== MODAL DEL ACUERDO ====================
-                function abrirModalAcuerdo() {
+        function abrirModalAcuerdo() {
             // 1. Validar formulario
             const validacion = validarFormulario();
             if (!validacion.ok) {
@@ -887,7 +875,7 @@ const solicitud = respuesta.solicitud;
                 return;
             }
 
-            // 2. Validar CUIT (validación adicional y crítica)
+            // 2. Validar CUIT
             const cuitTexto = document.getElementById('campoCuit').value.trim();
             const cuitValidacion = validarCuit(cuitTexto);
             if (!cuitValidacion.ok) {
@@ -975,7 +963,7 @@ const solicitud = respuesta.solicitud;
                     acuerdo_aceptado: true,
                     fecha_acuerdo: new Date().toISOString(),
                     fecha_alta: new Date().toISOString(),
-                    link_qr: `https://qrproyectum26.github.io/QRPretium/catalogo.html?cuit=${cuit}`
+                    link_qr: `https://qrpretium.com.ar/catalogo.html?cuit=${cuit}`
                 };
 
                 if (plan === 'Prueba Gratuita') {
@@ -997,20 +985,16 @@ const solicitud = respuesta.solicitud;
                     return;
                 }
 
-             // UPDATE en solicitudes via RPC
-          const { data: respuestaUpdate, error: errorUpdate } = await supabaseClient
-              .rpc('actualizar_solicitud_alta', {
-              p_id: solicitudActual.id,
-              p_token: tokenActual
-    });
+                // 5. UPDATE en solicitudes via RPC
+                const { data: respuestaUpdate, error: errorUpdate } = await supabaseClient
+                    .rpc('actualizar_solicitud_alta', {
+                        p_id: solicitudActual.id,
+                        p_token: tokenActual
+                    });
 
-           if (errorUpdate || !respuestaUpdate?.success) {
-              console.error('Error al actualizar solicitud:', errorUpdate || respuestaUpdate?.error);
-              // No bloqueamos al usuario por esto. El comercio ya está creado.
-}
-
-                if (errorUpdate) {
-                    console.error('Error al actualizar solicitud:', errorUpdate);
+                if (errorUpdate || !respuestaUpdate?.success) {
+                    console.error('Error al actualizar solicitud:', errorUpdate || respuestaUpdate?.error);
+                    // No bloqueamos al usuario por esto. El comercio ya está creado.
                 }
 
                 // 6. Llamar a la Edge Function enviar-credenciales
@@ -1021,7 +1005,7 @@ const solicitud = respuesta.solicitud;
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'apikey': 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB'
+                                'apikey': SUPABASE_ANON_KEY
                             },
                             body: JSON.stringify({
                                 cuit: cuit,
