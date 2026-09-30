@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="img/favicon.png">
     <title>Solicitudes - QRPretium Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -174,7 +175,6 @@
         .tabla-solicitudes tr:hover td {
             background-color: rgba(30, 41, 59, 0.5);
         }
-        /* Mobile: cards */
         @media (max-width: 1024px) {
             .tabla-solicitudes thead { display: none; }
             .tabla-solicitudes tr { display: block; margin-bottom: 16px; border: 1px solid #334155; border-radius: 12px; overflow: hidden; }
@@ -325,28 +325,31 @@
 
             try {
                 const { data, error } = await supabaseClient
-    .rpc('login_admin_solicitudes', {
-        usuario_input: usuario,
-        password_input: password
-    });
+                    .rpc('login_admin_solicitudes', {
+                        usuario_input: usuario,
+                        password_input: password
+                    });
 
                 if (error) {
-    divError.innerText = 'Error al conectar: ' + error.message;
-    divError.classList.remove('hidden');
-    return;
-}
+                    divError.innerText = 'Error al conectar: ' + error.message;
+                    divError.classList.remove('hidden');
+                    return;
+                }
 
-if (!data.success) {
-    divError.innerText = data.error || 'Usuario o contraseña incorrectos.';
-    divError.classList.remove('hidden');
-    return;
-}
+                // Manejar el nivel extra de anidación
+                const respuesta = data && data.login_admin_solicitudes ? data.login_admin_solicitudes : data;
 
-// Login exitoso
-usuarioActual = data.usuario;
-document.getElementById('seccionLogin').classList.add('hidden');
-document.getElementById('seccionPanel').classList.remove('hidden');
-await cargarSolicitudes();
+                if (!respuesta || !respuesta.success) {
+                    divError.innerText = respuesta?.error || 'Usuario o contraseña incorrectos.';
+                    divError.classList.remove('hidden');
+                    return;
+                }
+
+                // Login exitoso
+                usuarioActual = respuesta.usuario;
+                document.getElementById('seccionLogin').classList.add('hidden');
+                document.getElementById('seccionPanel').classList.remove('hidden');
+                await cargarSolicitudes();
 
             } catch (err) {
                 console.error('Error en login:', err);
@@ -370,33 +373,37 @@ await cargarSolicitudes();
         // ==================== CARGAR SOLICITUDES ====================
         async function cargarSolicitudes() {
             try {
-             const { data: respuesta, error } = await supabaseClient
-    .rpc('listar_solicitudes');
+                // Llamada a la RPC
+                const { data, error } = await supabaseClient
+                    .rpc('listar_solicitudes');
 
-if (error) throw error;
-const respuesta = data && data.listar_solicitudes ? data.listar_solicitudes : data;
-if (!respuesta || !respuesta.success) {
-    console.error('Error al listar solicitudes:', respuesta?.error);
-    solicitudesTodas = [];
-} else {
-    // respuesta.solicitudes viene como string JSON o array
-    let listaSolicitudes = respuesta.solicitudes;
-    
-    // Si viene como string, parsearlo
-    if (typeof listaSolicitudes === 'string') {
-        try {
-            listaSolicitudes = JSON.parse(listaSolicitudes);
-        } catch (e) {
-            console.error('Error al parsear solicitudes:', e);
-            listaSolicitudes = [];
-        }
-    }
-    
-    solicitudesTodas = Array.isArray(listaSolicitudes) ? listaSolicitudes : [];
-}
+                if (error) throw error;
 
-actualizarContadores();
-renderizarTabla();
+                // Manejar el nivel extra de anidación
+                const respuesta = data && data.listar_solicitudes ? data.listar_solicitudes : data;
+
+                if (!respuesta || !respuesta.success) {
+                    console.error('Error al listar solicitudes:', respuesta?.error);
+                    solicitudesTodas = [];
+                } else {
+                    // respuesta.solicitudes viene como string JSON o array
+                    let listaSolicitudes = respuesta.solicitudes;
+
+                    // Si viene como string, parsearlo
+                    if (typeof listaSolicitudes === 'string') {
+                        try {
+                            listaSolicitudes = JSON.parse(listaSolicitudes);
+                        } catch (e) {
+                            console.error('Error al parsear solicitudes:', e);
+                            listaSolicitudes = [];
+                        }
+                    }
+
+                    solicitudesTodas = Array.isArray(listaSolicitudes) ? listaSolicitudes : [];
+                }
+
+                actualizarContadores();
+                renderizarTabla();
             } catch (err) {
                 console.error('Error al cargar solicitudes:', err);
                 mostrarMensaje('Error al cargar solicitudes: ' + err.message, 'error');
