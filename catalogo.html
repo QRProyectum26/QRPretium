@@ -5,41 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="img/favicon.png">
     <title>Catálogo de Productos - Vidriera Inmersiva</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Three.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/geometries/RoundedBoxGeometry.js"></script>
     
     <style>
-        /* --- RESPLANDORES DEL CUBO --- */
         .marco-verde-pastel {
             box-shadow: 0 0 20px rgba(134, 239, 172, 0.45), inset 0 0 15px rgba(134, 239, 172, 0.25);
             transition: box-shadow 0.3s ease;
         }
-        
         .glow-escuchando {
             box-shadow: 0 0 40px rgba(16, 185, 129, 0.8), 0 0 80px rgba(16, 185, 129, 0.4), inset 0 0 30px rgba(16, 185, 129, 0.3) !important;
             animation: pulse-glow 0.8s ease-in-out infinite;
         }
-        
         @keyframes pulse-glow {
             0%, 100% { box-shadow: 0 0 40px rgba(16, 185, 129, 0.8), 0 0 80px rgba(16, 185, 129, 0.4), inset 0 0 30px rgba(16, 185, 129, 0.3); }
             50% { box-shadow: 0 0 60px rgba(16, 185, 129, 1), 0 0 120px rgba(16, 185, 129, 0.6), inset 0 0 50px rgba(16, 185, 129, 0.5); }
         }
-        
         .glow-hablando {
             box-shadow: 0 0 30px rgba(56, 189, 248, 0.7), 0 0 60px rgba(56, 189, 248, 0.3), inset 0 0 20px rgba(56, 189, 248, 0.2) !important;
             animation: pulse-hablando 0.5s ease-in-out infinite;
         }
-        
         @keyframes pulse-hablando {
             0%, 100% { box-shadow: 0 0 30px rgba(56, 189, 248, 0.7), 0 0 60px rgba(56, 189, 248, 0.3); }
             50% { box-shadow: 0 0 50px rgba(56, 189, 248, 1), 0 0 100px rgba(56, 189, 248, 0.5); }
         }
-        
         @keyframes shake-error {
             0%, 100% { transform: translateX(0) rotate(0deg); }
             10% { transform: translateX(-8px) rotate(-3deg); }
@@ -52,12 +43,7 @@
             80% { transform: translateX(2px); }
             90% { transform: translateX(-1px); }
         }
-        
-        .shake-error {
-            animation: shake-error 0.6s ease-in-out;
-        }
-
-        /* --- ONDAS DE SONIDO --- */
+        .shake-error { animation: shake-error 0.6s ease-in-out; }
         .onda-sonido {
             position: absolute;
             border-radius: 50%;
@@ -69,13 +55,10 @@
         .onda-sonido:nth-child(1) { animation-delay: 0s; width: 60px; height: 60px; }
         .onda-sonido:nth-child(2) { animation-delay: 0.4s; width: 80px; height: 80px; }
         .onda-sonido:nth-child(3) { animation-delay: 0.8s; width: 100px; height: 100px; }
-        
         @keyframes expand-onda {
             0% { transform: scale(0.5); opacity: 0.8; }
             100% { transform: scale(1.8); opacity: 0; }
         }
-
-        /* --- BOTÓN "+" MÁS PEQUEÑO CON SIGNO VERDE --- */
         .btn-info-gris {
             background-color: #0a1628 !important;
             color: #10b981 !important;
@@ -95,32 +78,19 @@
             background-color: #cbd5e1 !important;
             transform: scale(1.05);
         }
-
         .subtitulo-vidriera {
             font-size: 0.8rem !important;
             letter-spacing: 0.05em;
         }
-
-        /* --- CORREGIDO: CONTENEDOR PRINCIPAL CON SCROLL --- */
         .contenedor-principal {
             max-height: calc(100vh - 220px);
             overflow-y: auto;
             padding-bottom: 20px;
             scroll-behavior: smooth;
         }
-        
-        .contenedor-principal::-webkit-scrollbar {
-            width: 4px;
-        }
-        .contenedor-principal::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .contenedor-principal::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 8px;
-        }
-
-        /* --- CORREGIDO: HEADER FIJO (NO SCROLLEA) --- */
+        .contenedor-principal::-webkit-scrollbar { width: 4px; }
+        .contenedor-principal::-webkit-scrollbar-track { background: transparent; }
+        .contenedor-principal::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
         .header-fijo {
             position: sticky;
             top: 0;
@@ -132,8 +102,6 @@
             margin-top: 20px;
             overflow: visible !important;
         }
-
-        /* --- NUEVO: DESCRIPCIÓN DE PRODUCTO CON SCROLL (máx 3 líneas) --- */
         .descripcion-producto {
             max-height: 3.6em;
             overflow-y: auto;
@@ -143,18 +111,9 @@
             scrollbar-width: thin;
             margin-top: 4px;
         }
-        .descripcion-producto::-webkit-scrollbar {
-            width: 3px;
-        }
-        .descripcion-producto::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-        .descripcion-producto::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        /* --- NUEVO: TEXTO CURVO CON SVG (DEFINITIVO) --- */
+        .descripcion-producto::-webkit-scrollbar { width: 3px; }
+        .descripcion-producto::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .descripcion-producto::-webkit-scrollbar-track { background: transparent; }
         .texto-arco-svg {
             position: absolute;
             top: -10px;           
@@ -164,8 +123,6 @@
             pointer-events: none;
             overflow: visible;
         }
-
-        /* --- PANEL LATERAL (PC) --- */
         .panel-chat {
             position: fixed;
             top: 400px;
@@ -188,12 +145,7 @@
             overflow: hidden;
             padding: 0;
         }
-        
-        .panel-chat.abierto {
-            right: 0;
-        }
-        
-        /* Overlay suave detrás del panel */
+        .panel-chat.abierto { right: 0; }
         .overlay-panel {
             position: fixed;
             inset: 0;
@@ -203,12 +155,7 @@
             pointer-events: none;
             transition: opacity 0.3s ease;
         }
-        .overlay-panel.activo {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        /* --- ESTILOS INTERNOS DEL PANEL --- */
+        .overlay-panel.activo { opacity: 1; pointer-events: auto; }
         .panel-chat .header-panel {
             padding: 12px 16px;
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
@@ -219,13 +166,11 @@
             background: rgba(255, 255, 255, 0.3);
             border-radius: 20px 0 0 0;
         }
-        
         .panel-chat .header-panel .info-ia {
             display: flex;
             align-items: center;
             gap: 10px;
         }
-        
         .panel-chat .header-panel .info-ia .icono-estado {
             font-size: 24px;
             width: 36px;
@@ -237,46 +182,14 @@
             border-radius: 50%;
             transition: all 0.3s ease;
         }
-        
-        .panel-chat .header-panel .info-ia .icono-estado.escuchando {
-            background: rgba(16, 185, 129, 0.15);
-            animation: pulse-icono 0.8s ease-in-out infinite;
-        }
-        
-        .panel-chat .header-panel .info-ia .icono-estado.pensando {
-            background: rgba(249, 115, 22, 0.15);
-        }
-        
-        .panel-chat .header-panel .info-ia .icono-estado.hablando {
-            background: rgba(56, 189, 248, 0.15);
-        }
-        
-        .panel-chat .header-panel .info-ia .icono-estado.ok {
-            background: rgba(34, 197, 94, 0.15);
-        }
-        
-        .panel-chat .header-panel .info-ia .icono-estado.error {
-            background: rgba(239, 68, 68, 0.15);
-        }
-        
-        @keyframes pulse-icono {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-        
-        .panel-chat .header-panel .info-ia .texto-estado {
-            font-size: 13px;
-            font-weight: 600;
-            color: #0f172a;
-        }
-        
-        .panel-chat .header-panel .info-ia .texto-estado .sub {
-            font-size: 11px;
-            font-weight: 400;
-            color: #64748b;
-            display: block;
-        }
-        
+        .panel-chat .header-panel .info-ia .icono-estado.escuchando { background: rgba(16, 185, 129, 0.15); animation: pulse-icono 0.8s ease-in-out infinite; }
+        .panel-chat .header-panel .info-ia .icono-estado.pensando { background: rgba(249, 115, 22, 0.15); }
+        .panel-chat .header-panel .info-ia .icono-estado.hablando { background: rgba(56, 189, 248, 0.15); }
+        .panel-chat .header-panel .info-ia .icono-estado.ok { background: rgba(34, 197, 94, 0.15); }
+        .panel-chat .header-panel .info-ia .icono-estado.error { background: rgba(239, 68, 68, 0.15); }
+        @keyframes pulse-icono { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .panel-chat .header-panel .info-ia .texto-estado { font-size: 13px; font-weight: 600; color: #0f172a; }
+        .panel-chat .header-panel .info-ia .texto-estado .sub { font-size: 11px; font-weight: 400; color: #64748b; display: block; }
         .panel-chat .header-panel .btn-cerrar-panel {
             background: rgba(0, 0, 0, 0.04);
             border: none;
@@ -291,11 +204,7 @@
             align-items: center;
             justify-content: center;
         }
-        .panel-chat .header-panel .btn-cerrar-panel:hover {
-            background: rgba(0, 0, 0, 0.08);
-            color: #0f172a;
-        }
-
+        .panel-chat .header-panel .btn-cerrar-panel:hover { background: rgba(0, 0, 0, 0.08); color: #0f172a; }
         .panel-chat .chat-body {
             flex: 1;
             overflow-y: auto;
@@ -305,7 +214,6 @@
             gap: 8px;
             background: rgba(255, 255, 255, 0.2);
         }
-        
         .panel-chat .chat-body .mensaje {
             padding: 8px 12px;
             border-radius: 12px;
@@ -315,54 +223,14 @@
             word-wrap: break-word;
             animation: fadeInUp 0.3s ease;
         }
-        
-        .panel-chat .chat-body .mensaje.usuario {
-            background: #f97316;
-            color: white;
-            align-self: flex-end;
-            border-bottom-right-radius: 4px;
-        }
-        
-        .panel-chat .chat-body .mensaje.ia {
-            background: rgba(15, 23, 42, 0.06);
-            color: #0f172a;
-            align-self: flex-start;
-            border-bottom-left-radius: 4px;
-            border: 1px solid rgba(0, 0, 0, 0.04);
-        }
-        
-        .panel-chat .chat-body .mensaje.ia .timestamp {
-            font-size: 9px;
-            color: #94a3b8;
-            margin-top: 4px;
-            text-align: right;
-        }
-        
-        .panel-chat .chat-body .mensaje.pensando {
-            background: rgba(249, 115, 22, 0.08);
-            color: #f97316;
-            font-style: italic;
-            align-self: flex-start;
-        }
-        
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Scrollbar */
-        .panel-chat .chat-body::-webkit-scrollbar {
-            width: 3px;
-        }
-        .panel-chat .chat-body::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .panel-chat .chat-body::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 8px;
-        }
-
-        /* --- BOTÓN MICRÓFONO EN EL PANEL --- */
+        .panel-chat .chat-body .mensaje.usuario { background: #f97316; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .panel-chat .chat-body .mensaje.ia { background: rgba(15, 23, 42, 0.06); color: #0f172a; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid rgba(0, 0, 0, 0.04); }
+        .panel-chat .chat-body .mensaje.ia .timestamp { font-size: 9px; color: #94a3b8; margin-top: 4px; text-align: right; }
+        .panel-chat .chat-body .mensaje.pensando { background: rgba(249, 115, 22, 0.08); color: #f97316; font-style: italic; align-self: flex-start; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .panel-chat .chat-body::-webkit-scrollbar { width: 3px; }
+        .panel-chat .chat-body::-webkit-scrollbar-track { background: transparent; }
+        .panel-chat .chat-body::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
         .panel-chat .controles-voz {
             padding: 10px 16px 14px;
             border-top: 1px solid rgba(0, 0, 0, 0.04);
@@ -374,7 +242,6 @@
             background: rgba(255, 255, 255, 0.2);
             border-radius: 0 0 0 20px;
         }
-        
         .panel-chat .controles-voz .btn-mic {
             width: 44px;
             height: 44px;
@@ -391,63 +258,23 @@
             box-shadow: 0 2px 12px rgba(249, 115, 22, 0.25);
             flex-shrink: 0;
         }
-        .panel-chat .controles-voz .btn-mic:hover {
-            transform: scale(1.04);
-            background: #ea580c;
-        }
-        .panel-chat .controles-voz .btn-mic:active {
-            transform: scale(0.92);
-        }
-        .panel-chat .controles-voz .btn-mic.escuchando {
-            background: #ef4444;
-            animation: pulse-mic 1s ease-in-out infinite;
-        }
-        
+        .panel-chat .controles-voz .btn-mic:hover { transform: scale(1.04); background: #ea580c; }
+        .panel-chat .controles-voz .btn-mic:active { transform: scale(0.92); }
+        .panel-chat .controles-voz .btn-mic.escuchando { background: #ef4444; animation: pulse-mic 1s ease-in-out infinite; }
         @keyframes pulse-mic {
             0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.3); }
             50% { box-shadow: 0 0 0 16px rgba(239, 68, 68, 0); }
         }
-        
-        .panel-chat .controles-voz .estado-voz-label {
-            font-size: 12px;
-            font-weight: 500;
-            color: #f97316;
-        }
-        
-        .panel-chat .controles-voz .estado-voz-label.activo {
-            color: #f97316;
-        }
-
-        /* --- CORREGIDO: RESPONSIVE PARA MÓVILES --- */
+        .panel-chat .controles-voz .estado-voz-label { font-size: 12px; font-weight: 500; color: #f97316; }
+        .panel-chat .controles-voz .estado-voz-label.activo { color: #f97316; }
         @media (max-width: 768px) {
-            .panel-chat {
-                width: 70%;
-                right: -70%;
-                top: 200px;
-                height: 65vh;
-                border-radius: 16px 0 0 16px;
-                background: rgba(241, 245, 249, 0.06);
-            }
-            .panel-chat.abierto {
-                right: 0;
-            }
+            .panel-chat { width: 70%; right: -70%; top: 200px; height: 65vh; border-radius: 16px 0 0 16px; background: rgba(241, 245, 249, 0.06); }
+            .panel-chat.abierto { right: 0; }
         }
-
         @media (max-width: 480px) {
-            .panel-chat {
-                width: 75%;
-                right: -75%;
-                top: 150px;
-                height: 45vh;
-                border-radius: 12px 0 0 12px;
-                background: rgba(241, 245, 249, 0.06);
-            }
-            .panel-chat.abierto {
-                right: 0;
-            }
+            .panel-chat { width: 75%; right: -75%; top: 150px; height: 45vh; border-radius: 12px 0 0 12px; background: rgba(241, 245, 249, 0.06); }
+            .panel-chat.abierto { right: 0; }
         }
-
-        /* --- CONTENEDOR DEL CUBO --- */
         #contenedorCuboIa {
             transition: all 0.3s ease;
             position: relative;
@@ -464,11 +291,7 @@
             pointer-events: none;
             z-index: 1;
         }
-        .contenedor-ondas.hidden {
-            display: none;
-        }
-
-        /* --- ESTADO DEL CUBO --- */
+        .contenedor-ondas.hidden { display: none; }
         .estado-cubo-sutil {
             font-size: 12px;
             color: #64748b;
@@ -480,26 +303,15 @@
             letter-spacing: 0.05em;
             padding-left: 30px;
         }
-        .estado-cubo-sutil.activo {
-            color: #f97316;
-        }
-        .estado-cubo-sutil.escuchando {
-            color: #10b981;
-        }
-        .estado-cubo-sutil.hablando {
-            color: #38bdf8;
-        }
-        .estado-cubo-sutil.error {
-            color: #ef4444;
-        }
-        .estado-cubo-sutil.ok {
-            color: #22c55e;
-        }
+        .estado-cubo-sutil.activo { color: #f97316; }
+        .estado-cubo-sutil.escuchando { color: #10b981; }
+        .estado-cubo-sutil.hablando { color: #38bdf8; }
+        .estado-cubo-sutil.error { color: #ef4444; }
+        .estado-cubo-sutil.ok { color: #22c55e; }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen pb-10">
 
-    <!-- ENCABEZADO -->
     <header id="headerComercio" class="text-white p-3 shadow-lg rounded-b-2xl transition-colors duration-300" style="background-color: #334155;">
         <div class="max-w-xl mx-auto flex items-center justify-between">
             <div class="flex items-center space-x-3">
@@ -520,10 +332,8 @@
         </div>
     </header>
 
-    <!-- CONTENIDO PRINCIPAL -->
     <main class="max-w-xl mx-auto px-4 -mt-4 relative z-10">
 
-        <!-- HEADER FIJO: Buscador + Cubo IA (no scrollean) -->
         <div class="header-fijo">
             <div class="flex items-center gap-3">
                 <div class="relative shadow-sm rounded-xl flex-1">
@@ -531,11 +341,9 @@
                         class="w-full pl-4 pr-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-600 text-sm bg-white shadow-sm">
                 </div>
 
-                <!-- CUBO IA -->
                 <div id="contenedorCuboIa" 
                      class="w-32 h-32 rounded-full border-2 border-green-300 marco-verde-pastel flex items-center justify-center relative overflow-visible cursor-pointer group flex-shrink-0 transition-transform duration-300 hover:scale-105 active:scale-95 shadow-lg bg-slate-950">
                     
-                    <!-- NUEVO: Texto curvo en SVG -->
                     <svg class="texto-arco-svg" viewBox="0 0 120 60" width="120" height="60" overflow="visible">
                         <defs>
                             <path id="arcoPath" d="M 10,28 A 50,28 0 0,1 110,28" />
@@ -559,22 +367,18 @@
             <div id="estadoCubo" class="estado-cubo-sutil" style="display: none;"></div>
         </div>
 
-        <!-- CONTENEDOR SCROLLABLE: Lista de Productos -->
         <div id="contenedorScroll" class="contenedor-principal">
             <div id="listaProductos" class="space-y-4 mt-1"></div>
         </div>
 
-        <!-- Mensaje de Estado / Errores -->
         <div id="mensajeEstado" class="text-center py-8 hidden">
             <p id="textoEstado" class="text-gray-500 font-medium"></p>
         </div>
 
     </main>
 
-    <!-- OVERLAY -->
     <div id="overlayPanel" class="overlay-panel" onclick="cerrarPanelIA()"></div>
 
-    <!-- PANEL LATERAL -->
     <div id="panelChat" class="panel-chat">
         <div class="header-panel">
             <div class="info-ia">
@@ -591,16 +395,16 @@
             <div class="mensaje ia">
                 HOLA !!, soy el ASESOR IA de esta vidriera. Consultame sobre cualquier codigo de artículo que ves..!
                 <div class="timestamp">
-    <svg width="14" height="22" viewBox="0 0 22 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 4px;">
-    <rect x="2" y="8" width="20" height="12" rx="2" />
-    <circle cx="8" cy="12" r="2.5" fill="#f97316" stroke="none" />
-    <circle cx="16" cy="12" r="2.5" fill="#f97316" stroke="none" />
-    <rect x="10" y="16" width="4" height="2" fill="#f97316" stroke="none" />
-    <line x1="12" y1="8" x2="12" y2="2" />
-    <circle cx="12" cy="2" r="2.2" fill="#f97316" stroke="none" />
-</svg>
-    Asesor
-</div>
+                    <svg width="14" height="22" viewBox="0 0 22 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 4px;">
+                        <rect x="2" y="8" width="20" height="12" rx="2" />
+                        <circle cx="8" cy="12" r="2.5" fill="#f97316" stroke="none" />
+                        <circle cx="16" cy="12" r="2.5" fill="#f97316" stroke="none" />
+                        <rect x="10" y="16" width="4" height="2" fill="#f97316" stroke="none" />
+                        <line x1="12" y1="8" x2="12" y2="2" />
+                        <circle cx="12" cy="2" r="2.2" fill="#f97316" stroke="none" />
+                    </svg>
+                    Asesor
+                </div>
             </div>
         </div>
 
@@ -612,7 +416,6 @@
         </div>
     </div>
 
-    <!-- MODAL INFO DEL COMERCIO -->
     <div id="modalInfo" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden border border-gray-100">
             <div class="p-5 text-white relative" style="background-color: #334155;">
@@ -637,7 +440,6 @@
                         <a id="linkMapa" href="#" target="_blank" class="inline-block text-xs font-bold text-slate-700 hover:text-slate-900 underline mt-1.5 hidden">📍 Ver en Google Maps →</a>
                     </div>
                 </div>
-                <!-- ✅ NUEVO: SITIO WEB -->
                 <div id="bloqueWeb" class="hidden flex items-start space-x-3 bg-slate-50 p-3 rounded-xl border border-slate-200/60">
                     <span class="text-xl">🌐</span>
                     <div class="w-full">
@@ -648,7 +450,6 @@
                         </a>
                     </div>
                 </div>
-                <!-- FIN SITIO WEB -->
                 <div class="flex items-start space-x-3 bg-slate-50 p-3 rounded-xl border border-slate-200/60">
                     <span class="text-xl">📞</span>
                     <div class="w-full">
@@ -666,7 +467,6 @@
         </div>
     </div>
 
-    <!-- SCRIPTS -->
     <script>
         (function dibujarNebulosaRealista() {
             const canvas = document.getElementById('fondo-espacio');
@@ -733,25 +533,20 @@
     <script>
         let controlVelocidadCubo = { x: 0.008, y: 0.012 };
         let estadoCuboActual = 'normal';
-
         const estadoCuboEl = document.getElementById('estadoCubo');
 
         function aplicarEfectoCubo(estado) {
             const contenedor = document.getElementById('contenedorCuboIa');
             const ondasContainer = document.getElementById('contenedorOndas');
-            
             contenedor.classList.remove('glow-escuchando', 'glow-hablando', 'shake-error');
             ondasContainer.classList.add('hidden');
-            
             estadoCuboActual = estado;
-            
             if (estado === 'normal') {
                 estadoCuboEl.style.display = 'none';
             } else {
                 estadoCuboEl.style.display = 'block';
                 estadoCuboEl.className = 'estado-cubo-sutil';
             }
-            
             switch(estado) {
                 case 'escuchando':
                     contenedor.classList.add('glow-escuchando');
@@ -803,7 +598,6 @@
             }
         }
 
-        // CUBO 3D THREE.JS
         (function crearCubo3D() {
             const canvas = document.getElementById('cubo3d-ia');
             if (!canvas) return;
@@ -833,8 +627,7 @@
                     ctx.moveTo(128, 118); ctx.lineTo(128, 135);
                     ctx.moveTo(108, 135); ctx.lineTo(148, 135);
                     ctx.stroke();
-                } 
-                else if (tipo === 'cerebro') {
+                } else if (tipo === 'cerebro') {
                     ctx.lineWidth = 6;
                     ctx.beginPath();
                     ctx.arc(108, 90, 20, Math.PI * 0.5, Math.PI * 1.8);
@@ -847,23 +640,20 @@
                     ctx.beginPath();
                     ctx.moveTo(128, 70); ctx.lineTo(128, 115);
                     ctx.stroke();
-                } 
-                else if (tipo === 'ok') {
+                } else if (tipo === 'ok') {
                     ctx.lineWidth = 12;
                     ctx.beginPath();
                     ctx.moveTo(95, 100);
                     ctx.lineTo(118, 122);
                     ctx.lineTo(165, 75);
                     ctx.stroke();
-                } 
-                else if (tipo === 'error') {
+                } else if (tipo === 'error') {
                     ctx.lineWidth = 12;
                     ctx.beginPath();
                     ctx.moveTo(100, 75); ctx.lineTo(156, 125);
                     ctx.moveTo(156, 75); ctx.lineTo(100, 125);
                     ctx.stroke();
-                } 
-                else if (tipo === 'robot') {
+                } else if (tipo === 'robot') {
                     ctx.lineWidth = 6;
                     ctx.beginPath();
                     ctx.roundRect(98, 75, 60, 48, 8);
@@ -881,8 +671,7 @@
                     ctx.beginPath();
                     ctx.moveTo(112, 110); ctx.lineTo(144, 110);
                     ctx.stroke();
-                } 
-                else if (tipo === 'lupa') {
+                } else if (tipo === 'lupa') {
                     ctx.lineWidth = 8;
                     ctx.beginPath();
                     ctx.arc(118, 92, 22, 0, Math.PI * 2);
@@ -891,7 +680,6 @@
                     ctx.moveTo(134, 108); ctx.lineTo(158, 130);
                     ctx.stroke();
                 }
-
                 ctx.restore();
             }
 
@@ -949,11 +737,9 @@
                 let velX = controlVelocidadCubo.x;
                 let velY = controlVelocidadCubo.y;
                 if (estadoCuboActual === 'pensando') {
-                    velX = 0.045;
-                    velY = 0.055;
+                    velX = 0.045; velY = 0.055;
                 } else if (estadoCuboActual === 'hablando') {
-                    velX = 0.02;
-                    velY = 0.025;
+                    velX = 0.02; velY = 0.025;
                 }
                 cubo.rotation.x += velX;
                 cubo.rotation.y += velY;
@@ -1003,17 +789,14 @@
         const urlParams = new URLSearchParams(window.location.search);
         const cuitParam = urlParams.get('cuit') ? parseInt(urlParams.get('cuit').trim().replace(/[-.\s]/g, ''), 10) : null;
 
-              function abrirPanelIA() {
+        function abrirPanelIA() {
             panelChat.classList.add('abierto');
             overlayPanel.classList.add('activo');
             document.body.style.overflow = 'hidden';
-            
-            // Iniciar escucha INMEDIATAMENTE (dentro del user gesture del click)
             if (!estaEscuchando && !estaHablando) {
                 try {
                     if (reconocedorVoz) reconocedorVoz.start();
                 } catch (e) {
-                    // Si ya estaba corriendo, ignorar
                     console.warn('Mic ya activo o error al iniciar:', e);
                 }
             }
@@ -1023,9 +806,7 @@
             panelChat.classList.remove('abierto');
             overlayPanel.classList.remove('activo');
             document.body.style.overflow = '';
-            if (estaEscuchando && reconocedorVoz) {
-                reconocedorVoz.stop();
-            }
+            if (estaEscuchando && reconocedorVoz) reconocedorVoz.stop();
             if (estaHablando) {
                 synth.cancel();
                 estaHablando = false;
@@ -1049,14 +830,8 @@
 
         function iniciarEscucha() {
             if (!reconocedorVoz) return;
-            if (estaEscuchando) {
-                reconocedorVoz.stop();
-                return;
-            }
-            if (estaHablando) {
-                synth.cancel();
-                estaHablando = false;
-            }
+            if (estaEscuchando) { reconocedorVoz.stop(); return; }
+            if (estaHablando) { synth.cancel(); estaHablando = false; }
             reconocedorVoz.start();
         }
 
@@ -1065,35 +840,17 @@
             if (estaEscuchando) {
                 reconocedorVoz.stop();
             } else {
-                if (estaHablando) {
-                    synth.cancel();
-                    estaHablando = false;
-                }
+                if (estaHablando) { synth.cancel(); estaHablando = false; }
                 reconocedorVoz.start();
             }
         }
 
         function actualizarEstadoPanel(estado, texto) {
-            const iconos = {
-                'escuchando': '🎤',
-                'pensando': '🧠',
-                'hablando': '🔊',
-                'ok': '✅',
-                'error': '⚠️',
-                'normal': '🎙️'
-            };
-            
+            const iconos = { 'escuchando': '🎤', 'pensando': '🧠', 'hablando': '🔊', 'ok': '✅', 'error': '⚠️', 'normal': '🎙️' };
             iconoEstadoPanel.textContent = iconos[estado] || '🎙️';
             iconoEstadoPanel.className = 'icono-estado ' + (estado !== 'normal' ? estado : '');
             
-            const labels = {
-                'escuchando': 'Escuchando...',
-                'pensando': 'Procesando...',
-                'hablando': 'Respondiendo...',
-                'ok': '¡Listo!',
-                'error': 'Error',
-                'normal': 'Toca el micrófono para hablar'
-            };
+            const labels = { 'escuchando': 'Escuchando...', 'pensando': 'Procesando...', 'hablando': 'Respondiendo...', 'ok': '¡Listo!', 'error': 'Error', 'normal': 'Toca el micrófono para hablar' };
             estadoPanelLabel.textContent = labels[estado] || labels.normal;
             
             if (estado === 'escuchando') {
@@ -1138,18 +895,11 @@
 
         function reproducirVozPanel(texto) {
             if (!synth) return;
-            if (estaHablando) {
-                synth.cancel();
-                estaHablando = false;
-            }
+            if (estaHablando) { synth.cancel(); estaHablando = false; }
             const utterance = new SpeechSynthesisUtterance(texto);
             utterance.lang = 'es-AR';
             utterance.rate = 1.0;
-            utterance.onstart = () => {
-                estaHablando = true;
-                aplicarEfectoCubo('hablando');
-                actualizarEstadoPanel('hablando');
-            };
+            utterance.onstart = () => { estaHablando = true; aplicarEfectoCubo('hablando'); actualizarEstadoPanel('hablando'); };
             utterance.onend = () => {
                 estaHablando = false;
                 aplicarEfectoCubo('ok');
@@ -1161,11 +911,7 @@
                     }
                 }, 2000);
             };
-            utterance.onerror = () => {
-                estaHablando = false;
-                aplicarEfectoCubo('error');
-                actualizarEstadoPanel('error');
-            };
+            utterance.onerror = () => { estaHablando = false; aplicarEfectoCubo('error'); actualizarEstadoPanel('error'); };
             synth.speak(utterance);
         }
 
@@ -1220,7 +966,6 @@
                     aplicarEfectoCubo('error');
                     actualizarEstadoPanel('error');
                 }
-
             } catch (err) {
                 console.error(err);
                 if (chatBody.lastChild && chatBody.lastChild.textContent.includes('⏳ Pensando respuesta...')) {
@@ -1261,37 +1006,26 @@
             };
 
             reconocedorVoz.onresult = async (event) => {
-                let textoIntermedio = '';
                 let textoFinal = '';
-                
                 for (let i = event.resultIndex; i < event.results.length; i++) {
                     if (event.results[i].isFinal) {
                         textoFinal = event.results[i][0].transcript;
-                    } else {
-                        textoIntermedio = event.results[i][0].transcript;
                     }
                 }
-                
-                if (textoIntermedio && !textoFinal) {
-                    actualizarEstadoPanel('escuchando');
-                }
-                
                 if (textoFinal) {
                     agregarMensajePanel('usuario', textoFinal);
                     await procesarConsultaIaPanel(textoFinal);
                 }
             };
 
-                       reconocedorVoz.onerror = (event) => {
+            reconocedorVoz.onerror = (event) => {
                 console.error("Error de voz:", event.error);
                 estaEscuchando = false;
-                
                 if (event.error === 'aborted') {
                     aplicarEfectoCubo('normal');
                     actualizarEstadoPanel('normal');
                     return;
                 }
-                
                 aplicarEfectoCubo('error');
                 actualizarEstadoPanel('error');
                 
@@ -1305,7 +1039,6 @@
                 } else if (event.error === 'network') {
                     mensaje = "📡 Error de red. Verificá tu conexión.";
                 }
-                
                 agregarMensajePanel('ia', mensaje);
                 
                 setTimeout(() => {
@@ -1324,56 +1057,56 @@
             }
 
             try {
-                // 1) Traer datos del comercio
-                const { data: comercio, error: errComercio } = await supabaseClient
-                    .from('comercios')
-                    .select('*')
-                    .eq('cuit', cuitParam)
-                    .maybeSingle();
-
-                if (errComercio) throw errComercio;
-
-                if (!comercio) {
-                    document.getElementById('nombreComercio').innerText = 'Comercio no encontrado';
-                    return;
-                }
-
-                datosComercioGlobal = comercio;
-                document.getElementById('nombreComercio').innerText = comercio.nombre || 'Mi Comercio';
-                document.getElementById('modalNombreComercio').innerText = comercio.nombre || 'Mi Comercio';
-
-                if (comercio.color) {
-                    document.getElementById('headerComercio').style.backgroundColor = comercio.color;
-                }
-
-                if (comercio.logo && String(comercio.logo).trim() !== '') {
-                    document.getElementById('imgLogo').src = comercio.logo;
-                }
-
-                configurarModalComercio(comercio);
-
-                // 2) Traer artículos vía RPC
+                // 1) Traer comercio vía RPC (NO accede directo a tabla)
                 const { data: rpcData, error: rpcError } = await supabaseClient.rpc(
-                    'listar_articulos_by_cuit',
+                    'obtener_comercio_publico_by_cuit',
                     { p_cuit: String(cuitParam) }
                 );
 
                 if (rpcError) throw rpcError;
 
-                // Desanidar respuesta
+                // Desanidar
                 let respuesta = rpcData;
-                if (rpcData && rpcData.listar_articulos_by_cuit) {
-                    respuesta = rpcData.listar_articulos_by_cuit;
+                if (rpcData && rpcData.obtener_comercio_publico_by_cuit) {
+                    respuesta = rpcData.obtener_comercio_publico_by_cuit;
+                }
+
+                if (!respuesta || !respuesta.success) {
+                    document.getElementById('nombreComercio').innerText = 'Comercio no encontrado';
+                    return;
+                }
+
+                const comercio = respuesta.comercio;
+                datosComercioGlobal = comercio;
+                document.getElementById('nombreComercio').innerText = comercio.nombre || 'Mi Comercio';
+                document.getElementById('modalNombreComercio').innerText = comercio.nombre || 'Mi Comercio';
+
+                if (comercio.color) document.getElementById('headerComercio').style.backgroundColor = comercio.color;
+                if (comercio.logo && String(comercio.logo).trim() !== '') document.getElementById('imgLogo').src = comercio.logo;
+
+                configurarModalComercio(comercio);
+
+                // 2) Traer artículos vía RPC
+                const { data: artData, error: artError } = await supabaseClient.rpc(
+                    'listar_articulos_by_cuit',
+                    { p_cuit: String(cuitParam) }
+                );
+
+                if (artError) throw artError;
+
+                let respArt = artData;
+                if (artData && artData.listar_articulos_by_cuit) {
+                    respArt = artData.listar_articulos_by_cuit;
                 }
 
                 let productos = [];
-                if (respuesta && respuesta.success) {
-                    productos = respuesta.articulos;
+                if (respArt && respArt.success) {
+                    productos = respArt.articulos;
                     if (typeof productos === 'string') {
                         try { productos = JSON.parse(productos); } catch (e) { productos = []; }
                     }
-                } else if (respuesta && respuesta.error) {
-                    throw new Error(respuesta.error);
+                } else if (respArt && respArt.error) {
+                    throw new Error(respArt.error);
                 }
 
                 productos = Array.isArray(productos) ? productos : [];
@@ -1397,8 +1130,7 @@
         }
 
         function configurarModalComercio(com) {
-            const horarios = com.horarios;
-            if (horarios) document.getElementById('modalHorarios').innerText = horarios;
+            if (com.horarios) document.getElementById('modalHorarios').innerText = com.horarios;
 
             const direccion = com.direccion;
             const ciudad = com.ciudad || '';
