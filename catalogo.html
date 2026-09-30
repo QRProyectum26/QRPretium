@@ -1323,13 +1323,26 @@
 
                 configurarModalComercio(comercio);
 
-                let productos = null;
-                let prodRes1 = await supabaseClient.from('articulos').select('*').eq('cuit', cuitParam);
-                if (prodRes1.data && prodRes1.data.length > 0) productos = prodRes1.data;
-                else {
-                    let prodRes2 = await supabaseClient.from('articulos').select('*').eq('CUIT', cuitParam);
-                    if (prodRes2.data && prodRes2.data.length > 0) productos = prodRes2.data;
-                }
+              // RPC listar_articulos_by_cuit
+let productos = null;
+try {
+    const { data: rpcData, error: rpcError } = await supabaseClient.rpc('listar_articulos_by_cuit', {
+        p_cuit: String(cuitParam)
+    });
+
+    if (!rpcError && rpcData) {
+        const respuesta = rpcData.listar_articulos_by_cuit ? rpcData.listar_articulos_by_cuit : rpcData;
+        let lista = respuesta?.articulos;
+        if (typeof lista === 'string') {
+            try { lista = JSON.parse(lista); } catch(e) { lista = []; }
+        }
+        if (Array.isArray(lista) && lista.length > 0) {
+            productos = lista;
+        }
+    }
+} catch (e) {
+    console.warn('Error al cargar artículos con RPC:', e);
+}
 
                 if (!productos || productos.length === 0) {
                     document.getElementById('listaProductos').innerHTML = '<p class="text-center text-gray-400 py-8">Este comercio aún no tiene artículos cargados.</p>';
