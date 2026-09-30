@@ -345,6 +345,11 @@
                     return;
                 }
 
+                               // Guardar token para usarlo en las RPCs de escritura
+                if (respuesta.token) {
+                    localStorage.setItem('qrpretium_token', respuesta.token);
+                }
+
                 comercioActual = respuesta.comercio;
                 cuitLimpioActual = String(comercioActual.cuit).trim();
                 cargarPanel();
@@ -440,7 +445,7 @@
             btn.innerText = "Guardando...";
 
             try {
-                const { data, error } = await supabaseClient.rpc('actualizar_datos_comercio', {
+                               const { data, error } = await supabaseClient.rpc('actualizar_datos_comercio', {
                     p_cuit: cuitLimpioActual,
                     p_nombre: document.getElementById('editNombre').value.trim(),
                     p_direccion: document.getElementById('editDireccion').value.trim(),
@@ -450,7 +455,8 @@
                     p_whatsapp: document.getElementById('editWhatsapp').value.trim(),
                     p_web: document.getElementById('editWeb').value.trim(),
                     p_horarios: document.getElementById('editHorarios').value.trim(),
-                    p_logo: logoBase64Actual || null
+                    p_logo: logoBase64Actual || null,
+                    p_token: localStorage.getItem('qrpretium_token')
                 });
 
                 if (error) throw error;
@@ -496,11 +502,11 @@
             document.getElementById('headerAdmin').style.backgroundColor = nuevoColor;
 
             try {
-                const { data, error } = await supabaseClient.rpc('actualizar_color_comercio', {
+                                const { data, error } = await supabaseClient.rpc('actualizar_color_comercio', {
                     p_cuit: cuitLimpioActual,
-                    p_color: nuevoColor
+                    p_color: nuevoColor,
+                    p_token: localStorage.getItem('qrpretium_token')
                 });
-
                 if (error) throw error;
 
                 const respuesta = (data && data.actualizar_color_comercio) ? data.actualizar_color_comercio : data;
@@ -818,6 +824,8 @@
                 let resultado = null;
                 let error = null;
 
+                                const token = localStorage.getItem('qrpretium_token');
+
                 if (id) {
                     const res = await supabaseClient.rpc('actualizar_articulo', {
                         p_id: parseInt(id),
@@ -827,7 +835,21 @@
                         p_descripcion: descripcion,
                         p_disponibilidad: disponibilidad,
                         p_precio: precio,
-                        p_promocion: promocion
+                        p_promocion: promocion,
+                        p_token: token
+                    });
+                    resultado = res.data;
+                    error = res.error;
+                } else {
+                    const res = await supabaseClient.rpc('crear_articulo', {
+                        p_cuit: cuitLimpioActual,
+                        p_codigo: codigo,
+                        p_articulo: articulo,
+                        p_descripcion: descripcion,
+                        p_disponibilidad: disponibilidad,
+                        p_precio: precio,
+                        p_promocion: promocion,
+                        p_token: token
                     });
                     resultado = res.data;
                     error = res.error;
@@ -902,7 +924,8 @@
                 try {
                     const { data, error } = await supabaseClient.rpc('eliminar_articulo', {
                         p_id: id,
-                        p_cuit: cuitLimpioActual
+                        p_cuit: cuitLimpioActual,
+                        p_token: localStorage.getItem('qrpretium_token')
                     });
 
                     if (error) throw error;
@@ -921,7 +944,10 @@
             }
         }
 
-        function cerrarSesion() {
+                function cerrarSesion() {
+            // Borrar el token para que no quede guardado
+            localStorage.removeItem('qrpretium_token');
+
             comercioActual = null;
             cuitLimpioActual = '';
             articulosLista = [];
