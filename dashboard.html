@@ -4,11 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard de Clientes - QRPretium</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Leaflet CSS -->
+    <script src="https://cdn.tailwindcss.com/3.4.3"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         #map {
             height: 500px;
@@ -41,7 +40,6 @@
             z-index: 1000;
             pointer-events: none;
         }
-        /* Estilos para el selector de estado */
         .select-estado {
             padding: 2px 6px;
             border-radius: 12px;
@@ -52,9 +50,7 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        .select-estado:hover {
-            border-color: #6b7280;
-        }
+        .select-estado:hover { border-color: #6b7280; }
         .select-estado.pendiente { background: #fef3c7; color: #92400e; border-color: #f59e0b; }
         .select-estado.visitado { background: #d1fae5; color: #065f46; border-color: #10b981; }
         .select-estado.revisitar { background: #dbeafe; color: #1e40af; border-color: #3b82f6; }
@@ -65,150 +61,289 @@
 </head>
 <body class="bg-gray-100 min-h-screen p-6">
 
-    <div class="max-w-7xl mx-auto">
-
-        <!-- HEADER -->
-        <div class="flex items-center justify-between mb-6">
-            <h1 class="text-2xl font-black text-slate-800">📍 Dashboard de Clientes</h1>
-            <a href="index.html" class="text-sm text-slate-600 hover:text-slate-900">← Volver al inicio</a>
+    <!-- SECCIÓN 1: LOGIN -->
+    <div id="seccionLogin" class="max-w-md mx-auto mt-16 p-6 bg-white rounded-2xl shadow-xl border border-gray-200">
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-black text-slate-800 tracking-tight">QRPretium Dashboard</h1>
+            <p class="text-xs text-gray-500 mt-1">Ingresá tus credenciales para ver el dashboard de clientes</p>
         </div>
 
-        <!-- FILTROS -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-            <!-- Rubro -->
-            <div class="filtro-card">
-                <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Rubro</label>
-                <select id="filtroRubro" class="w-full border rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-slate-600">
-                    <option value="todos">Todos los rubros</option>
-                </select>
+        <form onsubmit="iniciarSesion(event)" class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Usuario</label>
+                <input type="text" id="loginUsuario" required placeholder="Ej: qrpretium" 
+                    class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-600 text-sm">
             </div>
-            <!-- Ciudad -->
-            <div class="filtro-card">
-                <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Zona / Ciudad</label>
-                <select id="filtroCiudad" class="w-full border rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-slate-600">
-                    <option value="todos">Todas las zonas</option>
-                </select>
+            <div>
+                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Contraseña</label>
+                <input type="password" id="loginPassword" required placeholder="••••••••" 
+                    class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-600 text-sm">
             </div>
-            <!-- Tipo de Solicitud -->
-            <div class="filtro-card">
-                <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Tipo de Solicitud</label>
-                <select id="filtroTipo" class="w-full border rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-slate-600">
-                    <option value="todos">Todos</option>
-                    <option value="Visita">Visita</option>
-                    <option value="Brochure">Brochure</option>
-                    <option value="Plan Standard">Plan Standard</option>
-                    <option value="Plan Power">Plan Power</option>
-                    <option value="Plan Premium">Plan Premium</option>
-                    <option value="Prueba Gratuita">Prueba Gratuita</option>
-                </select>
-            </div>
-            <!-- Estado -->
-            <div class="filtro-card">
-                <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Estado</label>
-                <select id="filtroEstado" class="w-full border rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-slate-600">
-                    <option value="todos">Todos</option>
-                    <option value="Pendiente">Pendiente</option>
-                    <option value="Visitado">Visitado</option>
-                    <option value="Revisitar">Revisitar</option>
-                    <option value="Llamar">Llamar</option>
-                    <option value="No Interesado">No Interesado</option>
-                </select>
-            </div>
-            <!-- Botón Aplicar -->
-            <div class="filtro-card flex items-end">
-                <button id="btnAplicarFiltros" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 px-4 rounded-xl text-sm transition">
-                    Aplicar filtros
-                </button>
-            </div>
-        </div>
 
-        <!-- MAPA -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-2 mb-6 relative">
-            <div id="map"></div>
-            <div id="geocodingStatus" class="geocoding-status hidden">🌍 Cargando marcadores...</div>
-        </div>
+            <div id="errorLogin" class="text-red-600 text-xs text-center font-bold hidden p-3 bg-red-50 rounded-lg border border-red-200 leading-relaxed"></div>
 
-        <!-- TABLA DE CLIENTES -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-            <div class="p-4 border-b border-gray-100 flex justify-between items-center">
-                <h2 class="font-bold text-slate-800 text-sm">Clientes filtrados</h2>
-                <span id="cantClientes" class="text-xs font-bold bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full">0 clientes</span>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-gray-50 text-gray-500 uppercase text-[10px] tracking-wider font-extrabold border-b">
-                        <tr>
-                            <th class="p-3">Nombre</th>
-                            <th class="p-3">Comercio</th>
-                            <th class="p-3">Rubro</th>
-                            <th class="p-3">Dirección</th>
-                            <th class="p-3">Ciudad</th>
-                            <th class="p-3">Teléfono</th>
-                            <th class="p-3">Tipo</th>
-                            <th class="p-3">Estado</th>
-                            <th class="p-3 text-center">Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbodyClientes" class="divide-y divide-gray-100">
-                    </tbody>
-                </table>
-            </div>
-        </div>
+            <button type="submit" id="btnIngresar" 
+                class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-xl shadow-md transition duration-200 text-sm">
+                Iniciar Sesión
+            </button>
+        </form>
+    </div>
 
+    <!-- SECCIÓN 2: DASHBOARD -->
+    <div id="seccionDashboard" class="hidden">
+        <div class="max-w-7xl mx-auto">
+
+            <!-- HEADER -->
+            <div class="flex items-center justify-between mb-6">
+                <h1 class="text-2xl font-black text-slate-800">📍 Dashboard de Clientes</h1>
+                <div class="flex items-center gap-3">
+                    <a href="index.html" class="text-sm text-slate-600 hover:text-slate-900">← Volver al inicio</a>
+                    <button onclick="cerrarSesion()" class="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-lg shadow transition">
+                        Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+
+            <!-- FILTROS -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+                <!-- Rubro -->
+                <div class="filtro-card">
+                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Rubro</label>
+                    <select id="filtroRubro" class="w-full border rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-slate-600">
+                        <option value="todos">Todos los rubros</option>
+                    </select>
+                </div>
+                <!-- Ciudad -->
+                <div class="filtro-card">
+                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Zona / Ciudad</label>
+                    <select id="filtroCiudad" class="w-full border rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-slate-600">
+                        <option value="todos">Todas las zonas</option>
+                    </select>
+                </div>
+                <!-- Tipo de Solicitud -->
+                <div class="filtro-card">
+                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Tipo de Solicitud</label>
+                    <select id="filtroTipo" class="w-full border rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-slate-600">
+                        <option value="todos">Todos</option>
+                        <option value="Visita">Visita</option>
+                        <option value="Brochure">Brochure</option>
+                        <option value="Plan Standard">Plan Standard</option>
+                        <option value="Plan Power">Plan Power</option>
+                        <option value="Plan Premium">Plan Premium</option>
+                        <option value="Prueba Gratuita">Prueba Gratuita</option>
+                    </select>
+                </div>
+                <!-- Estado Comercial -->
+                <div class="filtro-card">
+                    <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Estado Comercial</label>
+                    <select id="filtroEstado" class="w-full border rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-slate-600">
+                        <option value="todos">Todos</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="Visitado">Visitado</option>
+                        <option value="Revisitar">Revisitar</option>
+                        <option value="Llamar">Llamar</option>
+                        <option value="No Interesado">No Interesado</option>
+                    </select>
+                </div>
+                <!-- Botón Aplicar -->
+                <div class="filtro-card flex items-end">
+                    <button id="btnAplicarFiltros" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 px-4 rounded-xl text-sm transition">
+                        Aplicar filtros
+                    </button>
+                </div>
+            </div>
+
+            <!-- MAPA -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-2 mb-6 relative">
+                <div id="map"></div>
+                <div id="geocodingStatus" class="geocoding-status hidden">🌍 Cargando marcadores...</div>
+            </div>
+
+            <!-- TABLA DE CLIENTES -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+                    <h2 class="font-bold text-slate-800 text-sm">Clientes filtrados</h2>
+                    <span id="cantClientes" class="text-xs font-bold bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full">0 clientes</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-gray-50 text-gray-500 uppercase text-[10px] tracking-wider font-extrabold border-b">
+                            <tr>
+                                <th class="p-3">Nombre</th>
+                                <th class="p-3">Comercio</th>
+                                <th class="p-3">Rubro</th>
+                                <th class="p-3">Dirección</th>
+                                <th class="p-3">Ciudad</th>
+                                <th class="p-3">Teléfono</th>
+                                <th class="p-3">Tipo</th>
+                                <th class="p-3">Estado Comercial</th>
+                                <th class="p-3 text-center">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyClientes" class="divide-y divide-gray-100">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
     </div>
 
     <script>
         const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let clientes = [];
         let mapa = null;
         let marcadores = [];
+        let usuarioActual = '';
 
+        // ==================== LOGIN ====================
+        async function iniciarSesion(e) {
+            e.preventDefault();
+            const usuario = document.getElementById('loginUsuario').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            const divError = document.getElementById('errorLogin');
+            const btn = document.getElementById('btnIngresar');
+
+            divError.classList.add('hidden');
+            btn.disabled = true;
+            btn.innerText = 'Verificando...';
+
+            try {
+                const { data, error } = await supabaseClient
+                    .rpc('login_admin_solicitudes', {
+                        usuario_input: usuario,
+                        password_input: password
+                    });
+
+                if (error) {
+                    divError.innerText = 'Error al conectar: ' + error.message;
+                    divError.classList.remove('hidden');
+                    return;
+                }
+
+                const respuesta = data && data.login_admin_solicitudes ? data.login_admin_solicitudes : data;
+
+                if (!respuesta || !respuesta.success) {
+                    divError.innerText = respuesta?.error || 'Usuario o contraseña incorrectos.';
+                    divError.classList.remove('hidden');
+                    return;
+                }
+
+                // ✅ Login exitoso: guardar en sessionStorage
+                usuarioActual = respuesta.usuario;
+                sessionStorage.setItem('qrpretium_dashboard_user', usuarioActual);
+
+                // Ocultar login, mostrar dashboard
+                document.getElementById('seccionLogin').classList.add('hidden');
+                document.getElementById('seccionDashboard').classList.remove('hidden');
+
+                // Inicializar el dashboard
+                await inicializarDashboard();
+
+            } catch (err) {
+                console.error('Error en login:', err);
+                divError.innerText = 'Error al conectar: ' + err.message;
+                divError.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Iniciar Sesión';
+            }
+        }
+
+        function cerrarSesion() {
+            sessionStorage.removeItem('qrpretium_dashboard_user');
+            usuarioActual = '';
+            clientes = [];
+
+            // Ocultar dashboard, mostrar login
+            document.getElementById('seccionDashboard').classList.add('hidden');
+            document.getElementById('seccionLogin').classList.remove('hidden');
+
+            // Limpiar formulario
+            document.getElementById('loginUsuario').value = '';
+            document.getElementById('loginPassword').value = '';
+        }
+
+        // ==================== INICIALIZAR DASHBOARD ====================
+        async function inicializarDashboard() {
+            initMap();
+            await cargarFiltros();
+            await renderizarDashboard();
+
+            // Registrar listener del botón (una sola vez)
+            const btn = document.getElementById('btnAplicarFiltros');
+            if (!btn.dataset.listenerAttached) {
+                btn.addEventListener('click', async () => {
+                    const rubro = document.getElementById('filtroRubro').value;
+                    const ciudad = document.getElementById('filtroCiudad').value;
+                    const tipo = document.getElementById('filtroTipo').value;
+                    const estado = document.getElementById('filtroEstado').value;
+                    await renderizarDashboard(rubro, ciudad, tipo, estado);
+                });
+                btn.dataset.listenerAttached = 'true';
+            }
+        }
+
+        // ==================== MAPA ====================
         function initMap() {
+            if (mapa) return; // ya inicializado
             mapa = L.map('map').setView([-38.4161, -63.6167], 5);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap'
             }).addTo(mapa);
         }
 
+        // ==================== OBTENER CLIENTES ====================
         async function obtenerClientes() {
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/solicitudes?select=*`, {
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                const { data, error } = await supabaseClient.rpc('listar_solicitudes_comercial');
+
+                if (error) throw error;
+
+                let respuesta = data;
+                if (data && data.listar_solicitudes_comercial) {
+                    respuesta = data.listar_solicitudes_comercial;
+                }
+
+                let lista = [];
+                if (respuesta && respuesta.success) {
+                    lista = respuesta.solicitudes;
+                    if (typeof lista === 'string') {
+                        try { lista = JSON.parse(lista); } catch (e) { lista = []; }
                     }
-                });
-                if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`);
-                return await response.json();
+                }
+
+                return Array.isArray(lista) ? lista : [];
             } catch (error) {
                 console.error('Error al obtener clientes:', error);
                 return [];
             }
         }
 
-        // ✅ Función para actualizar el estado en Supabase
+        // ==================== ACTUALIZAR ESTADO ====================
         async function actualizarEstado(id, nuevoEstado) {
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/solicitudes?id=eq.${id}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                        'Content-Type': 'application/json',
-                        'Prefer': 'return=representation',
-                    },
-                    body: JSON.stringify({ estado: nuevoEstado }),
+                const { data, error } = await supabaseClient.rpc('actualizar_estado_comercial', {
+                    p_id: id,
+                    p_estado_comercial: nuevoEstado
                 });
 
-                if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`);
+                if (error) throw error;
 
-                // Actualizar la vista local
+                const respuesta = data && data.actualizar_estado_comercial 
+                    ? data.actualizar_estado_comercial 
+                    : data;
+
+                if (!respuesta || !respuesta.success) {
+                    throw new Error(respuesta?.error || 'Error al actualizar');
+                }
+
                 const cliente = clientes.find(c => c.id === id);
                 if (cliente) {
-                    cliente.estado = nuevoEstado;
-                    // Re-renderizar para reflejar el cambio
+                    cliente.estado_comercial = nuevoEstado;
                     await renderizarDashboard(
                         document.getElementById('filtroRubro').value,
                         document.getElementById('filtroCiudad').value,
@@ -223,30 +358,22 @@
             }
         }
 
+        // ==================== RENDERIZAR ====================
         async function renderizarDashboard(filtroRubro = 'todos', filtroCiudad = 'todos', filtroTipo = 'todos', filtroEstado = 'todos') {
             const data = await obtenerClientes();
             clientes = data;
 
             let filtrados = clientes;
-            if (filtroRubro !== 'todos') {
-                filtrados = filtrados.filter(c => c.rubro === filtroRubro);
-            }
-            if (filtroCiudad !== 'todos') {
-                filtrados = filtrados.filter(c => c.ciudad === filtroCiudad);
-            }
-            if (filtroTipo !== 'todos') {
-                filtrados = filtrados.filter(c => c.tipo_solicitud === filtroTipo);
-            }
-            if (filtroEstado !== 'todos') {
-                filtrados = filtrados.filter(c => c.estado === filtroEstado);
-            }
+            if (filtroRubro !== 'todos') filtrados = filtrados.filter(c => c.rubro === filtroRubro);
+            if (filtroCiudad !== 'todos') filtrados = filtrados.filter(c => c.ciudad === filtroCiudad);
+            if (filtroTipo !== 'todos') filtrados = filtrados.filter(c => c.tipo_solicitud === filtroTipo);
+            if (filtroEstado !== 'todos') filtrados = filtrados.filter(c => c.estado_comercial === filtroEstado);
 
             if (marcadores.length > 0) {
                 marcadores.forEach(m => mapa.removeLayer(m));
                 marcadores = [];
             }
 
-            // Renderizar tabla
             const tbody = document.getElementById('tbodyClientes');
             const cant = document.getElementById('cantClientes');
             tbody.innerHTML = '';
@@ -258,12 +385,12 @@
             }
 
             filtrados.forEach(c => {
-                // Determinar clase CSS para el estado
+                const estadoComercial = c.estado_comercial || 'Pendiente';
                 let estadoClass = 'pendiente';
-                if (c.estado === 'Visitado') estadoClass = 'visitado';
-                else if (c.estado === 'Revisitar') estadoClass = 'revisitar';
-                else if (c.estado === 'Llamar') estadoClass = 'llamar';
-                else if (c.estado === 'No Interesado') estadoClass = 'no_interesado';
+                if (estadoComercial === 'Visitado') estadoClass = 'visitado';
+                else if (estadoComercial === 'Revisitar') estadoClass = 'revisitar';
+                else if (estadoComercial === 'Llamar') estadoClass = 'llamar';
+                else if (estadoComercial === 'No Interesado') estadoClass = 'no_interesado';
 
                 tbody.innerHTML += `
                     <tr class="hover:bg-gray-50 transition" data-id="${c.id}">
@@ -274,28 +401,25 @@
                         <td class="p-3 text-xs text-gray-500">${c.ciudad || '-'}</td>
                         <td class="p-3 text-xs text-gray-500">${c.telefono || '-'}</td>
                         <td class="p-3 text-xs font-medium text-gray-600">${c.tipo_solicitud || '-'}</td>
-                        <td class="p-3 text-xs font-medium ${c.estado === 'Pendiente' ? 'text-amber-600' : c.estado === 'Visitado' ? 'text-green-600' : c.estado === 'Revisitar' ? 'text-blue-600' : c.estado === 'Llamar' ? 'text-orange-600' : 'text-gray-500'}">${c.estado || '-'}</td>
+                        <td class="p-3 text-xs font-medium">${estadoComercial}</td>
                         <td class="p-3 text-center">
                             <select class="select-estado ${estadoClass}" 
                                     onchange="actualizarEstado(${c.id}, this.value)"
                                     aria-label="Cambiar estado del cliente">
-                                <option value="Pendiente" ${c.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
-                                <option value="Visitado" ${c.estado === 'Visitado' ? 'selected' : ''}>Visitado</option>
-                                <option value="Revisitar" ${c.estado === 'Revisitar' ? 'selected' : ''}>Revisitar</option>
-                                <option value="Llamar" ${c.estado === 'Llamar' ? 'selected' : ''}>Llamar</option>
-                                <option value="No Interesado" ${c.estado === 'No Interesado' ? 'selected' : ''}>No Interesado</option>
+                                <option value="Pendiente" ${estadoComercial === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
+                                <option value="Visitado" ${estadoComercial === 'Visitado' ? 'selected' : ''}>Visitado</option>
+                                <option value="Revisitar" ${estadoComercial === 'Revisitar' ? 'selected' : ''}>Revisitar</option>
+                                <option value="Llamar" ${estadoComercial === 'Llamar' ? 'selected' : ''}>Llamar</option>
+                                <option value="No Interesado" ${estadoComercial === 'No Interesado' ? 'selected' : ''}>No Interesado</option>
                             </select>
                         </td>
                     </tr>
                 `;
             });
 
-            // Geocodificar y agregar marcadores
             const statusEl = document.getElementById('geocodingStatus');
             statusEl.classList.remove('hidden');
             statusEl.textContent = `🌍 Cargando marcadores...`;
-
-            let marcadoresAgregados = 0;
 
             for (const cliente of filtrados) {
                 if (cliente.lat && cliente.lng) {
@@ -307,10 +431,9 @@
                             ${cliente.rubro || 'Sin rubro'}<br>
                             📍 ${cliente.direccion || ''} ${cliente.ciudad || ''}<br>
                             📞 ${cliente.telefono || 'Sin teléfono'}<br>
-                            📌 ${cliente.tipo_solicitud || 'Sin tipo'} | ${cliente.estado || 'Sin estado'}
+                            📌 ${cliente.tipo_solicitud || 'Sin tipo'} | ${cliente.estado_comercial || 'Pendiente'}
                         `);
                     marcadores.push(marker);
-                    marcadoresAgregados++;
                 }
             }
 
@@ -319,17 +442,10 @@
             if (marcadores.length > 0) {
                 const group = L.featureGroup(marcadores);
                 mapa.fitBounds(group.getBounds().pad(0.1));
-            } else {
-                const noDataMsg = L.control({ position: 'bottomleft' });
-                noDataMsg.onAdd = function() {
-                    const div = L.DomUtil.create('div', 'loading-marker');
-                    div.innerHTML = '⚠️ No hay marcadores para mostrar. Asegúrate de que las direcciones estén completas.';
-                    return div;
-                };
-                noDataMsg.addTo(mapa);
             }
         }
 
+        // ==================== FILTROS ====================
         async function cargarFiltros() {
             const data = await obtenerClientes();
             const rubros = [...new Set(data.map(c => c.rubro).filter(Boolean))];
@@ -349,18 +465,16 @@
             });
         }
 
+        // ==================== AUTO-LOGIN ====================
         document.addEventListener('DOMContentLoaded', async () => {
-            initMap();
-            await cargarFiltros();
-            await renderizarDashboard();
-
-            document.getElementById('btnAplicarFiltros').addEventListener('click', async () => {
-                const rubro = document.getElementById('filtroRubro').value;
-                const ciudad = document.getElementById('filtroCiudad').value;
-                const tipo = document.getElementById('filtroTipo').value;
-                const estado = document.getElementById('filtroEstado').value;
-                await renderizarDashboard(rubro, ciudad, tipo, estado);
-            });
+            // ✅ Si ya hay sesión guardada, saltar el login
+            const usuarioGuardado = sessionStorage.getItem('qrpretium_dashboard_user');
+            if (usuarioGuardado) {
+                usuarioActual = usuarioGuardado;
+                document.getElementById('seccionLogin').classList.add('hidden');
+                document.getElementById('seccionDashboard').classList.remove('hidden');
+                await inicializarDashboard();
+            }
         });
     </script>
 </body>
