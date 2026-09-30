@@ -26,6 +26,13 @@
 </script>
     <!-- html2canvas para descargar el cartel como imagen -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    </script>
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen pb-12">
 
@@ -69,7 +76,7 @@
 
                 <div class="flex items-center space-x-3 bg-black/20 p-1.5 rounded-xl backdrop-blur-sm border border-white/10">
                     <label for="inputColor" class="text-xs font-bold text-white uppercase">Color de Franja:</label>
-                    <input type="color" id="inputColor" value="#334155" onchange="guardarColor(this.value)" class="h-8 w-12 rounded cursor-pointer border-0 bg-transparent">
+                    <input type="color" id="inputColor" value="#334155" class="h-8 w-12 rounded cursor-pointer border-0 bg-transparent">
                     <button onclick="guardarColor(document.getElementById('inputColor').value)" class="text-xs bg-white text-slate-800 font-bold px-2.5 py-1.3 rounded-lg shadow hover:bg-gray-100">
                         Guardar
                     </button>
@@ -304,9 +311,6 @@
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
-
         let comercioActual = null;
         let cuitLimpioActual = '';
         let articulosLista = [];
@@ -361,12 +365,7 @@
             const cuitLimpio = cuitIngresado.replace(/[-.\s]/g, '');
 
             try {
-                let comercios = [];
-                try {
-                    comercios = await consultarSupabase('COMERCIOS?select=*');
-                } catch (e) {
-                    comercios = await consultarSupabase('comercios?select=*');
-                }
+                const comercios = await consultarSupabase('comercios?select=*');
 
                 let comercio = comercios.find(c => {
                     const rawCuit = String(obtenerValorObjeto(c, ['cuit', 'CUIT', 'cuit_comercio']));
@@ -413,7 +412,7 @@
 
             await cargarArticulos();
             cargarDatosComercioEnFormulario();
-            await generarCartelQr();  // ← NUEVO
+            await generarCartelQr();
         }
 
         function cargarDatosComercioEnFormulario() {
@@ -498,34 +497,10 @@
             payload[obtenerClaveColumna('logo')] = logoBase64Actual || null;
 
             try {
-                let guardadoExitoso = false;
-                let ultimoError = null;
-
-                try {
-                    await consultarSupabase(`COMERCIOS?${campoId}=eq.${idComercio}`, {
-                        method: 'PATCH',
-                        body: JSON.stringify(payload)
-                    });
-                    guardadoExitoso = true;
-                } catch (err1) {
-                    ultimoError = err1;
-                }
-
-                if (!guardadoExitoso) {
-                    try {
-                        await consultarSupabase(`comercios?${campoId}=eq.${idComercio}`, {
-                            method: 'PATCH',
-                            body: JSON.stringify(payload)
-                        });
-                        guardadoExitoso = true;
-                    } catch (err2) {
-                        ultimoError = err2;
-                    }
-                }
-
-                if (!guardadoExitoso) {
-                    throw ultimoError;
-                }
+                await consultarSupabase(`comercios?${campoId}=eq.${idComercio}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify(payload)
+                });
 
                 comercioActual = { ...comercioActual, ...payload };
                 cargarDatosComercioEnFormulario();
@@ -736,22 +711,22 @@
             }, 500);
         }
 
-          async function cargarArticulos() {
+        async function cargarArticulos() {
             try {
-                // RPC listar_articulos_by_cuit
                 const { data, error } = await supabaseClient
                     .rpc('listar_articulos_by_cuit', { p_cuit: cuitLimpioActual });
 
                 if (error) throw error;
 
-                // Manejar el nivel extra de anidación
-                const respuesta = data && data.listar_articulos_by_cuit ? data.listar_articulos_by_cuit : data;
+                // Desanidar respuesta (PostgREST a veces envuelve la respuesta)
+                let respuesta = data;
+                if (data && data.listar_articulos_by_cuit) {
+                    respuesta = data.listar_articulos_by_cuit;
+                }
 
                 let listaArticulos = [];
                 if (respuesta && respuesta.success) {
                     listaArticulos = respuesta.articulos;
-
-                    // Si viene como string, parsear
                     if (typeof listaArticulos === 'string') {
                         try {
                             listaArticulos = JSON.parse(listaArticulos);
@@ -760,11 +735,14 @@
                             listaArticulos = [];
                         }
                     }
+                } else if (respuesta && respuesta.error) {
+                    console.error('RPC devolvió error:', respuesta.error);
                 }
 
                 articulosLista = Array.isArray(listaArticulos) ? listaArticulos : [];
                 renderizarTabla();
 
+                // Obtener plan del comercio
                 let planComercio = 'standard';
                 try {
                     const { data: datosComercio } = await supabaseClient
@@ -776,51 +754,14 @@
                         planComercio = datosComercio.plan;
                     }
                 } catch (errPlan) {
-                    console.warn("No se pudo obtener el plan del comercio, usando 'standard':", errPlan);
+                    console.warn("No se pudo obtener el plan, usando 'standard':", errPlan);
                 }
 
                 actualizarIndicadorCupo(planComercio, articulosLista.length);
 
             } catch (err) {
                 console.error("Error al cargar artículos:", err);
-            }
-        }
-
-                let planComercio = 'standard';
-                try {
-                    const { data: datosComercio } = await supabaseClient
-                        .from('comercios')
-                        .select('plan')
-                        .eq('cuit', cuitLimpioActual)
-                        .maybeSingle();
-                    if (datosComercio && datosComercio.plan) {
-                        planComercio = datosComercio.plan;
-                    }
-                } catch (errPlan) {
-                    console.warn("No se pudo obtener el plan del comercio, usando 'standard':", errPlan);
-                }
-
-                actualizarIndicadorCupo(planComercio, articulosLista.length);
-
-            } catch (err) {
-                console.error("Error al cargar artículos:", err);
-            }
-        }
-
-                let planComercio = 'standard';
-                try {
-                    let datosComercio = await consultarSupabase(`comercios?select=plan&cuit=eq.${cuitComparar}`);
-                    if (datosComercio && datosComercio.length > 0) {
-                        planComercio = datosComercio[0].plan || datosComercio[0].PLAN || 'standard';
-                    }
-                } catch (errPlan) {
-                    console.warn("No se pudo obtener el plan del comercio, usando 'standard':", errPlan);
-                }
-
-                actualizarIndicadorCupo(planComercio, articulosLista.length);
-
-            } catch (err) {
-                console.error("Error al cargar artículos:", err);
+                mostrarMensaje(`Error al cargar artículos: ${err.message}`, true);
             }
         }
 
@@ -1039,20 +980,18 @@
             const campoId = obtenerClaveColumna('id');
 
             try {
-                await consultarSupabase(`COMERCIOS?${campoId}=eq.${idComercio}`, {
-                    method: 'PATCH',
-                    body: JSON.stringify({ color: nuevoColor })
-                });
-            } catch (e) {
                 await consultarSupabase(`comercios?${campoId}=eq.${idComercio}`, {
                     method: 'PATCH',
                     body: JSON.stringify({ color: nuevoColor })
                 });
-            }
 
-            // Actualizar comercioActual y regenerar cartel
-            comercioActual = { ...comercioActual, color: nuevoColor };
-            await generarCartelQr();
+                // Actualizar comercioActual y regenerar cartel
+                comercioActual = { ...comercioActual, color: nuevoColor };
+                await generarCartelQr();
+            } catch (err) {
+                console.error("Error al guardar color:", err);
+                alert(`No se pudo guardar el color: ${err.message}`);
+            }
         }
 
         function cerrarSesion() {
