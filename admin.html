@@ -6,25 +6,18 @@
     <link rel="icon" type="image/png" href="img/favicon.png">
     <title>Panel de Administración - QRPretium</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- QRCode.js para generar el QR -->
+    <!-- QRCode.js -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <script>
-  window.addEventListener('DOMContentLoaded', function() {
-    if (typeof QRCode === 'undefined') {
-      console.warn('QRCode no cargó desde jsdelivr, intentando desde unpkg...');
-      const script = document.createElement('script');
-      script.src = 'https://unpkg.com/qrcode@1.5.1/build/qrcode.min.js';
-      script.onload = function() {
-        console.log('✅ QRCode cargado desde unpkg');
-      };
-      script.onerror = function() {
-        console.error('❌ QRCode no se pudo cargar desde ninguna CDN');
-      };
-      document.head.appendChild(script);
-    }
-  });
-</script>
-    <!-- html2canvas para descargar el cartel como imagen -->
+        window.addEventListener('DOMContentLoaded', function() {
+            if (typeof QRCode === 'undefined') {
+                const script = document.createElement('script');
+                script.src = 'https://unpkg.com/qrcode@1.5.1/build/qrcode.min.js';
+                document.head.appendChild(script);
+            }
+        });
+    </script>
+    <!-- html2canvas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -178,16 +171,13 @@
                 </div>
             </div>
 
-            <!-- ============================================
-                 SECCIÓN: MI QR
-                 ============================================ -->
+            <!-- SECCIÓN: MI QR -->
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 mb-6">
                 <h2 class="text-base font-bold text-emerald-600 mb-4 flex items-center gap-2">
                     <span>📱</span> Mi QR de Vidriera
                 </h2>
                 <p class="text-xs text-gray-500 mb-4">Este es tu código QR personalizado. Tus clientes lo escanean para acceder a tu catálogo digital en vidriera.</p>
 
-                <!-- Link del catálogo -->
                 <div class="mb-5">
                     <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1.5">Tu link de catálogo</label>
                     <div class="flex flex-wrap gap-2">
@@ -204,12 +194,10 @@
                     </div>
                 </div>
 
-                <!-- Previsualización del cartel -->
                 <div class="mb-5">
                     <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1.5">Previsualización del Cartel</label>
                     <div class="flex justify-center">
                         <div id="cartelQrContenedor" class="inline-block shadow-lg rounded-2xl overflow-hidden border border-gray-200">
-                            <!-- El cartel se genera dinámicamente acá -->
                         </div>
                     </div>
                     <p class="text-[10px] text-gray-400 text-center mt-2">
@@ -217,7 +205,6 @@
                     </p>
                 </div>
 
-                <!-- Botones de acción -->
                 <div class="flex flex-wrap gap-2 justify-center">
                     <button type="button" onclick="descargarCartelQr()" 
                         class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs rounded-xl shadow transition">
@@ -230,7 +217,7 @@
                 </div>
             </div>
 
-            <!-- SECCIÓN: DATOS DEL LOCAL (ahora al final) -->
+            <!-- SECCIÓN: DATOS DEL LOCAL -->
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 mt-6">
                 <h2 class="text-base font-bold text-orange-500 mb-4 flex items-center gap-2">
                     <span>🏪</span> Datos del Local
@@ -238,7 +225,6 @@
                 <p class="text-xs text-gray-500 mb-4">Modifica la información que aparece al hacer clic en el signo "+" en el Catalogo de Vidriera.</p>
 
                 <form id="formDatosComercio" class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <!-- Nombre + Logo -->
                     <div class="md:col-span-2">
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Nombre del Comercio</label>
                         <div class="flex items-start gap-3 flex-wrap">
@@ -314,28 +300,7 @@
         let comercioActual = null;
         let cuitLimpioActual = '';
         let articulosLista = [];
-        let esquemaColumnas = [];
         let logoBase64Actual = '';
-
-        async function consultarSupabase(endpoint, opciones = {}) {
-            const url = `${SUPABASE_URL}/rest/v1/${endpoint}`;
-            const headers = {
-                'apikey': SUPABASE_ANON_KEY,
-                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                'Content-Type': 'application/json',
-                'Prefer': 'return=representation',
-                'Accept-Profile': 'public',
-                'Content-Profile': 'public',
-                ...(opciones.headers || {})
-            };
-
-            const respuesta = await fetch(url, { ...opciones, headers });
-            if (!respuesta.ok) {
-                const errorData = await respuesta.json().catch(() => ({ message: respuesta.statusText }));
-                throw new Error(errorData.message || `Error status ${respuesta.status}`);
-            }
-            return await respuesta.json().catch(() => []);
-        }
 
         function obtenerValorObjeto(obj, listaClaves) {
             if (!obj) return '';
@@ -362,33 +327,26 @@
             const divError = document.getElementById('errorLogin');
             divError.classList.add('hidden');
 
-            const cuitLimpio = cuitIngresado.replace(/[-.\s]/g, '');
-
             try {
-                const comercios = await consultarSupabase('comercios?select=*');
-
-                let comercio = comercios.find(c => {
-                    const rawCuit = String(obtenerValorObjeto(c, ['cuit', 'CUIT', 'cuit_comercio']));
-                    const valCuitLimpio = rawCuit.replace(/[-.\s]/g, '');
-                    return valCuitLimpio === cuitLimpio || rawCuit === cuitIngresado || valCuitLimpio.includes(cuitLimpio);
+                // Llamada a la RPC de login (NO expone password, valida server-side)
+                const { data, error } = await supabaseClient.rpc('login_admin_comercio', {
+                    p_cuit: cuitIngresado,
+                    p_password: passIngresada
                 });
 
-                if (!comercio) {
-                    const cuitsRegistrados = comercios.map(c => `"${obtenerValorObjeto(c, ['cuit', 'CUIT'])}"`).join(', ');
-                    divError.innerText = `No se encontró el CUIT "${cuitIngresado}". Registrados: [${cuitsRegistrados}].`;
+                if (error) throw error;
+
+                // Desanidar
+                const respuesta = (data && data.login_admin_comercio) ? data.login_admin_comercio : data;
+
+                if (!respuesta || !respuesta.success) {
+                    divError.innerText = respuesta?.error || 'Credenciales incorrectas';
                     divError.classList.remove('hidden');
                     return;
                 }
 
-                const passDB = String(obtenerValorObjeto(comercio, ['password', 'PASSWORD', 'clave', 'CLAVE', 'contrasena'])).trim();
-                if (passDB && passDB !== passIngresada) {
-                    divError.innerText = "La contraseña ingresada no coincide.";
-                    divError.classList.remove('hidden');
-                    return;
-                }
-
-                comercioActual = comercio;
-                cuitLimpioActual = String(obtenerValorObjeto(comercio, ['cuit', 'CUIT'])).trim();
+                comercioActual = respuesta.comercio;
+                cuitLimpioActual = String(comercioActual.cuit).trim();
                 cargarPanel();
 
             } catch (err) {
@@ -402,8 +360,8 @@
             document.getElementById('seccionLogin').classList.add('hidden');
             document.getElementById('seccionPanel').classList.remove('hidden');
 
-            const nombre = obtenerValorObjeto(comercioActual, ['nombre', 'NOMBRE']) || 'Mi Comercio';
-            const color = obtenerValorObjeto(comercioActual, ['color', 'COLOR']) || '#334155';
+            const nombre = comercioActual.nombre || 'Mi Comercio';
+            const color = comercioActual.color || '#334155';
 
             document.getElementById('adminNombreComercio').innerText = nombre;
             document.getElementById('adminCuitComercio').innerText = `CUIT: ${cuitLimpioActual}`;
@@ -417,16 +375,16 @@
 
         function cargarDatosComercioEnFormulario() {
             if (!comercioActual) return;
-            document.getElementById('editNombre').value = obtenerValorObjeto(comercioActual, ['nombre', 'NOMBRE']) || '';
-            document.getElementById('editDireccion').value = obtenerValorObjeto(comercioActual, ['direccion', 'DIRECCION']) || '';
-            document.getElementById('editCiudad').value = obtenerValorObjeto(comercioActual, ['ciudad', 'CIUDAD']) || '';
-            document.getElementById('editProvincia').value = obtenerValorObjeto(comercioActual, ['provincia', 'PROVINCIA']) || '';
-            document.getElementById('editTelefono').value = obtenerValorObjeto(comercioActual, ['telefono', 'TELEFONO']) || '';
-            document.getElementById('editWhatsapp').value = obtenerValorObjeto(comercioActual, ['whatsapp', 'WHATSAPP']) || '';
-            document.getElementById('editWeb').value = obtenerValorObjeto(comercioActual, ['web', 'WEB', 'sitio', 'SITIO', 'website', 'WEBSITE']) || '';
-            document.getElementById('editHorarios').value = obtenerValorObjeto(comercioActual, ['horarios', 'HORARIOS']) || '';
+            document.getElementById('editNombre').value = comercioActual.nombre || '';
+            document.getElementById('editDireccion').value = comercioActual.direccion || '';
+            document.getElementById('editCiudad').value = comercioActual.ciudad || '';
+            document.getElementById('editProvincia').value = comercioActual.provincia || '';
+            document.getElementById('editTelefono').value = comercioActual.telefono || '';
+            document.getElementById('editWhatsapp').value = comercioActual.whatsapp || '';
+            document.getElementById('editWeb').value = comercioActual.web || '';
+            document.getElementById('editHorarios').value = comercioActual.horarios || '';
 
-            const logoGuardado = obtenerValorObjeto(comercioActual, ['logo', 'LOGO']);
+            const logoGuardado = comercioActual.logo;
             if (logoGuardado && String(logoGuardado).trim().length > 0) {
                 logoBase64Actual = logoGuardado;
                 document.getElementById('previewLogo').src = logoGuardado;
@@ -439,7 +397,6 @@
             }
         }
 
-        // ================== LOGO ==================
         function cargarLogo(event) {
             const archivo = event.target.files[0];
             if (!archivo) return;
@@ -482,40 +439,49 @@
             btn.disabled = true;
             btn.innerText = "Guardando...";
 
-            const idComercio = comercioActual.id || comercioActual.ID;
-            const campoId = obtenerClaveColumna('id');
-
-            const payload = {};
-            payload[obtenerClaveColumna('nombre')] = document.getElementById('editNombre').value.trim();
-            payload[obtenerClaveColumna('direccion')] = document.getElementById('editDireccion').value.trim();
-            payload[obtenerClaveColumna('ciudad')] = document.getElementById('editCiudad').value.trim();
-            payload[obtenerClaveColumna('provincia')] = document.getElementById('editProvincia').value.trim();
-            payload[obtenerClaveColumna('telefono')] = document.getElementById('editTelefono').value.trim();
-            payload[obtenerClaveColumna('whatsapp')] = document.getElementById('editWhatsapp').value.trim();
-            payload[obtenerClaveColumna('web')] = document.getElementById('editWeb').value.trim();
-            payload[obtenerClaveColumna('horarios')] = document.getElementById('editHorarios').value.trim();
-            payload[obtenerClaveColumna('logo')] = logoBase64Actual || null;
-
             try {
-                await consultarSupabase(`comercios?${campoId}=eq.${idComercio}`, {
-                    method: 'PATCH',
-                    body: JSON.stringify(payload)
+                const { data, error } = await supabaseClient.rpc('actualizar_datos_comercio', {
+                    p_cuit: cuitLimpioActual,
+                    p_nombre: document.getElementById('editNombre').value.trim(),
+                    p_direccion: document.getElementById('editDireccion').value.trim(),
+                    p_ciudad: document.getElementById('editCiudad').value.trim(),
+                    p_provincia: document.getElementById('editProvincia').value.trim(),
+                    p_telefono: document.getElementById('editTelefono').value.trim(),
+                    p_whatsapp: document.getElementById('editWhatsapp').value.trim(),
+                    p_web: document.getElementById('editWeb').value.trim(),
+                    p_horarios: document.getElementById('editHorarios').value.trim(),
+                    p_logo: logoBase64Actual || null
                 });
 
-                comercioActual = { ...comercioActual, ...payload };
-                cargarDatosComercioEnFormulario();
+                if (error) throw error;
 
-                // Regenerar el cartel con el nuevo nombre/color
+                const respuesta = (data && data.actualizar_datos_comercio) ? data.actualizar_datos_comercio : data;
+
+                if (!respuesta || !respuesta.success) {
+                    throw new Error(respuesta?.error || 'No se pudo guardar');
+                }
+
+                // Actualizar el objeto local
+                comercioActual.nombre = document.getElementById('editNombre').value.trim();
+                comercioActual.direccion = document.getElementById('editDireccion').value.trim();
+                comercioActual.ciudad = document.getElementById('editCiudad').value.trim();
+                comercioActual.provincia = document.getElementById('editProvincia').value.trim();
+                comercioActual.telefono = document.getElementById('editTelefono').value.trim();
+                comercioActual.whatsapp = document.getElementById('editWhatsapp').value.trim();
+                comercioActual.web = document.getElementById('editWeb').value.trim();
+                comercioActual.horarios = document.getElementById('editHorarios').value.trim();
+                comercioActual.logo = logoBase64Actual || null;
+
+                document.getElementById('adminNombreComercio').innerText = comercioActual.nombre;
                 await generarCartelQr();
 
                 mensaje.className = 'mt-3 p-3 text-xs font-bold rounded-xl text-center leading-relaxed bg-emerald-50 text-emerald-700 border border-emerald-200';
                 mensaje.innerText = '✅ Datos del local actualizados correctamente.';
                 mensaje.classList.remove('hidden');
-
                 setTimeout(() => mensaje.classList.add('hidden'), 5000);
 
             } catch (err) {
-                console.error("Error al guardar datos del comercio:", err);
+                console.error("Error:", err);
                 mensaje.className = 'mt-3 p-3 text-xs font-bold rounded-xl text-center leading-relaxed bg-red-50 text-red-600 border border-red-200';
                 mensaje.innerText = `❌ Error: ${err.message}`;
                 mensaje.classList.remove('hidden');
@@ -526,34 +492,53 @@
             }
         }
 
-        // ================== MI QR ==================
+        async function guardarColor(nuevoColor) {
+            document.getElementById('headerAdmin').style.backgroundColor = nuevoColor;
+
+            try {
+                const { data, error } = await supabaseClient.rpc('actualizar_color_comercio', {
+                    p_cuit: cuitLimpioActual,
+                    p_color: nuevoColor
+                });
+
+                if (error) throw error;
+
+                const respuesta = (data && data.actualizar_color_comercio) ? data.actualizar_color_comercio : data;
+
+                if (!respuesta || !respuesta.success) {
+                    throw new Error(respuesta?.error || 'No se pudo guardar color');
+                }
+
+                comercioActual.color = nuevoColor;
+                await generarCartelQr();
+            } catch (err) {
+                console.error("Error al guardar color:", err);
+                alert(`No se pudo guardar el color: ${err.message}`);
+            }
+        }
+
+        // ================== QR ==================
         async function generarCartelQr() {
             try {
                 const linkQr = comercioActual.link_qr ||
                     `https://qrproyectum26.github.io/QRPretium/catalogo.html?cuit=${cuitLimpioActual}`;
-                const nombreComercio = obtenerValorObjeto(comercioActual, ['nombre', 'NOMBRE']) || 'Mi Comercio';
-                const colorFranja = obtenerValorObjeto(comercioActual, ['color', 'COLOR']) || '#334155';
+                const nombreComercio = comercioActual.nombre || 'Mi Comercio';
+                const colorFranja = comercioActual.color || '#334155';
 
-                // Actualizar input y link de abrir
                 const input = document.getElementById('linkQrInput');
                 const linkAbrir = document.getElementById('linkQrAbrir');
                 if (input) input.value = linkQr;
                 if (linkAbrir) linkAbrir.href = linkQr;
 
-                // Generar QR en un canvas temporal
                 const canvasTemp = document.createElement('canvas');
                 await QRCode.toCanvas(canvasTemp, linkQr, {
                     width: 280,
                     margin: 1,
-                    color: {
-                        dark: '#0F172A',
-                        light: '#FFFFFF'
-                    },
+                    color: { dark: '#0F172A', light: '#FFFFFF' },
                     errorCorrectionLevel: 'H'
                 });
                 const qrDataUrl = canvasTemp.toDataURL('image/png');
 
-                // Generar el cartel completo (HTML/CSS)
                 const contenedor = document.getElementById('cartelQrContenedor');
                 contenedor.innerHTML = `
                     <div id="cartelQr" style="
@@ -564,7 +549,6 @@
                         text-align: center;
                         border: 1px solid #E2E8F0;
                     ">
-                        <!-- Nombre del comercio (con color del comercio) -->
                         <div style="
                             background: ${colorFranja};
                             color: #FFFFFF;
@@ -580,7 +564,6 @@
                             ${nombreComercio}
                         </div>
 
-                        <!-- QR con borde naranja -->
                         <div style="
                             display: inline-block;
                             padding: 12px;
@@ -592,7 +575,6 @@
                             <img src="${qrDataUrl}" alt="QR" style="display: block; width: 260px; height: 260px;">
                         </div>
 
-                        <!-- Texto "Escaneame" -->
                         <p style="
                             margin-top: 18px;
                             font-size: 22px;
@@ -612,7 +594,6 @@
                             ..Escaneáme y consulta mi Catálogo de Vidriera Interactiva!!
                         </p>
 
-                        <!-- Branding QRPretium -->
                         <p style="
                             margin-top: 16px;
                             font-size: 10px;
@@ -625,9 +606,6 @@
                         </p>
                     </div>
                 `;
-
-                console.log('Cartel QR generado para:', linkQr);
-
             } catch (err) {
                 console.error('Error al generar cartel QR:', err);
             }
@@ -711,6 +689,7 @@
             }, 500);
         }
 
+        // ================== ARTÍCULOS ==================
         async function cargarArticulos() {
             try {
                 const { data, error } = await supabaseClient
@@ -718,7 +697,6 @@
 
                 if (error) throw error;
 
-                // Desanidar respuesta (PostgREST a veces envuelve la respuesta)
                 let respuesta = data;
                 if (data && data.listar_articulos_by_cuit) {
                     respuesta = data.listar_articulos_by_cuit;
@@ -728,35 +706,15 @@
                 if (respuesta && respuesta.success) {
                     listaArticulos = respuesta.articulos;
                     if (typeof listaArticulos === 'string') {
-                        try {
-                            listaArticulos = JSON.parse(listaArticulos);
-                        } catch (e) {
-                            console.error('Error al parsear artículos:', e);
-                            listaArticulos = [];
-                        }
+                        try { listaArticulos = JSON.parse(listaArticulos); } catch (e) { listaArticulos = []; }
                     }
-                } else if (respuesta && respuesta.error) {
-                    console.error('RPC devolvió error:', respuesta.error);
                 }
 
                 articulosLista = Array.isArray(listaArticulos) ? listaArticulos : [];
                 renderizarTabla();
 
-                // Obtener plan del comercio
-                let planComercio = 'standard';
-                try {
-                    const { data: datosComercio } = await supabaseClient
-                        .from('comercios')
-                        .select('plan')
-                        .eq('cuit', cuitLimpioActual)
-                        .maybeSingle();
-                    if (datosComercio && datosComercio.plan) {
-                        planComercio = datosComercio.plan;
-                    }
-                } catch (errPlan) {
-                    console.warn("No se pudo obtener el plan, usando 'standard':", errPlan);
-                }
-
+                // Plan (desde comercioActual, ya lo tenemos del login)
+                let planComercio = comercioActual.plan || 'standard';
                 actualizarIndicadorCupo(planComercio, articulosLista.length);
 
             } catch (err) {
@@ -771,7 +729,8 @@
             const limites = {
                 'standard': 35,
                 'power': 350,
-                'premium': 2800
+                'premium': 2800,
+                'prueba gratuita': 35
             };
 
             const limiteMax = limites[plan] || 35;
@@ -818,12 +777,12 @@
             }
 
             articulosLista.forEach(item => {
-                const id = item.id || item.ID;
-                const cod = obtenerValorObjeto(item, ['codigo', 'CODIGO']) || '-';
-                const art = obtenerValorObjeto(item, ['articulo', 'ARTICULO', 'nombre', 'NOMBRE']) || '-';
-                const disp = obtenerValorObjeto(item, ['disponibilidad', 'DISPONIBILIDAD']) || '-';
-                const precio = obtenerValorObjeto(item, ['precio', 'PRECIO']) || 0;
-                const promo = obtenerValorObjeto(item, ['promocion', 'PROMOCION']) || '-';
+                const id = item.id;
+                const cod = item.codigo || '-';
+                const art = item.articulo || '-';
+                const disp = item.disponibilidad || '-';
+                const precio = item.precio || 0;
+                const promo = item.promocion || '-';
 
                 tbody.innerHTML += `
                     <tr class="hover:bg-gray-50 transition">
@@ -839,14 +798,6 @@
                     </tr>
                 `;
             });
-        }
-
-        function obtenerClaveColumna(nombreStandard) {
-            if (esquemaColumnas.length > 0) {
-                const encontrada = esquemaColumnas.find(c => c.toLowerCase() === nombreStandard.toLowerCase());
-                if (encontrada) return encontrada;
-            }
-            return nombreStandard;
         }
 
         async function guardarArticulo(e) {
@@ -868,7 +819,6 @@
                 let error = null;
 
                 if (id) {
-                    // ACTUALIZAR
                     const res = await supabaseClient.rpc('actualizar_articulo', {
                         p_id: parseInt(id),
                         p_cuit: cuitLimpioActual,
@@ -882,7 +832,6 @@
                     resultado = res.data;
                     error = res.error;
                 } else {
-                    // CREAR
                     const res = await supabaseClient.rpc('crear_articulo', {
                         p_cuit: cuitLimpioActual,
                         p_codigo: codigo,
@@ -898,7 +847,6 @@
 
                 if (error) throw error;
 
-                // Manejar el nivel extra de anidación
                 const respuesta = resultado && (resultado.crear_articulo || resultado.actualizar_articulo)
                     ? (resultado.crear_articulo || resultado.actualizar_articulo)
                     : resultado;
@@ -920,16 +868,16 @@
         }
 
         function prepararEdicion(id) {
-            const item = articulosLista.find(a => (a.id || a.ID) == id);
+            const item = articulosLista.find(a => a.id == id);
             if (!item) return;
 
             document.getElementById('artId').value = id;
-            document.getElementById('artCodigo').value = obtenerValorObjeto(item, ['codigo', 'CODIGO']);
-            document.getElementById('artNombre').value = obtenerValorObjeto(item, ['articulo', 'ARTICULO', 'nombre', 'NOMBRE']);
-            document.getElementById('artDescripcion').value = obtenerValorObjeto(item, ['descripcion', 'DESCRIPCION']);
-            document.getElementById('artDisponibilidad').value = obtenerValorObjeto(item, ['disponibilidad', 'DISPONIBILIDAD']);
-            document.getElementById('artPrecio').value = obtenerValorObjeto(item, ['precio', 'PRECIO']);
-            document.getElementById('artPromocion').value = obtenerValorObjeto(item, ['promocion', 'PROMOCION']);
+            document.getElementById('artCodigo').value = item.codigo || '';
+            document.getElementById('artNombre').value = item.articulo || '';
+            document.getElementById('artDescripcion').value = item.descripcion || '';
+            document.getElementById('artDisponibilidad').value = item.disponibilidad || '';
+            document.getElementById('artPrecio').value = item.precio || '';
+            document.getElementById('artPromocion').value = item.promocion || '';
 
             document.getElementById('tituloFormArticulo').innerText = "✏️ Editar Artículo";
             document.getElementById('btnCancelar').classList.remove('hidden');
@@ -959,7 +907,6 @@
 
                     if (error) throw error;
 
-                    // Manejar el nivel extra de anidación
                     const respuesta = data && data.eliminar_articulo ? data.eliminar_articulo : data;
 
                     if (!respuesta || !respuesta.success) {
@@ -974,30 +921,13 @@
             }
         }
 
-        async function guardarColor(nuevoColor) {
-            document.getElementById('headerAdmin').style.backgroundColor = nuevoColor;
-            const idComercio = comercioActual.id || comercioActual.ID;
-            const campoId = obtenerClaveColumna('id');
-
-            try {
-                await consultarSupabase(`comercios?${campoId}=eq.${idComercio}`, {
-                    method: 'PATCH',
-                    body: JSON.stringify({ color: nuevoColor })
-                });
-
-                // Actualizar comercioActual y regenerar cartel
-                comercioActual = { ...comercioActual, color: nuevoColor };
-                await generarCartelQr();
-            } catch (err) {
-                console.error("Error al guardar color:", err);
-                alert(`No se pudo guardar el color: ${err.message}`);
-            }
-        }
-
         function cerrarSesion() {
             comercioActual = null;
+            cuitLimpioActual = '';
+            articulosLista = [];
             document.getElementById('seccionPanel').classList.add('hidden');
             document.getElementById('seccionLogin').classList.remove('hidden');
+            document.getElementById('loginPassword').value = '';
         }
     </script>
 </body>
