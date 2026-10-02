@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="img/favicon.png">
     <title>Panel de Administración - QRPretium</title>
-    <link rel="stylesheet" href="output.css">
-    <!-- QRCode.js -->
+    <script src="https://cdn.tailwindcss.com/3.4.3"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <script>
         window.addEventListener('DOMContentLoaded', function() {
@@ -17,15 +16,274 @@
             }
         });
     </script>
-    <!-- html2canvas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
+        const SUPABASE_URL = 'https://zbnuunuuciupyyzploq.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     </script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        
+        /* ===== POPUPS GENERALES ===== */
+        .popup-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .popup-overlay.activo {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .popup-caja {
+            background: #ffffff;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+        .popup-caja-grande {
+            max-width: 700px;
+        }
+        .popup-overlay.activo .popup-caja {
+            transform: scale(1);
+            opacity: 1;
+        }
+        .popup-cerrar {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(15, 23, 42, 0.1);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 18px;
+            font-weight: 700;
+            color: #334155;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+        .popup-cerrar:hover {
+            background: rgba(15, 23, 42, 0.2);
+            transform: rotate(90deg);
+        }
+        .popup-caja::-webkit-scrollbar { width: 6px; }
+        .popup-caja::-webkit-scrollbar-track { background: #f1f5f9; }
+        .popup-caja::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
+        
+        /* ===== CATEGORÍAS ===== */
+        .categoria-btn {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #334155;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .categoria-btn:hover {
+            border-color: #f97316;
+            background: #fff7ed;
+            transform: translateY(-1px);
+        }
+        .categoria-btn.seleccionada {
+            background: #f97316;
+            border-color: #ea580c;
+            color: white;
+        }
+        
+        /* ===== TABLA CATEGORÍAS EN POPUP ===== */
+        .tabla-categorias {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+        .tabla-categorias th {
+            background: #f1f5f9;
+            padding: 10px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #475569;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .tabla-categorias td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 13px;
+        }
+        .tabla-categorias input[type="text"] {
+            width: 100%;
+            padding: 6px 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            background: white;
+        }
+        .tabla-categorias input[type="text"]:focus {
+            outline: none;
+            border-color: #f97316;
+            box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.15);
+        }
+        .tabla-categorias input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #f97316;
+            cursor: pointer;
+        }
+        
+        /* ===== TABLA ARTÍCULOS ===== */
+        .tabla-articulos {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .tabla-articulos th {
+            padding: 12px 10px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #64748b;
+            text-align: left;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .tabla-articulos td {
+            padding: 12px 10px;
+            font-size: 13px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .tabla-articulos tr:hover td {
+            background: #f8fafc;
+        }
+        
+        /* ===== CÓDIGO DESTACADO ===== */
+        .codigo-badge {
+            background: #1e293b;
+            color: white;
+            font-family: 'Courier New', monospace;
+            font-weight: 900;
+            font-size: 14px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            border: 2px solid #f97316;
+            display: inline-block;
+            letter-spacing: 1px;
+        }
+        
+        /* ===== INPUT CON CÓDIGO AUTO ===== */
+        .input-codigo-auto {
+            background: #f1f5f9 !important;
+            font-family: 'Courier New', monospace;
+            font-weight: 900;
+            font-size: 18px !important;
+            letter-spacing: 2px;
+            text-align: center;
+            color: #0f172a;
+        }
+        
+        /* ===== ESPECIFICACIONES ===== */
+        .esp-fila {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr auto;
+            gap: 8px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+        .esp-fila input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+        .esp-fila input:focus {
+            outline: none;
+            border-color: #f97316;
+            box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.15);
+        }
+        .esp-eliminar {
+            background: #fee2e2;
+            color: #dc2626;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+        .esp-eliminar:hover {
+            background: #fecaca;
+        }
+        
+        /* ===== MENSAJES ===== */
+        .mensaje-flotante {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            z-index: 200;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            max-width: 320px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        .mensaje-flotante.activo {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .mensaje-flotante.ok {
+            background: #10b981;
+            color: white;
+        }
+        .mensaje-flotante.error {
+            background: #ef4444;
+            color: white;
+        }
+        
+        /* ===== INDICADOR PROMO ===== */
+        .badge-promo {
+            display: inline-block;
+            background: #fee2e2;
+            color: #dc2626;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 6px;
+            margin-left: 4px;
+        }
+    </style>
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen pb-12">
 
@@ -60,83 +318,176 @@
     <!-- SECCIÓN 2: PANEL DE ADMINISTRACIÓN -->
     <div id="seccionPanel" class="hidden">
 
-        <header id="headerAdmin" class="text-white p-6 shadow-lg rounded-b-2xl transition-colors duration-300" style="background-color: #334155;">
-            <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-                <div class="text-center md:text-left">
-                    <h1 id="adminNombreComercio" class="text-2xl font-extrabold uppercase tracking-wide">Cargando...</h1>
-                    <p id="adminCuitComercio" class="text-xs text-slate-200 font-medium mt-1">CUIT: -</p>
+        <!-- HEADER NUEVO -->
+        <header id="headerAdmin" class="text-white shadow-lg rounded-b-2xl transition-colors duration-300" style="background-color: #334155;">
+            <div class="max-w-5xl mx-auto p-5">
+                
+                <!-- FILA 1: Nombre + CUIT + sesión -->
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+                    <div class="text-center md:text-left">
+                        <h1 id="adminNombreComercio" class="text-2xl font-extrabold uppercase tracking-wide">Cargando...</h1>
+                        <p id="adminCuitComercio" class="text-xs text-slate-200 font-medium mt-1">CUIT: -</p>
+                    </div>
+
+                    <div class="flex items-center justify-center gap-2 flex-wrap">
+                        <div class="flex items-center space-x-2 bg-black/20 p-1.5 rounded-xl backdrop-blur-sm border border-white/10">
+                            <label for="inputColor" class="text-xs font-bold text-white uppercase">Color:</label>
+                            <input type="color" id="inputColor" value="#334155" class="h-7 w-10 rounded cursor-pointer border-0 bg-transparent">
+                            <button onclick="guardarColor(document.getElementById('inputColor').value)" class="text-xs bg-white text-slate-800 font-bold px-2.5 py-1 rounded-lg shadow hover:bg-gray-100">
+                                Guardar
+                            </button>
+                        </div>
+
+                        <button onclick="cerrarSesion()" class="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-lg shadow">
+                            Cerrar Sesión
+                        </button>
+                    </div>
                 </div>
 
-                <div class="flex items-center space-x-3 bg-black/20 p-1.5 rounded-xl backdrop-blur-sm border border-white/10">
-                    <label for="inputColor" class="text-xs font-bold text-white uppercase">Color de Franja:</label>
-                    <input type="color" id="inputColor" value="#334155" class="h-8 w-12 rounded cursor-pointer border-0 bg-transparent">
-                    <button onclick="guardarColor(document.getElementById('inputColor').value)" class="text-xs bg-white text-slate-800 font-bold px-2.5 py-1.3 rounded-lg shadow hover:bg-gray-100">
-                        Guardar
-                    </button>
+                <!-- FILA 2: Plan + Cupo + barra -->
+                <div class="bg-black/20 backdrop-blur-sm rounded-xl p-3 border border-white/10">
+                    <div class="flex justify-between items-center mb-2">
+                        <span id="nombrePlan" class="text-xs font-extrabold uppercase tracking-wider text-white">Plan STANDARD</span>
+                        <span id="textoCupo" class="text-xs font-bold text-slate-200">0 de 35 artículos</span>
+                    </div>
+                    <div class="w-full bg-white/20 rounded-full h-2 overflow-hidden">
+                        <div id="barraProgreso" class="bg-white h-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
                 </div>
-
-                <button onclick="cerrarSesion()" class="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-lg shadow">
-                    Cerrar Sesión
-                </button>
             </div>
         </header>
 
-        <main class="max-w-4xl mx-auto px-4 mt-6">
+        <main class="max-w-5xl mx-auto px-4 mt-6">
 
-            <!-- BANNER DE CUPO Y PLAN -->
+            <!-- ZONA DE ACCIONES -->
             <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 mb-6">
-                <div class="flex justify-between items-center mb-2">
-                    <span id="nombrePlan" class="text-xs font-extrabold uppercase tracking-wider text-slate-700">Plan STANDARD</span>
-                    <span id="textoCupo" class="text-xs font-bold text-gray-500">0 de 35 artículos</span>
-                </div>
-                <div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
-                    <div id="barraProgreso" class="bg-slate-700 h-full transition-all duration-300" style="width: 0%"></div>
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="abrirPopupNuevoArticulo()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold px-4 py-2.5 rounded-xl text-sm shadow transition flex items-center gap-2">
+                            ➕ Nuevo Artículo
+                        </button>
+                        <button onclick="abrirPopupCategorias()" id="btnCategorias" class="bg-white hover:bg-slate-50 text-slate-800 font-bold px-4 py-2.5 rounded-xl text-sm shadow transition border border-slate-300 flex items-center gap-2">
+                            📂 Cargar Categorías
+                        </button>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="abrirPopupMiQr()" class="bg-white hover:bg-slate-50 text-slate-800 font-bold px-4 py-2.5 rounded-xl text-sm shadow transition border border-slate-300 flex items-center gap-2">
+                            📱 Mi QR
+                        </button>
+                        <button onclick="abrirPopupMiComercio()" class="bg-white hover:bg-slate-50 text-slate-800 font-bold px-4 py-2.5 rounded-xl text-sm shadow transition border border-slate-300 flex items-center gap-2">
+                            🏪 Mi Comercio
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- FORMULARIO DE ARTÍCULO -->
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 mb-6">
-                <h2 id="tituloFormArticulo" class="text-base font-bold text-emerald-600 mb-4 flex items-center gap-2">
-                    <span>➕</span> Agregar Nuevo Artículo
-                </h2>
+            <!-- TABLA DE ARTÍCULOS -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-6">
+                <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+                    <h3 class="font-bold text-slate-800 text-sm">Artículos Publicados</h3>
+                    <span id="cantArticulos" class="text-xs font-bold bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full">0 productos</span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="tabla-articulos">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Artículo</th>
+                                <th>Disponibilidad</th>
+                                <th>Promoción</th>
+                                <th>Precio</th>
+                                <th class="text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyArticulos">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+<!-- ==================== POPUP: NUEVO / EDITAR ARTÍCULO ==================== -->
+    <div id="popupArticulo" class="popup-overlay" onclick="if(event.target===this) cerrarPopupArticulo()">
+        <div class="popup-caja popup-caja-grande">
+            <button class="popup-cerrar" onclick="cerrarPopupArticulo()">✕</button>
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-5">
+                    <h2 id="tituloFormArticulo" class="text-xl font-extrabold text-slate-800">➕ Nuevo Artículo</h2>
+                    <button onclick="abrirVistaPrevia()" class="text-xs bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-3 py-2 rounded-lg shadow transition">
+                        👁️ Vista Previa
+                    </button>
+                </div>
 
                 <div id="mensajeEstado" class="hidden mb-4 p-3 text-xs font-bold rounded-xl text-center leading-relaxed"></div>
 
-                <form onsubmit="guardarArticulo(event)" class="grid grid-cols-1 md:grid-cols-12 gap-3">
+                <form onsubmit="guardarArticulo(event)" class="space-y-4">
                     <input type="hidden" id="artId">
 
-                    <div class="md:col-span-2">
-                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Código</label>
-                        <input type="text" id="artCodigo" placeholder="Ej: 007,P25,A05" required class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+                    <!-- CATEGORÍAS DISPONIBLES -->
+                    <div id="bloqueCategorias" class="bg-orange-50 border border-orange-200 rounded-xl p-3 hidden">
+                        <label class="block text-[11px] font-bold text-orange-700 uppercase mb-2">Elegí una categoría para autocompletar el código:</label>
+                        <div id="categoriasDisponibles" class="flex flex-wrap gap-2"></div>
                     </div>
 
-                    <div class="md:col-span-7">
-                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Artículo / Nombre</label>
-                        <input type="text" id="artNombre" placeholder="Ej: SWEATER PUGH, CAMPERA CORDEROY,SACO SMOKING" required class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+                    <!-- CÓDIGO -->
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Código *</label>
+                        <input type="text" id="artCodigo" readonly placeholder="Elegí una categoría arriba" required 
+                            class="input-codigo-auto w-full px-4 py-3 rounded-xl border border-gray-300">
+                        <p class="text-[10px] text-gray-400 mt-1">El código se autocompleta al elegir una categoría.</p>
                     </div>
 
-                    <div class="md:col-span-2">
-                        <label class="block text-[11px] font-bold text-orange-400 uppercase mb-1">Precio ($)</label>
-                        <input type="number" step="0.01" id="artPrecio" placeholder="Ej: 25000" required class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+                    <!-- NOMBRE -->
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Artículo / Nombre *</label>
+                        <input type="text" id="artNombre" placeholder="Ej: CHAQUETA DE CUERO NEGRA" required 
+                            class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
                     </div>
 
-                    <div class="md:col-span-12">
+                    <!-- DESCRIPCIÓN -->
+                    <div>
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Descripción</label>
-                        <input type="text" id="artDescripcion" placeholder="Ej: Buzo liso en frisa de algodón..." class="w-full px-3 py-4 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+                        <textarea id="artDescripcion" rows="3" placeholder="Ej: Ideal para momentos especiales, con cuero gamuza y costura reforzada..."
+                            class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600"></textarea>
+                        <p class="text-[10px] text-gray-400 mt-1">💡 Texto "romántico" que destaca cualidades del producto.</p>
                     </div>
 
-                    <div class="md:col-span-6">
+                    <!-- BOTONES ESPECIFICACIONES Y VIDEO -->
+                    <div class="flex gap-2">
+                        <button type="button" onclick="abrirPopupEspecificaciones()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1">
+                            🔍 Especificaciones
+                        </button>
+                        <button type="button" onclick="abrirPopupVideo()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1">
+                            ▶️ Video
+                        </button>
+                    </div>
+
+                    <!-- DISPONIBILIDAD -->
+                    <div>
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Disponibilidad</label>
-                        <input type="text" id="artDisponibilidad" placeholder="Ej: Talle L,M,XL-AZUL,VERDE FUSION" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+                        <input type="text" id="artDisponibilidad" placeholder="Ej: Talle L,M,XL-AZUL,VERDE FUSION" 
+                            class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
                     </div>
 
-                    <div class="md:col-span-6">
-                        <label class="block text-[11px] font-bold text-emerald-500 uppercase mb-1">Promoción</label>
-                        <input type="text" id="artPromocion" placeholder="Ej: 10% OFF EFECTIVO-3 Cuotas S/Int." class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+                    <!-- PRECIO Y PROMOCIÓN -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold text-orange-400 uppercase mb-1">Precio ($) *</label>
+                            <input type="number" step="0.01" id="artPrecio" placeholder="Ej: 25000" required 
+                                class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-emerald-500 uppercase mb-1">Promoción</label>
+                            <input type="text" id="artPromocion" placeholder="Ej: 10% OFF EFECTIVO" 
+                                class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+                        </div>
                     </div>
 
-                    <div class="md:col-span-12 flex justify-end gap-2 mt-2">
-                        <button type="button" onclick="limpiarFormulario()" id="btnCancelar" class="hidden px-4 py-2 bg-gray-200 text-gray-700 font-bold rounded-xl text-sm">
+                    <!-- BOTONES -->
+                    <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                        <button type="button" onclick="cerrarPopupArticulo()" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm hover:bg-gray-200">
                             Cancelar
                         </button>
                         <button type="submit" id="btnGuardarArt" class="px-6 py-2 bg-slate-800 text-white font-bold rounded-xl text-sm hover:bg-slate-900 shadow">
@@ -145,38 +496,104 @@
                     </div>
                 </form>
             </div>
+        </div>
+    </div>
 
-            <!-- TABLA DE PRODUCTOS -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-6">
-                <div class="p-4 border-b border-gray-100 flex justify-between items-center">
-                    <h3 class="font-bold text-slate-800 text-sm">Artículos Publicados</h3>
-                    <span id="cantArticulos" class="text-xs font-bold bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full">0 productos</span>
-                </div>
+    <!-- ==================== POPUP: CATEGORÍAS ==================== -->
+    <div id="popupCategorias" class="popup-overlay" onclick="if(event.target===this) cerrarPopupCategorias()">
+        <div class="popup-caja popup-caja-grande">
+            <button class="popup-cerrar" onclick="cerrarPopupCategorias()">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-2">📂 Cargar Categorías</h2>
+                <p class="text-xs text-gray-500 mb-4">Definí qué tipo de producto corresponde a cada letra. Solo activá las que vas a usar.</p>
 
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-gray-50 text-gray-500 uppercase text-[10px] tracking-wider font-extrabold border-b">
+                <div class="max-h-96 overflow-y-auto pr-2">
+                    <table class="tabla-categorias">
+                        <thead>
                             <tr>
-                                <th class="p-3">Código</th>
-                                <th class="p-3">Artículo</th>
-                                <th class="p-3">Disponibilidad</th>
-                                <th class="p-3">Precio</th>
-                                <th class="p-3">Promoción</th>
-                                <th class="p-3 text-right">Acciones</th>
+                                <th style="width: 50px;">Uso</th>
+                                <th style="width: 60px;">Letra</th>
+                                <th>Tipo de Producto</th>
                             </tr>
                         </thead>
-                        <tbody id="tbodyArticulos" class="divide-y divide-gray-100">
+                        <tbody id="tbodyCategorias">
                         </tbody>
                     </table>
                 </div>
-            </div>
 
-            <!-- SECCIÓN: MI QR -->
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 mb-6">
-                <h2 class="text-base font-bold text-emerald-600 mb-4 flex items-center gap-2">
-                    <span>📱</span> Mi QR de Vidriera
-                </h2>
-                <p class="text-xs text-gray-500 mb-4">Este es tu código QR personalizado. Tus clientes lo escanean para acceder a tu catálogo digital en vidriera.</p>
+                <div class="flex justify-end gap-2 mt-5 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="cerrarPopupCategorias()" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm hover:bg-gray-200">
+                        Cancelar
+                    </button>
+                    <button type="button" onclick="guardarCategorias()" class="px-6 py-2 bg-slate-800 text-white font-bold rounded-xl text-sm hover:bg-slate-900 shadow">
+                        Guardar Categorías
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== POPUP: ESPECIFICACIONES ==================== -->
+    <div id="popupEspecificaciones" class="popup-overlay" onclick="if(event.target===this) cerrarPopupEspecificaciones()">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopupEspecificaciones()">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-2">🔍 Especificaciones</h2>
+                <p class="text-xs text-gray-500 mb-4">Datos técnicos del producto. Podés borrar los ejemplos y escribir los tuyos.</p>
+
+                <div id="listaEspecificaciones" class="mb-4"></div>
+
+                <button type="button" onclick="agregarFilaEspecificacion()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold px-3 py-2 rounded-lg transition w-full mb-4">
+                    ➕ Agregar otra fila
+                </button>
+
+                <div class="flex justify-end gap-2 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="cerrarPopupEspecificaciones()" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm hover:bg-gray-200">
+                        Cancelar
+                    </button>
+                    <button type="button" onclick="guardarEspecificacionesDesdePopup()" class="px-6 py-2 bg-slate-800 text-white font-bold rounded-xl text-sm hover:bg-slate-900 shadow">
+                        Guardar Especificaciones
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== POPUP: VIDEO ==================== -->
+    <div id="popupVideo" class="popup-overlay" onclick="if(event.target===this) cerrarPopupVideo()">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopupVideo()">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-2">▶️ Video del Artículo</h2>
+                <p class="text-xs text-gray-500 mb-4">Pegá una URL de YouTube o Vimeo.</p>
+
+                <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">URL del video</label>
+                <input type="text" id="artVideoUrl" placeholder="Ej: https://www.youtube.com/watch?v=XXXXX" 
+                    class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600 mb-3">
+
+                <div id="previewVideoContenedor" class="rounded-xl overflow-hidden bg-black mb-4 hidden" style="aspect-ratio: 16/9;">
+                    <iframe id="previewVideoIframe" style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="cerrarPopupVideo()" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm hover:bg-gray-200">
+                        Cancelar
+                    </button>
+                    <button type="button" onclick="guardarVideoDesdePopup()" class="px-6 py-2 bg-slate-800 text-white font-bold rounded-xl text-sm hover:bg-slate-900 shadow">
+                        Guardar Video
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== POPUP: MI QR ==================== -->
+    <div id="popupMiQr" class="popup-overlay" onclick="if(event.target===this) cerrarPopupMiQr()">
+        <div class="popup-caja popup-caja-grande">
+            <button class="popup-cerrar" onclick="cerrarPopupMiQr()">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-2">📱 Mi QR de Vidriera</h2>
+                <p class="text-xs text-gray-500 mb-4">Este es tu código QR personalizado. Tus clientes lo escanean para acceder a tu catálogo digital.</p>
 
                 <div class="mb-5">
                     <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1.5">Tu link de catálogo</label>
@@ -189,7 +606,7 @@
                         </button>
                         <a id="linkQrAbrir" href="#" target="_blank" rel="noopener noreferrer"
                             class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition whitespace-nowrap">
-                            🔗 Ver Mi Catalogo Vidriera
+                            🔗 Ver Catálogo
                         </a>
                     </div>
                 </div>
@@ -197,8 +614,7 @@
                 <div class="mb-5">
                     <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1.5">Previsualización del Cartel</label>
                     <div class="flex justify-center">
-                        <div id="cartelQrContenedor" class="inline-block shadow-lg rounded-2xl overflow-hidden border border-gray-200">
-                        </div>
+                        <div id="cartelQrContenedor" class="inline-block shadow-lg rounded-2xl overflow-hidden border border-gray-200"></div>
                     </div>
                     <p class="text-[10px] text-gray-400 text-center mt-2">
                         💡 Este cartel es una vista previa. La versión definitiva para imprenta se enviará por mail.
@@ -216,13 +632,16 @@
                     </button>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <!-- SECCIÓN: DATOS DEL LOCAL -->
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 mt-6">
-                <h2 class="text-base font-bold text-orange-500 mb-4 flex items-center gap-2">
-                    <span>🏪</span> Datos del Local
-                </h2>
-                <p class="text-xs text-gray-500 mb-4">Modifica la información que aparece al hacer clic en el signo "+" en el Catalogo de Vidriera.</p>
+    <!-- ==================== POPUP: MI COMERCIO ==================== -->
+    <div id="popupMiComercio" class="popup-overlay" onclick="if(event.target===this) cerrarPopupMiComercio()">
+        <div class="popup-caja popup-caja-grande">
+            <button class="popup-cerrar" onclick="cerrarPopupMiComercio()">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-2">🏪 Datos del Comercio</h2>
+                <p class="text-xs text-gray-500 mb-4">Modificá la información que aparece al hacer clic en el "+" en el catálogo.</p>
 
                 <form id="formDatosComercio" class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div class="md:col-span-2">
@@ -236,7 +655,6 @@
                                     class="px-3 py-2 bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs rounded-xl shadow transition whitespace-nowrap">
                                     📷 Subir Logo
                                 </button>
-                                <span class="text-[10px] text-gray-400">Máx. 200 KB</span>
                             </div>
 
                             <div id="previewLogoContenedor" class="hidden flex-col items-center gap-1">
@@ -244,74 +662,82 @@
                                 <button type="button" onclick="quitarLogo()" class="text-[10px] text-red-500 hover:underline font-bold">Quitar</button>
                             </div>
                         </div>
-                        <p class="text-[10px] text-gray-400 mt-1">Recomendado: imagen cuadrada, PNG con fondo transparente, mínimo 128x128 px.</p>
                     </div>
 
                     <div class="md:col-span-2">
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Dirección</label>
-                        <input type="text" id="editDireccion" placeholder="Calle y número" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+                        <input type="text" id="editDireccion" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
                     </div>
 
                     <div>
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Ciudad</label>
-                        <input type="text" id="editCiudad" placeholder="Ej: Buenos Aires" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+                        <input type="text" id="editCiudad" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
                     </div>
 
                     <div>
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Provincia</label>
-                        <input type="text" id="editProvincia" placeholder="Ej: CABA" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+                        <input type="text" id="editProvincia" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
                     </div>
 
                     <div>
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Teléfono</label>
-                        <input type="text" id="editTelefono" placeholder="Ej: 11 1234 5678" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+                        <input type="text" id="editTelefono" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
                     </div>
 
                     <div>
                         <label class="block text-[11px] font-bold text-emerald-500 uppercase mb-1">WhatsApp</label>
-                        <input type="text" id="editWhatsapp" placeholder="Ej: 11 1234 5678" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+                        <input type="text" id="editWhatsapp" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
                     </div>
 
                     <div class="md:col-span-2">
                         <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Sitio Web (opcional)</label>
-                        <input type="text" id="editWeb" placeholder="Ej: www.micomercio.com.ar" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
-                        <p class="text-[10px] text-gray-400 mt-1">Si lo completás, aparece un botón "🌐 Sitio Web" en el modal "+" del catálogo.</p>
+                        <input type="text" id="editWeb" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
                     </div>
 
                     <div class="md:col-span-2">
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Horarios de Atención</label>
-                        <input type="text" id="editHorarios" placeholder="Ej: Lunes a Viernes 9:00-18:00, Sábados 10:00-14:00" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+                        <input type="text" id="editHorarios" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
                     </div>
 
                     <div class="md:col-span-2 flex justify-end mt-2">
                         <button type="button" onclick="guardarDatosComercio()" id="btnGuardarDatos" class="px-6 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-sm shadow transition">
-                            Guardar Datos del Local
+                            Guardar Datos del Comercio
                         </button>
                     </div>
                 </form>
 
                 <div id="mensajeDatos" class="hidden mt-3 p-3 text-xs font-bold rounded-xl text-center leading-relaxed"></div>
             </div>
-
-        </main>
+        </div>
     </div>
 
+    <!-- MENSAJE FLOTANTE -->
+    <div id="mensajeFlotante" class="mensaje-flotante"></div>
+
     <script>
+// ==================== VARIABLES GLOBALES ====================
         let comercioActual = null;
         let cuitLimpioActual = '';
         let articulosLista = [];
+        let categoriasLista = [];
         let logoBase64Actual = '';
+        let especificacionesTemporales = [];
+        let videoUrlTemporal = '';
+        let articuloEditandoId = null;
 
-        function obtenerValorObjeto(obj, listaClaves) {
-            if (!obj) return '';
-            const claveEncontrada = Object.keys(obj).find(k => 
-                listaClaves.some(l => l.toLowerCase() === k.toLowerCase())
-            );
-            return claveEncontrada ? obj[claveEncontrada] : '';
+        // ==================== HELPERS ====================
+        function mostrarMensajeFlotante(texto, tipo = 'ok') {
+            const div = document.getElementById('mensajeFlotante');
+            div.innerText = texto;
+            div.className = 'mensaje-flotante activo ' + tipo;
+            setTimeout(() => {
+                div.classList.remove('activo');
+            }, 3500);
         }
 
         function mostrarMensaje(texto, esError = false) {
             const div = document.getElementById('mensajeEstado');
+            if (!div) return;
             div.innerText = texto;
             div.className = `mb-4 p-3 text-xs font-bold rounded-xl text-center leading-relaxed ${
                 esError ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
@@ -320,6 +746,7 @@
             setTimeout(() => div.classList.add('hidden'), 5000);
         }
 
+        // ==================== LOGIN ====================
         async function iniciarSesion(e) {
             e.preventDefault();
             const cuitIngresado = document.getElementById('loginCuit').value.trim();
@@ -328,7 +755,6 @@
             divError.classList.add('hidden');
 
             try {
-                // Llamada a la RPC de login (NO expone password, valida server-side)
                 const { data, error } = await supabaseClient.rpc('login_admin_comercio', {
                     p_cuit: cuitIngresado,
                     p_password: passIngresada
@@ -336,7 +762,6 @@
 
                 if (error) throw error;
 
-                // Desanidar
                 const respuesta = (data && data.login_admin_comercio) ? data.login_admin_comercio : data;
 
                 if (!respuesta || !respuesta.success) {
@@ -345,14 +770,13 @@
                     return;
                 }
 
-                               // Guardar token para usarlo en las RPCs de escritura
                 if (respuesta.token) {
                     localStorage.setItem('qrpretium_token', respuesta.token);
                 }
 
                 comercioActual = respuesta.comercio;
                 cuitLimpioActual = String(comercioActual.cuit).trim();
-                cargarPanel();
+                await cargarPanel();
 
             } catch (err) {
                 console.error(err);
@@ -373,161 +797,595 @@
             document.getElementById('headerAdmin').style.backgroundColor = color;
             document.getElementById('inputColor').value = color;
 
-            await cargarArticulos();
             cargarDatosComercioEnFormulario();
+            await cargarCategorias();
+            await cargarArticulos();
             await generarCartelQr();
-        }
 
-        function cargarDatosComercioEnFormulario() {
-            if (!comercioActual) return;
-            document.getElementById('editNombre').value = comercioActual.nombre || '';
-            document.getElementById('editDireccion').value = comercioActual.direccion || '';
-            document.getElementById('editCiudad').value = comercioActual.ciudad || '';
-            document.getElementById('editProvincia').value = comercioActual.provincia || '';
-            document.getElementById('editTelefono').value = comercioActual.telefono || '';
-            document.getElementById('editWhatsapp').value = comercioActual.whatsapp || '';
-            document.getElementById('editWeb').value = comercioActual.web || '';
-            document.getElementById('editHorarios').value = comercioActual.horarios || '';
-
-            const logoGuardado = comercioActual.logo;
-            if (logoGuardado && String(logoGuardado).trim().length > 0) {
-                logoBase64Actual = logoGuardado;
-                document.getElementById('previewLogo').src = logoGuardado;
-                document.getElementById('previewLogoContenedor').classList.remove('hidden');
-                document.getElementById('previewLogoContenedor').classList.add('flex');
-            } else {
-                logoBase64Actual = '';
-                document.getElementById('previewLogoContenedor').classList.add('hidden');
-                document.getElementById('previewLogoContenedor').classList.remove('flex');
+            // Si no hay categorías activas, abrir popup automático
+            const categoriasActivas = categoriasLista.filter(c => c.activa);
+            if (categoriasActivas.length === 0) {
+                setTimeout(() => {
+                    abrirPopupCategorias();
+                    mostrarMensajeFlotante('⚠️ Primero definí tus categorías por letras', 'error');
+                }, 800);
             }
         }
 
-        function cargarLogo(event) {
-            const archivo = event.target.files[0];
-            if (!archivo) return;
+        function cerrarSesion() {
+            localStorage.removeItem('qrpretium_token');
+            comercioActual = null;
+            cuitLimpioActual = '';
+            articulosLista = [];
+            categoriasLista = [];
+            document.getElementById('seccionPanel').classList.add('hidden');
+            document.getElementById('seccionLogin').classList.remove('hidden');
+            document.getElementById('loginPassword').value = '';
+        }
 
-            const tiposPermitidos = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/svg+xml'];
-            if (!tiposPermitidos.includes(archivo.type)) {
-                alert('❌ Formato no permitido. Usá PNG, JPG, WEBP o SVG.');
-                event.target.value = '';
+        // ==================== CATEGORÍAS ====================
+        async function cargarCategorias() {
+            try {
+                const { data, error } = await supabaseClient.rpc('listar_categorias', { p_cuit: cuitLimpioActual });
+                if (error) throw error;
+
+                let resp = data;
+                if (data && data.listar_categorias) resp = data.listar_categorias;
+
+                let lista = (resp && resp.success) ? resp.categorias : [];
+                if (typeof lista === 'string') {
+                    try { lista = JSON.parse(lista); } catch(e) { lista = []; }
+                }
+                categoriasLista = Array.isArray(lista) ? lista : [];
+
+                renderizarBotonesCategorias();
+                renderizarTablaCategorias();
+            } catch (err) {
+                console.error('Error al cargar categorías:', err);
+                categoriasLista = [];
+            }
+        }
+
+        function renderizarBotonesCategorias() {
+            const contenedor = document.getElementById('categoriasDisponibles');
+            const bloque = document.getElementById('bloqueCategorias');
+            contenedor.innerHTML = '';
+            const activas = categoriasLista.filter(c => c.activa);
+            
+            if (activas.length === 0) {
+                bloque.classList.add('hidden');
                 return;
             }
+            bloque.classList.remove('hidden');
 
-            const maxBytes = 200 * 1024;
-            if (archivo.size > maxBytes) {
-                alert(`❌ La imagen pesa ${(archivo.size / 1024).toFixed(1)} KB. El máximo permitido es 200 KB.`);
-                event.target.value = '';
+            activas.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'categoria-btn';
+                btn.innerText = cat.tipo_producto || cat.letra;
+                btn.dataset.letra = cat.letra;
+                btn.onclick = () => seleccionarCategoria(cat.letra, btn);
+                contenedor.appendChild(btn);
+            });
+        }
+
+        async function seleccionarCategoria(letra, btnEl) {
+            // Marcar visualmente
+            document.querySelectorAll('#categoriasDisponibles .categoria-btn').forEach(b => b.classList.remove('seleccionada'));
+            btnEl.classList.add('seleccionada');
+
+            // Si estamos editando, no autocompletar
+            if (articuloEditandoId) {
                 return;
             }
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                logoBase64Actual = e.target.result;
-                document.getElementById('previewLogo').src = logoBase64Actual;
-                document.getElementById('previewLogoContenedor').classList.remove('hidden');
-                document.getElementById('previewLogoContenedor').classList.add('flex');
-            };
-            reader.readAsDataURL(archivo);
-        }
-
-        function quitarLogo() {
-            logoBase64Actual = '';
-            document.getElementById('inputLogo').value = '';
-            document.getElementById('previewLogo').src = '';
-            document.getElementById('previewLogoContenedor').classList.add('hidden');
-            document.getElementById('previewLogoContenedor').classList.remove('flex');
-        }
-
-        async function guardarDatosComercio() {
-            const btn = document.getElementById('btnGuardarDatos');
-            const mensaje = document.getElementById('mensajeDatos');
-            btn.disabled = true;
-            btn.innerText = "Guardando...";
 
             try {
-                               const { data, error } = await supabaseClient.rpc('actualizar_datos_comercio', {
+                const { data, error } = await supabaseClient.rpc('siguiente_codigo_categoria', {
                     p_cuit: cuitLimpioActual,
-                    p_nombre: document.getElementById('editNombre').value.trim(),
-                    p_direccion: document.getElementById('editDireccion').value.trim(),
-                    p_ciudad: document.getElementById('editCiudad').value.trim(),
-                    p_provincia: document.getElementById('editProvincia').value.trim(),
-                    p_telefono: document.getElementById('editTelefono').value.trim(),
-                    p_whatsapp: document.getElementById('editWhatsapp').value.trim(),
-                    p_web: document.getElementById('editWeb').value.trim(),
-                    p_horarios: document.getElementById('editHorarios').value.trim(),
-                    p_logo: logoBase64Actual || null,
-                    p_token: localStorage.getItem('qrpretium_token')
+                    p_letra: letra
                 });
+                if (error) throw error;
+                let resp = data;
+                if (data && data.siguiente_codigo_categoria) resp = data.siguiente_codigo_categoria;
+                if (resp && resp.success) {
+                    document.getElementById('artCodigo').value = resp.codigo;
+                }
+            } catch (err) {
+                console.error('Error al obtener código:', err);
+                mostrarMensajeFlotante('❌ No se pudo autocompletar el código', 'error');
+            }
+        }
+
+        function renderizarTablaCategorias() {
+            const tbody = document.getElementById('tbodyCategorias');
+            tbody.innerHTML = '';
+            const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+            
+            letras.forEach(letra => {
+                const cat = categoriasLista.find(c => c.letra === letra);
+                const activa = cat ? cat.activa : false;
+                const tipo = cat ? (cat.tipo_producto || '') : '';
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="text-center">
+                        <input type="checkbox" data-letra="${letra}" ${activa ? 'checked' : ''}>
+                    </td>
+                    <td class="font-mono font-black text-lg text-slate-800">${letra}</td>
+                    <td>
+                        <input type="text" data-letra-tipo="${letra}" value="${tipo}" placeholder="Cartera, Bolso, Calzado, Otro...">
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function abrirPopupCategorias() {
+            renderizarTablaCategorias();
+            document.getElementById('popupCategorias').classList.add('activo');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function cerrarPopupCategorias() {
+            document.getElementById('popupCategorias').classList.remove('activo');
+            document.body.style.overflow = '';
+        }
+
+        async function guardarCategorias() {
+            const categorias = [];
+            const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+            
+            letras.forEach(letra => {
+                const check = document.querySelector(`input[data-letra="${letra}"]`);
+                const tipoInput = document.querySelector(`input[data-letra-tipo="${letra}"]`);
+                if (check && check.checked) {
+                    categorias.push({
+                        letra: letra,
+                        tipo_producto: (tipoInput ? tipoInput.value.trim() : '') || letra,
+                        activa: true
+                    });
+                } else {
+                    categorias.push({
+                        letra: letra,
+                        tipo_producto: (tipoInput ? tipoInput.value.trim() : '') || '',
+                        activa: false
+                    });
+                }
+            });
+
+            try {
+                const { data, error } = await supabaseClient.rpc('guardar_categorias', {
+                    p_cuit: cuitLimpioActual,
+                    p_categorias: categorias
+                });
+                if (error) throw error;
+                let resp = data;
+                if (data && data.guardar_categorias) resp = data.guardar_categorias;
+                if (!resp || !resp.success) throw new Error(resp?.error || 'Error al guardar');
+
+                mostrarMensajeFlotante('✅ Categorías guardadas', 'ok');
+                await cargarCategorias();
+                cerrarPopupCategorias();
+            } catch (err) {
+                console.error('Error al guardar categorías:', err);
+                mostrarMensajeFlotante('❌ ' + err.message, 'error');
+            }
+        }
+ // ==================== ARTÍCULOS ====================
+        async function cargarArticulos() {
+            try {
+                const { data, error } = await supabaseClient.rpc('listar_articulos_by_cuit', { p_cuit: cuitLimpioActual });
+                if (error) throw error;
+
+                let respuesta = data;
+                if (data && data.listar_articulos_by_cuit) respuesta = data.listar_articulos_by_cuit;
+
+                let lista = [];
+                if (respuesta && respuesta.success) {
+                    lista = respuesta.articulos;
+                    if (typeof lista === 'string') {
+                        try { lista = JSON.parse(lista); } catch(e) { lista = []; }
+                    }
+                }
+                articulosLista = Array.isArray(lista) ? lista : [];
+                renderizarTabla();
+
+                const planComercio = comercioActual.plan || 'standard';
+                actualizarIndicadorCupo(planComercio, articulosLista.length);
+            } catch (err) {
+                console.error('Error al cargar artículos:', err);
+                mostrarMensajeFlotante('❌ Error al cargar artículos', 'error');
+            }
+        }
+
+        function actualizarIndicadorCupo(planComercio, totalGuardados) {
+            const plan = (planComercio || 'standard').toLowerCase();
+            const limites = { 'standard': 35, 'power': 350, 'premium': 2800, 'prueba gratuita': 35 };
+            const limiteMax = limites[plan] || 35;
+            const porcentaje = Math.min((totalGuardados / limiteMax) * 100, 100);
+
+            document.getElementById('nombrePlan').innerText = `Plan ${plan.toUpperCase()}`;
+            document.getElementById('textoCupo').innerText = `${totalGuardados} de ${limiteMax} artículos`;
+            
+            const barra = document.getElementById('barraProgreso');
+            barra.style.width = `${porcentaje}%`;
+            barra.className = porcentaje >= 100 ? 'bg-red-500 h-full transition-all' 
+                            : porcentaje >= 80 ? 'bg-amber-500 h-full transition-all'
+                            : 'bg-white h-full transition-all';
+        }
+
+        function renderizarTabla() {
+            const tbody = document.getElementById('tbodyArticulos');
+            document.getElementById('cantArticulos').innerText = `${articulosLista.length} productos`;
+            tbody.innerHTML = '';
+
+            if (articulosLista.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-gray-400">No hay artículos cargados. Hacé click en "➕ Nuevo Artículo" para empezar.</td></tr>`;
+                return;
+            }
+
+            articulosLista.forEach(item => {
+                const id = item.id;
+                const cod = item.codigo || '-';
+                const art = item.articulo || '-';
+                const disp = item.disponibilidad || '-';
+                const precio = item.precio || 0;
+                const promo = item.promocion || '';
+                const tienePromo = promo && promo.trim() !== '';
+                const tieneVideo = item.video_url && String(item.video_url).trim() !== '';
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td><span class="codigo-badge">${cod}</span></td>
+                        <td class="font-semibold text-slate-800">
+                            ${art}
+                            ${tieneVideo ? '<span class="badge-promo" style="background:#dbeafe;color:#1d4ed8;">▶️</span>' : ''}
+                        </td>
+                        <td class="text-xs text-gray-600">${disp}</td>
+                        <td class="text-xs font-bold ${tienePromo ? 'text-emerald-600' : 'text-gray-400'}">
+                            ${tienePromo ? '🔥 ' + promo : '—'}
+                        </td>
+                        <td class="font-black text-slate-800">$${Number(precio).toLocaleString('es-AR')}</td>
+                        <td class="text-right space-x-1">
+                            <button onclick="prepararEdicion(${id})" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-bold text-xs">✏️ Editar</button>
+                            <button onclick="eliminarArticulo(${id})" class="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded font-bold text-xs">🗑️ Borrar</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // ==================== POPUP NUEVO ARTÍCULO ====================
+        function abrirPopupNuevoArticulo() {
+            const activas = categoriasLista.filter(c => c.activa);
+            if (activas.length === 0) {
+                abrirPopupCategorias();
+                mostrarMensajeFlotante('⚠️ Primero definí tus categorías por letras', 'error');
+                return;
+            }
+
+            articuloEditandoId = null;
+            document.getElementById('artId').value = '';
+            document.getElementById('artCodigo').value = '';
+            document.getElementById('artNombre').value = '';
+            document.getElementById('artDescripcion').value = '';
+            document.getElementById('artDisponibilidad').value = '';
+            document.getElementById('artPrecio').value = '';
+            document.getElementById('artPromocion').value = '';
+            document.getElementById('artVideoUrl').value = '';
+            especificacionesTemporales = [];
+            videoUrlTemporal = '';
+            document.getElementById('tituloFormArticulo').innerText = '➕ Nuevo Artículo';
+            document.querySelectorAll('#categoriasDisponibles .categoria-btn').forEach(b => b.classList.remove('seleccionada'));
+
+            document.getElementById('popupArticulo').classList.add('activo');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function cerrarPopupArticulo() {
+            document.getElementById('popupArticulo').classList.remove('activo');
+            document.body.style.overflow = '';
+            articuloEditandoId = null;
+        }
+
+        // ==================== GUARDAR ARTÍCULO ====================
+        async function guardarArticulo(e) {
+            e.preventDefault();
+            const btnGuardar = document.getElementById('btnGuardarArt');
+            btnGuardar.disabled = true;
+            btnGuardar.innerText = 'Guardando...';
+
+            const id = document.getElementById('artId').value;
+            const codigo = document.getElementById('artCodigo').value.trim();
+            const articulo = document.getElementById('artNombre').value.trim();
+            const descripcion = document.getElementById('artDescripcion').value.trim();
+            const disponibilidad = document.getElementById('artDisponibilidad').value.trim();
+            const precio = parseFloat(document.getElementById('artPrecio').value) || 0;
+            const promocion = document.getElementById('artPromocion').value.trim();
+            const video_url = videoUrlTemporal || null;
+
+            if (!codigo) {
+                mostrarMensajeFlotante('⚠️ Elegí una categoría para generar el código', 'error');
+                btnGuardar.disabled = false;
+                btnGuardar.innerText = 'Guardar Artículo';
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('qrpretium_token');
+                let resultado, error;
+
+                if (id) {
+                    const res = await supabaseClient.rpc('actualizar_articulo', {
+                        p_id: parseInt(id),
+                        p_cuit: cuitLimpioActual,
+                        p_codigo: codigo,
+                        p_articulo: articulo,
+                        p_descripcion: descripcion,
+                        p_disponibilidad: disponibilidad,
+                        p_precio: precio,
+                        p_promocion: promocion,
+                        p_video_url: video_url,
+                        p_token: token
+                    });
+                    resultado = res.data;
+                    error = res.error;
+                } else {
+                    const res = await supabaseClient.rpc('crear_articulo', {
+                        p_cuit: cuitLimpioActual,
+                        p_codigo: codigo,
+                        p_articulo: articulo,
+                        p_descripcion: descripcion,
+                        p_disponibilidad: disponibilidad,
+                        p_precio: precio,
+                        p_promocion: promocion,
+                        p_video_url: video_url,
+                        p_token: token
+                    });
+                    resultado = res.data;
+                    error = res.error;
+                }
 
                 if (error) throw error;
 
-                const respuesta = (data && data.actualizar_datos_comercio) ? data.actualizar_datos_comercio : data;
+                const respuesta = resultado && (resultado.crear_articulo || resultado.actualizar_articulo)
+                    ? (resultado.crear_articulo || resultado.actualizar_articulo)
+                    : resultado;
 
                 if (!respuesta || !respuesta.success) {
-                    throw new Error(respuesta?.error || 'No se pudo guardar');
+                    throw new Error(respuesta?.error || 'No se pudo guardar el artículo');
                 }
 
-                // Actualizar el objeto local
-                comercioActual.nombre = document.getElementById('editNombre').value.trim();
-                comercioActual.direccion = document.getElementById('editDireccion').value.trim();
-                comercioActual.ciudad = document.getElementById('editCiudad').value.trim();
-                comercioActual.provincia = document.getElementById('editProvincia').value.trim();
-                comercioActual.telefono = document.getElementById('editTelefono').value.trim();
-                comercioActual.whatsapp = document.getElementById('editWhatsapp').value.trim();
-                comercioActual.web = document.getElementById('editWeb').value.trim();
-                comercioActual.horarios = document.getElementById('editHorarios').value.trim();
-                comercioActual.logo = logoBase64Actual || null;
+                // Guardar especificaciones si hay
+                const articuloId = id ? parseInt(id) : respuesta.id;
+                if (articuloId && especificacionesTemporales.length > 0) {
+                    await guardarEspecificacionesEnDB(articuloId, especificacionesTemporales);
+                }
 
-                document.getElementById('adminNombreComercio').innerText = comercioActual.nombre;
-                await generarCartelQr();
-
-                mensaje.className = 'mt-3 p-3 text-xs font-bold rounded-xl text-center leading-relaxed bg-emerald-50 text-emerald-700 border border-emerald-200';
-                mensaje.innerText = '✅ Datos del local actualizados correctamente.';
-                mensaje.classList.remove('hidden');
-                setTimeout(() => mensaje.classList.add('hidden'), 5000);
-
+                mostrarMensajeFlotante(id ? '✅ Artículo actualizado' : '✅ Artículo guardado', 'ok');
+                cerrarPopupArticulo();
+                await cargarArticulos();
             } catch (err) {
-                console.error("Error:", err);
-                mensaje.className = 'mt-3 p-3 text-xs font-bold rounded-xl text-center leading-relaxed bg-red-50 text-red-600 border border-red-200';
-                mensaje.innerText = `❌ Error: ${err.message}`;
-                mensaje.classList.remove('hidden');
-                setTimeout(() => mensaje.classList.add('hidden'), 5000);
+                console.error('Error al guardar:', err);
+                mostrarMensajeFlotante('❌ ' + err.message, 'error');
             } finally {
-                btn.disabled = false;
-                btn.innerText = "Guardar Datos del Local";
+                btnGuardar.disabled = false;
+                btnGuardar.innerText = 'Guardar Artículo';
             }
         }
 
-        async function guardarColor(nuevoColor) {
-            document.getElementById('headerAdmin').style.backgroundColor = nuevoColor;
+        // ==================== EDITAR ARTÍCULO ====================
+        async function prepararEdicion(id) {
+            const item = articulosLista.find(a => a.id == id);
+            if (!item) return;
 
+            articuloEditandoId = id;
+            document.getElementById('artId').value = id;
+            document.getElementById('artCodigo').value = item.codigo || '';
+            document.getElementById('artNombre').value = item.articulo || '';
+            document.getElementById('artDescripcion').value = item.descripcion || '';
+            document.getElementById('artDisponibilidad').value = item.disponibilidad || '';
+            document.getElementById('artPrecio').value = item.precio || '';
+            document.getElementById('artPromocion').value = item.promocion || '';
+            document.getElementById('artVideoUrl').value = item.video_url || '';
+            videoUrlTemporal = item.video_url || '';
+
+            document.getElementById('tituloFormArticulo').innerText = '✏️ Editar Artículo';
+
+            // Cargar especificaciones del artículo
+            await cargarEspecificacionesEnPopup(id);
+
+            document.querySelectorAll('#categoriasDisponibles .categoria-btn').forEach(b => b.classList.remove('seleccionada'));
+
+            document.getElementById('popupArticulo').classList.add('activo');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // ==================== ELIMINAR ARTÍCULO ====================
+        async function eliminarArticulo(id) {
+            if (!confirm('¿Estás seguro de que querés borrar este artículo?')) return;
             try {
-                                const { data, error } = await supabaseClient.rpc('actualizar_color_comercio', {
+                const { data, error } = await supabaseClient.rpc('eliminar_articulo', {
+                    p_id: id,
                     p_cuit: cuitLimpioActual,
-                    p_color: nuevoColor,
                     p_token: localStorage.getItem('qrpretium_token')
                 });
                 if (error) throw error;
+                const respuesta = data && data.eliminar_articulo ? data.eliminar_articulo : data;
+                if (!respuesta || !respuesta.success) throw new Error(respuesta?.error || 'Error');
 
-                const respuesta = (data && data.actualizar_color_comercio) ? data.actualizar_color_comercio : data;
-
-                if (!respuesta || !respuesta.success) {
-                    throw new Error(respuesta?.error || 'No se pudo guardar color');
-                }
-
-                comercioActual.color = nuevoColor;
-                await generarCartelQr();
+                mostrarMensajeFlotante('🗑️ Artículo eliminado', 'ok');
+                await cargarArticulos();
             } catch (err) {
-                console.error("Error al guardar color:", err);
-                alert(`No se pudo guardar el color: ${err.message}`);
+                mostrarMensajeFlotante('❌ ' + err.message, 'error');
             }
         }
 
-        // ================== QR ==================
+        // ==================== VISTA PREVIA ====================
+        function abrirVistaPrevia() {
+            const cuit = cuitLimpioActual;
+            window.open(`catalogo.html?cuit=${cuit}`, '_blank');
+        }
+
+        // ==================== ESPECIFICACIONES ====================
+        function abrirPopupEspecificaciones() {
+            renderizarListaEspecificaciones();
+            document.getElementById('popupEspecificaciones').classList.add('activo');
+        }
+
+        function cerrarPopupEspecificaciones() {
+            document.getElementById('popupEspecificaciones').classList.remove('activo');
+        }
+
+        function renderizarListaEspecificaciones() {
+            const contenedor = document.getElementById('listaEspecificaciones');
+            contenedor.innerHTML = '';
+
+            const camposSugeridos = ['Medidas', 'Peso', 'Talle', 'Modelo', 'Material', 'Origen'];
+
+            // Si no hay ninguna, agregar 3 vacías con sugerencias
+            if (especificacionesTemporales.length === 0) {
+                for (let i = 0; i < 4; i++) {
+                    especificacionesTemporales.push({
+                        campo: camposSugeridos[i] || '',
+                        valor: ''
+                    });
+                }
+            }
+
+            especificacionesTemporales.forEach((esp, i) => {
+                const fila = document.createElement('div');
+                fila.className = 'esp-fila';
+                fila.innerHTML = `
+                    <input type="text" placeholder="Campo (ej: Material)" value="${esp.campo || ''}" onchange="actualizarEsp(${i}, 'campo', this.value)">
+                    <input type="text" placeholder="Valor" value="${esp.valor || ''}" onchange="actualizarEsp(${i}, 'valor', this.value)">
+                    <button type="button" class="esp-eliminar" onclick="eliminarEsp(${i})">✕</button>
+                `;
+                contenedor.appendChild(fila);
+            });
+        }
+
+        function actualizarEsp(index, key, valor) {
+            if (especificacionesTemporales[index]) {
+                especificacionesTemporales[index][key] = valor;
+            }
+        }
+
+        function eliminarEsp(index) {
+            especificacionesTemporales.splice(index, 1);
+            renderizarListaEspecificaciones();
+        }
+
+        function agregarFilaEspecificacion() {
+            especificacionesTemporales.push({ campo: '', valor: '' });
+            renderizarListaEspecificaciones();
+        }
+
+        async function cargarEspecificacionesEnPopup(articuloId) {
+            try {
+                const { data, error } = await supabaseClient.rpc('listar_especificaciones', { p_articulo_id: articuloId });
+                if (error) throw error;
+                let resp = data;
+                if (data && data.listar_especificaciones) resp = data.listar_especificaciones;
+                let lista = (resp && resp.success) ? resp.especificaciones : [];
+                if (typeof lista === 'string') {
+                    try { lista = JSON.parse(lista); } catch(e) { lista = []; }
+                }
+                especificacionesTemporales = Array.isArray(lista) ? lista.map(e => ({ campo: e.campo, valor: e.valor })) : [];
+            } catch (err) {
+                console.error('Error al cargar especificaciones:', err);
+                especificacionesTemporales = [];
+            }
+        }
+
+        async function guardarEspecificacionesEnDB(articuloId, lista) {
+            const limpias = lista.filter(e => e.campo && e.campo.trim() && e.valor && e.valor.trim());
+            try {
+                await supabaseClient.rpc('guardar_especificaciones', {
+                    p_articulo_id: articuloId,
+                    p_especificaciones: limpias
+                });
+            } catch (err) {
+                console.error('Error al guardar especificaciones:', err);
+            }
+        }
+
+        async function guardarEspecificacionesDesdePopup() {
+            if (!articuloEditandoId) {
+                // Guardar temporalmente (se guardan al guardar el artículo)
+                mostrarMensajeFlotante('✅ Especificaciones listas (se guardan al guardar el artículo)', 'ok');
+                cerrarPopupEspecificaciones();
+                return;
+            }
+            // Guardar directo en DB
+            await guardarEspecificacionesEnDB(articuloEditandoId, especificacionesTemporales);
+            mostrarMensajeFlotante('✅ Especificaciones guardadas', 'ok');
+            cerrarPopupEspecificaciones();
+        }
+
+        // ==================== VIDEO ====================
+        function abrirPopupVideo() {
+            const input = document.getElementById('artVideoUrl');
+            if (videoUrlTemporal) input.value = videoUrlTemporal;
+            input.oninput = () => {
+                videoUrlTemporal = input.value.trim();
+                mostrarPreviewVideo();
+            };
+            mostrarPreviewVideo();
+            document.getElementById('popupVideo').classList.add('activo');
+        }
+
+        function cerrarPopupVideo() {
+            document.getElementById('popupVideo').classList.remove('activo');
+        }
+
+        function mostrarPreviewVideo() {
+            const url = document.getElementById('artVideoUrl').value.trim();
+            const contenedor = document.getElementById('previewVideoContenedor');
+            const iframe = document.getElementById('previewVideoIframe');
+            
+            if (!url) {
+                contenedor.classList.add('hidden');
+                return;
+            }
+
+            let embedUrl = url;
+            if (url.includes('youtube.com/watch')) {
+                const vidId = new URL(url).searchParams.get('v');
+                if (vidId) embedUrl = `https://www.youtube.com/embed/${vidId}`;
+            } else if (url.includes('youtu.be/')) {
+                const vidId = url.split('youtu.be/')[1].split('?')[0];
+                embedUrl = `https://www.youtube.com/embed/${vidId}`;
+            } else if (url.includes('vimeo.com/')) {
+                const vidId = url.split('vimeo.com/')[1].split('?')[0];
+                embedUrl = `https://player.vimeo.com/video/${vidId}`;
+            }
+
+            iframe.src = embedUrl;
+            contenedor.classList.remove('hidden');
+        }
+
+        function guardarVideoDesdePopup() {
+            videoUrlTemporal = document.getElementById('artVideoUrl').value.trim();
+            mostrarMensajeFlotante('✅ URL del video guardada', 'ok');
+            cerrarPopupVideo();
+        }
+// ==================== MI QR ====================
+        function abrirPopupMiQr() {
+            document.getElementById('popupMiQr').classList.add('activo');
+            document.body.style.overflow = 'hidden';
+            generarCartelQr();
+        }
+
+        function cerrarPopupMiQr() {
+            document.getElementById('popupMiQr').classList.remove('activo');
+            document.body.style.overflow = '';
+        }
+
         async function generarCartelQr() {
             try {
                 const linkQr = comercioActual.link_qr ||
-                    `https://qrproyectum26.github.io/QRPretium/catalogo.html?cuit=${cuitLimpioActual}`;
+                    `https://qrpretium.com.ar/catalogo.html?cuit=${cuitLimpioActual}`;
                 const nombreComercio = comercioActual.nombre || 'Mi Comercio';
                 const colorFranja = comercioActual.color || '#334155';
 
@@ -624,12 +1482,12 @@
             input.setSelectionRange(0, 99999);
             try {
                 document.execCommand('copy');
-                alert('✅ Link copiado al portapapeles');
+                mostrarMensajeFlotante('✅ Link copiado', 'ok');
             } catch (err) {
                 navigator.clipboard.writeText(input.value).then(() => {
-                    alert('✅ Link copiado al portapapeles');
+                    mostrarMensajeFlotante('✅ Link copiado', 'ok');
                 }).catch(() => {
-                    alert('⚠️ No se pudo copiar. Copialo manualmente.');
+                    mostrarMensajeFlotante('⚠️ No se pudo copiar', 'error');
                 });
             }
         }
@@ -637,7 +1495,7 @@
         async function descargarCartelQr() {
             const cartel = document.getElementById('cartelQr');
             if (!cartel) {
-                alert('⚠️ No hay cartel para descargar.');
+                mostrarMensajeFlotante('⚠️ No hay cartel para descargar', 'error');
                 return;
             }
             try {
@@ -650,16 +1508,17 @@
                 link.download = `Cartel-QR-${cuitLimpioActual}.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
+                mostrarMensajeFlotante('✅ Cartel descargado', 'ok');
             } catch (err) {
                 console.error('Error al descargar:', err);
-                alert('⚠️ No se pudo descargar el cartel.');
+                mostrarMensajeFlotante('❌ No se pudo descargar', 'error');
             }
         }
 
         function imprimirCartelQr() {
             const cartel = document.getElementById('cartelQr');
             if (!cartel) {
-                alert('⚠️ No hay cartel para imprimir.');
+                mostrarMensajeFlotante('⚠️ No hay cartel para imprimir', 'error');
                 return;
             }
             const ventana = window.open('', '_blank');
@@ -669,19 +1528,8 @@
                 <head>
                     <title>Imprimir Cartel QR - QRPretium</title>
                     <style>
-                        body {
-                            font-family: Arial, sans-serif;
-                            display: flex;
-                            justify-content: center;
-                            align-items: center;
-                            min-height: 100vh;
-                            margin: 0;
-                            padding: 20px;
-                            background: #FFFFFF;
-                        }
-                        @media print {
-                            body { padding: 0; }
-                        }
+                        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; background: #FFFFFF; }
+                        @media print { body { padding: 0; } }
                     </style>
                 </head>
                 <body>
@@ -690,258 +1538,163 @@
                 </html>
             `);
             ventana.document.close();
-            setTimeout(() => {
-                ventana.print();
-            }, 500);
+            setTimeout(() => ventana.print(), 500);
         }
 
-        // ================== ARTÍCULOS ==================
-        async function cargarArticulos() {
-            try {
-                const { data, error } = await supabaseClient
-                    .rpc('listar_articulos_by_cuit', { p_cuit: cuitLimpioActual });
+        // ==================== MI COMERCIO ====================
+        function abrirPopupMiComercio() {
+            cargarDatosComercioEnFormulario();
+            document.getElementById('popupMiComercio').classList.add('activo');
+            document.body.style.overflow = 'hidden';
+        }
 
-                if (error) throw error;
+        function cerrarPopupMiComercio() {
+            document.getElementById('popupMiComercio').classList.remove('activo');
+            document.body.style.overflow = '';
+        }
 
-                let respuesta = data;
-                if (data && data.listar_articulos_by_cuit) {
-                    respuesta = data.listar_articulos_by_cuit;
-                }
+        function cargarDatosComercioEnFormulario() {
+            if (!comercioActual) return;
+            document.getElementById('editNombre').value = comercioActual.nombre || '';
+            document.getElementById('editDireccion').value = comercioActual.direccion || '';
+            document.getElementById('editCiudad').value = comercioActual.ciudad || '';
+            document.getElementById('editProvincia').value = comercioActual.provincia || '';
+            document.getElementById('editTelefono').value = comercioActual.telefono || '';
+            document.getElementById('editWhatsapp').value = comercioActual.whatsapp || '';
+            document.getElementById('editWeb').value = comercioActual.web || '';
+            document.getElementById('editHorarios').value = comercioActual.horarios || '';
 
-                let listaArticulos = [];
-                if (respuesta && respuesta.success) {
-                    listaArticulos = respuesta.articulos;
-                    if (typeof listaArticulos === 'string') {
-                        try { listaArticulos = JSON.parse(listaArticulos); } catch (e) { listaArticulos = []; }
-                    }
-                }
-
-                articulosLista = Array.isArray(listaArticulos) ? listaArticulos : [];
-                renderizarTabla();
-
-                // Plan (desde comercioActual, ya lo tenemos del login)
-                let planComercio = comercioActual.plan || 'standard';
-                actualizarIndicadorCupo(planComercio, articulosLista.length);
-
-            } catch (err) {
-                console.error("Error al cargar artículos:", err);
-                mostrarMensaje(`Error al cargar artículos: ${err.message}`, true);
+            const logoGuardado = comercioActual.logo;
+            if (logoGuardado && String(logoGuardado).trim().length > 0) {
+                logoBase64Actual = logoGuardado;
+                document.getElementById('previewLogo').src = logoGuardado;
+                document.getElementById('previewLogoContenedor').classList.remove('hidden');
+                document.getElementById('previewLogoContenedor').classList.add('flex');
+            } else {
+                logoBase64Actual = '';
+                document.getElementById('previewLogoContenedor').classList.add('hidden');
+                document.getElementById('previewLogoContenedor').classList.remove('flex');
             }
         }
 
-        function actualizarIndicadorCupo(planComercio, totalGuardados) {
-            const plan = (planComercio || 'standard').toLowerCase();
-            
-            const limites = {
-                'standard': 35,
-                'power': 350,
-                'premium': 2800,
-                'prueba gratuita': 35
-            };
-
-            const limiteMax = limites[plan] || 35;
-            const porcentaje = Math.min((totalGuardados / limiteMax) * 100, 100);
-
-            const elemPlan = document.getElementById('nombrePlan');
-            const elemCupo = document.getElementById('textoCupo');
-            const barra = document.getElementById('barraProgreso');
-
-            if (elemPlan) elemPlan.innerText = `Plan ${plan.toUpperCase()}`;
-            if (elemCupo) elemCupo.innerText = `${totalGuardados} de ${limiteMax} artículos`;
-            
-            if (barra) {
-                barra.style.width = `${porcentaje}%`;
-                if (totalGuardados >= limiteMax) {
-                    barra.className = "bg-red-500 h-full transition-all duration-300";
-                } else if (porcentaje >= 80) {
-                    barra.className = "bg-amber-500 h-full transition-all duration-300";
-                } else {
-                    barra.className = "bg-slate-700 h-full transition-all duration-300";
-                }
-            }
-
-            const btnGuardar = document.getElementById('btnGuardarArt'); 
-            if (btnGuardar) {
-                if (totalGuardados >= limiteMax) {
-                    btnGuardar.disabled = true;
-                    btnGuardar.classList.add('opacity-50', 'cursor-not-allowed');
-                } else {
-                    btnGuardar.disabled = false;
-                    btnGuardar.classList.remove('opacity-50', 'cursor-not-allowed');
-                }
-            }
-        }
-
-        function renderizarTabla() {
-            const tbody = document.getElementById('tbodyArticulos');
-            document.getElementById('cantArticulos').innerText = `${articulosLista.length} productos`;
-            tbody.innerHTML = '';
-
-            if (articulosLista.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-400">No hay artículos cargados para este CUIT.</td></tr>`;
+        function cargarLogo(event) {
+            const archivo = event.target.files[0];
+            if (!archivo) return;
+            const tiposPermitidos = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/svg+xml'];
+            if (!tiposPermitidos.includes(archivo.type)) {
+                mostrarMensajeFlotante('❌ Formato no permitido', 'error');
+                event.target.value = '';
                 return;
             }
-
-            articulosLista.forEach(item => {
-                const id = item.id;
-                const cod = item.codigo || '-';
-                const art = item.articulo || '-';
-                const disp = item.disponibilidad || '-';
-                const precio = item.precio || 0;
-                const promo = item.promocion || '-';
-
-                tbody.innerHTML += `
-                    <tr class="hover:bg-gray-50 transition">
-                        <td class="p-3 font-mono font-bold text-slate-800">${cod}</td>
-                        <td class="p-3 font-semibold text-gray-900 uppercase">${art}</td>
-                        <td class="p-3 text-xs text-gray-600">${disp}</td>
-                        <td class="p-3 font-black text-slate-800">$${Number(precio).toLocaleString('es-AR')}</td>
-                        <td class="p-3 text-xs text-emerald-500 font-bold">${promo !== '-' ? '🔥 ' + promo : '-'}</td>
-                        <td class="p-3 text-right space-x-1">
-                            <button onclick="prepararEdicion(${id})" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-bold text-xs">✏️ Editar</button>
-                            <button onclick="eliminarArticulo(${id})" class="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded font-bold text-xs">🗑️ Borrar</button>
-                        </td>
-                    </tr>
-                `;
-            });
+            const maxBytes = 200 * 1024;
+            if (archivo.size > maxBytes) {
+                mostrarMensajeFlotante(`❌ La imagen pesa ${(archivo.size/1024).toFixed(1)} KB. Máx: 200 KB`, 'error');
+                event.target.value = '';
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                logoBase64Actual = e.target.result;
+                document.getElementById('previewLogo').src = logoBase64Actual;
+                document.getElementById('previewLogoContenedor').classList.remove('hidden');
+                document.getElementById('previewLogoContenedor').classList.add('flex');
+            };
+            reader.readAsDataURL(archivo);
         }
 
-        async function guardarArticulo(e) {
-            e.preventDefault();
-            const btnGuardar = document.getElementById('btnGuardarArt');
-            btnGuardar.disabled = true;
-            btnGuardar.innerText = "Guardando...";
+        function quitarLogo() {
+            logoBase64Actual = '';
+            document.getElementById('inputLogo').value = '';
+            document.getElementById('previewLogo').src = '';
+            document.getElementById('previewLogoContenedor').classList.add('hidden');
+            document.getElementById('previewLogoContenedor').classList.remove('flex');
+        }
 
-            const id = document.getElementById('artId').value;
-            const codigo = document.getElementById('artCodigo').value.trim();
-            const articulo = document.getElementById('artNombre').value.trim();
-            const descripcion = document.getElementById('artDescripcion').value.trim();
-            const disponibilidad = document.getElementById('artDisponibilidad').value.trim();
-            const precio = parseFloat(document.getElementById('artPrecio').value) || 0;
-            const promocion = document.getElementById('artPromocion').value.trim();
+        async function guardarDatosComercio() {
+            const btn = document.getElementById('btnGuardarDatos');
+            const mensaje = document.getElementById('mensajeDatos');
+            btn.disabled = true;
+            btn.innerText = 'Guardando...';
 
-                        try {
-                const token = localStorage.getItem('qrpretium_token');
-                let resultado = null;
-                let error = null;
-
-                if (id) {
-                    const res = await supabaseClient.rpc('actualizar_articulo', {
-                        p_id: parseInt(id),
-                        p_cuit: cuitLimpioActual,
-                        p_codigo: codigo,
-                        p_articulo: articulo,
-                        p_descripcion: descripcion,
-                        p_disponibilidad: disponibilidad,
-                        p_precio: precio,
-                        p_promocion: promocion,
-                        p_token: token
-                    });
-                    resultado = res.data;
-                    error = res.error;
-                } else {
-                    const res = await supabaseClient.rpc('crear_articulo', {
-                        p_cuit: cuitLimpioActual,
-                        p_codigo: codigo,
-                        p_articulo: articulo,
-                        p_descripcion: descripcion,
-                        p_disponibilidad: disponibilidad,
-                        p_precio: precio,
-                        p_promocion: promocion,
-                        p_token: token
-                    });
-                    resultado = res.data;
-                    error = res.error;
-                } 
+            try {
+                const { data, error } = await supabaseClient.rpc('actualizar_datos_comercio', {
+                    p_cuit: cuitLimpioActual,
+                    p_nombre: document.getElementById('editNombre').value.trim(),
+                    p_direccion: document.getElementById('editDireccion').value.trim(),
+                    p_ciudad: document.getElementById('editCiudad').value.trim(),
+                    p_provincia: document.getElementById('editProvincia').value.trim(),
+                    p_telefono: document.getElementById('editTelefono').value.trim(),
+                    p_whatsapp: document.getElementById('editWhatsapp').value.trim(),
+                    p_web: document.getElementById('editWeb').value.trim(),
+                    p_horarios: document.getElementById('editHorarios').value.trim(),
+                    p_logo: logoBase64Actual || null,
+                    p_token: localStorage.getItem('qrpretium_token')
+                });
 
                 if (error) throw error;
+                const respuesta = (data && data.actualizar_datos_comercio) ? data.actualizar_datos_comercio : data;
+                if (!respuesta || !respuesta.success) throw new Error(respuesta?.error || 'Error');
 
-                const respuesta = resultado && (resultado.crear_articulo || resultado.actualizar_articulo)
-                    ? (resultado.crear_articulo || resultado.actualizar_articulo)
-                    : resultado;
+                comercioActual.nombre = document.getElementById('editNombre').value.trim();
+                comercioActual.direccion = document.getElementById('editDireccion').value.trim();
+                comercioActual.ciudad = document.getElementById('editCiudad').value.trim();
+                comercioActual.provincia = document.getElementById('editProvincia').value.trim();
+                comercioActual.telefono = document.getElementById('editTelefono').value.trim();
+                comercioActual.whatsapp = document.getElementById('editWhatsapp').value.trim();
+                comercioActual.web = document.getElementById('editWeb').value.trim();
+                comercioActual.horarios = document.getElementById('editHorarios').value.trim();
+                comercioActual.logo = logoBase64Actual || null;
 
-                if (!respuesta || !respuesta.success) {
-                    throw new Error(respuesta?.error || 'No se pudo guardar el artículo');
-                }
+                document.getElementById('adminNombreComercio').innerText = comercioActual.nombre;
 
-                mostrarMensaje(id ? "✅ Artículo actualizado correctamente." : "✅ Nuevo artículo guardado con éxito.");
-                limpiarFormulario();
-                await cargarArticulos();
+                mensaje.className = 'mt-3 p-3 text-xs font-bold rounded-xl text-center bg-emerald-50 text-emerald-700 border border-emerald-200';
+                mensaje.innerText = '✅ Datos actualizados';
+                mensaje.classList.remove('hidden');
+                setTimeout(() => mensaje.classList.add('hidden'), 4000);
+                mostrarMensajeFlotante('✅ Datos del comercio guardados', 'ok');
             } catch (err) {
-                console.error("Error al guardar:", err);
-                mostrarMensaje(`Error al guardar: ${err.message}`, true);
+                console.error('Error:', err);
+                mensaje.className = 'mt-3 p-3 text-xs font-bold rounded-xl text-center bg-red-50 text-red-600 border border-red-200';
+                mensaje.innerText = `❌ ${err.message}`;
+                mensaje.classList.remove('hidden');
+                setTimeout(() => mensaje.classList.add('hidden'), 4000);
             } finally {
-                btnGuardar.disabled = false;
-                btnGuardar.innerText = "Guardar Artículo";
+                btn.disabled = false;
+                btn.innerText = 'Guardar Datos del Comercio';
             }
         }
 
-        function prepararEdicion(id) {
-            const item = articulosLista.find(a => a.id == id);
-            if (!item) return;
-
-            document.getElementById('artId').value = id;
-            document.getElementById('artCodigo').value = item.codigo || '';
-            document.getElementById('artNombre').value = item.articulo || '';
-            document.getElementById('artDescripcion').value = item.descripcion || '';
-            document.getElementById('artDisponibilidad').value = item.disponibilidad || '';
-            document.getElementById('artPrecio').value = item.precio || '';
-            document.getElementById('artPromocion').value = item.promocion || '';
-
-            document.getElementById('tituloFormArticulo').innerText = "✏️ Editar Artículo";
-            document.getElementById('btnCancelar').classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function limpiarFormulario() {
-            document.getElementById('artId').value = '';
-            document.getElementById('artCodigo').value = '';
-            document.getElementById('artNombre').value = '';
-            document.getElementById('artDescripcion').value = '';
-            document.getElementById('artDisponibilidad').value = '';
-            document.getElementById('artPrecio').value = '';
-            document.getElementById('artPromocion').value = '';
-
-            document.getElementById('tituloFormArticulo').innerText = "➕ Agregar Nuevo Artículo";
-            document.getElementById('btnCancelar').classList.add('hidden');
-        }
-
-        async function eliminarArticulo(id) {
-            if (confirm("¿Estás seguro de que deseas borrar este artículo?")) {
-                try {
-                    const { data, error } = await supabaseClient.rpc('eliminar_articulo', {
-                        p_id: id,
-                        p_cuit: cuitLimpioActual,
-                        p_token: localStorage.getItem('qrpretium_token')
-                    });
-
-                    if (error) throw error;
-
-                    const respuesta = data && data.eliminar_articulo ? data.eliminar_articulo : data;
-
-                    if (!respuesta || !respuesta.success) {
-                        throw new Error(respuesta?.error || 'No se pudo eliminar');
-                    }
-
-                    mostrarMensaje("🗑️ Artículo eliminado.");
-                    await cargarArticulos();
-                } catch (err) {
-                    mostrarMensaje(`Error al borrar: ${err.message}`, true);
-                }
+        // ==================== GUARDAR COLOR ====================
+        async function guardarColor(nuevoColor) {
+            document.getElementById('headerAdmin').style.backgroundColor = nuevoColor;
+            try {
+                const { data, error } = await supabaseClient.rpc('actualizar_color_comercio', {
+                    p_cuit: cuitLimpioActual,
+                    p_color: nuevoColor,
+                    p_token: localStorage.getItem('qrpretium_token')
+                });
+                if (error) throw error;
+                const respuesta = (data && data.actualizar_color_comercio) ? data.actualizar_color_comercio : data;
+                if (!respuesta || !respuesta.success) throw new Error(respuesta?.error || 'Error');
+                comercioActual.color = nuevoColor;
+                mostrarMensajeFlotante('✅ Color actualizado', 'ok');
+            } catch (err) {
+                console.error('Error al guardar color:', err);
+                mostrarMensajeFlotante('❌ ' + err.message, 'error');
             }
         }
 
-                function cerrarSesion() {
-            // Borrar el token para que no quede guardado
-            localStorage.removeItem('qrpretium_token');
-
-            comercioActual = null;
-            cuitLimpioActual = '';
-            articulosLista = [];
-            document.getElementById('seccionPanel').classList.add('hidden');
-            document.getElementById('seccionLogin').classList.remove('hidden');
-            document.getElementById('loginPassword').value = '';
-        }
+        // ==================== CIERRE CON ESC ====================
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if (document.getElementById('popupVideo').classList.contains('activo')) cerrarPopupVideo();
+                else if (document.getElementById('popupEspecificaciones').classList.contains('activo')) cerrarPopupEspecificaciones();
+                else if (document.getElementById('popupArticulo').classList.contains('activo')) cerrarPopupArticulo();
+                else if (document.getElementById('popupCategorias').classList.contains('activo')) cerrarPopupCategorias();
+                else if (document.getElementById('popupMiQr').classList.contains('activo')) cerrarPopupMiQr();
+                else if (document.getElementById('popupMiComercio').classList.contains('activo')) cerrarPopupMiComercio();
+            }
+        });
     </script>
 </body>
 </html>
