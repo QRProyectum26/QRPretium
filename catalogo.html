@@ -5,12 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="img/favicon.png">
     <title>Catálogo de Productos - Vidriera Inmersiva</title>
-    <link rel="stylesheet" href="output.css">
+    <script src="https://cdn.tailwindcss.com/3.4.3"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/geometries/RoundedBoxGeometry.js"></script>
     
     <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        
         .marco-verde-pastel {
             box-shadow: 0 0 20px rgba(134, 239, 172, 0.45), inset 0 0 15px rgba(134, 239, 172, 0.25);
             transition: box-shadow 0.3s ease;
@@ -61,11 +63,11 @@
         }
         .btn-info-gris {
             background-color: #0a1628 !important;
-            color: #10b981 !important;
+            color: #FFFFFF !important;
             border: 2px solid #cbd5e1 !important;
             transition: all 0.2s ease;
-            width: 20px !important;
-            height: 20px !important;
+            width: 22px !important;
+            height: 22px !important;
             font-size: 20px !important;
             line-height: 18px !important;
             display: flex !important;
@@ -82,15 +84,75 @@
             font-size: 0.8rem !important;
             letter-spacing: 0.05em;
         }
-        .contenedor-principal {
-            max-height: calc(100vh - 220px);
-            overflow-y: auto;
+        
+        /* ===== GRILLA DE CÓDIGOS ===== */
+        .grilla-codigos {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 12px;
             padding-bottom: 20px;
-            scroll-behavior: smooth;
         }
-        .contenedor-principal::-webkit-scrollbar { width: 4px; }
-        .contenedor-principal::-webkit-scrollbar-track { background: transparent; }
-        .contenedor-principal::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
+        @media (min-width: 480px) {
+            .grilla-codigos { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        }
+        @media (min-width: 640px) {
+            .grilla-codigos { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+        }
+        @media (min-width: 768px) {
+            .grilla-codigos { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+        }
+        @media (min-width: 1024px) {
+            .grilla-codigos { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+        }
+        
+        .codigo-celda {
+            background-color: #1e293b;
+            color: #ffffff;
+            border: 3px solid #f97316;
+            border-radius: 12px;
+            padding: 14px 6px;
+            font-family: 'Courier New', monospace;
+            font-weight: 900;
+            font-size: 18px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            opacity: 0;
+            animation: fadeInCelda 0.3s ease-out forwards;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        .codigo-celda:hover {
+            transform: scale(1.05);
+            border-color: #fb923c;
+            box-shadow: 0 6px 16px rgba(249, 115, 22, 0.4);
+        }
+        .codigo-celda:active {
+            transform: scale(0.96);
+        }
+        @keyframes fadeInCelda {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .codigo-celda .indicador-promo {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            border: 2px solid #ffffff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        
+        /* ===== HEADER FIJO ===== */
         .header-fijo {
             position: sticky;
             top: 0;
@@ -100,20 +162,20 @@
             padding-bottom: 0px;
             border-radius: 0 0 12px 12px;
             margin-top: 20px;
-            overflow: visible !important;
         }
-        .descripcion-producto {
-            max-height: 3.6em;
+        
+        /* ===== CONTENEDOR SCROLL ===== */
+        .contenedor-principal {
+            max-height: calc(100vh - 240px);
             overflow-y: auto;
-            font-size: 14px;
-            line-height: 1.4;
-            color: #4b5563;
-            scrollbar-width: thin;
-            margin-top: 4px;
+            padding-bottom: 20px;
+            scroll-behavior: smooth;
         }
-        .descripcion-producto::-webkit-scrollbar { width: 3px; }
-        .descripcion-producto::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .descripcion-producto::-webkit-scrollbar-track { background: transparent; }
+        .contenedor-principal::-webkit-scrollbar { width: 4px; }
+        .contenedor-principal::-webkit-scrollbar-track { background: transparent; }
+        .contenedor-principal::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
+        
+        /* ===== CUBO IA ===== */
         .texto-arco-svg {
             position: absolute;
             top: -10px;           
@@ -123,164 +185,12 @@
             pointer-events: none;
             overflow: visible;
         }
-        .panel-chat {
-            position: fixed;
-            top: 400px;
-            right: -40%;
-            width: 20%;
-            max-width: 230px;
-            height: 440px;
-            background: rgba(241, 245, 249, 0.07);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 20px 0 0 20px;
-            border-left: 1px solid rgba(255, 255, 255, 0.3);
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: -10px 0 40px rgba(0, 0, 0, 0.08);
-            z-index: 100;
-            transition: right 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            padding: 0;
-        }
-        .panel-chat.abierto { right: 0; }
-        .overlay-panel {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.15);
-            z-index: 99;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-        .overlay-panel.activo { opacity: 1; pointer-events: auto; }
-        .panel-chat .header-panel {
-            padding: 12px 16px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 20px 0 0 0;
-        }
-        .panel-chat .header-panel .info-ia {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .panel-chat .header-panel .info-ia .icono-estado {
-            font-size: 24px;
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(15, 23, 42, 0.05);
-            border-radius: 50%;
-            transition: all 0.3s ease;
-        }
-        .panel-chat .header-panel .info-ia .icono-estado.escuchando { background: rgba(16, 185, 129, 0.15); animation: pulse-icono 0.8s ease-in-out infinite; }
-        .panel-chat .header-panel .info-ia .icono-estado.pensando { background: rgba(249, 115, 22, 0.15); }
-        .panel-chat .header-panel .info-ia .icono-estado.hablando { background: rgba(56, 189, 248, 0.15); }
-        .panel-chat .header-panel .info-ia .icono-estado.ok { background: rgba(34, 197, 94, 0.15); }
-        .panel-chat .header-panel .info-ia .icono-estado.error { background: rgba(239, 68, 68, 0.15); }
-        @keyframes pulse-icono { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-        .panel-chat .header-panel .info-ia .texto-estado { font-size: 13px; font-weight: 600; color: #0f172a; }
-        .panel-chat .header-panel .info-ia .texto-estado .sub { font-size: 11px; font-weight: 400; color: #64748b; display: block; }
-        .panel-chat .header-panel .btn-cerrar-panel {
-            background: rgba(0, 0, 0, 0.04);
-            border: none;
-            color: #64748b;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .panel-chat .header-panel .btn-cerrar-panel:hover { background: rgba(0, 0, 0, 0.08); color: #0f172a; }
-        .panel-chat .chat-body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 12px 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.2);
-        }
-        .panel-chat .chat-body .mensaje {
-            padding: 8px 12px;
-            border-radius: 12px;
-            max-width: 88%;
-            font-size: 13px;
-            line-height: 1.5;
-            word-wrap: break-word;
-            animation: fadeInUp 0.3s ease;
-        }
-        .panel-chat .chat-body .mensaje.usuario { background: #f97316; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
-        .panel-chat .chat-body .mensaje.ia { background: rgba(15, 23, 42, 0.06); color: #0f172a; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid rgba(0, 0, 0, 0.04); }
-        .panel-chat .chat-body .mensaje.ia .timestamp { font-size: 9px; color: #94a3b8; margin-top: 4px; text-align: right; }
-        .panel-chat .chat-body .mensaje.pensando { background: rgba(249, 115, 22, 0.08); color: #f97316; font-style: italic; align-self: flex-start; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        .panel-chat .chat-body::-webkit-scrollbar { width: 3px; }
-        .panel-chat .chat-body::-webkit-scrollbar-track { background: transparent; }
-        .panel-chat .chat-body::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
-        .panel-chat .controles-voz {
-            padding: 10px 16px 14px;
-            border-top: 1px solid rgba(0, 0, 0, 0.04);
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 14px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 0 0 0 20px;
-        }
-        .panel-chat .controles-voz .btn-mic {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: #f97316;
-            border: none;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 12px rgba(249, 115, 22, 0.25);
-            flex-shrink: 0;
-        }
-        .panel-chat .controles-voz .btn-mic:hover { transform: scale(1.04); background: #ea580c; }
-        .panel-chat .controles-voz .btn-mic:active { transform: scale(0.92); }
-        .panel-chat .controles-voz .btn-mic.escuchando { background: #ef4444; animation: pulse-mic 1s ease-in-out infinite; }
-        @keyframes pulse-mic {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.3); }
-            50% { box-shadow: 0 0 0 16px rgba(239, 68, 68, 0); }
-        }
-        .panel-chat .controles-voz .estado-voz-label { font-size: 12px; font-weight: 500; color: #f97316; }
-        .panel-chat .controles-voz .estado-voz-label.activo { color: #f97316; }
-        @media (max-width: 768px) {
-            .panel-chat { width: 70%; right: -70%; top: 200px; height: 65vh; border-radius: 16px 0 0 16px; background: rgba(241, 245, 249, 0.06); }
-            .panel-chat.abierto { right: 0; }
-        }
-        @media (max-width: 480px) {
-            .panel-chat { width: 75%; right: -75%; top: 150px; height: 45vh; border-radius: 12px 0 0 12px; background: rgba(241, 245, 249, 0.06); }
-            .panel-chat.abierto { right: 0; }
-        }
         #contenedorCuboIa {
             transition: all 0.3s ease;
             position: relative;
             overflow: visible !important;
             cursor: pointer;
-            margin-top: -20px;  
+            margin-top: -25px;
         }
         .contenedor-ondas {
             position: absolute;
@@ -308,10 +218,292 @@
         .estado-cubo-sutil.hablando { color: #38bdf8; }
         .estado-cubo-sutil.error { color: #ef4444; }
         .estado-cubo-sutil.ok { color: #22c55e; }
+        
+        /* ===== POPUPS ===== */
+        .popup-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .popup-overlay.activo {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .popup-caja {
+            background: #ffffff;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+        .popup-overlay.activo .popup-caja {
+            transform: scale(1);
+            opacity: 1;
+        }
+        
+        .popup-slide-up .popup-caja {
+            transform: translateY(40px);
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+        }
+        .popup-slide-up.activo .popup-caja {
+            transform: translateY(0);
+        }
+        
+        .popup-caja::-webkit-scrollbar { width: 6px; }
+        .popup-caja::-webkit-scrollbar-track { background: #f1f5f9; }
+        .popup-caja::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
+        
+        .popup-cerrar {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(15, 23, 42, 0.1);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 18px;
+            font-weight: 700;
+            color: #334155;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+        .popup-cerrar:hover {
+            background: rgba(15, 23, 42, 0.2);
+            transform: rotate(90deg);
+        }
+        
+        .codigo-destacado {
+            background: #1e293b;
+            color: #ffffff;
+            font-family: 'Courier New', monospace;
+            font-weight: 900;
+            font-size: 24px;
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: 3px solid #f97316;
+            display: inline-block;
+            letter-spacing: 2px;
+        }
+        
+        .tabla-especificaciones {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+        .tabla-especificaciones tr:nth-child(odd) {
+            background: #f8fafc;
+        }
+        .tabla-especificaciones tr:nth-child(even) {
+            background: #ffffff;
+        }
+        .tabla-especificaciones td {
+            padding: 10px 14px;
+            font-size: 13px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .tabla-especificaciones td:first-child {
+            font-weight: 700;
+            color: #475569;
+            width: 40%;
+        }
+        .tabla-especificaciones td:last-child {
+            color: #0f172a;
+        }
+        
+        /* ===== POPUP CUBO IA CONTEXTUAL ===== */
+        .popup-ia-contextual {
+            position: fixed;
+            top: 130px;
+            right: 16px;
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 14px 16px;
+            max-width: 240px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+            border: 2px solid #10b981;
+            z-index: 105;
+            opacity: 0;
+            transform: translateX(20px);
+            pointer-events: none;
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .popup-ia-contextual.activo {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+        .popup-ia-contextual::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: 40px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid #10b981;
+        }
+        
+        /* ===== PANEL IA ===== */
+        .panel-chat {
+            position: fixed;
+            top: 400px;
+            right: -40%;
+            width: 20%;
+            max-width: 230px;
+            height: 440px;
+            background: rgba(241, 245, 249, 0.07);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px 0 0 20px;
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: -10px 0 40px rgba(0, 0, 0, 0.08);
+            z-index: 110;
+            transition: right 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .panel-chat.abierto { right: 0; }
+        .overlay-panel {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.15);
+            z-index: 109;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .overlay-panel.activo { opacity: 1; pointer-events: auto; }
+        .panel-chat .header-panel {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 20px 0 0 0;
+        }
+        .panel-chat .info-ia { display: flex; align-items: center; gap: 10px; }
+        .panel-chat .icono-estado {
+            font-size: 22px;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(15, 23, 42, 0.05);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        .panel-chat .icono-estado.escuchando { background: rgba(16, 185, 129, 0.15); animation: pulse-icono 0.8s ease-in-out infinite; }
+        .panel-chat .icono-estado.pensando { background: rgba(249, 115, 22, 0.15); }
+        .panel-chat .icono-estado.hablando { background: rgba(56, 189, 248, 0.15); }
+        @keyframes pulse-icono { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .panel-chat .texto-estado { font-size: 13px; font-weight: 600; color: #0f172a; }
+        .panel-chat .texto-estado .sub { font-size: 11px; font-weight: 400; color: #64748b; display: block; }
+        .panel-chat .btn-cerrar-panel {
+            background: rgba(0, 0, 0, 0.04);
+            border: none;
+            color: #64748b;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        .panel-chat .btn-cerrar-panel:hover { background: rgba(0, 0, 0, 0.08); }
+        .panel-chat .chat-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .panel-chat .mensaje {
+            padding: 8px 12px;
+            border-radius: 12px;
+            max-width: 88%;
+            font-size: 13px;
+            line-height: 1.5;
+            word-wrap: break-word;
+            animation: fadeInUp 0.3s ease;
+        }
+        .panel-chat .mensaje.usuario { background: #f97316; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .panel-chat .mensaje.ia { background: rgba(15, 23, 42, 0.06); color: #0f172a; align-self: flex-start; border-bottom-left-radius: 4px; }
+        .panel-chat .mensaje.pensando { background: rgba(249, 115, 22, 0.08); color: #f97316; font-style: italic; align-self: flex-start; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .panel-chat .controles-voz {
+            padding: 10px 16px 14px;
+            border-top: 1px solid rgba(0, 0, 0, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .panel-chat .btn-mic {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #f97316;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 12px rgba(249, 115, 22, 0.25);
+            transition: all 0.2s ease;
+        }
+        .panel-chat .btn-mic:hover { transform: scale(1.04); }
+        .panel-chat .btn-mic.escuchando { background: #ef4444; animation: pulse-mic 1s ease-in-out infinite; }
+        @keyframes pulse-mic {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.3); }
+            50% { box-shadow: 0 0 0 16px rgba(239, 68, 68, 0); }
+        }
+        .panel-chat .estado-voz-label { font-size: 12px; font-weight: 500; color: #f97316; }
+        @media (max-width: 768px) {
+            .panel-chat { width: 80%; right: -80%; top: 180px; height: 70vh; border-radius: 16px 0 0 16px; }
+            .panel-chat.abierto { right: 0; }
+            .popup-ia-contextual { top: 110px; right: 8px; max-width: 200px; font-size: 12px; }
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen pb-10">
-
+<!-- HEADER -->
     <header id="headerComercio" class="text-white p-3 shadow-lg rounded-b-2xl transition-colors duration-300" style="background-color: #334155;">
         <div class="max-w-xl mx-auto flex items-center justify-between">
             <div class="flex items-center space-x-3">
@@ -332,15 +524,18 @@
         </div>
     </header>
 
+    <!-- CONTENIDO PRINCIPAL -->
     <main class="max-w-xl mx-auto px-4 -mt-4 relative z-10">
 
+        <!-- HEADER FIJO: Buscador + Cubo IA -->
         <div class="header-fijo">
             <div class="flex items-center gap-3">
                 <div class="relative shadow-sm rounded-xl flex-1">
-                    <input type="text" id="inputBuscar" onkeyup="filtrarProductos()" placeholder="🔍 Buscar por Código, Artículo o Descripción..." 
+                    <input type="text" id="inputBuscar" onkeyup="manejarBusqueda(event)" placeholder="🔍 Buscar por Código, Artículo o Descripción..." 
                         class="w-full pl-4 pr-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-600 text-sm bg-white shadow-sm">
                 </div>
 
+                <!-- CUBO IA -->
                 <div id="contenedorCuboIa" 
                      class="w-32 h-32 rounded-full border-2 border-green-300 marco-verde-pastel flex items-center justify-center relative overflow-visible cursor-pointer group flex-shrink-0 transition-transform duration-300 hover:scale-105 active:scale-95 shadow-lg bg-slate-950">
                     
@@ -367,18 +562,20 @@
             <div id="estadoCubo" class="estado-cubo-sutil" style="display: none;"></div>
         </div>
 
+        <!-- CONTENEDOR SCROLLABLE: Grilla de Códigos -->
         <div id="contenedorScroll" class="contenedor-principal">
-            <div id="listaProductos" class="space-y-4 mt-1"></div>
-        </div>
-
-        <div id="mensajeEstado" class="text-center py-8 hidden">
-            <p id="textoEstado" class="text-gray-500 font-medium"></p>
+            <div id="grillaCodigos" class="grilla-codigos"></div>
+            <div id="mensajeVacio" class="text-center py-8 hidden">
+                <p class="text-gray-500 font-medium">No se encontraron artículos.</p>
+            </div>
         </div>
 
     </main>
 
+    <!-- OVERLAY PANEL IA -->
     <div id="overlayPanel" class="overlay-panel" onclick="cerrarPanelIA()"></div>
 
+    <!-- PANEL IA LATERAL -->
     <div id="panelChat" class="panel-chat">
         <div class="header-panel">
             <div class="info-ia">
@@ -393,18 +590,7 @@
 
         <div id="chatBody" class="chat-body">
             <div class="mensaje ia">
-                HOLA !!, soy el ASESOR IA de esta vidriera. Consultame sobre cualquier codigo de artículo que ves..!
-                <div class="timestamp">
-                    <svg width="14" height="22" viewBox="0 0 22 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 4px;">
-                        <rect x="2" y="8" width="20" height="12" rx="2" />
-                        <circle cx="8" cy="12" r="2.5" fill="#f97316" stroke="none" />
-                        <circle cx="16" cy="12" r="2.5" fill="#f97316" stroke="none" />
-                        <rect x="10" y="16" width="4" height="2" fill="#f97316" stroke="none" />
-                        <line x1="12" y1="8" x2="12" y2="2" />
-                        <circle cx="12" cy="2" r="2.2" fill="#f97316" stroke="none" />
-                    </svg>
-                    Asesor
-                </div>
+                HOLA !!, soy el ASESOR IA de esta vidriera. Consultame sobre cualquier código de artículo que ves..!
             </div>
         </div>
 
@@ -416,6 +602,73 @@
         </div>
     </div>
 
+    <!-- POPUP IA CONTEXTUAL -->
+    <div id="popupIaContextual" class="popup-ia-contextual">
+        <p id="popupIaTexto" class="text-sm text-gray-800 font-medium leading-tight mb-2">¿Tenés alguna consulta por este artículo?</p>
+        <div class="flex gap-2">
+            <button onclick="responderIaContextual(true)" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-1.5 rounded-lg text-xs transition">Sí</button>
+            <button onclick="responderIaContextual(false)" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-1.5 rounded-lg text-xs transition">No</button>
+        </div>
+    </div>
+
+    <!-- POPUP DE ETIQUETA -->
+    <div id="popupEtiqueta" class="popup-overlay" onclick="if(event.target===this) cerrarPopupEtiqueta()">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopupEtiqueta()">✕</button>
+            <div class="p-5">
+                <div class="text-center mb-4">
+                    <div id="popupCodigo" class="codigo-destacado">A01</div>
+                </div>
+                <h2 id="popupNombre" class="text-xl font-extrabold text-gray-900 uppercase text-center mb-3">Nombre</h2>
+                <div id="popupDescripcion" class="text-sm text-gray-700 leading-relaxed mb-4">Descripción</div>
+                <div id="popupBotones" class="flex gap-2 mb-4 flex-wrap"></div>
+                <div id="popupDisponibilidad" class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 mb-3 hidden">
+                    <p class="text-xs font-bold text-emerald-700 uppercase mb-1">📦 Disponibilidad</p>
+                    <p id="popupDisponibilidadTexto" class="text-sm text-gray-800"></p>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 mb-3">
+                    <div class="flex items-center justify-between">
+                        <p class="text-xs font-bold text-orange-500 uppercase">💰 Precio final</p>
+                        <p id="popupPrecio" class="text-2xl font-black text-slate-800">$0</p>
+                    </div>
+                </div>
+                <div id="popupPromocion" class="bg-orange-50 border border-orange-200 rounded-xl p-3 mb-4 hidden">
+                    <p class="text-xs font-bold text-orange-700 uppercase mb-1">🔥 Promoción</p>
+                    <p id="popupPromocionTexto" class="text-sm text-gray-800 font-semibold"></p>
+                </div>
+                <button onclick="cerrarPopupEtiqueta()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-xl transition">← Volver</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP ESPECIFICACIONES -->
+    <div id="popupEspecificaciones" class="popup-overlay popup-slide-up" onclick="if(event.target===this) cerrarPopupEspecificaciones()">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopupEspecificaciones()">✕</button>
+            <div class="p-5">
+                <h2 class="text-lg font-extrabold text-gray-900 mb-4">🔍 Especificaciones <span id="popupEspCodigo" class="text-orange-500"></span></h2>
+                <table id="tablaEspecificaciones" class="tabla-especificaciones">
+                    <tbody></tbody>
+                </table>
+                <button onclick="cerrarPopupEspecificaciones()" class="w-full mt-4 bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-xl transition">← Volver</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP VIDEO -->
+    <div id="popupVideo" class="popup-overlay popup-slide-up" onclick="if(event.target===this) cerrarPopupVideo()">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopupVideo()">✕</button>
+            <div class="p-5">
+                <h2 class="text-lg font-extrabold text-gray-900 mb-4">▶️ Video <span id="popupVideoCodigo" class="text-orange-500"></span></h2>
+                <div id="contenedorVideo" class="rounded-xl overflow-hidden bg-black" style="aspect-ratio: 16/9;">
+                </div>
+                <button onclick="cerrarPopupVideo()" class="w-full mt-4 bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-xl transition">← Volver</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL INFO DEL COMERCIO -->
     <div id="modalInfo" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden border border-gray-100">
             <div class="p-5 text-white relative" style="background-color: #334155;">
@@ -468,6 +721,28 @@
     </div>
 
     <script>
+javascript
+        // ==================== CONFIGURACIÓN ====================
+        const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ==================== ESTADO GLOBAL ====================
+        let productosGlobales = [];
+        let datosComercioGlobal = null;
+        let reconocedorVoz = null;
+        let estaEscuchando = false;
+        let synth = window.speechSynthesis;
+        let estaHablando = false;
+        let codigoActualPopup = null;
+        let temporizadorPopupIA = null;
+        let temporizadorSinHabla = null;
+        let intentosSinHabla = 0;
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const cuitParam = urlParams.get('cuit') ? parseInt(urlParams.get('cuit').trim().replace(/[-.\s]/g, ''), 10) : null;
+
+        // ==================== NEBULOSA (canvas fondo cubo) ====================
         (function dibujarNebulosaRealista() {
             const canvas = document.getElementById('fondo-espacio');
             if (!canvas) return;
@@ -528,9 +803,8 @@
                 ctx.stroke();
             });
         })();
-    </script>
 
-    <script>
+        // ==================== CUBO 3D ====================
         let controlVelocidadCubo = { x: 0.008, y: 0.012 };
         let estadoCuboActual = 'normal';
         const estadoCuboEl = document.getElementById('estadoCubo');
@@ -545,7 +819,6 @@
                 estadoCuboEl.style.display = 'none';
             } else {
                 estadoCuboEl.style.display = 'block';
-                estadoCuboEl.className = 'estado-cubo-sutil';
             }
             switch(estado) {
                 case 'escuchando':
@@ -554,8 +827,7 @@
                     estadoCuboEl.className = 'estado-cubo-sutil escuchando';
                     break;
                 case 'pensando':
-                    controlVelocidadCubo.x = 0.045;
-                    controlVelocidadCubo.y = 0.055;
+                    controlVelocidadCubo.x = 0.045; controlVelocidadCubo.y = 0.055;
                     estadoCuboEl.textContent = '🧠 Procesando...';
                     estadoCuboEl.className = 'estado-cubo-sutil activo';
                     break;
@@ -572,8 +844,7 @@
                         if (estadoCuboActual === 'ok') {
                             estadoCuboActual = 'normal';
                             estadoCuboEl.style.display = 'none';
-                            controlVelocidadCubo.x = 0.008;
-                            controlVelocidadCubo.y = 0.012;
+                            controlVelocidadCubo.x = 0.008; controlVelocidadCubo.y = 0.012;
                         }
                     }, 2500);
                     break;
@@ -589,12 +860,9 @@
                         }
                     }, 3000);
                     break;
-                case 'normal':
                 default:
-                    controlVelocidadCubo.x = 0.008;
-                    controlVelocidadCubo.y = 0.012;
+                    controlVelocidadCubo.x = 0.008; controlVelocidadCubo.y = 0.012;
                     estadoCuboEl.style.display = 'none';
-                    break;
             }
         }
 
@@ -610,102 +878,56 @@
 
             function dibujarIconoVectorial(ctx, tipo, color) {
                 ctx.save();
-                ctx.strokeStyle = color;
-                ctx.fillStyle = color;
-                ctx.lineWidth = 8;
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-
+                ctx.strokeStyle = color; ctx.fillStyle = color;
+                ctx.lineWidth = 8; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
                 if (tipo === 'mic') {
-                    ctx.beginPath();
-                    ctx.arc(128, 90, 18, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.beginPath();
-                    ctx.arc(128, 90, 28, 0, Math.PI);
-                    ctx.stroke();
-                    ctx.beginPath();
-                    ctx.moveTo(128, 118); ctx.lineTo(128, 135);
-                    ctx.moveTo(108, 135); ctx.lineTo(148, 135);
-                    ctx.stroke();
+                    ctx.beginPath(); ctx.arc(128, 90, 18, 0, Math.PI * 2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(128, 90, 28, 0, Math.PI); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(128, 118); ctx.lineTo(128, 135);
+                    ctx.moveTo(108, 135); ctx.lineTo(148, 135); ctx.stroke();
                 } else if (tipo === 'cerebro') {
                     ctx.lineWidth = 6;
-                    ctx.beginPath();
-                    ctx.arc(108, 90, 20, Math.PI * 0.5, Math.PI * 1.8);
-                    ctx.arc(118, 75, 12, Math.PI, Math.PI * 1.9);
-                    ctx.stroke();
-                    ctx.beginPath();
-                    ctx.arc(148, 90, 20, Math.PI * 1.2, Math.PI * 0.5);
-                    ctx.arc(138, 75, 12, Math.PI * 1.1, 0);
-                    ctx.stroke();
-                    ctx.beginPath();
-                    ctx.moveTo(128, 70); ctx.lineTo(128, 115);
-                    ctx.stroke();
+                    ctx.beginPath(); ctx.arc(108, 90, 20, Math.PI * 0.5, Math.PI * 1.8);
+                    ctx.arc(118, 75, 12, Math.PI, Math.PI * 1.9); ctx.stroke();
+                    ctx.beginPath(); ctx.arc(148, 90, 20, Math.PI * 1.2, Math.PI * 0.5);
+                    ctx.arc(138, 75, 12, Math.PI * 1.1, 0); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(128, 70); ctx.lineTo(128, 115); ctx.stroke();
                 } else if (tipo === 'ok') {
                     ctx.lineWidth = 12;
-                    ctx.beginPath();
-                    ctx.moveTo(95, 100);
-                    ctx.lineTo(118, 122);
-                    ctx.lineTo(165, 75);
-                    ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(95, 100); ctx.lineTo(118, 122); ctx.lineTo(165, 75); ctx.stroke();
                 } else if (tipo === 'error') {
                     ctx.lineWidth = 12;
-                    ctx.beginPath();
-                    ctx.moveTo(100, 75); ctx.lineTo(156, 125);
-                    ctx.moveTo(156, 75); ctx.lineTo(100, 125);
-                    ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(100, 75); ctx.lineTo(156, 125);
+                    ctx.moveTo(156, 75); ctx.lineTo(100, 125); ctx.stroke();
                 } else if (tipo === 'robot') {
                     ctx.lineWidth = 6;
-                    ctx.beginPath();
-                    ctx.roundRect(98, 75, 60, 48, 8);
-                    ctx.stroke();
-                    ctx.beginPath();
-                    ctx.arc(113, 93, 5, 0, Math.PI * 2);
-                    ctx.arc(143, 93, 5, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.beginPath();
-                    ctx.moveTo(128, 75); ctx.lineTo(128, 62);
-                    ctx.stroke();
-                    ctx.beginPath();
-                    ctx.arc(128, 60, 4, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.beginPath();
-                    ctx.moveTo(112, 110); ctx.lineTo(144, 110);
-                    ctx.stroke();
+                    ctx.beginPath(); ctx.roundRect(98, 75, 60, 48, 8); ctx.stroke();
+                    ctx.beginPath(); ctx.arc(113, 93, 5, 0, Math.PI * 2); ctx.arc(143, 93, 5, 0, Math.PI * 2); ctx.fill();
+                    ctx.beginPath(); ctx.moveTo(128, 75); ctx.lineTo(128, 62); ctx.stroke();
+                    ctx.beginPath(); ctx.arc(128, 60, 4, 0, Math.PI * 2); ctx.fill();
+                    ctx.beginPath(); ctx.moveTo(112, 110); ctx.lineTo(144, 110); ctx.stroke();
                 } else if (tipo === 'lupa') {
                     ctx.lineWidth = 8;
-                    ctx.beginPath();
-                    ctx.arc(118, 92, 22, 0, Math.PI * 2);
-                    ctx.stroke();
-                    ctx.beginPath();
-                    ctx.moveTo(134, 108); ctx.lineTo(158, 130);
-                    ctx.stroke();
+                    ctx.beginPath(); ctx.arc(118, 92, 22, 0, Math.PI * 2); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(134, 108); ctx.lineTo(158, 130); ctx.stroke();
                 }
                 ctx.restore();
             }
 
             function crearTexturaCara(tipoIcono, texto, colorElemento) {
                 const c = document.createElement('canvas');
-                c.width = 256;
-                c.height = 256;
+                c.width = 256; c.height = 256;
                 const ctx = c.getContext('2d');
-                ctx.fillStyle = '#B0B8C0'; 
-                ctx.fillRect(0, 0, 256, 256);
-                ctx.strokeStyle = '#F97316';
-                ctx.lineWidth = 12;
+                ctx.fillStyle = '#B0B8C0'; ctx.fillRect(0, 0, 256, 256);
+                ctx.strokeStyle = '#F97316'; ctx.lineWidth = 12;
                 const r = 30;
-                ctx.beginPath();
-                ctx.moveTo(10 + r, 10);
-                ctx.arcTo(246, 10, 246, 246, r);
-                ctx.arcTo(246, 246, 10, 246, r);
-                ctx.arcTo(10, 246, 10, 10, r);
-                ctx.arcTo(10, 10, 246, 10, r);
-                ctx.closePath();
-                ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(10 + r, 10);
+                ctx.arcTo(246, 10, 246, 246, r); ctx.arcTo(246, 246, 10, 246, r);
+                ctx.arcTo(10, 246, 10, 10, r); ctx.arcTo(10, 10, 246, 10, r);
+                ctx.closePath(); ctx.stroke();
                 dibujarIconoVectorial(ctx, tipoIcono, colorElemento);
                 ctx.font = 'bold 22px sans-serif';
-                ctx.fillStyle = colorElemento;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
+                ctx.fillStyle = colorElemento; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
                 ctx.fillText(texto, 128, 195);
                 return new THREE.CanvasTexture(c);
             }
@@ -726,23 +948,17 @@
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
             scene.add(ambientLight);
             const pointLight1 = new THREE.PointLight(0xF97316, 2.5, 10);
-            pointLight1.position.set(3, 3, 3);
-            scene.add(pointLight1);
+            pointLight1.position.set(3, 3, 3); scene.add(pointLight1);
             const pointLight2 = new THREE.PointLight(0x38BDF8, 2, 10);
-            pointLight2.position.set(-3, -3, -3);
-            scene.add(pointLight2);
+            pointLight2.position.set(-3, -3, -3); scene.add(pointLight2);
 
             function animate() {
                 requestAnimationFrame(animate);
                 let velX = controlVelocidadCubo.x;
                 let velY = controlVelocidadCubo.y;
-                if (estadoCuboActual === 'pensando') {
-                    velX = 0.045; velY = 0.055;
-                } else if (estadoCuboActual === 'hablando') {
-                    velX = 0.02; velY = 0.025;
-                }
-                cubo.rotation.x += velX;
-                cubo.rotation.y += velY;
+                if (estadoCuboActual === 'pensando') { velX = 0.045; velY = 0.055; }
+                else if (estadoCuboActual === 'hablando') { velX = 0.02; velY = 0.025; }
+                cubo.rotation.x += velX; cubo.rotation.y += velY;
                 renderer.render(scene, camera);
             }
             animate();
@@ -751,32 +967,18 @@
             if (contenedor) {
                 contenedor.addEventListener('mouseenter', () => {
                     if (estadoCuboActual !== 'escuchando' && estadoCuboActual !== 'hablando' && estadoCuboActual !== 'pensando') {
-                        controlVelocidadCubo.x = 0.025;
-                        controlVelocidadCubo.y = 0.03;
+                        controlVelocidadCubo.x = 0.025; controlVelocidadCubo.y = 0.03;
                     }
                 });
                 contenedor.addEventListener('mouseleave', () => {
                     if (estadoCuboActual !== 'escuchando' && estadoCuboActual !== 'hablando' && estadoCuboActual !== 'pensando') {
-                        controlVelocidadCubo.x = 0.008;
-                        controlVelocidadCubo.y = 0.012;
+                        controlVelocidadCubo.x = 0.008; controlVelocidadCubo.y = 0.012;
                     }
                 });
             }
         })();
-    </script>
 
-    <script>
-        const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        let productosGlobales = [];
-        let datosComercioGlobal = null;
-        let reconocedorVoz = null;
-        let estaEscuchando = false;
-        let synth = window.speechSynthesis;
-        let estaHablando = false;
-
+        // ==================== PANEL IA ====================
         const panelChat = document.getElementById('panelChat');
         const overlayPanel = document.getElementById('overlayPanel');
         const chatBody = document.getElementById('chatBody');
@@ -786,93 +988,38 @@
         const estadoPanelLabel = document.getElementById('estadoPanelLabel');
         const iconoEstadoPanel = document.getElementById('iconoEstadoPanel');
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const cuitParam = urlParams.get('cuit') ? parseInt(urlParams.get('cuit').trim().replace(/[-.\s]/g, ''), 10) : null;
-
         function abrirPanelIA() {
             panelChat.classList.add('abierto');
             overlayPanel.classList.add('activo');
             document.body.style.overflow = 'hidden';
-            if (!estaEscuchando && !estaHablando) {
-                try {
-                    if (reconocedorVoz) reconocedorVoz.start();
-                } catch (e) {
-                    console.warn('Mic ya activo o error al iniciar:', e);
-                }
-            }
         }
-
         function cerrarPanelIA() {
             panelChat.classList.remove('abierto');
             overlayPanel.classList.remove('activo');
             document.body.style.overflow = '';
             if (estaEscuchando && reconocedorVoz) reconocedorVoz.stop();
-            if (estaHablando) {
-                synth.cancel();
-                estaHablando = false;
-            }
+            if (estaHablando) { synth.cancel(); estaHablando = false; }
             aplicarEfectoCubo('normal');
             actualizarEstadoPanel('normal');
         }
-
-        function togglePanelIA() {
-            if (panelChat.classList.contains('abierto')) {
-                cerrarPanelIA();
-            } else {
-                abrirPanelIA();
-            }
-        }
-
-        document.getElementById('contenedorCuboIa').addEventListener('click', function(e) {
-            e.stopPropagation();
-            togglePanelIA();
-        });
-
-        function iniciarEscucha() {
-            if (!reconocedorVoz) return;
-            if (estaEscuchando) { reconocedorVoz.stop(); return; }
-            if (estaHablando) { synth.cancel(); estaHablando = false; }
-            reconocedorVoz.start();
-        }
-
-        function alternarEscuchaPanel() {
-            if (!reconocedorVoz) return;
-            if (estaEscuchando) {
-                reconocedorVoz.stop();
-            } else {
-                if (estaHablando) { synth.cancel(); estaHablando = false; }
-                reconocedorVoz.start();
-            }
-        }
-
-        function actualizarEstadoPanel(estado, texto) {
+        function actualizarEstadoPanel(estado) {
             const iconos = { 'escuchando': '🎤', 'pensando': '🧠', 'hablando': '🔊', 'ok': '✅', 'error': '⚠️', 'normal': '🎙️' };
             iconoEstadoPanel.textContent = iconos[estado] || '🎙️';
             iconoEstadoPanel.className = 'icono-estado ' + (estado !== 'normal' ? estado : '');
-            
             const labels = { 'escuchando': 'Escuchando...', 'pensando': 'Procesando...', 'hablando': 'Respondiendo...', 'ok': '¡Listo!', 'error': 'Error', 'normal': 'Toca el micrófono para hablar' };
             estadoPanelLabel.textContent = labels[estado] || labels.normal;
-            
             if (estado === 'escuchando') {
-                btnMicPanel.classList.add('escuchando');
-                iconoMicPanel.textContent = '🔴';
+                btnMicPanel.classList.add('escuchando'); iconoMicPanel.textContent = '🔴';
                 estadoVozLabel.textContent = 'Escuchando...';
-                estadoVozLabel.className = 'estado-voz-label activo';
             } else if (estado === 'pensando') {
-                btnMicPanel.classList.remove('escuchando');
-                iconoMicPanel.textContent = '⏳';
+                btnMicPanel.classList.remove('escuchando'); iconoMicPanel.textContent = '⏳';
                 estadoVozLabel.textContent = 'Procesando...';
-                estadoVozLabel.className = 'estado-voz-label activo';
             } else if (estado === 'hablando') {
-                btnMicPanel.classList.remove('escuchando');
-                iconoMicPanel.textContent = '🔊';
+                btnMicPanel.classList.remove('escuchando'); iconoMicPanel.textContent = '🔊';
                 estadoVozLabel.textContent = 'Respondiendo...';
-                estadoVozLabel.className = 'estado-voz-label activo';
             } else {
-                btnMicPanel.classList.remove('escuchando');
-                iconoMicPanel.textContent = '🎙️';
+                btnMicPanel.classList.remove('escuchando'); iconoMicPanel.textContent = '🎙️';
                 estadoVozLabel.textContent = 'Toca para hablar';
-                estadoVozLabel.className = 'estado-voz-label';
             }
         }
 
@@ -883,11 +1030,7 @@
                 div.textContent = texto;
             } else {
                 div.className = `mensaje ${remitente}`;
-                const timestamp = new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
-                div.innerHTML = `<div>${texto}</div>`;
-                if (remitente === 'ia') {
-                    div.innerHTML += `<div class="timestamp">🤖 ${timestamp}</div>`;
-                }
+                div.textContent = texto;
             }
             chatBody.appendChild(div);
             chatBody.scrollTop = chatBody.scrollHeight;
@@ -897,17 +1040,14 @@
             if (!synth) return;
             if (estaHablando) { synth.cancel(); estaHablando = false; }
             const utterance = new SpeechSynthesisUtterance(texto);
-            utterance.lang = 'es-AR';
-            utterance.rate = 1.0;
+            utterance.lang = 'es-AR'; utterance.rate = 1.0;
             utterance.onstart = () => { estaHablando = true; aplicarEfectoCubo('hablando'); actualizarEstadoPanel('hablando'); };
             utterance.onend = () => {
                 estaHablando = false;
-                aplicarEfectoCubo('ok');
-                actualizarEstadoPanel('ok');
+                aplicarEfectoCubo('ok'); actualizarEstadoPanel('ok');
                 setTimeout(() => {
                     if (!estaEscuchando && estadoCuboActual !== 'escuchando') {
-                        aplicarEfectoCubo('normal');
-                        actualizarEstadoPanel('normal');
+                        aplicarEfectoCubo('normal'); actualizarEstadoPanel('normal');
                     }
                 }, 2000);
             };
@@ -915,56 +1055,56 @@
             synth.speak(utterance);
         }
 
-        function generarContextoIA() {
+        function generarContextoIA(codigoEspecifico = null) {
             let contexto = "Eres un asistente de ventas experto en productos de un comercio. ";
+            if (codigoEspecifico) {
+                const prod = productosGlobales.find(p => p.codigo === codigoEspecifico);
+                if (prod) {
+                    contexto += `El cliente está consultando por el artículo código ${prod.codigo}:\n`;
+                    contexto += `- Nombre: ${prod.articulo}\n`;
+                    if (prod.descripcion) contexto += `- Descripción: ${prod.descripcion}\n`;
+                    if (prod.disponibilidad) contexto += `- Disponibilidad: ${prod.disponibilidad}\n`;
+                    contexto += `- Precio: $${Number(prod.precio).toLocaleString('es-AR')}\n`;
+                    if (prod.promocion) contexto += `- Promoción: ${prod.promocion}\n`;
+                    contexto += "\n";
+                }
+            }
             contexto += "Los productos disponibles son:\n";
             productosGlobales.forEach((p, i) => {
-                const nombre = p.articulo || 'Producto';
-                const precio = p.precio || 0;
-                const desc = p.descripcion || '';
-                const cod = p.codigo || '';
-                contexto += `${i+1}. ${nombre} - $${Number(precio).toLocaleString('es-AR')}`;
-                if (desc) contexto += ` (${desc})`;
-                if (cod) contexto += ` [Código: ${cod}]`;
+                contexto += `${i+1}. ${p.articulo} - $${Number(p.precio || 0).toLocaleString('es-AR')}`;
+                if (p.descripcion) contexto += ` (${p.descripcion})`;
+                if (p.codigo) contexto += ` [Código: ${p.codigo}]`;
                 contexto += "\n";
             });
-            contexto += "\nResponde de forma amigable, profesional y concisa. Si el usuario pregunta por recomendaciones, sugiere productos basándote en el presupuesto. Si no encuentras un producto, sugiere alternativas. Nunca inventes productos que no estén en la lista.";
+            contexto += "\nResponde de forma amigable, profesional y concisa. Si el usuario pregunta por recomendaciones, sugiere productos basándote en el presupuesto. Nunca inventes productos que no estén en la lista.";
             return contexto;
         }
 
         async function procesarConsultaIaPanel(consultaTexto) {
-            aplicarEfectoCubo('pensando');
-            actualizarEstadoPanel('pensando');
+            aplicarEfectoCubo('pensando'); actualizarEstadoPanel('pensando');
             agregarMensajePanel('ia', '⏳ Pensando respuesta...', true);
-
             try {
-                const contexto = generarContextoIA();
+                const contexto = generarContextoIA(codigoActualPopup);
                 const mensajeCompleto = `${contexto}\n\nUsuario: ${consultaTexto}`;
-
-                const respuesta = await fetch('https://zbnuunaguciupyyzploq.supabase.co/functions/v1/chat-asistente', {
+                const respuesta = await fetch(`${SUPABASE_URL}/functions/v1/chat-asistente`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: mensajeCompleto })
                 });
-
                 const data = await respuesta.json();
-                
                 if (chatBody.lastChild && chatBody.lastChild.textContent.includes('⏳ Pensando respuesta...')) {
                     chatBody.removeChild(chatBody.lastChild);
                 }
-
                 if (data.choices && data.choices.length > 0) {
                     const botReply = data.choices[0].message.content;
                     agregarMensajePanel('ia', botReply);
                     reproducirVozPanel(botReply);
-                    aplicarEfectoCubo('ok');
-                    actualizarEstadoPanel('ok');
+                    aplicarEfectoCubo('ok'); actualizarEstadoPanel('ok');
                 } else {
                     const errDefault = "No pude procesar tu solicitud. Intenta de nuevo.";
                     agregarMensajePanel('ia', errDefault);
                     reproducirVozPanel(errDefault);
-                    aplicarEfectoCubo('error');
-                    actualizarEstadoPanel('error');
+                    aplicarEfectoCubo('error'); actualizarEstadoPanel('error');
                 }
             } catch (err) {
                 console.error(err);
@@ -974,164 +1114,119 @@
                 const errConexion = "Error de conexión. Intenta de nuevo.";
                 agregarMensajePanel('ia', errConexion);
                 reproducirVozPanel(errConexion);
-                aplicarEfectoCubo('error');
-                actualizarEstadoPanel('error');
+                aplicarEfectoCubo('error'); actualizarEstadoPanel('error');
             }
         }
 
         function inicializarReconocimientoVoz() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                estadoVozLabel.textContent = "No soportado";
-                return;
-            }
-
+            if (!SpeechRecognition) { estadoVozLabel.textContent = "No soportado"; return; }
             reconocedorVoz = new SpeechRecognition();
             reconocedorVoz.lang = 'es-AR';
             reconocedorVoz.continuous = false;
             reconocedorVoz.interimResults = true;
-
             reconocedorVoz.onstart = () => {
                 estaEscuchando = true;
-                aplicarEfectoCubo('escuchando');
-                actualizarEstadoPanel('escuchando');
+                aplicarEfectoCubo('escuchando'); actualizarEstadoPanel('escuchando');
+                limpiarTemporizadorSinHabla();
+                temporizadorSinHabla = setTimeout(() => {
+                    if (estaEscuchando) {
+                        intentosSinHabla++;
+                        if (intentosSinHabla === 1) {
+                            reproducirVozPanel("No escuché nada. ¿Podés repetir tu consulta?");
+                            if (reconocedorVoz) { reconocedorVoz.stop(); setTimeout(() => reconocedorVoz.start(), 2500); }
+                        } else {
+                            cerrarPanelIA();
+                            limpiarTemporizadorSinHabla();
+                        }
+                    }
+                }, 10000);
             };
-
             reconocedorVoz.onend = () => {
                 estaEscuchando = false;
                 if (estadoCuboActual === 'escuchando') {
-                    aplicarEfectoCubo('normal');
-                    actualizarEstadoPanel('normal');
+                    aplicarEfectoCubo('normal'); actualizarEstadoPanel('normal');
                 }
             };
-
             reconocedorVoz.onresult = async (event) => {
                 let textoFinal = '';
                 for (let i = event.resultIndex; i < event.results.length; i++) {
-                    if (event.results[i].isFinal) {
-                        textoFinal = event.results[i][0].transcript;
-                    }
+                    if (event.results[i].isFinal) textoFinal = event.results[i][0].transcript;
                 }
                 if (textoFinal) {
+                    limpiarTemporizadorSinHabla();
+                    intentosSinHabla = 0;
                     agregarMensajePanel('usuario', textoFinal);
                     await procesarConsultaIaPanel(textoFinal);
                 }
             };
-
             reconocedorVoz.onerror = (event) => {
                 console.error("Error de voz:", event.error);
                 estaEscuchando = false;
-                if (event.error === 'aborted') {
-                    aplicarEfectoCubo('normal');
-                    actualizarEstadoPanel('normal');
-                    return;
-                }
-                aplicarEfectoCubo('error');
-                actualizarEstadoPanel('error');
-                
+                if (event.error === 'aborted') { aplicarEfectoCubo('normal'); actualizarEstadoPanel('normal'); return; }
+                aplicarEfectoCubo('error'); actualizarEstadoPanel('error');
                 let mensaje = "Error de micrófono. Intenta de nuevo.";
-                if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-                    mensaje = "🚫 Habilitá el micrófono en tu navegador para usar el asistente de voz.";
-                } else if (event.error === 'no-speech') {
-                    mensaje = "🎤 No escuché nada. ¿Probás de nuevo?";
-                } else if (event.error === 'audio-capture') {
-                    mensaje = "🎤 No se detectó micrófono. Verificá tu dispositivo.";
-                } else if (event.error === 'network') {
-                    mensaje = "📡 Error de red. Verificá tu conexión.";
-                }
+                if (event.error === 'not-allowed') mensaje = "🚫 Habilitá el micrófono en tu navegador.";
+                else if (event.error === 'no-speech') mensaje = "🎤 No escuché nada.";
                 agregarMensajePanel('ia', mensaje);
-                
-                setTimeout(() => {
-                    if (!estaEscuchando && !estaHablando) {
-                        aplicarEfectoCubo('normal');
-                        actualizarEstadoPanel('normal');
-                    }
-                }, 3000);
+                setTimeout(() => { if (!estaEscuchando && !estaHablando) { aplicarEfectoCubo('normal'); actualizarEstadoPanel('normal'); } }, 3000);
             };
         }
 
+        function alternarEscuchaPanel() {
+            if (!reconocedorVoz) return;
+            if (estaEscuchando) { reconocedorVoz.stop(); }
+            else {
+                if (estaHablando) { synth.cancel(); estaHablando = false; }
+                intentosSinHabla = 0;
+                reconocedorVoz.start();
+            }
+        }
+
+        // ==================== CARGA DE DATOS ====================
         async function cargarDatos() {
             if (!cuitParam) {
                 document.getElementById('nombreComercio').innerText = 'Error: Sin CUIT';
                 return;
             }
-
             try {
-                // 1) Traer comercio vía RPC (NO accede directo a tabla)
-                const { data: rpcData, error: rpcError } = await supabaseClient.rpc(
-                    'obtener_comercio_publico_by_cuit',
-                    { p_cuit: String(cuitParam) }
-                );
-
+                const { data: rpcData, error: rpcError } = await supabaseClient.rpc('obtener_comercio_publico_by_cuit', { p_cuit: String(cuitParam) });
                 if (rpcError) throw rpcError;
-
-                // Desanidar
                 let respuesta = rpcData;
-                if (rpcData && rpcData.obtener_comercio_publico_by_cuit) {
-                    respuesta = rpcData.obtener_comercio_publico_by_cuit;
-                }
-
+                if (rpcData && rpcData.obtener_comercio_publico_by_cuit) respuesta = rpcData.obtener_comercio_publico_by_cuit;
                 if (!respuesta || !respuesta.success) {
                     document.getElementById('nombreComercio').innerText = 'Comercio no encontrado';
                     return;
                 }
-
                 const comercio = respuesta.comercio;
                 datosComercioGlobal = comercio;
                 document.getElementById('nombreComercio').innerText = comercio.nombre || 'Mi Comercio';
                 document.getElementById('modalNombreComercio').innerText = comercio.nombre || 'Mi Comercio';
-
                 if (comercio.color) document.getElementById('headerComercio').style.backgroundColor = comercio.color;
                 if (comercio.logo && String(comercio.logo).trim() !== '') document.getElementById('imgLogo').src = comercio.logo;
-
                 configurarModalComercio(comercio);
 
-                // 2) Traer artículos vía RPC
-                const { data: artData, error: artError } = await supabaseClient.rpc(
-                    'listar_articulos_by_cuit',
-                    { p_cuit: String(cuitParam) }
-                );
-
+                const { data: artData, error: artError } = await supabaseClient.rpc('listar_articulos_by_cuit', { p_cuit: String(cuitParam) });
                 if (artError) throw artError;
-
                 let respArt = artData;
-                if (artData && artData.listar_articulos_by_cuit) {
-                    respArt = artData.listar_articulos_by_cuit;
-                }
-
+                if (artData && artData.listar_articulos_by_cuit) respArt = artData.listar_articulos_by_cuit;
                 let productos = [];
                 if (respArt && respArt.success) {
                     productos = respArt.articulos;
-                    if (typeof productos === 'string') {
-                        try { productos = JSON.parse(productos); } catch (e) { productos = []; }
-                    }
-                } else if (respArt && respArt.error) {
-                    throw new Error(respArt.error);
+                    if (typeof productos === 'string') { try { productos = JSON.parse(productos); } catch (e) { productos = []; } }
                 }
-
                 productos = Array.isArray(productos) ? productos : [];
-
-                if (productos.length === 0) {
-                    document.getElementById('listaProductos').innerHTML =
-                        '<p class="text-center text-gray-400 py-8">Este comercio aún no tiene artículos cargados.</p>';
-                    return;
-                }
-
                 productosGlobales = productos;
-                renderizarProductos(productosGlobales);
+                renderizarGrilla(productosGlobales);
                 inicializarReconocimientoVoz();
-
             } catch (err) {
                 console.error("Error al cargar datos:", err);
                 document.getElementById('nombreComercio').innerText = 'Error de conexión';
-                document.getElementById('listaProductos').innerHTML =
-                    `<p class="text-center text-red-400 py-8">Error al cargar: ${err.message}</p>`;
             }
         }
 
         function configurarModalComercio(com) {
             if (com.horarios) document.getElementById('modalHorarios').innerText = com.horarios;
-
             const direccion = com.direccion;
             const ciudad = com.ciudad || '';
             if (direccion) {
@@ -1141,7 +1236,6 @@
                 linkMapa.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(busquedaMapa)}`;
                 linkMapa.classList.remove('hidden');
             }
-
             const web = com.web;
             const bloqueWeb = document.getElementById('bloqueWeb');
             const linkWeb = document.getElementById('linkWeb');
@@ -1149,15 +1243,9 @@
                 let urlWeb = String(web).trim();
                 if (!/^https?:\/\//i.test(urlWeb)) urlWeb = 'https://' + urlWeb;
                 linkWeb.href = urlWeb;
-                const dominioLimpio = urlWeb.replace(/^https?:\/\//i, '').replace(/\/$/, '');
-                linkWeb.innerText = dominioLimpio + ' →';
-                bloqueWeb.classList.remove('hidden');
-                bloqueWeb.classList.add('flex');
-            } else {
-                bloqueWeb.classList.add('hidden');
-                bloqueWeb.classList.remove('flex');
+                linkWeb.innerText = urlWeb.replace(/^https?:\/\//i, '').replace(/\/$/, '') + ' →';
+                bloqueWeb.classList.remove('hidden'); bloqueWeb.classList.add('flex');
             }
-
             const telefono = com.telefono;
             const whatsapp = com.whatsapp || telefono;
             if (telefono || whatsapp) document.getElementById('modalTelefono').innerText = whatsapp || telefono;
@@ -1169,56 +1257,231 @@
             }
         }
 
-        function renderizarProductos(lista) {
-            const contenedor = document.getElementById('listaProductos');
+        // ==================== RENDER GRILLA ====================
+        function renderizarGrilla(lista) {
+            const contenedor = document.getElementById('grillaCodigos');
+            const mensajeVacio = document.getElementById('mensajeVacio');
             contenedor.innerHTML = '';
             if (lista.length === 0) {
-                contenedor.innerHTML = '<p class="text-center text-gray-400 py-4">No se encontraron productos.</p>';
+                mensajeVacio.classList.remove('hidden');
                 return;
             }
-            lista.forEach(item => {
-                const codigo = item.codigo || '';
-                const articulo = item.articulo || item.descripcion || 'Artículo';
-                const descripcion = item.articulo ? (item.descripcion || '') : '';
-                const disponibilidad = item.disponibilidad || '';
-                const precio = item.precio || 0;
-                const promocion = item.promocion || '';
-
-                const tarjeta = `
-                    <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200 relative overflow-hidden">
-                        <div class="flex flex-wrap items-center justify-between mb-3 pb-2 border-b border-gray-100 gap-2">
-                            ${codigo ? `<span class="bg-slate-800 text-white font-mono font-black text-lg px-1.5 py-0.5 rounded-lg shadow-sm whitespace-nowrap flex-shrink-0" style="min-width: 80px; text-align: center;">CÓD: ${codigo}</span>` : '<span></span>'}
-                            ${disponibilidad ? `<span class="bg-emerald-100 text-slate-800 font-medium text-xs px-2.5 py-0.7 rounded-full border border-emerald-300 text-right flex-shrink-0">📦 ${disponibilidad}</span>` : ''}
-                        </div>
-                        <h3 class="font-extrabold text-gray-900 text-lg leading-tight uppercase">${articulo}</h3>
-                        ${descripcion ? `<div class="descripcion-producto">${descripcion}</div>` : ''}
-                        <div class="mt-3 pt-2 border-t border-gray-100 flex flex-col space-y-1.5">
-                            <div class="flex items-end justify-between">
-                                <div><p class="text-[13px] text-orange-500 uppercase font-bold">Precio final</p></div>
-                                <div class="text-right"><span class="text-slate-800 font-black text-2xl">$${Number(precio).toLocaleString('es-AR')}</span></div>
-                            </div>
-                       ${promocion ? `<div><span class="inline-block bg-slate-700 text-emerald-200 font-extrabold text-[11px] px-2.5 py-[2px] rounded-lg uppercase tracking-wider w-full text-center border border-slate-200 shadow-sm"><svg class="inline-block align-middle text-orange-500" width="1rem" height="1.2rem" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg> ${promocion}</span></div>` : ''}
-                        </div>
-                    </div>
-                `;
-                contenedor.innerHTML += tarjeta;
+            mensajeVacio.classList.add('hidden');
+            lista.forEach((item, index) => {
+                const celda = document.createElement('div');
+                celda.className = 'codigo-celda';
+                celda.style.animationDelay = (index * 0.03) + 's';
+                celda.innerText = item.codigo || '-';
+                if (item.promocion && String(item.promocion).trim() !== '') {
+                    const indicador = document.createElement('span');
+                    indicador.className = 'indicador-promo';
+                    indicador.innerText = '🔥';
+                    celda.appendChild(indicador);
+                }
+                celda.onclick = () => abrirPopupEtiqueta(item);
+                contenedor.appendChild(celda);
             });
         }
 
-        function filtrarProductos() {
-            const busqueda = document.getElementById('inputBuscar').value.toLowerCase();
+        // ==================== BUSCADOR ====================
+        function manejarBusqueda(event) {
+            const busqueda = document.getElementById('inputBuscar').value.toLowerCase().trim();
+            if (!busqueda) { renderizarGrilla(productosGlobales); return; }
+            const matchCodigoExacto = productosGlobales.find(p => (p.codigo || '').toLowerCase() === busqueda);
+            if (matchCodigoExacto) {
+                document.getElementById('inputBuscar').value = '';
+                renderizarGrilla(productosGlobales);
+                abrirPopupEtiqueta(matchCodigoExacto);
+                return;
+            }
             const filtrados = productosGlobales.filter(prod => {
                 const cod = (prod.codigo || '').toString().toLowerCase();
                 const art = (prod.articulo || '').toLowerCase();
                 const desc = (prod.descripcion || '').toLowerCase();
                 return cod.includes(busqueda) || art.includes(busqueda) || desc.includes(busqueda);
             });
-            renderizarProductos(filtrados);
+            renderizarGrilla(filtrados);
         }
 
+        // ==================== POPUP ETIQUETA ====================
+        function abrirPopupEtiqueta(item) {
+            codigoActualPopup = item.codigo;
+            document.getElementById('popupCodigo').innerText = item.codigo || '-';
+            document.getElementById('popupNombre').innerText = item.articulo || 'Artículo';
+            document.getElementById('popupDescripcion').innerText = item.descripcion || '';
+            const disp = item.disponibilidad || '';
+            if (disp) {
+                document.getElementById('popupDisponibilidadTexto').innerText = disp;
+                document.getElementById('popupDisponibilidad').classList.remove('hidden');
+            } else {
+                document.getElementById('popupDisponibilidad').classList.add('hidden');
+            }
+            document.getElementById('popupPrecio').innerText = '$' + Number(item.precio || 0).toLocaleString('es-AR');
+            const promo = item.promocion || '';
+            if (promo && promo.trim() !== '') {
+                document.getElementById('popupPromocionTexto').innerText = promo;
+                document.getElementById('popupPromocion').classList.remove('hidden');
+            } else {
+                document.getElementById('popupPromocion').classList.add('hidden');
+            }
+
+            // Botones dinámicos
+            const botonesCont = document.getElementById('popupBotones');
+            botonesCont.innerHTML = '';
+            if (item.id) {
+                const botonEsp = document.createElement('button');
+                botonEsp.className = 'flex-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1';
+                botonEsp.innerHTML = '🔍 Ver Especificación';
+                botonEsp.onclick = () => abrirPopupEspecificaciones(item.id, item.codigo);
+                botonesCont.appendChild(botonEsp);
+            }
+            if (item.video_url && String(item.video_url).trim() !== '') {
+                const botonVid = document.createElement('button');
+                botonVid.className = 'flex-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1';
+                botonVid.innerHTML = '▶️ Ver Video';
+                botonVid.onclick = () => abrirPopupVideo(item.video_url, item.codigo);
+                botonesCont.appendChild(botonVid);
+            }
+
+            document.getElementById('popupEtiqueta').classList.add('activo');
+            document.body.style.overflow = 'hidden';
+
+            // Programar popup del cubo IA (5 seg)
+            limpiarTemporizadorPopupIA();
+            temporizadorPopupIA = setTimeout(() => {
+                mostrarPopupIaContextual(item.articulo);
+            }, 5000);
+        }
+
+        function cerrarPopupEtiqueta() {
+            document.getElementById('popupEtiqueta').classList.remove('activo');
+            document.body.style.overflow = '';
+            codigoActualPopup = null;
+            limpiarTemporizadorPopupIA();
+            cerrarPopupIaContextual();
+        }
+
+        // ==================== POPUP ESPECIFICACIONES ====================
+        async function abrirPopupEspecificaciones(articuloId, codigo) {
+            try {
+                const { data, error } = await supabaseClient.rpc('listar_especificaciones', { p_articulo_id: articuloId });
+                if (error) throw error;
+                let resp = data;
+                if (data && data.listar_especificaciones) resp = data.listar_especificaciones;
+                const especificaciones = (resp && resp.success) ? resp.especificaciones : [];
+                if (!especificaciones || especificaciones.length === 0) {
+                    alert('Este artículo no tiene especificaciones cargadas.');
+                    return;
+                }
+                document.getElementById('popupEspCodigo').innerText = codigo;
+                const tbody = document.querySelector('#tablaEspecificaciones tbody');
+                tbody.innerHTML = '';
+                especificaciones.forEach(e => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${e.campo}</td><td>${e.valor}</td>`;
+                    tbody.appendChild(tr);
+                });
+                document.getElementById('popupEspecificaciones').classList.add('activo');
+            } catch (err) {
+                console.error('Error al cargar especificaciones:', err);
+                alert('No se pudieron cargar las especificaciones.');
+            }
+        }
+        function cerrarPopupEspecificaciones() {
+            document.getElementById('popupEspecificaciones').classList.remove('activo');
+        }
+
+        // ==================== POPUP VIDEO ====================
+        function abrirPopupVideo(urlVideo, codigo) {
+            const contenedor = document.getElementById('contenedorVideo');
+            contenedor.innerHTML = '';
+            let embedUrl = urlVideo;
+            // Convertir YouTube URL a embed
+            if (urlVideo.includes('youtube.com/watch')) {
+                const vidId = new URL(urlVideo).searchParams.get('v');
+                if (vidId) embedUrl = `https://www.youtube.com/embed/${vidId}`;
+            } else if (urlVideo.includes('youtu.be/')) {
+                const vidId = urlVideo.split('youtu.be/')[1].split('?')[0];
+                embedUrl = `https://www.youtube.com/embed/${vidId}`;
+            } else if (urlVideo.includes('vimeo.com/')) {
+                const vidId = urlVideo.split('vimeo.com/')[1].split('?')[0];
+                embedUrl = `https://player.vimeo.com/video/${vidId}`;
+            }
+            const iframe = document.createElement('iframe');
+            iframe.src = embedUrl;
+            iframe.style.width = '100%';
+            iframe.style.height = '100%';
+            iframe.style.border = 'none';
+            iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+            iframe.allowFullscreen = true;
+            contenedor.appendChild(iframe);
+            document.getElementById('popupVideoCodigo').innerText = codigo;
+            document.getElementById('popupVideo').classList.add('activo');
+        }
+        function cerrarPopupVideo() {
+            document.getElementById('popupVideo').classList.remove('activo');
+            document.getElementById('contenedorVideo').innerHTML = '';
+        }
+
+        // ==================== POPUP IA CONTEXTUAL ====================
+        function mostrarPopupIaContextual(nombreArticulo) {
+            const popup = document.getElementById('popupIaContextual');
+            document.getElementById('popupIaTexto').innerText = `¿Tenés alguna consulta por "${nombreArticulo}"?`;
+            popup.classList.add('activo');
+        }
+        function cerrarPopupIaContextual() {
+            document.getElementById('popupIaContextual').classList.remove('activo');
+        }
+        function responderIaContextual(dijoSi) {
+            cerrarPopupIaContextual();
+            if (dijoSi) {
+                abrirPanelIA();
+                setTimeout(() => {
+                    const mensaje = `Dime tu consulta sobre este artículo o código por favor`;
+                    agregarMensajePanel('ia', mensaje);
+                    reproducirVozPanel(mensaje);
+                    // Cuenta regresiva 3-2-1 y arrancar micrófono
+                    setTimeout(() => {
+                        intentosSinHabla = 0;
+                        if (reconocedorVoz) reconocedorVoz.start();
+                    }, 3500);
+                }, 500);
+            }
+        }
+
+        // ==================== TEMPORIZADORES ====================
+        function limpiarTemporizadorPopupIA() {
+            if (temporizadorPopupIA) { clearTimeout(temporizadorPopupIA); temporizadorPopupIA = null; }
+        }
+        function limpiarTemporizadorSinHabla() {
+            if (temporizadorSinHabla) { clearTimeout(temporizadorSinHabla); temporizadorSinHabla = null; }
+        }
+
+        // ==================== CUBO IA CLICK ====================
+        document.getElementById('contenedorCuboIa').addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (panelChat.classList.contains('abierto')) {
+                cerrarPanelIA();
+            } else {
+                abrirPanelIA();
+            }
+        });
+
+        // ==================== MODAL INFO COMERCIO ====================
         function abrirModalInfo() { document.getElementById('modalInfo').classList.remove('hidden'); }
         function cerrarModalInfo() { document.getElementById('modalInfo').classList.add('hidden'); }
 
+        // ==================== ESC PARA CERRAR ====================
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if (document.getElementById('popupVideo').classList.contains('activo')) cerrarPopupVideo();
+                else if (document.getElementById('popupEspecificaciones').classList.contains('activo')) cerrarPopupEspecificaciones();
+                else if (document.getElementById('popupEtiqueta').classList.contains('activo')) cerrarPopupEtiqueta();
+                else if (document.getElementById('modalInfo').classList.contains('hidden') === false) cerrarModalInfo();
+            }
+        });
+
+        // ==================== INIT ====================
         window.onload = cargarDatos;
     </script>
 </body>
