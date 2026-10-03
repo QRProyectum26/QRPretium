@@ -613,7 +613,7 @@
                     <p class="text-[14px] font-bold text-orange-700 uppercase mb-1 text-center">🔥 Promoción</p>
                     <p id="popupPromocionTexto" class="text-sm text-gray-600 font-semibold text-center leading-snug"></p>
                 </div>
-                <div class="flex gap-2">
+              
     <div class="flex items-end justify-between gap-3 mt-4">
     <!-- Botón Volver -->
     <button onclick="cerrarPopupEtiqueta()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 px-5 rounded-xl transition flex items-center justify-center gap-2">
@@ -630,11 +630,7 @@
         </span>
     </button>
 </div>
-</div>
-            </div>
-        </div>
-    </div>
-
+   
     <!-- POPUP ESPECIFICACIONES -->
     <div id="popupEspecificaciones" class="popup-overlay popup-slide-up" onclick="if(event.target===this) cerrarPopupEspecificaciones()">
         <div class="popup-caja">
@@ -647,8 +643,6 @@
                 <button onclick="cerrarPopupEspecificaciones()" class="w-full mt-4 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-2">
                     <span style="color: #10b981; font-size: 18px; font-weight: 900;">←</span> Volver
                 </button>
-            </div>
-        </div>
     </div>
 
     <!-- POPUP VIDEO -->
@@ -730,6 +724,7 @@
         let temporizadorPopupIA = null;
         let temporizadorSinHabla = null;
         let intentosSinHabla = 0;
+        let miniCuboRenderizando = false; 
 
         const urlParams = new URLSearchParams(window.location.search);
         const cuitParam = urlParams.get('cuit') ? parseInt(urlParams.get('cuit').trim().replace(/[-.\s]/g, ''), 10) : null;
@@ -1219,8 +1214,8 @@
                     if (articuloParam) {
                         setTimeout(() => abrirPopupEtiqueta(articuloParam), 300);
                     // Iniciar el mini-cubo
-                    setTimeout(() => iniciarMiniCubo3D(), 100);
-                    }
+                    
+                  }
                 }
             } catch (err) {
                 console.error("Error al cargar datos:", err);
@@ -1461,7 +1456,6 @@ temporizadorPopupIA = setTimeout(() => {
         function abrirModalInfo() { document.getElementById('modalInfo').classList.remove('hidden'); }
         function cerrarModalInfo() { document.getElementById('modalInfo').classList.add('hidden'); }
 // ==================== MINI CUBO 3D EN POPUP ====================
-let miniCuboRenderizando = false;
 
 function iniciarMiniCubo3D() {
     if (miniCuboRenderizando) return;
@@ -1545,21 +1539,6 @@ function iniciarMiniCubo3D() {
             }
         });
 function llamarAsesorIaDesdeEtiqueta() {
-    // Cerrar el popup contextual si estaba abierto
-    cerrarPopupIaContextual();
-    // Abrir el panel IA directamente
-    abrirPanelIA();
-    setTimeout(() => {
-        const mensaje = `Dime tu consulta sobre este artículo o código por favor`;
-        agregarMensajePanel('ia', mensaje);
-        reproducirVozPanel(mensaje);
-        setTimeout(() => {
-            intentosSinHabla = 0;
-            if (reconocedorVoz) reconocedorVoz.start();
-        }, 3500);
-    }, 500);
-}
-        function llamarAsesorIaDesdeEtiqueta() {
     // Cerrar el popup contextual si estaba abierto
     cerrarPopupIaContextual();
     // Abrir el panel IA directamente
