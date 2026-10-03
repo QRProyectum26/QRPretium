@@ -493,7 +493,7 @@
                     <img id="imgLogo" src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Logo Comercio" class="h-12 w-12 rounded-xl bg-white p-1 shadow-md object-cover border border-slate-400">
                 </div>
                 <div class="text-left">
-                    <p class="texto-vidriera-inmersiva leading-none">VIDRIERA INMERSIVA</p>
+                    <p class="texto-vidriera-inmersiva leading-none">VIDRIERA INMERSIVA...</p>
                     <div class="flex items-center space-x-1.5 mt-1">
                         <h1 id="nombreComercio" class="text-xl font-extrabold uppercase tracking-wide leading-tight">Cargando...</h1>
                         <button onclick="abrirModalInfo()" title="Ver información del comercio" 
@@ -605,13 +605,13 @@
                 </div>
                 <div class="bg-slate-50 border border-slate-200 rounded-lg p-2 mb-2">
                     <div class="flex items-center justify-between">
-                        <p class="text-[16px] font-bold text-orange-500 uppercase">💰 Precio final</p>
+                        <p class="text-[16px] font-bold text-orange-500 uppercase">💰 Precio Final</p>
                         <p id="popupPrecio" class="text-xl font-black text-slate-800">$0</p>
                     </div>
                 </div>
                 <div id="popupPromocion" class="bg-orange-200 border border-orange-500 rounded-lg p-2 mb-3 hidden">
-                    <p class="text-[12px] font-bold text-orange-700 uppercase mb-1 text-center">🔥 Promoción</p>
-                    <p id="popupPromocionTexto" class="text-xs text-gray-800 font-semibold text-center leading-snug"></p>
+                    <p class="text-[14px] font-bold text-orange-700 uppercase mb-1 text-center">🔥 Promoción</p>
+                    <p id="popupPromocionTexto" class="text-sm text-gray-600 font-semibold text-center leading-snug"></p>
                 </div>
                 <button onclick="cerrarPopupEtiqueta()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-2">
                     <span style="color: #10b981; font-size: 18px; font-weight: 900;">←</span> Volver
@@ -1309,14 +1309,14 @@
             botonesCont.innerHTML = '';
             if (item.id) {
                 const botonEsp = document.createElement('button');
-                botonEsp.className = 'flex-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1';
+                botonEsp.className = 'flex-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-3 rounded-xl text-sm transition flex items-center justify-center gap-1';
                 botonEsp.innerHTML = '🔍 Ver Especificación';
                 botonEsp.onclick = () => abrirPopupEspecificaciones(item.id, item.codigo);
                 botonesCont.appendChild(botonEsp);
             }
             if (item.video_url && String(item.video_url).trim() !== '') {
                 const botonVid = document.createElement('button');
-                botonVid.className = 'flex-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1';
+                botonVid.className = 'flex-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-3 rounded-xl text-sm transition flex items-center justify-center gap-1';
                 botonVid.innerHTML = '▶️ Ver Video';
                 botonVid.onclick = () => abrirPopupVideo(item.video_url, item.codigo);
                 botonesCont.appendChild(botonVid);
