@@ -614,13 +614,22 @@
                     <p id="popupPromocionTexto" class="text-sm text-gray-600 font-semibold text-center leading-snug"></p>
                 </div>
                 <div class="flex gap-2">
-    <button onclick="cerrarPopupEtiqueta()" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-2">
+    <div class="flex items-end justify-between gap-3 mt-4">
+    <!-- Botón Volver -->
+    <button onclick="cerrarPopupEtiqueta()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 px-5 rounded-xl transition flex items-center justify-center gap-2">
         <span style="color: #10b981; font-size: 18px; font-weight: 900;">←</span> Volver
     </button>
-    <button onclick="llamarAsesorIaDesdeEtiqueta()" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-2">
-        <canvas id="miniCuboIa" width="40" height="40" style="width: 24px; height: 24px;"></canvas>
-        Asesor IA
+
+    <!-- Cubo IA en miniatura -->
+    <button onclick="llamarAsesorIaDesdeEtiqueta()" class="flex flex-col items-center group">
+        <div class="w-16 h-16 rounded-full border-2 border-green-300 marco-verde-pastel flex items-center justify-center shadow-lg bg-slate-950 overflow-hidden relative transition-transform duration-300 group-hover:scale-105">
+            <canvas id="miniCubo3D" width="60" height="60" class="w-12 h-12 relative z-10 pointer-events-none"></canvas>
+        </div>
+        <span class="text-[11px] font-bold text-emerald-700 uppercase mt-0.5 bg-emerald-100 px-2 py-0.5 rounded-b-lg border border-emerald-300 border-t-0 leading-tight">
+            Asesor IA
+        </span>
     </button>
+</div>
 </div>
             </div>
         </div>
@@ -1209,6 +1218,8 @@
                     const articuloParam = productosGlobales.find(p => (p.codigo || '').toLowerCase() === codigoParam.toLowerCase());
                     if (articuloParam) {
                         setTimeout(() => abrirPopupEtiqueta(articuloParam), 300);
+                    // Iniciar el mini-cubo
+                    setTimeout(() => iniciarMiniCubo3D(), 100);
                     }
                 }
             } catch (err) {
@@ -1328,23 +1339,26 @@
                 botonesCont.appendChild(botonVid);
             }
 
-            document.getElementById('popupEtiqueta').classList.add('activo');
-            document.body.style.overflow = 'hidden';
+           document.getElementById('popupEtiqueta').classList.add('activo');
+document.body.style.overflow = 'hidden';
 
-            limpiarTemporizadorPopupIA();
-            temporizadorPopupIA = setTimeout(() => {
-                mostrarPopupIaContextual(item.articulo);
-            }, 12000);
+// Iniciar el mini-cubo
+setTimeout(() => iniciarMiniCubo3D(), 100);
+
+limpiarTemporizadorPopupIA();
+temporizadorPopupIA = setTimeout(() => {
+    mostrarPopupIaContextual(item.articulo);
+}, 12000); 
         }
 
         function cerrarPopupEtiqueta() {
-            document.getElementById('popupEtiqueta').classList.remove('activo');
-            document.body.style.overflow = '';
-            codigoActualPopup = null;
-            limpiarTemporizadorPopupIA();
-            cerrarPopupIaContextual();
-        }
-
+    document.getElementById('popupEtiqueta').classList.remove('activo');
+    document.body.style.overflow = '';
+    codigoActualPopup = null;
+    miniCuboRenderizando = false; // ← DETENER
+    limpiarTemporizadorPopupIA();
+    cerrarPopupIaContextual();
+}
         async function abrirPopupEspecificaciones(articuloId, codigo) {
             try {
                 const { data, error } = await supabaseClient.rpc('listar_especificaciones', { p_articulo_id: articuloId });
@@ -1446,7 +1460,82 @@
 
         function abrirModalInfo() { document.getElementById('modalInfo').classList.remove('hidden'); }
         function cerrarModalInfo() { document.getElementById('modalInfo').classList.add('hidden'); }
+// ==================== MINI CUBO 3D EN POPUP ====================
+let miniCuboRenderizando = false;
 
+function iniciarMiniCubo3D() {
+    if (miniCuboRenderizando) return;
+    
+    const canvas = document.getElementById('miniCubo3D');
+    if (!canvas) return;
+    
+    miniCuboRenderizando = true;
+    
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+    camera.position.z = 2.8;
+    const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+    renderer.setSize(60, 60);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    function dibujarIconoMini(ctx, tipo, color) {
+        ctx.save();
+        ctx.strokeStyle = color; ctx.fillStyle = color;
+        ctx.lineWidth = 16; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+        if (tipo === 'robot') {
+            ctx.beginPath(); ctx.roundRect(80, 80, 96, 80, 12); ctx.stroke();
+            ctx.beginPath(); ctx.arc(108, 115, 8, 0, Math.PI * 2); ctx.arc(148, 115, 8, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(128, 80); ctx.lineTo(128, 55); ctx.stroke();
+            ctx.beginPath(); ctx.arc(128, 50, 8, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(100, 140); ctx.lineTo(156, 140); ctx.stroke();
+        }
+        ctx.restore();
+    }
+
+    function crearTexturaMini() {
+        const c = document.createElement('canvas');
+        c.width = 256; c.height = 256;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#B0B8C0'; ctx.fillRect(0, 0, 256, 256);
+        ctx.strokeStyle = '#F97316'; ctx.lineWidth = 14;
+        const r = 32;
+        ctx.beginPath(); ctx.moveTo(10 + r, 10);
+        ctx.arcTo(246, 10, 246, 246, r); ctx.arcTo(246, 246, 10, 246, r);
+        ctx.arcTo(10, 246, 10, 10, r); ctx.arcTo(10, 10, 246, 10, r);
+        ctx.closePath(); ctx.stroke();
+        dibujarIconoMini(ctx, 'robot', '#38BDF8');
+        return new THREE.CanvasTexture(c);
+    }
+
+    const materiales = [
+        new THREE.MeshStandardMaterial({ map: crearTexturaMini(), roughness: 0.2, metalness: 0.7 }),
+        new THREE.MeshStandardMaterial({ map: crearTexturaMini(), roughness: 0.2, metalness: 0.7 }),
+        new THREE.MeshStandardMaterial({ map: crearTexturaMini(), roughness: 0.2, metalness: 0.7 }),
+        new THREE.MeshStandardMaterial({ map: crearTexturaMini(), roughness: 0.2, metalness: 0.7 }),
+        new THREE.MeshStandardMaterial({ map: crearTexturaMini(), roughness: 0.2, metalness: 0.7 }),
+        new THREE.MeshStandardMaterial({ map: crearTexturaMini(), roughness: 0.2, metalness: 0.7 })
+    ];
+
+    const geometry = new THREE.RoundedBoxGeometry(1.2, 1.2, 1.2, 6, 0.2);
+    const cubo = new THREE.Mesh(geometry, materiales);
+    scene.add(cubo);
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+    scene.add(ambientLight);
+    const pointLight1 = new THREE.PointLight(0xF97316, 2.5, 10);
+    pointLight1.position.set(3, 3, 3); scene.add(pointLight1);
+    const pointLight2 = new THREE.PointLight(0x38BDF8, 2, 10);
+    pointLight2.position.set(-3, -3, -3); scene.add(pointLight2);
+
+    function animate() {
+        if (!miniCuboRenderizando) return;
+        requestAnimationFrame(animate);
+        cubo.rotation.x += 0.012;
+        cubo.rotation.y += 0.018;
+        renderer.render(scene, camera);
+    }
+    animate();
+}
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 if (document.getElementById('popupVideo').classList.contains('activo')) cerrarPopupVideo();
