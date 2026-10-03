@@ -81,7 +81,7 @@
             transform: scale(1.05);
         }
         .texto-vidriera-inmersiva {
-            font-size: 0.75rem;
+            font-size: 0.875rem;
             letter-spacing: 0.25em;
             font-weight: 700;
             color: rgba(255,255,255,0.85);
@@ -305,8 +305,8 @@
         .tabla-especificaciones tr:nth-child(odd) { background: #f8fafc; }
         .tabla-especificaciones tr:nth-child(even) { background: #ffffff; }
         .tabla-especificaciones td {
-            padding: 10px 14px;
-            font-size: 13px;
+            padding: 12px 16px;
+            font-size: 15px;
             border-bottom: 1px solid #e2e8f0;
         }
         .tabla-especificaciones td:first-child {
@@ -567,7 +567,7 @@
 
         <div id="chatBody" class="chat-body">
             <div class="mensaje ia">
-                HOLA !!, soy el ASESOR IA de esta vidriera. Consultame sobre cualquier código de artículo que ves..!
+                HOLA !!, Soy El ASESOR IA De Esta Vidriera. Consultame sobre cualquier código de artículo que ves..!
             </div>
         </div>
 
@@ -600,17 +600,17 @@
                 <div id="popupBotones" class="flex gap-2 mb-3 flex-wrap"></div>
                 <div class="border-t border-gray-200 my-3"></div>
                 <div id="popupDisponibilidad" class="bg-emerald-50 border border-emerald-200 rounded-lg p-2 mb-2 hidden">
-                    <p class="text-[10px] font-bold text-emerald-700 uppercase mb-1 text-center">📦 Disponibilidad</p>
-                    <p id="popupDisponibilidadTexto" class="text-xs text-gray-800 text-center leading-snug"></p>
+                    <p class="text-[12px] font-bold text-emerald-700 uppercase mb-1 text-center">📦 Disponibilidad</p>
+                    <p id="popupDisponibilidadTexto" class="text-sm text-gray-800 text-center leading-snug"></p>
                 </div>
                 <div class="bg-slate-50 border border-slate-200 rounded-lg p-2 mb-2">
                     <div class="flex items-center justify-between">
-                        <p class="text-[10px] font-bold text-orange-500 uppercase">💰 Precio final</p>
+                        <p class="text-[16px] font-bold text-orange-500 uppercase">💰 Precio final</p>
                         <p id="popupPrecio" class="text-xl font-black text-slate-800">$0</p>
                     </div>
                 </div>
-                <div id="popupPromocion" class="bg-orange-50 border border-orange-200 rounded-lg p-2 mb-3 hidden">
-                    <p class="text-[10px] font-bold text-orange-700 uppercase mb-1 text-center">🔥 Promoción</p>
+                <div id="popupPromocion" class="bg-orange-200 border border-orange-500 rounded-lg p-2 mb-3 hidden">
+                    <p class="text-[12px] font-bold text-orange-700 uppercase mb-1 text-center">🔥 Promoción</p>
                     <p id="popupPromocionTexto" class="text-xs text-gray-800 font-semibold text-center leading-snug"></p>
                 </div>
                 <button onclick="cerrarPopupEtiqueta()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-2">
@@ -625,7 +625,7 @@
         <div class="popup-caja">
             <button class="popup-cerrar" onclick="cerrarPopupEspecificaciones()">✕</button>
             <div class="p-5">
-                <h2 class="text-lg font-extrabold text-gray-900 mb-4">🔍 Especificaciones <span id="popupEspCodigo" class="text-orange-500"></span></h2>
+                <h2 class="text-xl font-extrabold text-gray-900 mb-4">🔍 Especificaciones <span id="popupEspCodigo" class="text-orange-500"></span></h2>
                 <table id="tablaEspecificaciones" class="tabla-especificaciones">
                     <tbody></tbody>
                 </table>
