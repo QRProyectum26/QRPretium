@@ -613,9 +613,15 @@
                     <p class="text-[14px] font-bold text-orange-700 uppercase mb-1 text-center">🔥 Promoción</p>
                     <p id="popupPromocionTexto" class="text-sm text-gray-600 font-semibold text-center leading-snug"></p>
                 </div>
-                <button onclick="cerrarPopupEtiqueta()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-2">
-                    <span style="color: #10b981; font-size: 18px; font-weight: 900;">←</span> Volver
-                </button>
+                <div class="flex gap-2">
+    <button onclick="cerrarPopupEtiqueta()" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-2">
+        <span style="color: #10b981; font-size: 18px; font-weight: 900;">←</span> Volver
+    </button>
+    <button onclick="llamarAsesorIaDesdeEtiqueta()" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-2">
+        <canvas id="miniCuboIa" width="40" height="40" style="width: 24px; height: 24px;"></canvas>
+        Asesor IA
+    </button>
+</div>
             </div>
         </div>
     </div>
@@ -1328,7 +1334,7 @@
             limpiarTemporizadorPopupIA();
             temporizadorPopupIA = setTimeout(() => {
                 mostrarPopupIaContextual(item.articulo);
-            }, 5000);
+            }, 12000);
         }
 
         function cerrarPopupEtiqueta() {
@@ -1449,6 +1455,36 @@
                 else if (document.getElementById('modalInfo').classList.contains('hidden') === false) cerrarModalInfo();
             }
         });
+function llamarAsesorIaDesdeEtiqueta() {
+    // Cerrar el popup contextual si estaba abierto
+    cerrarPopupIaContextual();
+    // Abrir el panel IA directamente
+    abrirPanelIA();
+    setTimeout(() => {
+        const mensaje = `Dime tu consulta sobre este artículo o código por favor`;
+        agregarMensajePanel('ia', mensaje);
+        reproducirVozPanel(mensaje);
+        setTimeout(() => {
+            intentosSinHabla = 0;
+            if (reconocedorVoz) reconocedorVoz.start();
+        }, 3500);
+    }, 500);
+}
+        function llamarAsesorIaDesdeEtiqueta() {
+    // Cerrar el popup contextual si estaba abierto
+    cerrarPopupIaContextual();
+    // Abrir el panel IA directamente
+    abrirPanelIA();
+    setTimeout(() => {
+        const mensaje = `Dime tu consulta sobre este artículo o código por favor`;
+        agregarMensajePanel('ia', mensaje);
+        reproducirVozPanel(mensaje);
+        setTimeout(() => {
+            intentosSinHabla = 0;
+            if (reconocedorVoz) reconocedorVoz.start();
+        }, 3500);
+    }, 500);
+}
 
         window.onload = cargarDatos;
     </script>
