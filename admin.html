@@ -291,7 +291,7 @@
     <div id="seccionLogin" class="max-w-md mx-auto mt-16 p-6 bg-white rounded-2xl shadow-xl border border-gray-200">
         <div class="text-center mb-6">
             <h1 class="text-2xl font-black text-slate-800 tracking-tight">QRPretium Admin</h1>
-            <p class="text-xs text-gray-500 mt-1">Ingresá tus credenciales para gestionar tu catálogo</p>
+            <p class="text-xs text-gray-500 mt-1">Ingresá tus credenciales para gestionar tu catálogo de vidriera interactiva</p>
         </div>
 
         <form onsubmit="iniciarSesion(event)" class="space-y-4">
@@ -360,26 +360,26 @@
         <main class="max-w-5xl mx-auto px-4 mt-6">
 
             <!-- ZONA DE ACCIONES -->
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 mb-6">
-                <div class="flex flex-wrap items-center justify-between gap-3">
-                    <div class="flex flex-wrap gap-2">
-                        <button onclick="abrirPopupNuevoArticulo()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold px-4 py-2.5 rounded-xl text-sm shadow transition flex items-center gap-2">
-                            ➕ Nuevo Artículo
-                        </button>
-                        <button onclick="abrirPopupCategorias()" id="btnCategorias" class="bg-white hover:bg-slate-50 text-slate-800 font-bold px-4 py-2.5 rounded-xl text-sm shadow transition border border-slate-300 flex items-center gap-2">
-                            📂 Cargar Categorías
-                        </button>
-                    </div>
-                    <div class="flex flex-wrap gap-2">
-                        <button onclick="abrirPopupMiQr()" class="bg-white hover:bg-slate-50 text-slate-800 font-bold px-4 py-2.5 rounded-xl text-sm shadow transition border border-slate-300 flex items-center gap-2">
-                            📱 Mi QR
-                        </button>
-                        <button onclick="abrirPopupMiComercio()" class="bg-white hover:bg-slate-50 text-slate-800 font-bold px-4 py-2.5 rounded-xl text-sm shadow transition border border-slate-300 flex items-center gap-2">
-                            🏪 Mi Comercio
-                        </button>
-                    </div>
-                </div>
-            </div>
+<div class="bg-white p-3 rounded-2xl shadow-sm border border-gray-200 mb-6">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap gap-2">
+            <button onclick="abrirPopupNuevoArticulo()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold px-4 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2">
+                ➕ Nuevo Artículo
+            </button>
+            <button onclick="abrirPopupCategorias()" id="btnCategorias" class="bg-white hover:bg-slate-50 text-slate-800 font-bold px-4 py-1.5 rounded-xl text-sm shadow transition border border-slate-300 flex items-center gap-2">
+                📂 Cargar Categorías
+            </button>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            <button onclick="abrirPopupMiQr()" class="bg-white hover:bg-slate-50 text-slate-800 font-bold px-4 py-1.5 rounded-xl text-sm shadow transition border border-slate-300 flex items-center gap-2">
+                📱 Mi QR
+            </button>
+            <button onclick="abrirPopupMiComercio()" class="bg-white hover:bg-slate-50 text-slate-800 font-bold px-4 py-1.5 rounded-xl text-sm shadow transition border border-slate-300 flex items-center gap-2">
+                🏪 Mi Comercio
+            </button>
+        </div>
+    </div>
+</div>
 
             <!-- TABLA DE ARTÍCULOS -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-6">
@@ -465,11 +465,11 @@
                     </div>
 
                     <!-- DISPONIBILIDAD -->
-                    <div>
-                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Disponibilidad</label>
-                        <input type="text" id="artDisponibilidad" placeholder="Ej: Talle L,M,XL-AZUL,VERDE FUSION" 
-                            class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
-                    </div>
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3">
+    <label class="block text-[11px] font-bold text-emerald-700 uppercase mb-1">📦 Disponibilidad</label>
+    <input type="text" id="artDisponibilidad" placeholder="Ej: Talle L,M,XL-AZUL,VERDE FUSION" 
+        class="w-full px-3 py-2 border border-emerald-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-emerald-500">
+</div>
 
                     <!-- PRECIO Y PROMOCIÓN -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -478,11 +478,11 @@
                             <input type="number" step="0.01" id="artPrecio" placeholder="Ej: 25000" required 
                                 class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
                         </div>
-                        <div>
-                            <label class="block text-[11px] font-bold text-emerald-500 uppercase mb-1">Promoción</label>
-                            <input type="text" id="artPromocion" placeholder="Ej: 10% OFF EFECTIVO" 
-                                class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
-                        </div>
+                        <div class="bg-orange-50 border border-orange-200 rounded-xl p-3">
+    <label class="block text-[11px] font-bold text-orange-600 uppercase mb-1">🔥 Promoción</label>
+    <input type="text" id="artPromocion" placeholder="Ej: 10% OFF EFECTIVO" 
+        class="w-full px-3 py-2 border border-orange-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-orange-500">
+</div>
                     </div>
 
                     <!-- BOTONES -->
@@ -1024,36 +1024,35 @@
                 return;
             }
 
-            articulosLista.forEach(item => {
-                const id = item.id;
-                const cod = item.codigo || '-';
-                const art = item.articulo || '-';
-                const disp = item.disponibilidad || '-';
-                const precio = item.precio || 0;
-                const promo = item.promocion || '';
-                const tienePromo = promo && promo.trim() !== '';
-                const tieneVideo = item.video_url && String(item.video_url).trim() !== '';
+articulosLista.forEach(item => {
+    const id = item.id;
+    const cod = item.codigo || '-';
+    const art = item.articulo || '-';
+    const disp = item.disponibilidad || '-';
+    const precio = item.precio || 0;
+    const promo = item.promocion || '';
+    const tienePromo = promo && promo.trim() !== '';
+    const tieneVideo = item.video_url && String(item.video_url).trim() !== '';
 
-                tbody.innerHTML += `
-                    <tr>
-                        <td><span class="codigo-badge">${cod}</span></td>
-                        <td class="font-semibold text-slate-800">
-                            ${art}
-                            ${tieneVideo ? '<span class="badge-promo" style="background:#dbeafe;color:#1d4ed8;">▶️</span>' : ''}
-                        </td>
-                        <td class="text-xs text-gray-600">${disp}</td>
-                        <td class="text-xs font-bold ${tienePromo ? 'text-emerald-600' : 'text-gray-400'}">
-                            ${tienePromo ? '🔥 ' + promo : '—'}
-                        </td>
-                        <td class="font-black text-slate-800">$${Number(precio).toLocaleString('es-AR')}</td>
-                        <td class="text-right space-x-1">
-                            <button onclick="prepararEdicion(${id})" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-bold text-xs">✏️ Editar</button>
-                            <button onclick="eliminarArticulo(${id})" class="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded font-bold text-xs">🗑️ Borrar</button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
+    tbody.innerHTML += `
+        <tr>
+            <td><span class="codigo-badge">${cod}</span></td>
+            <td class="font-semibold text-slate-800">
+                ${art}
+                ${tieneVideo ? '<span class="badge-promo" style="background:#dbeafe;color:#1d4ed8;">▶️</span>' : ''}
+            </td>
+            <td class="text-xs font-bold text-emerald-600">${disp}</td>
+            <td class="text-xs font-bold ${tienePromo ? 'text-orange-500' : 'text-gray-400'}">
+                ${tienePromo ? '🔥 ' + promo : '—'}
+            </td>
+            <td class="font-black text-slate-800">$${Number(precio).toLocaleString('es-AR')}</td>
+            <td class="text-right space-x-1">
+                <button onclick="prepararEdicion(${id})" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-bold text-xs">✏️ Editar</button>
+                <button onclick="eliminarArticulo(${id})" class="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded font-bold text-xs">🗑️ Borrar</button>
+            </td>
+        </tr>
+    `;
+});
 
         // ==================== POPUP NUEVO ARTÍCULO ====================
         function abrirPopupNuevoArticulo() {
@@ -1223,10 +1222,13 @@
 
         // ==================== VISTA PREVIA ====================
         function abrirVistaPrevia() {
-            const cuit = cuitLimpioActual;
-            window.open(`catalogo.html?cuit=${cuit}`, '_blank');
-        }
-
+    const cuit = cuitLimpioActual;
+    const codigoActual = document.getElementById('artCodigo').value.trim();
+    const url = codigoActual 
+        ? `catalogo.html?cuit=${cuit}&codigo=${codigoActual}` 
+        : `catalogo.html?cuit=${cuit}`;
+    window.open(url, '_blank');
+}
         // ==================== ESPECIFICACIONES ====================
         function abrirPopupEspecificaciones() {
             renderizarListaEspecificaciones();
