@@ -345,39 +345,41 @@
                 </div>
 
                 <!-- FILA 2: Plan + Cupo + barra -->
-                <div class="bg-black/20 backdrop-blur-sm rounded-xl p-3 border border-white/10">
-                    <div class="flex justify-between items-center mb-2">
-                        <span id="nombrePlan" class="text-xs font-extrabold uppercase tracking-wider text-white">Plan STANDARD</span>
-                        <span id="textoCupo" class="text-xs font-bold text-zinc-900">0 de 35 artículos</span>
-                    </div>
-                    <div class="w-full bg-white/20 rounded-full h-2 overflow-hidden">
-                        <div id="barraProgreso" class="bg-white h-full transition-all duration-300" style="width: 0%"></div>
-                    </div>
-                </div>
+             <div class="bg-zinc-100/90 backdrop-blur-sm rounded-xl p-3 border border-white/20">
+    <div class="flex justify-between items-center mb-2">
+        <span id="nombrePlan" class="text-xs font-extrabold uppercase tracking-wider text-zinc-800">Plan STANDARD</span>
+        <span id="textoCupo" class="text-xs font-bold text-zinc-700">0 de 35 artículos</span>
+    </div>
+    <div class="w-full bg-zinc-300 rounded-full h-2 overflow-hidden">
+        <div id="barraProgreso" class="bg-zinc-700 h-full transition-all duration-300" style="width: 0%"></div>
+    </div>
+</div> 
             </div>
         </header>
 
         <main class="max-w-5xl mx-auto px-4 mt-6">
 
             <!-- ZONA DE ACCIONES -->
+<div class="bg-white p-3 rounded-2xl shadow-sm border border-gray-200 mb-3">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+        <button onclick="abrirPopupMiComercio()" class="bg-white hover:bg-slate-50 text-slate-800 font-bold px-4 py-1.5 rounded-xl text-sm shadow transition border border-slate-300 flex items-center gap-2">
+            🏪 Mi Comercio
+        </button>
+        <button onclick="abrirPopupMiQr()" class="bg-white hover:bg-slate-50 text-slate-800 font-bold px-4 py-1.5 rounded-xl text-sm shadow transition border border-slate-300 flex items-center gap-2">
+            📱 Mi QR
+        </button>
+    </div>
+</div>
+
+<!-- ZONA DE ACCIONES - FILA 2: Cargar Categorías + Nuevo Artículo -->
 <div class="bg-white p-3 rounded-2xl shadow-sm border border-gray-200 mb-6">
-    <div class="flex flex-wrap items-center justify-between gap-3">
-        <div class="flex flex-wrap gap-2">
-            <button onclick="abrirPopupNuevoArticulo()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold px-4 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2">
-                ➕ Nuevo Artículo
-            </button>
-            <button onclick="abrirPopupCategorias()" id="btnCategorias" class="bg-white hover:bg-slate-50 text-slate-800 font-bold px-4 py-1.5 rounded-xl text-sm shadow transition border border-slate-300 flex items-center gap-2">
-                📂 Cargar Categorías
-            </button>
-        </div>
-        <div class="flex flex-wrap gap-2">
-            <button onclick="abrirPopupMiQr()" class="bg-white hover:bg-slate-50 text-slate-800 font-bold px-4 py-1.5 rounded-xl text-sm shadow transition border border-slate-300 flex items-center gap-2">
-                📱 Mi QR
-            </button>
-            <button onclick="abrirPopupMiComercio()" class="bg-white hover:bg-slate-50 text-slate-800 font-bold px-4 py-1.5 rounded-xl text-sm shadow transition border border-slate-300 flex items-center gap-2">
-                🏪 Mi Comercio
-            </button>
-        </div>
+    <div class="flex flex-wrap items-center justify-between gap-2">
+        <button onclick="abrirPopupCategorias()" id="btnCategorias" class="bg-white hover:bg-slate-50 text-slate-800 font-bold px-4 py-1.5 rounded-xl text-sm shadow transition border border-slate-300 flex items-center gap-2">
+            📂 Cargar Categorías
+        </button>
+        <button onclick="abrirPopupNuevoArticulo()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold px-4 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2">
+            ➕ Nuevo Artículo
+        </button>
     </div>
 </div>
 
