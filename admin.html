@@ -434,12 +434,34 @@
                     </div>
 
                     <!-- CÓDIGO -->
-                    <div>
-                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Código *</label>
-                        <input type="text" id="artCodigo" readonly placeholder="Elegí una categoría arriba" required 
-                            class="input-codigo-auto w-full px-4 py-2 rounded-xl border border-gray-300">
-                        <p class="text-[10px] text-gray-400 mt-1">El código se autocompleta al elegir una categoría.</p>
-                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+    <div>
+        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Código *</label>
+        <input type="text" id="artCodigo" readonly placeholder="Elegí una categoría arriba" required 
+            class="input-codigo-auto w-full px-4 py-2 rounded-xl border border-gray-300">
+    </div>
+    <div>
+        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Fila</label>
+        <select id="artFila" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+            <option value="1">Fila 1</option>
+            <option value="2">Fila 2</option>
+            <option value="3">Fila 3</option>
+            <option value="4">Fila 4</option>
+            <option value="5">Fila 5</option>
+        </select>
+    </div>
+    <div>
+        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Columna</label>
+        <select id="artColumna" class="w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+            <option value="1">Columna 1</option>
+            <option value="2">Columna 2</option>
+            <option value="3">Columna 3</option>
+            <option value="4">Columna 4</option>
+            <option value="5">Columna 5</option>
+        </select>
+    </div>
+</div>
+<p class="text-[10px] text-gray-400 mt-1">El código se autocompleta al elegir una categoría.</p>
 
                     <!-- NOMBRE -->
                     <div>
@@ -540,15 +562,15 @@
                     
                     <!-- Tipografía -->
                     <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Tipografía</label>
-                    <select id="layoutTipografia" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
-                        <option value="Inter">Inter (recomendada)</option>
-                        <option value="Roboto">Roboto</option>
-                        <option value="Open Sans">Open Sans</option>
-                        <option value="Montserrat">Montserrat</option>
-                        <option value="Arial">Arial</option>
-                        <option value="Helvetica">Helvetica</option>
-                        <option value="Courier New">Courier New (monoespaciada)</option>
-                    </select>
+                    <select id="layoutTipografia" onchange="actualizarPreviewEtiquetas()" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+    <option value="Inter">Inter (recomendada)</option>
+    <option value="Roboto">Roboto</option>
+    <option value="Open Sans">Open Sans</option>
+    <option value="Montserrat">Montserrat</option>
+    <option value="Arial">Arial</option>
+    <option value="Helvetica">Helvetica</option>
+    <option value="Courier New">Courier New (monoespaciada)</option>
+</select>
                 </div>
 
                 <!-- ===== PREVIEW ===== -->
@@ -1168,7 +1190,32 @@ async function guardarCategoriasYLayout() {
             videoUrlTemporal = '';
             document.getElementById('tituloFormArticulo').innerText = '➕ Nuevo Artículo';
             document.querySelectorAll('#categoriasDisponibles .categoria-btn').forEach(b => b.classList.remove('seleccionada'));
+           // Poblar filas y columnas según el layout
+const maxFilas = comercioActual.filas_vidriera || 5;
+const maxColumnas = comercioActual.columnas_vidriera || 5;
 
+const selectFila = document.getElementById('artFila');
+const selectColumna = document.getElementById('artColumna');
+
+selectFila.innerHTML = '';
+for (let i = 1; i <= maxFilas; i++) {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.text = `Fila ${i}`;
+    selectFila.appendChild(opt);
+}
+
+selectColumna.innerHTML = '';
+for (let i = 1; i <= maxColumnas; i++) {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.text = `Columna ${i}`;
+    selectColumna.appendChild(opt);
+}
+
+// Resetear a 1
+selectFila.value = 1;
+selectColumna.value = 1;
             document.getElementById('popupArticulo').classList.add('activo');
             document.body.style.overflow = 'hidden';
         }
@@ -1194,6 +1241,8 @@ async function guardarCategoriasYLayout() {
             const precio = parseFloat(document.getElementById('artPrecio').value) || 0;
             const promocion = document.getElementById('artPromocion').value.trim();
             const video_url = videoUrlTemporal || null;
+            const fila = parseInt(document.getElementById('artFila').value) || 1;
+            const columna = parseInt(document.getElementById('artColumna').value) || 1;
 
             if (!codigo) {
                 mostrarMensajeFlotante('⚠️ Elegí una categoría para generar el código', 'error');
@@ -1280,7 +1329,9 @@ async function guardarCategoriasYLayout() {
             document.getElementById('artPromocion').value = item.promocion || '';
             document.getElementById('artVideoUrl').value = item.video_url || '';
             videoUrlTemporal = item.video_url || '';
-
+            
+            document.getElementById('artFila').value = item.fila || 1;
+            document.getElementById('artColumna').value = item.columna || 1;
             document.getElementById('tituloFormArticulo').innerText = '✏️ Editar Artículo';
 
             // Cargar especificaciones del artículo
