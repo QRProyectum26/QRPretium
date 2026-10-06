@@ -5,10 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="img/favicon.png">
     <title>Panel de Administración - QRPretium</title>
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com/3.4.3"></script>
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Roboto:wght@400;700;900&family=Open+Sans:wght@400;700;900&family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <!-- QRCode.js -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <script>
         window.addEventListener('DOMContentLoaded', function() {
@@ -19,8 +23,13 @@
             }
         });
     </script>
+    <!-- html2canvas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- jsPDF (para el PDF de códigos) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Supabase Client -->
     <script>
         const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
@@ -164,15 +173,20 @@
                         </button>
                     </div>
                 </div>
-                <div class="bg-zinc-100/90 backdrop-blur-sm rounded-xl p-3 border border-white/20">
-                    <div class="flex justify-between items-center mb-2">
-                        <span id="nombrePlan" class="text-xs font-extrabold uppercase tracking-wider text-zinc-800">Plan STANDARD</span>
-                        <span id="textoCupo" class="text-xs font-bold text-zinc-700">0 de 35 artículos</span>
-                    </div>
-                    <div class="w-full bg-zinc-300 rounded-full h-2 overflow-hidden">
-                        <div id="barraProgreso" class="bg-zinc-700 h-full transition-all duration-300" style="width: 0%"></div>
-                    </div>
-                </div>
+            <div class="bg-zinc-100/90 backdrop-blur-sm rounded-xl p-3 border border-white/20 flex flex-wrap items-center justify-between gap-3">
+    <div class="flex-1 min-w-[200px]">
+        <div class="flex justify-between items-center mb-2">
+            <span id="nombrePlan" class="text-xs font-extrabold uppercase tracking-wider text-zinc-800">Plan STANDARD</span>
+            <span id="textoCupo" class="text-xs font-bold text-zinc-700">0 de 35 artículos</span>
+        </div>
+        <div class="w-full bg-zinc-300 rounded-full h-2 overflow-hidden">
+            <div id="barraProgreso" class="bg-zinc-700 h-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+    </div>
+    <button onclick="abrirPopupImprimir()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold px-4 py-2 rounded-xl text-sm shadow transition flex items-center gap-2 whitespace-nowrap">
+        🖨️ Imprimir Códigos
+    </button>
+</div>
             </div>
         </header>
 
@@ -231,12 +245,9 @@
         <div class="popup-caja popup-caja-grande">
             <button class="popup-cerrar" onclick="cerrarPopupArticulo()">✕</button>
             <div class="p-6">
-                <div class="flex items-center justify-between mb-5">
-                    <h2 id="tituloFormArticulo" class="text-xl font-extrabold text-slate-800">➕ Nuevo Artículo</h2>
-                    <button onclick="abrirVistaPrevia()" class="text-xs bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-3 py-2 rounded-lg shadow transition">
-                        👁️ Vista Previa
-                    </button>
-                </div>
+               <div class="flex items-center justify-between mb-5">
+    <h2 id="tituloFormArticulo" class="text-xl font-extrabold text-slate-800">➕ Nuevo Artículo</h2>
+</div>
                 <div id="mensajeEstado" class="hidden mb-4 p-3 text-xs font-bold rounded-xl text-center leading-relaxed"></div>
                 <form onsubmit="guardarArticulo(event)" class="space-y-4">
                     <input type="hidden" id="artId">
@@ -542,7 +553,30 @@
             </div>
         </div>
     </div>
+    <!-- POPUP: IMPRIMIR CÓDIGOS -->
+    <div id="popupImprimir" class="popup-overlay" onclick="if(event.target===this) cerrarPopupImprimir()">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopupImprimir()">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-2">🖨️ Imprimir Códigos</h2>
+                <p class="text-xs text-gray-500 mb-5">Elegí el tipo de plantilla. Se van a descargar 2 archivos: la plantilla de códigos y una guía de ubicación.</p>
 
+                <div class="space-y-3">
+                    <button onclick="generarPDFs('plantilla')" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-2">
+                        🎨 Imprimir Plantilla Seleccionada
+                    </button>
+                    <button onclick="generarPDFs('base')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-2">
+                        📄 Imprimir Plantilla Base
+                    </button>
+                </div>
+
+                <p class="text-[10px] text-gray-400 text-center mt-4">
+                    💡 La "Plantilla Seleccionada" usa tus colores y tipografía.<br>
+                    La "Plantilla Base" es un archivo neutro para llevar a imprenta.
+                </p>
+            </div>
+        </div>
+    </div>
     <div id="mensajeFlotante" class="mensaje-flotante"></div>
 
     <script>
@@ -918,47 +952,52 @@
                             : porcentaje >= 80 ? 'bg-amber-500 h-full transition-all'
                             : 'bg-zinc-700 h-full transition-all';
         }
+function renderizarTabla() {
+    const tbody = document.getElementById('tbodyArticulos');
+    document.getElementById('cantArticulos').innerText = `${articulosLista.length} productos`;
+    tbody.innerHTML = '';
 
-        function renderizarTabla() {
-            const tbody = document.getElementById('tbodyArticulos');
-            document.getElementById('cantArticulos').innerText = `${articulosLista.length} productos`;
-            tbody.innerHTML = '';
+    if (articulosLista.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-gray-400">No hay artículos cargados. Hacé click en "➕ Nuevo Artículo" para empezar.</td></tr>`;
+        return;
+    }
 
-            if (articulosLista.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-gray-400">No hay artículos cargados. Hacé click en "➕ Nuevo Artículo" para empezar.</td></tr>`;
-                return;
-            }
+    articulosLista.forEach(item => {
+        const id = item.id;
+        const cod = item.codigo || '-';
+        const art = item.articulo || '-';
+        const disp = item.disponibilidad || '-';
+        const precio = item.precio || 0;
+        const promo = item.promocion || '';
+        const tienePromo = promo && promo.trim() !== '';
+        const tieneVideo = item.video_url && String(item.video_url).trim() !== '';
 
-            articulosLista.forEach(item => {
-                const id = item.id;
-                const cod = item.codigo || '-';
-                const art = item.articulo || '-';
-                const disp = item.disponibilidad || '-';
-                const precio = item.precio || 0;
-                const promo = item.promocion || '';
-                const tienePromo = promo && promo.trim() !== '';
-                const tieneVideo = item.video_url && String(item.video_url).trim() !== '';
+        tbody.innerHTML += `
+            <tr>
+                <td><span class="codigo-badge">${cod}</span></td>
+                <td class="font-semibold text-slate-800">
+                    ${art}
+                    ${tieneVideo ? '<span class="badge-promo" style="background:#dbeafe;color:#1d4ed8;">▶️</span>' : ''}
+                </td>
+                <td class="text-xs text-emerald-600">${disp}</td>
+                <td class="text-xs ${tienePromo ? 'text-orange-500' : 'text-gray-400'}">
+                    ${tienePromo ? '🔥 ' + promo : '—'}
+                </td>
+                <td class="font-black text-slate-800">$${Number(precio).toLocaleString('es-AR')}</td>
+                <td class="text-right space-x-1">
+                    <button onclick="abrirVistaPreviaDesdeTabla('${cod}')" class="px-2 py-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded font-bold text-xs">👁️ Ver</button>
+                    <button onclick="prepararEdicion(${id})" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-bold text-xs">✏️ Editar</button>
+                    <button onclick="eliminarArticulo(${id})" class="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded font-bold text-xs">🗑️ Borrar</button>
+                </td>
+            </tr>
+        `;
+    });
+}
 
-                tbody.innerHTML += `
-                    <tr>
-                        <td><span class="codigo-badge">${cod}</span></td>
-                        <td class="font-semibold text-slate-800">
-                            ${art}
-                            ${tieneVideo ? '<span class="badge-promo" style="background:#dbeafe;color:#1d4ed8;">▶️</span>' : ''}
-                        </td>
-                        <td class="text-xs font-bold text-emerald-600">${disp}</td>
-                        <td class="text-xs font-bold ${tienePromo ? 'text-orange-500' : 'text-gray-400'}">
-                            ${tienePromo ? '🔥 ' + promo : '—'}
-                        </td>
-                        <td class="font-black text-slate-800">$${Number(precio).toLocaleString('es-AR')}</td>
-                        <td class="text-right space-x-1">
-                            <button onclick="prepararEdicion(${id})" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-bold text-xs">✏️ Editar</button>
-                            <button onclick="eliminarArticulo(${id})" class="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded font-bold text-xs">🗑️ Borrar</button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
+function abrirVistaPreviaDesdeTabla(codigo) {
+    const cuit = cuitLimpioActual;
+    window.open(`catalogo.html?cuit=${cuit}&codigo=${codigo}`, '_blank');
+}
 
         // ==================== POPUP NUEVO ARTÍCULO ====================
         function abrirPopupNuevoArticulo() {
@@ -1517,10 +1556,212 @@
             }
         }
 
-        // ==================== ESC ====================
+         // ==================== IMPRIMIR CÓDIGOS ====================
+        function abrirPopupImprimir() {
+            document.getElementById('popupImprimir').classList.add('activo');
+        }
+        function cerrarPopupImprimir() {
+            document.getElementById('popupImprimir').classList.remove('activo');
+        }
+
+        function hexToRgb(hex) {
+            hex = (hex || '#000000').replace('#', '');
+            if (hex.length === 3) {
+                hex = hex.split('').map(c => c + c).join('');
+            }
+            return [
+                parseInt(hex.substring(0, 2), 16),
+                parseInt(hex.substring(2, 4), 16),
+                parseInt(hex.substring(4, 6), 16)
+            ];
+        }
+
+        function generarPDFs(tipo) {
+            if (!window.jspdf) {
+                alert('❌ jsPDF no está cargado. Esperá unos segundos y volvé a intentar.');
+                return;
+            }
+            if (!articulosLista || articulosLista.length === 0) {
+                alert('⚠️ No hay artículos cargados. Cargá al menos un artículo para generar el PDF.');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+            const porCategoria = {};
+            articulosLista.forEach(a => {
+                const letra = (a.codigo || 'A').charAt(0).toUpperCase();
+                if (!porCategoria[letra]) porCategoria[letra] = [];
+                porCategoria[letra].push(a);
+            });
+
+            const plan = (comercioActual.plan || 'standard').toLowerCase();
+            const digitos = (plan.includes('power') || plan.includes('premium')) ? 3 : 2;
+
+            const colorFondo = tipo === 'plantilla' ? (comercioActual.color_etiqueta_fondo || '#0f172a') : '#ffffff';
+            const colorTexto = tipo === 'plantilla' ? (comercioActual.color_etiqueta_texto || '#ffffff') : '#000000';
+            const colorBorde = tipo === 'plantilla' ? '#f97316' : '#999999';
+            const tipografia = tipo === 'plantilla' ? (comercioActual.tipografia_etiqueta || 'Inter') : 'Helvetica';
+
+            const rgbFondo = hexToRgb(colorFondo);
+            const rgbTexto = hexToRgb(colorTexto);
+            const rgbBorde = hexToRgb(colorBorde);
+
+            const fontMap = {
+                'Inter': 'helvetica',
+                'Roboto': 'helvetica',
+                'Open Sans': 'helvetica',
+                'Montserrat': 'helvetica',
+                'Arial': 'helvetica',
+                'Helvetica': 'helvetica',
+                'Courier New': 'courier'
+            };
+            const fontPDF = fontMap[tipografia] || 'helvetica';
+
+            let x = 15;
+            let y = 20;
+            const anchoEtiqueta = 42;
+            const altoEtiqueta = 26;
+            const espacioX = 5;
+            const espacioY = 5;
+            const porFila = 4;
+            let columna = 0;
+
+            Object.keys(porCategoria).sort().forEach(letra => {
+                const articulos = porCategoria[letra];
+                articulos.sort((a, b) => {
+                    const numA = parseInt((a.codigo || '').replace(/\D/g, '')) || 0;
+                    const numB = parseInt((b.codigo || '').replace(/\D/g, '')) || 0;
+                    return numA - numB;
+                });
+
+                const ultimo = articulos[articulos.length - 1];
+                const ultimoNum = parseInt((ultimo.codigo || '').replace(/\D/g, '')) || 0;
+
+                const codigosAImprimir = articulos.map(a => a.codigo);
+                for (let i = 1; i <= 2; i++) {
+                    const numReserva = ultimoNum + i;
+                    const codReserva = letra + String(numReserva).padStart(digitos, '0');
+                    codigosAImprimir.push(codReserva);
+                }
+
+                codigosAImprimir.forEach(cod => {
+                    if (y + altoEtiqueta > 280) {
+                        doc.addPage();
+                        x = 15;
+                        y = 20;
+                        columna = 0;
+                    }
+
+                    if (tipo === 'plantilla') {
+                        doc.setFillColor(rgbFondo[0], rgbFondo[1], rgbFondo[2]);
+                        doc.roundedRect(x, y, anchoEtiqueta, altoEtiqueta, 3, 3, 'F');
+                    }
+
+                    doc.setDrawColor(rgbBorde[0], rgbBorde[1], rgbBorde[2]);
+                    doc.setLineWidth(0.8);
+                    doc.roundedRect(x, y, anchoEtiqueta, altoEtiqueta, 3, 3, 'S');
+
+                    doc.setTextColor(rgbTexto[0], rgbTexto[1], rgbTexto[2]);
+                    doc.setFont(fontPDF, 'bold');
+                    doc.setFontSize(20);
+                    doc.text(cod, x + anchoEtiqueta / 2, y + altoEtiqueta / 2 + 3, { align: 'center' });
+
+                    columna++;
+                    if (columna >= porFila) {
+                        columna = 0;
+                        x = 15;
+                        y += altoEtiqueta + espacioY;
+                    } else {
+                        x += anchoEtiqueta + espacioX;
+                    }
+                });
+
+                if (columna !== 0) {
+                    columna = 0;
+                    x = 15;
+                    y += altoEtiqueta + espacioY;
+                }
+            });
+
+            doc.save(`Codigos-${cuitLimpioActual}-${tipo}.pdf`);
+
+            setTimeout(() => {
+                try {
+                    generarGuiaUbicacion(tipo);
+                } catch (err) {
+                    console.error('Error al generar guía:', err);
+                }
+            }, 500);
+
+            cerrarPopupImprimir();
+            mostrarMensajeFlotante('✅ PDF de códigos generado', 'ok');
+        }
+
+        function generarGuiaUbicacion(tipo) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text(`Guía de Ubicación - ${comercioActual.nombre || 'Comercio'}`, 15, 15);
+
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Esta es una guía para pegar los códigos en la vidriera.', 15, 22);
+
+            const filas = comercioActual.filas_vidriera || 5;
+            const columnas = comercioActual.columnas_vidriera || 5;
+            const ancho = 260;
+            const alto = 160;
+            const anchoCelda = ancho / columnas;
+            const altoCelda = alto / filas;
+            const startX = 15;
+            const startY = 35;
+
+            const grid = {};
+            articulosLista.forEach(a => {
+                const f = a.fila || 1;
+                const c = a.columna || 1;
+                const key = `${f}-${c}`;
+                if (!grid[key]) grid[key] = [];
+                grid[key].push(a.codigo);
+            });
+
+            doc.setDrawColor(150, 150, 150);
+            doc.setLineWidth(0.3);
+
+            for (let f = 1; f <= filas; f++) {
+                for (let c = 1; c <= columnas; c++) {
+                    const cx = startX + (c - 1) * anchoCelda;
+                    const cy = startY + (f - 1) * altoCelda;
+                    doc.rect(cx, cy, anchoCelda, altoCelda);
+
+                    doc.setFontSize(7);
+                    doc.setTextColor(180, 180, 180);
+                    doc.text(`F${f} C${c}`, cx + 1, cy + 3);
+
+                    const key = `${f}-${c}`;
+                    if (grid[key]) {
+                        doc.setFontSize(9);
+                        doc.setFont('helvetica', 'bold');
+                        doc.setTextColor(0, 0, 0);
+                        grid[key].forEach((cod, i) => {
+                            doc.text(cod, cx + 3, cy + 8 + i * 5);
+                        });
+                    }
+                }
+            }
+
+            doc.save(`Guia-Ubicacion-${cuitLimpioActual}-${tipo}.pdf`);
+        }
+
+        // ==================== CIERRE CON ESC ====================
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                if (document.getElementById('popupVideo').classList.contains('activo')) cerrarPopupVideo();
+                if (document.getElementById('popupImprimir').classList.contains('activo')) cerrarPopupImprimir();
+                else if (document.getElementById('popupVideo').classList.contains('activo')) cerrarPopupVideo();
                 else if (document.getElementById('popupEspecificaciones').classList.contains('activo')) cerrarPopupEspecificaciones();
                 else if (document.getElementById('popupArticulo').classList.contains('activo')) cerrarPopupArticulo();
                 else if (document.getElementById('popupCategorias').classList.contains('activo')) cerrarPopupCategorias();
