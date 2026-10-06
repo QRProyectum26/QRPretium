@@ -554,13 +554,38 @@
         </div>
     </div>
     <!-- POPUP: IMPRIMIR CÓDIGOS -->
+     <!-- POPUP: IMPRIMIR CÓDIGOS -->
     <div id="popupImprimir" class="popup-overlay" onclick="if(event.target===this) cerrarPopupImprimir()">
         <div class="popup-caja">
             <button class="popup-cerrar" onclick="cerrarPopupImprimir()">✕</button>
             <div class="p-6">
                 <h2 class="text-xl font-extrabold text-slate-800 mb-2">🖨️ Imprimir Códigos</h2>
-                <p class="text-xs text-gray-500 mb-5">Elegí el tipo de plantilla. Se van a descargar 2 archivos: la plantilla de códigos y una guía de ubicación.</p>
+                <p class="text-xs text-gray-500 mb-4">Elegí el tamaño de etiqueta y el tipo de plantilla. Se descargan 2 PDFs.</p>
 
+                <!-- Selector de tamaño -->
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-4">
+                    <h3 class="text-sm font-bold text-slate-800 mb-3">📏 Tamaño de etiqueta</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-white cursor-pointer">
+                            <input type="radio" name="tamanoEtiqueta" value="35x20" class="w-4 h-4 accent-orange-500">
+                            <span class="text-sm text-slate-700">Chico (35 x 20 mm) — hasta 70 por hoja</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-white cursor-pointer">
+                            <input type="radio" name="tamanoEtiqueta" value="42x26" checked class="w-4 h-4 accent-orange-500">
+                            <span class="text-sm text-slate-700">Mediano (42 x 26 mm) — hasta 36 por hoja</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-white cursor-pointer">
+                            <input type="radio" name="tamanoEtiqueta" value="55x35" class="w-4 h-4 accent-orange-500">
+                            <span class="text-sm text-slate-700">Grande (55 x 35 mm) — hasta 21 por hoja</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-white cursor-pointer">
+                            <input type="radio" name="tamanoEtiqueta" value="70x45" class="w-4 h-4 accent-orange-500">
+                            <span class="text-sm text-slate-700">Extra Grande (70 x 45 mm) — hasta 10 por hoja</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Botones de descarga -->
                 <div class="space-y-3">
                     <button onclick="generarPDFs('plantilla')" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-2">
                         🎨 Imprimir Plantilla Seleccionada
@@ -817,7 +842,8 @@
                 div.style.backgroundColor = colorFondoSeleccionado;
                 div.style.color = colorTextoSeleccionado;
                 div.style.fontFamily = `'${tipografia}', sans-serif`;
-                div.style.fontWeight = '900';
+                div.style.fontWeight = '700';
+                div.style.fontStyle = 'normal';
                 div.style.fontSize = '18px';
                 div.style.padding = '8px 14px';
                 div.style.borderRadius = '10px';
@@ -1576,7 +1602,7 @@ function abrirVistaPreviaDesdeTabla(codigo) {
             ];
         }
 
-        function generarPDFs(tipo) {
+              function generarPDFs(tipo) {
             if (!window.jspdf) {
                 alert('❌ jsPDF no está cargado. Esperá unos segundos y volvé a intentar.');
                 return;
@@ -1585,6 +1611,11 @@ function abrirVistaPreviaDesdeTabla(codigo) {
                 alert('⚠️ No hay artículos cargados. Cargá al menos un artículo para generar el PDF.');
                 return;
             }
+
+            // Leer tamaño seleccionado
+            const radioSel = document.querySelector('input[name="tamanoEtiqueta"]:checked');
+            const tamanoStr = radioSel ? radioSel.value : '42x26';
+            const [anchoEtiqueta, altoEtiqueta] = tamanoStr.split('x').map(n => parseInt(n));
 
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
@@ -1619,13 +1650,15 @@ function abrirVistaPreviaDesdeTabla(codigo) {
             };
             const fontPDF = fontMap[tipografia] || 'helvetica';
 
-            let x = 15;
+                        // Calcular cuántas etiquetas caben por fila según el ancho
+            const espacioX = 3;
+            const espacioY = 3;
+            const margenX = 10;
+            const anchoUtil = 210 - (margenX * 2); // A4 = 210 mm ancho
+            const porFila = Math.max(1, Math.floor((anchoUtil + espacioX) / (anchoEtiqueta + espacioX)));
+            
+            let x = margenX;
             let y = 20;
-            const anchoEtiqueta = 42;
-            const altoEtiqueta = 26;
-            const espacioX = 5;
-            const espacioY = 5;
-            const porFila = 4;
             let columna = 0;
 
             Object.keys(porCategoria).sort().forEach(letra => {
@@ -1649,11 +1682,10 @@ function abrirVistaPreviaDesdeTabla(codigo) {
                 codigosAImprimir.forEach(cod => {
                     if (y + altoEtiqueta > 280) {
                         doc.addPage();
-                        x = 15;
+                        x = margenX;
                         y = 20;
                         columna = 0;
                     }
-
                     if (tipo === 'plantilla') {
                         doc.setFillColor(rgbFondo[0], rgbFondo[1], rgbFondo[2]);
                         doc.roundedRect(x, y, anchoEtiqueta, altoEtiqueta, 3, 3, 'F');
@@ -1668,10 +1700,10 @@ function abrirVistaPreviaDesdeTabla(codigo) {
                     doc.setFontSize(20);
                     doc.text(cod, x + anchoEtiqueta / 2, y + altoEtiqueta / 2 + 3, { align: 'center' });
 
-                    columna++;
+                   columna++;
                     if (columna >= porFila) {
                         columna = 0;
-                        x = 15;
+                        x = margenX;
                         y += altoEtiqueta + espacioY;
                     } else {
                         x += anchoEtiqueta + espacioX;
