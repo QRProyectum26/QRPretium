@@ -831,28 +831,38 @@
             });
         }
 
-        function actualizarPreviewEtiquetas() {
-            const cont = document.getElementById('previewEtiquetas');
-            if (!cont) return;
-            const tipografia = document.getElementById('layoutTipografia').value || 'Inter';
-            cont.innerHTML = '';
-            const ejemplos = ['A001', 'B002', 'C003', 'D004'];
-            ejemplos.forEach(cod => {
-                const div = document.createElement('div');
-                div.style.backgroundColor = colorFondoSeleccionado;
-                div.style.color = colorTextoSeleccionado;
-                div.style.fontFamily = `'${tipografia}', sans-serif`;
-                div.style.fontWeight = '700';
-                div.style.fontStyle = 'normal';
-                div.style.fontSize = '18px';
-                div.style.padding = '8px 14px';
-                div.style.borderRadius = '10px';
-                div.style.border = '2px solid #f97316';
-                div.style.letterSpacing = '1px';
-                div.innerText = cod;
-                cont.appendChild(div);
-            });
-        }
+ function actualizarPreviewEtiquetas() {
+    const cont = document.getElementById('previewEtiquetas');
+    if (!cont) return;
+    const tipografia = document.getElementById('layoutTipografia').value || 'Inter';
+
+    // Detectar plan para saber cuántos dígitos usar
+    const plan = (comercioActual.plan || 'standard').toLowerCase();
+    const digitos = (plan.includes('power') || plan.includes('premium')) ? 3 : 2;
+
+    // Generar códigos de ejemplo según el plan
+    const ejemplos = ['A', 'B', 'C', 'D'].map((letra, i) => {
+        const num = String(i + 1).padStart(digitos, '0');
+        return letra + num;
+    });
+
+    cont.innerHTML = '';
+    ejemplos.forEach(cod => {
+        const div = document.createElement('div');
+        div.style.backgroundColor = colorFondoSeleccionado;
+        div.style.color = colorTextoSeleccionado;
+        div.style.fontFamily = `'${tipografia}', sans-serif`;
+        div.style.fontWeight = '700';
+        div.style.fontStyle = 'normal';
+        div.style.fontSize = '18px';
+        div.style.padding = '8px 14px';
+        div.style.borderRadius = '10px';
+        div.style.border = '2px solid #f97316';
+        div.style.letterSpacing = '1px';
+        div.innerText = cod;
+        cont.appendChild(div);
+    });
+}
 
         function abrirPopupCategorias() {
             renderizarPaletas();
