@@ -6,6 +6,9 @@
     <link rel="icon" type="image/png" href="img/favicon.png">
     <title>Catálogo de Productos - Vidriera Inmersiva</title>
     <script src="https://cdn.tailwindcss.com/3.4.3"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Roboto:wght@400;700;900&family=Open+Sans:wght@400;700;900&family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/geometries/RoundedBoxGeometry.js"></script>
@@ -89,25 +92,26 @@
         }
         
         /* ===== GRILLA DE CÓDIGOS ===== */
-        .grilla-codigos {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 8px;
+        /* ===== GRILLA DE CÓDIGOS (POR FILAS) ===== */
+        .grilla-filas {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
             margin-top: 12px;
             padding-bottom: 20px;
         }
-        @media (min-width: 480px) {
-            .grilla-codigos { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+        
+        .grilla-fila {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+            scroll-behavior: smooth;
         }
-        @media (min-width: 640px) {
-            .grilla-codigos { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-        }
-        @media (min-width: 768px) {
-            .grilla-codigos { grid-template-columns: repeat(8, minmax(0, 1fr)); }
-        }
-        @media (min-width: 1024px) {
-            .grilla-codigos { grid-template-columns: repeat(10, minmax(0, 1fr)); }
-        }
+        .grilla-fila::-webkit-scrollbar { height: 4px; }
+        .grilla-fila::-webkit-scrollbar-track { background: transparent; }
+        .grilla-fila::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
         
         .codigo-celda {
             background-color: #0f172a;
@@ -126,6 +130,8 @@
             animation: fadeInCelda 0.3s ease-out forwards;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
             line-height: 1;
+            min-width: 70px;
+            flex-shrink: 0;
         }
         .codigo-celda:hover {
             transform: scale(1.05);
@@ -1189,12 +1195,18 @@
                     document.getElementById('nombreComercio').innerText = 'Comercio no encontrado';
                     return;
                 }
-                const comercio = respuesta.comercio;
+              const comercio = respuesta.comercio;
                 datosComercioGlobal = comercio;
                 document.getElementById('nombreComercio').innerText = comercio.nombre || 'Mi Comercio';
                 document.getElementById('modalNombreComercio').innerText = comercio.nombre || 'Mi Comercio';
                 if (comercio.color) document.getElementById('headerComercio').style.backgroundColor = comercio.color;
                 if (comercio.logo && String(comercio.logo).trim() !== '') document.getElementById('imgLogo').src = comercio.logo;
+
+                // Aplicar tipografía al body si está definida
+                if (comercio.tipografia_etiqueta) {
+                    document.body.style.fontFamily = `'${comercio.tipografia_etiqueta}', sans-serif`;
+                }
+
                 configurarModalComercio(comercio);
 
                 const { data: artData, error: artError } = await supabaseClient.rpc('listar_articulos_by_cuit', { p_cuit: String(cuitParam) });
@@ -1257,25 +1269,94 @@
                 btnWa.classList.remove('hidden');
             }
         }
-
-        // ==================== RENDER GRILLA ====================
+                // ==================== RENDER GRILLA (POR FILAS Y COLUMNAS) ====================
         function renderizarGrilla(lista) {
             const contenedor = document.getElementById('grillaCodigos');
             const mensajeVacio = document.getElementById('mensajeVacio');
+
+            // Cambiar clases: de grilla-codigos a grilla-filas
+            contenedor.className = 'grilla-filas';
             contenedor.innerHTML = '';
+
             if (lista.length === 0) {
                 mensajeVacio.classList.remove('hidden');
                 return;
             }
             mensajeVacio.classList.add('hidden');
-            lista.forEach((item, index) => {
-                const celda = document.createElement('div');
-                celda.className = 'codigo-celda';
-                celda.style.animationDelay = (index * 0.03) + 's';
-                celda.innerText = item.codigo || '-';
-                celda.onclick = () => abrirPopupEtiqueta(item);
-                contenedor.appendChild(celda);
+
+            // Obtener layout del comercio
+            const filasMax = datosComercioGlobal.filas_vidriera || 5;
+            const columnasMax = datosComercioGlobal.columnas_vidriera || 5;
+
+            // Detectar si estamos filtrando (buscador) o mostrando todo
+            const esFiltro = lista.length !== productosGlobales.length;
+
+            // Si es filtro, mostrar en grilla normal (sin layout)
+            if (esFiltro) {
+                const fila = document.createElement('div');
+                fila.className = 'grilla-fila';
+                lista.forEach((item, index) => {
+                    const celda = crearCelda(item, index);
+                    fila.appendChild(celda);
+                });
+                contenedor.appendChild(fila);
+                return;
+            }
+
+            // Agrupar por fila y columna
+            const grid = {};
+            lista.forEach(item => {
+                const f = parseInt(item.fila) || 1;
+                const c = parseInt(item.columna) || 1;
+                const key = `${f}-${c}`;
+                if (!grid[key]) grid[key] = [];
+                grid[key].push(item);
             });
+
+            // Renderizar por filas
+            let indexGlobal = 0;
+            for (let f = 1; f <= filasMax; f++) {
+                const fila = document.createElement('div');
+                fila.className = 'grilla-fila';
+
+                let hayContenido = false;
+
+                for (let c = 1; c <= columnasMax; c++) {
+                    const key = `${f}-${c}`;
+                    if (grid[key] && grid[key].length > 0) {
+                        grid[key].forEach(item => {
+                            const celda = crearCelda(item, indexGlobal);
+                            indexGlobal++;
+                            fila.appendChild(celda);
+                            hayContenido = true;
+                        });
+                    }
+                }
+
+                // Si la fila tiene contenido, agregarla
+                if (hayContenido) {
+                    contenedor.appendChild(fila);
+                }
+            }
+        }
+
+        function crearCelda(item, index) {
+            const celda = document.createElement('div');
+            celda.className = 'codigo-celda';
+            celda.style.animationDelay = (index * 0.03) + 's';
+
+            // Aplicar colores y tipografía del comercio
+            const colorFondo = datosComercioGlobal.color_etiqueta_fondo || '#0f172a';
+            const colorTexto = datosComercioGlobal.color_etiqueta_texto || '#ffffff';
+            const tipografia = datosComercioGlobal.tipografia_etiqueta || 'Courier New';
+
+            celda.style.backgroundColor = colorFondo;
+            celda.style.color = colorTexto;
+            celda.style.fontFamily = `'${tipografia}', monospace`;
+
+            celda.innerText = item.codigo || '-';
+            celda.onclick = () => abrirPopupEtiqueta(item);
+            return celda;
         }
 
         // ==================== BUSCADOR ====================
