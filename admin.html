@@ -346,14 +346,20 @@
                         </div>
                     </div>
                 </div>
-                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-4">
+  <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-4">
                     <h3 class="text-sm font-bold text-slate-800 mb-3">🎨 Estilo de las Etiquetas</h3>
+                    
+                    <!-- Color de fondo -->
                     <label class="block text-[11px] font-bold text-gray-600 uppercase mb-2">Color de Fondo</label>
                     <div id="paletaFondo" class="flex flex-wrap gap-1.5 mb-4"></div>
+                    
+                    <!-- Color de texto -->
                     <label class="block text-[11px] font-bold text-gray-600 uppercase mb-2">Color de Texto</label>
                     <div id="paletaTexto" class="flex flex-wrap gap-1.5 mb-4"></div>
+                    
+                    <!-- Tipografía -->
                     <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Tipografía</label>
-                    <select id="layoutTipografia" onchange="actualizarPreviewEtiquetas()" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+                    <select id="layoutTipografia" onchange="actualizarPreviewEtiquetas()" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-slate-600 mb-4">
                         <option value="Inter">Inter (recomendada)</option>
                         <option value="Roboto">Roboto</option>
                         <option value="Open Sans">Open Sans</option>
@@ -361,6 +367,38 @@
                         <option value="Arial">Arial</option>
                         <option value="Helvetica">Helvetica</option>
                         <option value="Courier New">Courier New (monoespaciada)</option>
+                    </select>
+                    
+                    <!-- Estilo de borde -->
+                    <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Estilo de borde (para el PDF)</label>
+                    <select id="layoutBorde" onchange="actualizarPreviewEtiquetas()" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-slate-600 mb-4">
+                        <option value="sin_borde">Sin borde</option>
+                        <option value="simple">Línea simple</option>
+                        <option value="doble">Línea doble</option>
+                        <option value="punteado">Línea punteada</option>
+                        <option value="esquinas">Solo esquinas</option>
+                        <option value="filigrana">Filigranas</option>
+                    </select>
+                    
+                    <!-- Logo de etiqueta (opcional) -->
+                    <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Logo para etiqueta (opcional, solo PDF)</label>
+                    <div class="flex items-center gap-2 mb-3">
+                        <input type="file" id="inputLogoEtiqueta" accept="image/png, image/jpeg, image/webp, image/svg+xml" class="hidden" onchange="cargarLogoEtiqueta(event)">
+                        <button type="button" onclick="document.getElementById('inputLogoEtiqueta').click()" class="px-3 py-2 bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs rounded-xl shadow transition whitespace-nowrap">
+                            📷 Subir logo
+                        </button>
+                        <span class="text-[10px] text-gray-400">Máx. 100 KB</span>
+                        <div id="previewLogoEtiquetaContenedor" class="hidden items-center gap-2 ml-auto">
+                            <img id="previewLogoEtiqueta" src="" class="h-10 object-contain border border-gray-200 rounded p-0.5 bg-white">
+                            <button type="button" onclick="quitarLogoEtiqueta()" class="text-[10px] text-red-500 hover:underline font-bold">Quitar</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Posición del logo -->
+                    <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Posición del logo</label>
+                    <select id="layoutLogoPosicion" onchange="actualizarPreviewEtiquetas()" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+                        <option value="arriba">Arriba del código</option>
+                        <option value="abajo">Abajo del código</option>
                     </select>
                 </div>
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-4">
