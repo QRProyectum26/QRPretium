@@ -501,34 +501,89 @@
         </div>
     </div>
 
-    <!-- ==================== POPUP: CATEGORÍAS ==================== -->
+        <!-- ==================== POPUP: CATEGORÍAS ==================== -->
     <div id="popupCategorias" class="popup-overlay" onclick="if(event.target===this) cerrarPopupCategorias()">
         <div class="popup-caja popup-caja-grande">
             <button class="popup-cerrar" onclick="cerrarPopupCategorias()">✕</button>
             <div class="p-6">
                 <h2 class="text-xl font-extrabold text-slate-800 mb-2">📂 Cargar Categorías</h2>
-                <p class="text-xs text-gray-500 mb-4">Definí qué tipo de producto corresponde a cada letra. Solo activá las que vas a usar.</p>
+                <p class="text-xs text-gray-500 mb-4">Definí las categorías, el layout de tu vidriera y el estilo de las etiquetas.</p>
 
-                <div class="max-h-96 overflow-y-auto pr-2">
-                    <table class="tabla-categorias">
-                        <thead>
-                            <tr>
-                                <th style="width: 50px;">Uso</th>
-                                <th style="width: 60px;">Letra</th>
-                                <th>Tipo de Producto</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbodyCategorias">
-                        </tbody>
-                    </table>
+                <!-- ===== LAYOUT DE LA VIDRIERA ===== -->
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-4">
+                    <h3 class="text-sm font-bold text-slate-800 mb-3">📐 Layout de la Vidriera</h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Filas (1-10)</label>
+                            <input type="number" id="layoutFilas" min="1" max="10" value="5" 
+                                class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Columnas (1-10)</label>
+                            <input type="number" id="layoutColumnas" min="1" max="10" value="5" 
+                                class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== ESTILO DE ETIQUETAS ===== -->
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-4">
+                    <h3 class="text-sm font-bold text-slate-800 mb-3">🎨 Estilo de las Etiquetas</h3>
+                    
+                    <!-- Color de fondo -->
+                    <label class="block text-[11px] font-bold text-gray-600 uppercase mb-2">Color de Fondo</label>
+                    <div id="paletaFondo" class="flex flex-wrap gap-1.5 mb-4"></div>
+                    
+                    <!-- Color de texto -->
+                    <label class="block text-[11px] font-bold text-gray-600 uppercase mb-2">Color de Texto</label>
+                    <div id="paletaTexto" class="flex flex-wrap gap-1.5 mb-4"></div>
+                    
+                    <!-- Tipografía -->
+                    <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Tipografía</label>
+                    <select id="layoutTipografia" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-slate-600">
+                        <option value="Inter">Inter (recomendada)</option>
+                        <option value="Roboto">Roboto</option>
+                        <option value="Open Sans">Open Sans</option>
+                        <option value="Montserrat">Montserrat</option>
+                        <option value="Arial">Arial</option>
+                        <option value="Helvetica">Helvetica</option>
+                        <option value="Courier New">Courier New (monoespaciada)</option>
+                    </select>
+                </div>
+
+                <!-- ===== PREVIEW ===== -->
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-4">
+                    <h3 class="text-sm font-bold text-slate-800 mb-3">👁️ Preview</h3>
+                    <div class="flex justify-center">
+                        <div id="previewEtiquetas" class="flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+
+                <!-- ===== CATEGORÍAS ===== -->
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-4">
+                    <h3 class="text-sm font-bold text-slate-800 mb-3">📋 Categorías</h3>
+                    <div class="max-h-64 overflow-y-auto pr-2">
+                        <table class="tabla-categorias">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40px;">Uso</th>
+                                    <th style="width: 50px;">Letra</th>
+                                    <th>Tipo de Producto</th>
+                                    <th style="width: 80px;">Hasta</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyCategorias">
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <div class="flex justify-end gap-2 mt-5 pt-4 border-t border-slate-100">
                     <button type="button" onclick="cerrarPopupCategorias()" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm hover:bg-gray-200">
                         Cancelar
                     </button>
-                    <button type="button" onclick="guardarCategorias()" class="px-6 py-2 bg-slate-800 text-white font-bold rounded-xl text-sm hover:bg-slate-900 shadow">
-                        Guardar Categorías
+                    <button type="button" onclick="guardarCategoriasYLayout()" class="px-6 py-2 bg-slate-800 text-white font-bold rounded-xl text-sm hover:bg-slate-900 shadow">
+                        Guardar
                     </button>
                 </div>
             </div>
@@ -726,6 +781,15 @@
         let especificacionesTemporales = [];
         let videoUrlTemporal = '';
         let articuloEditandoId = null;
+        let colorFondoSeleccionado = '#0f172a'; 
+        let colorTextoSeleccionado = '#ffffff';  
+
+        const PALETA_COLORES = [
+    '#0f172a', '#1f2937', '#334155', '#64748b', '#cbd5e1', '#ffffff',
+    '#7f1d1d', '#dc2626', '#f87171', '#78350f', '#c2410c', '#f97316',
+    '#fb923c', '#facc15', '#65a30d', '#166534', '#22c55e', '#a3e635',
+    '#06b6d4', '#2563eb', '#1e40af', '#4f46e5', '#7c3aed', '#ec4899'
+];
 
         // ==================== HELPERS ====================
         function mostrarMensajeFlotante(texto, tipo = 'ok') {
@@ -826,236 +890,261 @@
         }
 
         // ==================== CATEGORÍAS ====================
-        async function cargarCategorias() {
-            try {
-                const { data, error } = await supabaseClient.rpc('listar_categorias', { p_cuit: cuitLimpioActual });
-                if (error) throw error;
+       // ==================== CATEGORÍAS ====================
+async function cargarCategorias() {
+    try {
+        const { data, error } = await supabaseClient.rpc('listar_categorias', { p_cuit: cuitLimpioActual });
+        if (error) throw error;
 
-                let resp = data;
-                if (data && data.listar_categorias) resp = data.listar_categorias;
+        let resp = data;
+        if (data && data.listar_categorias) resp = data.listar_categorias;
 
-                let lista = (resp && resp.success) ? resp.categorias : [];
-                if (typeof lista === 'string') {
-                    try { lista = JSON.parse(lista); } catch(e) { lista = []; }
-                }
-                categoriasLista = Array.isArray(lista) ? lista : [];
-
-                renderizarBotonesCategorias();
-                renderizarTablaCategorias();
-            } catch (err) {
-                console.error('Error al cargar categorías:', err);
-                categoriasLista = [];
-            }
+        let lista = (resp && resp.success) ? resp.categorias : [];
+        if (typeof lista === 'string') {
+            try { lista = JSON.parse(lista); } catch(e) { lista = []; }
         }
+        categoriasLista = Array.isArray(lista) ? lista : [];
 
-        function renderizarBotonesCategorias() {
-            const contenedor = document.getElementById('categoriasDisponibles');
-            const bloque = document.getElementById('bloqueCategorias');
-            contenedor.innerHTML = '';
-            const activas = categoriasLista.filter(c => c.activa);
-            
-            if (activas.length === 0) {
-                bloque.classList.add('hidden');
-                return;
-            }
-            bloque.classList.remove('hidden');
+        renderizarBotonesCategorias();
+        renderizarTablaCategorias();
+    } catch (err) {
+        console.error('Error al cargar categorías:', err);
+        categoriasLista = [];
+    }
+}
 
-            activas.forEach(cat => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'categoria-btn';
-                btn.innerText = cat.tipo_producto || cat.letra;
-                btn.dataset.letra = cat.letra;
-                btn.onclick = () => seleccionarCategoria(cat.letra, btn);
-                contenedor.appendChild(btn);
+function renderizarBotonesCategorias() {
+    const contenedor = document.getElementById('categoriasDisponibles');
+    const bloque = document.getElementById('bloqueCategorias');
+    contenedor.innerHTML = '';
+    const activas = categoriasLista.filter(c => c.activa);
+    
+    if (activas.length === 0) {
+        bloque.classList.add('hidden');
+        return;
+    }
+    bloque.classList.remove('hidden');
+
+    activas.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'categoria-btn';
+        btn.innerText = cat.tipo_producto || cat.letra;
+        btn.dataset.letra = cat.letra;
+        btn.onclick = () => seleccionarCategoria(cat.letra, btn);
+        contenedor.appendChild(btn);
+    });
+}
+
+async function seleccionarCategoria(letra, btnEl) {
+    document.querySelectorAll('#categoriasDisponibles .categoria-btn').forEach(b => b.classList.remove('seleccionada'));
+    btnEl.classList.add('seleccionada');
+
+    if (articuloEditandoId) {
+        return;
+    }
+
+    try {
+        const { data, error } = await supabaseClient.rpc('siguiente_codigo_categoria', {
+            p_cuit: cuitLimpioActual,
+            p_letra: letra
+        });
+        if (error) throw error;
+        let resp = data;
+        if (data && data.siguiente_codigo_categoria) resp = data.siguiente_codigo_categoria;
+        if (resp && resp.success) {
+            document.getElementById('artCodigo').value = resp.codigo;
+        }
+    } catch (err) {
+        console.error('Error al obtener código:', err);
+        mostrarMensajeFlotante('❌ No se pudo autocompletar el código', 'error');
+    }
+}
+
+function renderizarTablaCategorias() {
+    const tbody = document.getElementById('tbodyCategorias');
+    tbody.innerHTML = '';
+    const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    const plan = (comercioActual.plan || 'standard').toLowerCase();
+    let maxDefault = 10;
+    if (plan.includes('power')) maxDefault = 35;
+    else if (plan.includes('premium')) maxDefault = 280;
+    
+    letras.forEach(letra => {
+        const cat = categoriasLista.find(c => c.letra === letra);
+        const activa = cat ? cat.activa : false;
+        const tipo = cat ? (cat.tipo_producto || '') : '';
+        const maxCod = cat && cat.max_codigos ? cat.max_codigos : maxDefault;
+        
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td class="text-center">
+                <input type="checkbox" data-letra="${letra}" ${activa ? 'checked' : ''}>
+            </td>
+            <td class="font-mono font-black text-lg text-slate-800">${letra}</td>
+            <td>
+                <input type="text" data-letra-tipo="${letra}" value="${tipo}" placeholder="Cartera, Bolso, Calzado, Otro...">
+            </td>
+            <td>
+                <input type="number" data-letra-max="${letra}" value="${maxCod}" min="1" max="${maxDefault}" 
+                    class="w-full px-2 py-1 border rounded-lg text-xs">
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function renderizarPaletas() {
+    const contFondo = document.getElementById('paletaFondo');
+    contFondo.innerHTML = '';
+    PALETA_COLORES.forEach(color => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'w-7 h-7 rounded-lg border-2 transition';
+        btn.style.backgroundColor = color;
+        if (color === colorFondoSeleccionado) {
+            btn.style.borderColor = '#f97316';
+            btn.style.transform = 'scale(1.15)';
+        } else {
+            btn.style.borderColor = '#cbd5e1';
+        }
+        btn.onclick = () => {
+            colorFondoSeleccionado = color;
+            renderizarPaletas();
+            actualizarPreviewEtiquetas();
+        };
+        contFondo.appendChild(btn);
+    });
+
+    const contTexto = document.getElementById('paletaTexto');
+    contTexto.innerHTML = '';
+    PALETA_COLORES.forEach(color => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'w-7 h-7 rounded-lg border-2 transition';
+        btn.style.backgroundColor = color;
+        if (color === colorTextoSeleccionado) {
+            btn.style.borderColor = '#f97316';
+            btn.style.transform = 'scale(1.15)';
+        } else {
+            btn.style.borderColor = '#cbd5e1';
+        }
+        btn.onclick = () => {
+            colorTextoSeleccionado = color;
+            renderizarPaletas();
+            actualizarPreviewEtiquetas();
+        };
+        contTexto.appendChild(btn);
+    });
+}
+
+function actualizarPreviewEtiquetas() {
+    const cont = document.getElementById('previewEtiquetas');
+    if (!cont) return;
+    const tipografia = document.getElementById('layoutTipografia').value || 'Inter';
+    cont.innerHTML = '';
+    const ejemplos = ['A001', 'B002', 'C003', 'D004'];
+    ejemplos.forEach(cod => {
+        const div = document.createElement('div');
+        div.style.backgroundColor = colorFondoSeleccionado;
+        div.style.color = colorTextoSeleccionado;
+        div.style.fontFamily = `'${tipografia}', sans-serif`;
+        div.style.fontWeight = '900';
+        div.style.fontSize = '18px';
+        div.style.padding = '8px 14px';
+        div.style.borderRadius = '10px';
+        div.style.border = '2px solid #f97316';
+        div.style.letterSpacing = '1px';
+        div.innerText = cod;
+        cont.appendChild(div);
+    });
+}
+
+function abrirPopupCategorias() {
+    renderizarPaletas();
+    renderizarTablaCategorias();
+    document.getElementById('layoutFilas').value = comercioActual.filas_vidriera || 5;
+    document.getElementById('layoutColumnas').value = comercioActual.columnas_vidriera || 5;
+    document.getElementById('layoutTipografia').value = comercioActual.tipografia_etiqueta || 'Inter';
+    colorFondoSeleccionado = comercioActual.color_etiqueta_fondo || '#0f172a';
+    colorTextoSeleccionado = comercioActual.color_etiqueta_texto || '#ffffff';
+    actualizarPreviewEtiquetas();
+    document.getElementById('popupCategorias').classList.add('activo');
+    document.body.style.overflow = 'hidden';
+}
+
+function cerrarPopupCategorias() {
+    document.getElementById('popupCategorias').classList.remove('activo');
+    document.body.style.overflow = '';
+}
+
+async function guardarCategoriasYLayout() {
+    const categorias = [];
+    const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    
+    letras.forEach(letra => {
+        const check = document.querySelector(`input[data-letra="${letra}"]`);
+        const tipoInput = document.querySelector(`input[data-letra-tipo="${letra}"]`);
+        const maxInput = document.querySelector(`input[data-letra-max="${letra}"]`);
+        if (check && check.checked) {
+            categorias.push({
+                letra: letra,
+                tipo_producto: (tipoInput ? tipoInput.value.trim() : '') || letra,
+                activa: true,
+                max_codigos: maxInput ? parseInt(maxInput.value) : 10
+            });
+        } else {
+            categorias.push({
+                letra: letra,
+                tipo_producto: (tipoInput ? tipoInput.value.trim() : '') || '',
+                activa: false,
+                max_codigos: maxInput ? parseInt(maxInput.value) : 10
             });
         }
+    });
 
-        async function seleccionarCategoria(letra, btnEl) {
-            // Marcar visualmente
-            document.querySelectorAll('#categoriasDisponibles .categoria-btn').forEach(b => b.classList.remove('seleccionada'));
-            btnEl.classList.add('seleccionada');
+    try {
+        const { data: dataCat, error: errorCat } = await supabaseClient.rpc('guardar_categorias', {
+            p_cuit: cuitLimpioActual,
+            p_categorias: categorias
+        });
+        if (errorCat) throw errorCat;
+        let respCat = dataCat;
+        if (dataCat && dataCat.guardar_categorias) respCat = dataCat.guardar_categorias;
+        if (!respCat || !respCat.success) throw new Error(respCat?.error || 'Error al guardar categorías');
 
-            // Si estamos editando, no autocompletar
-            if (articuloEditandoId) {
-                return;
-            }
+        const filas = parseInt(document.getElementById('layoutFilas').value) || 5;
+        const columnas = parseInt(document.getElementById('layoutColumnas').value) || 5;
+        const tipografia = document.getElementById('layoutTipografia').value || 'Inter';
 
-            try {
-                const { data, error } = await supabaseClient.rpc('siguiente_codigo_categoria', {
-                    p_cuit: cuitLimpioActual,
-                    p_letra: letra
-                });
-                if (error) throw error;
-                let resp = data;
-                if (data && data.siguiente_codigo_categoria) resp = data.siguiente_codigo_categoria;
-                if (resp && resp.success) {
-                    document.getElementById('artCodigo').value = resp.codigo;
-                }
-            } catch (err) {
-                console.error('Error al obtener código:', err);
-                mostrarMensajeFlotante('❌ No se pudo autocompletar el código', 'error');
-            }
-        }
+        const { data: dataLayout, error: errorLayout } = await supabaseClient.rpc('actualizar_layout_comercio', {
+            p_cuit: cuitLimpioActual,
+            p_filas: filas,
+            p_columnas: columnas,
+            p_color_fondo: colorFondoSeleccionado,
+            p_color_texto: colorTextoSeleccionado,
+            p_tipografia: tipografia,
+            p_token: localStorage.getItem('qrpretium_token')
+        });
+        if (errorLayout) throw errorLayout;
+        let respLayout = dataLayout;
+        if (dataLayout && dataLayout.actualizar_layout_comercio) respLayout = dataLayout.actualizar_layout_comercio;
+        if (!respLayout || !respLayout.success) throw new Error(respLayout?.error || 'Error al guardar layout');
 
-        function renderizarTablaCategorias() {
-            const tbody = document.getElementById('tbodyCategorias');
-            tbody.innerHTML = '';
-            const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-            
-            letras.forEach(letra => {
-                const cat = categoriasLista.find(c => c.letra === letra);
-                const activa = cat ? cat.activa : false;
-                const tipo = cat ? (cat.tipo_producto || '') : '';
-                
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="text-center">
-                        <input type="checkbox" data-letra="${letra}" ${activa ? 'checked' : ''}>
-                    </td>
-                    <td class="font-mono font-black text-lg text-slate-800">${letra}</td>
-                    <td>
-                        <input type="text" data-letra-tipo="${letra}" value="${tipo}" placeholder="Cartera, Bolso, Calzado, Otro...">
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
+        comercioActual.filas_vidriera = filas;
+        comercioActual.columnas_vidriera = columnas;
+        comercioActual.color_etiqueta_fondo = colorFondoSeleccionado;
+        comercioActual.color_etiqueta_texto = colorTextoSeleccionado;
+        comercioActual.tipografia_etiqueta = tipografia;
 
-        function abrirPopupCategorias() {
-            renderizarTablaCategorias();
-            document.getElementById('popupCategorias').classList.add('activo');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function cerrarPopupCategorias() {
-            document.getElementById('popupCategorias').classList.remove('activo');
-            document.body.style.overflow = '';
-        }
-
-        async function guardarCategorias() {
-            const categorias = [];
-            const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-            
-            letras.forEach(letra => {
-                const check = document.querySelector(`input[data-letra="${letra}"]`);
-                const tipoInput = document.querySelector(`input[data-letra-tipo="${letra}"]`);
-                if (check && check.checked) {
-                    categorias.push({
-                        letra: letra,
-                        tipo_producto: (tipoInput ? tipoInput.value.trim() : '') || letra,
-                        activa: true
-                    });
-                } else {
-                    categorias.push({
-                        letra: letra,
-                        tipo_producto: (tipoInput ? tipoInput.value.trim() : '') || '',
-                        activa: false
-                    });
-                }
-            });
-
-            try {
-                const { data, error } = await supabaseClient.rpc('guardar_categorias', {
-                    p_cuit: cuitLimpioActual,
-                    p_categorias: categorias
-                });
-                if (error) throw error;
-                let resp = data;
-                if (data && data.guardar_categorias) resp = data.guardar_categorias;
-                if (!resp || !resp.success) throw new Error(resp?.error || 'Error al guardar');
-
-                mostrarMensajeFlotante('✅ Categorías guardadas', 'ok');
-                await cargarCategorias();
-                cerrarPopupCategorias();
-            } catch (err) {
-                console.error('Error al guardar categorías:', err);
-                mostrarMensajeFlotante('❌ ' + err.message, 'error');
-            }
-        }
- // ==================== ARTÍCULOS ====================
-        async function cargarArticulos() {
-            try {
-                const { data, error } = await supabaseClient.rpc('listar_articulos_by_cuit', { p_cuit: cuitLimpioActual });
-                if (error) throw error;
-
-                let respuesta = data;
-                if (data && data.listar_articulos_by_cuit) respuesta = data.listar_articulos_by_cuit;
-
-                let lista = [];
-                if (respuesta && respuesta.success) {
-                    lista = respuesta.articulos;
-                    if (typeof lista === 'string') {
-                        try { lista = JSON.parse(lista); } catch(e) { lista = []; }
-                    }
-                }
-                articulosLista = Array.isArray(lista) ? lista : [];
-                renderizarTabla();
-
-                const planComercio = comercioActual.plan || 'standard';
-                actualizarIndicadorCupo(planComercio, articulosLista.length);
-            } catch (err) {
-                console.error('Error al cargar artículos:', err);
-                mostrarMensajeFlotante('❌ Error al cargar artículos', 'error');
-            }
-        }
-
-        function actualizarIndicadorCupo(planComercio, totalGuardados) {
-            const plan = (planComercio || 'standard').toLowerCase();
-            const limites = { 'standard': 35, 'power': 350, 'premium': 2800, 'prueba gratuita': 35 };
-            const limiteMax = limites[plan] || 35;
-            const porcentaje = Math.min((totalGuardados / limiteMax) * 100, 100);
-
-            document.getElementById('nombrePlan').innerText = `Plan ${plan.toUpperCase()}`;
-            document.getElementById('textoCupo').innerText = `${totalGuardados} de ${limiteMax} artículos`;
-            
-            const barra = document.getElementById('barraProgreso');
-            barra.style.width = `${porcentaje}%`;
-            barra.className = porcentaje >= 100 ? 'bg-red-500 h-full transition-all' 
-                            : porcentaje >= 80 ? 'bg-amber-500 h-full transition-all'
-                            : 'bg-white h-full transition-all';
-        }
-
-        function renderizarTabla() {
-            const tbody = document.getElementById('tbodyArticulos');
-            document.getElementById('cantArticulos').innerText = `${articulosLista.length} productos`;
-            tbody.innerHTML = '';
-
-            if (articulosLista.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-gray-400">No hay artículos cargados. Hacé click en "➕ Nuevo Artículo" para empezar.</td></tr>`;
-                return;
-            }
-
-articulosLista.forEach(item => {
-    const id = item.id;
-    const cod = item.codigo || '-';
-    const art = item.articulo || '-';
-    const disp = item.disponibilidad || '-';
-    const precio = item.precio || 0;
-    const promo = item.promocion || '';
-    const tienePromo = promo && promo.trim() !== '';
-    const tieneVideo = item.video_url && String(item.video_url).trim() !== '';
-
-    tbody.innerHTML += `
-        <tr>
-            <td><span class="codigo-badge">${cod}</span></td>
-            <td class="font-semibold text-slate-800">
-                ${art}
-                ${tieneVideo ? '<span class="badge-promo" style="background:#dbeafe;color:#1d4ed8;">▶️</span>' : ''}
-            </td>
-            <td class="text-xs font-bold text-emerald-600">${disp}</td>
-            <td class="text-xs font-bold ${tienePromo ? 'text-orange-500' : 'text-gray-400'}">
-                ${tienePromo ? '🔥 ' + promo : '—'}
-            </td>
-            <td class="font-black text-slate-800">$${Number(precio).toLocaleString('es-AR')}</td>
-            <td class="text-right space-x-1">
-                <button onclick="prepararEdicion(${id})" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-bold text-xs">✏️ Editar</button>
-                <button onclick="eliminarArticulo(${id})" class="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded font-bold text-xs">🗑️ Borrar</button>
-            </td>
-        </tr>
-    `;
-});
-            } 
+        mostrarMensajeFlotante('✅ Categorías y layout guardados', 'ok');
+        await cargarCategorias();
+        cerrarPopupCategorias();
+    } catch (err) {
+        console.error('Error al guardar:', err);
+        mostrarMensajeFlotante('❌ ' + err.message, 'error');
+    }
+}
 
         // ==================== POPUP NUEVO ARTÍCULO ====================
         function abrirPopupNuevoArticulo() {
