@@ -1836,8 +1836,7 @@ function abrirVistaPreviaDesdeTabla(codigo) {
                 parseInt(hex.substring(4, 6), 16)
             ];
         }
-
-              function generarPDFs(tipo) {
+        function generarPDFs(tipo) {
             if (!window.jspdf) {
                 alert('❌ jsPDF no está cargado. Esperá unos segundos y volvé a intentar.');
                 return;
@@ -1855,6 +1854,7 @@ function abrirVistaPreviaDesdeTabla(codigo) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
+            // Agrupar artículos por categoría
             const porCategoria = {};
             articulosLista.forEach(a => {
                 const letra = (a.codigo || 'A').charAt(0).toUpperCase();
@@ -1862,13 +1862,18 @@ function abrirVistaPreviaDesdeTabla(codigo) {
                 porCategoria[letra].push(a);
             });
 
+            // Detectar plan y dígitos
             const plan = (comercioActual.plan || 'standard').toLowerCase();
             const digitos = (plan.includes('power') || plan.includes('premium')) ? 3 : 2;
 
+            // Colores y estilos
             const colorFondo = tipo === 'plantilla' ? (comercioActual.color_etiqueta_fondo || '#0f172a') : '#ffffff';
             const colorTexto = tipo === 'plantilla' ? (comercioActual.color_etiqueta_texto || '#ffffff') : '#000000';
-            const colorBorde = tipo === 'plantilla' ? '#f97316' : '#999999';
+            const colorBorde = tipo === 'plantilla' ? (comercioActual.color_etiqueta_texto || '#ffffff') : '#000000';
             const tipografia = tipo === 'plantilla' ? (comercioActual.tipografia_etiqueta || 'Inter') : 'Helvetica';
+            const estiloBorde = tipo === 'plantilla' ? (comercioActual.estilo_borde || 'sin_borde') : 'simple';
+            const logoData = tipo === 'plantilla' ? (comercioActual.logo_etiqueta || '') : '';
+            const logoPos = tipo === 'plantilla' ? (comercioActual.logo_etiqueta_posicion || 'arriba') : 'arriba';
 
             const rgbFondo = hexToRgb(colorFondo);
             const rgbTexto = hexToRgb(colorTexto);
@@ -1885,13 +1890,13 @@ function abrirVistaPreviaDesdeTabla(codigo) {
             };
             const fontPDF = fontMap[tipografia] || 'helvetica';
 
-                        // Calcular cuántas etiquetas caben por fila según el ancho
+            // Layout
             const espacioX = 3;
             const espacioY = 3;
             const margenX = 10;
-            const anchoUtil = 210 - (margenX * 2); // A4 = 210 mm ancho
+            const anchoUtil = 210 - (margenX * 2);
             const porFila = Math.max(1, Math.floor((anchoUtil + espacioX) / (anchoEtiqueta + espacioX)));
-            
+
             let x = margenX;
             let y = 20;
             let columna = 0;
@@ -1915,27 +1920,88 @@ function abrirVistaPreviaDesdeTabla(codigo) {
                 }
 
                 codigosAImprimir.forEach(cod => {
-                    if (y + altoEtiqueta > 280) {
+                    if (y + altoEtiqueta > 285) {
                         doc.addPage();
                         x = margenX;
                         y = 20;
                         columna = 0;
                     }
+
+                    // 1. Fondo
                     if (tipo === 'plantilla') {
                         doc.setFillColor(rgbFondo[0], rgbFondo[1], rgbFondo[2]);
-                        doc.roundedRect(x, y, anchoEtiqueta, altoEtiqueta, 3, 3, 'F');
+                        doc.rect(x, y, anchoEtiqueta, altoEtiqueta, 'F');
                     }
 
+                    // 2. Borde
                     doc.setDrawColor(rgbBorde[0], rgbBorde[1], rgbBorde[2]);
-                    doc.setLineWidth(0.8);
-                    doc.roundedRect(x, y, anchoEtiqueta, altoEtiqueta, 3, 3, 'S');
+                    doc.setLineWidth(0.4);
+                    if (estiloBorde === 'simple') {
+                        doc.rect(x, y, anchoEtiqueta, altoEtiqueta, 'S');
+                    } else if (estiloBorde === 'doble') {
+                        doc.rect(x, y, anchoEtiqueta, altoEtiqueta, 'S');
+                        doc.setLineWidth(0.2);
+                        doc.rect(x + 1.5, y + 1.5, anchoEtiqueta - 3, altoEtiqueta - 3, 'S');
+                        doc.setLineWidth(0.4);
+                    } else if (estiloBorde === 'punteado') {
+                        doc.setLineDashPattern([1, 1], 0);
+                        doc.rect(x, y, anchoEtiqueta, altoEtiqueta, 'S');
+                        doc.setLineDashPattern([], 0);
+                    } else if (estiloBorde === 'esquinas') {
+                        const largo = 6;
+                        // Esquina superior izquierda
+                        doc.line(x, y, x + largo, y);
+                        doc.line(x, y, x, y + largo);
+                        // Esquina superior derecha
+                        doc.line(x + anchoEtiqueta - largo, y, x + anchoEtiqueta, y);
+                        doc.line(x + anchoEtiqueta, y, x + anchoEtiqueta, y + largo);
+                        // Esquina inferior izquierda
+                        doc.line(x, y + altoEtiqueta - largo, x, y + altoEtiqueta);
+                        doc.line(x, y + altoEtiqueta, x + largo, y + altoEtiqueta);
+                        // Esquina inferior derecha
+                        doc.line(x + anchoEtiqueta - largo, y + altoEtiqueta, x + anchoEtiqueta, y + altoEtiqueta);
+                        doc.line(x + anchoEtiqueta, y + altoEtiqueta - largo, x + anchoEtiqueta, y + altoEtiqueta);
+                    } else if (estiloBorde === 'filigrana') {
+                        doc.setFontSize(8);
+                        doc.setTextColor(rgbBorde[0], rgbBorde[1], rgbBorde[2]);
+                        doc.text('✦', x + 2, y + 4);
+                        doc.text('✦', x + anchoEtiqueta - 4, y + 4);
+                        doc.text('✦', x + 2, y + altoEtiqueta - 2);
+                        doc.text('✦', x + anchoEtiqueta - 4, y + altoEtiqueta - 2);
+                    }
 
+                    // 3. Logo (si hay)
+                    let yTextoBase = y + altoEtiqueta / 2 + 3;
+                    let hayLogo = false;
+
+                    if (logoData && String(logoData).trim() !== '') {
+                        try {
+                            const logoAncho = Math.min(anchoEtiqueta - 8, 25);
+                            const logoAlto = 12;
+                            const logoX = x + (anchoEtiqueta - logoAncho) / 2;
+                            
+                            if (logoPos === 'arriba') {
+                                doc.addImage(logoData, 'PNG', logoX, y + 3, logoAncho, logoAlto);
+                                yTextoBase = y + altoEtiqueta - 5;
+                                hayLogo = true;
+                            } else {
+                                doc.addImage(logoData, 'PNG', logoX, y + altoEtiqueta - logoAlto - 3, logoAncho, logoAlto);
+                                yTextoBase = y + 7;
+                                hayLogo = true;
+                            }
+                        } catch (errImg) {
+                            console.warn('Error al agregar logo:', errImg);
+                        }
+                    }
+
+                    // 4. Texto del código
                     doc.setTextColor(rgbTexto[0], rgbTexto[1], rgbTexto[2]);
                     doc.setFont(fontPDF, 'bold');
-                    doc.setFontSize(20);
-                    doc.text(cod, x + anchoEtiqueta / 2, y + altoEtiqueta / 2 + 3, { align: 'center' });
+                    doc.setFontSize(Math.min(20, anchoEtiqueta / 2));
+                    doc.text(cod, x + anchoEtiqueta / 2, yTextoBase, { align: 'center' });
 
-                   columna++;
+                    // Avanzar
+                    columna++;
                     if (columna >= porFila) {
                         columna = 0;
                         x = margenX;
@@ -1947,7 +2013,7 @@ function abrirVistaPreviaDesdeTabla(codigo) {
 
                 if (columna !== 0) {
                     columna = 0;
-                    x = 15;
+                    x = margenX;
                     y += altoEtiqueta + espacioY;
                 }
             });
@@ -1964,64 +2030,6 @@ function abrirVistaPreviaDesdeTabla(codigo) {
 
             cerrarPopupImprimir();
             mostrarMensajeFlotante('✅ PDF de códigos generado', 'ok');
-        }
-
-        function generarGuiaUbicacion(tipo) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-
-            doc.setFontSize(16);
-            doc.setFont('helvetica', 'bold');
-            doc.text(`Guía de Ubicación - ${comercioActual.nombre || 'Comercio'}`, 15, 15);
-
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'normal');
-            doc.text('Esta es una guía para pegar los códigos en la vidriera.', 15, 22);
-
-            const filas = comercioActual.filas_vidriera || 5;
-            const columnas = comercioActual.columnas_vidriera || 5;
-            const ancho = 260;
-            const alto = 160;
-            const anchoCelda = ancho / columnas;
-            const altoCelda = alto / filas;
-            const startX = 15;
-            const startY = 35;
-
-            const grid = {};
-            articulosLista.forEach(a => {
-                const f = a.fila || 1;
-                const c = a.columna || 1;
-                const key = `${f}-${c}`;
-                if (!grid[key]) grid[key] = [];
-                grid[key].push(a.codigo);
-            });
-
-            doc.setDrawColor(150, 150, 150);
-            doc.setLineWidth(0.3);
-
-            for (let f = 1; f <= filas; f++) {
-                for (let c = 1; c <= columnas; c++) {
-                    const cx = startX + (c - 1) * anchoCelda;
-                    const cy = startY + (f - 1) * altoCelda;
-                    doc.rect(cx, cy, anchoCelda, altoCelda);
-
-                    doc.setFontSize(7);
-                    doc.setTextColor(180, 180, 180);
-                    doc.text(`F${f} C${c}`, cx + 1, cy + 3);
-
-                    const key = `${f}-${c}`;
-                    if (grid[key]) {
-                        doc.setFontSize(9);
-                        doc.setFont('helvetica', 'bold');
-                        doc.setTextColor(0, 0, 0);
-                        grid[key].forEach((cod, i) => {
-                            doc.text(cod, cx + 3, cy + 8 + i * 5);
-                        });
-                    }
-                }
-            }
-
-            doc.save(`Guia-Ubicacion-${cuitLimpioActual}-${tipo}.pdf`);
         }
 
         // ==================== CIERRE CON ESC ====================
