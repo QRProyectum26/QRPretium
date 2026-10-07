@@ -4,6 +4,20 @@ Markdown
 # TrigoScript 3D (Lingua Latina) 📐🌌
 
 **TrigoScript 3D** es un lenguaje de programación de dominio específico (*DSL*) de alto rendimiento, diseñado en **Rust**, para el control angular de actuadores, motores, acústica 3D y simulación cosmo-geométrica.
+---
+
+## VIII. Axiomas de Fase Dimensional y Tensión Superficial de Planck
+
+1. **Invariante de Saturación (Tensión de Planck):**
+   La métrica de espacio-tiempo en TrigoScript 3D no puede ser deformada por inyección no alineada de energía. Todo cálculo de interferencia vectorial está acotado por la constante de saturación de Planck ($\sigma_P = 1.22 \times 10^{19}$), impidiendo singularidades térmicas o colapsos de coherencia molecular.
+
+2. **Geometría Hiperdimensional ($4\text{D}$ en $S^3$):**
+   - El espacio tridimensional ($3\text{D}$) actúa como la proyección o sombra de la hiperesfera $S^3$.
+   - Los desplazamientos o transiciones de invisibilidad electromagnética no ocurren por ruptura de masa, sino por **rotación ortogonal sobre el eje hiperdimensional $W$** mediante cuaterniones.
+
+3. **Invisibilidad por Alineación vs. Fuerza Bruta:**
+   - La inyección de energía bruta (campos magnéticos pulsados sin simetría) choca contra la barrera de saturación de Planck, generando distorsión destructiva.
+   - La alineación geométrica de $60^\circ$ (`TRINUM`) sobre la red geodésica del `ICOSAHEDRON` permite la transparencia refractiva y la transición suave entre fases dimensionales preservando la estructura atómica del objeto.
 
 El lenguaje reemplaza el cálculo trigonométrico continuo tradicional por una **retícula discreta de fases basada en el ángulo de 60° (`TRINUM`)** y rotaciones en la **esfera $S^3$ mediante cuaterniones**, eliminando por completo el problema del *Gimbal Lock* (bloqueo de ejes).
 
