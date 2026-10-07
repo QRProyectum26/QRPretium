@@ -641,7 +641,7 @@
                             </label>
                             <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-white cursor-pointer">
                                 <input type="radio" name="tamanoEtiqueta" value="90x60" class="w-4 h-4 accent-orange-500">
-                                <span class="text-sm text-slate-700">Extra Grande (90 x 60 mm)</span>
+                                <span class="text-sm text-slate-700">Extra Extra (90 x 60 mm)</span>
                             </label>
                         </div>
                     </div>
@@ -1851,7 +1851,6 @@ function abrirVistaPreviaDesdeTabla(codigo) {
             } catch (err) {
                 mostrarMensajeFlotante('❌ ' + err.message, 'error');
             }
-        }
 
          // ==================== IMPRIMIR CÓDIGOS ====================
        function abrirPopupImprimir() {
@@ -1875,7 +1874,7 @@ function abrirVistaPreviaDesdeTabla(codigo) {
             
             document.getElementById('popupImprimir').classList.add('activo');
         }
-        }
+        
         function cerrarPopupImprimir() {
             document.getElementById('popupImprimir').classList.remove('activo');
         }
