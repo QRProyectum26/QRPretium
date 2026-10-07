@@ -615,26 +615,62 @@
                 <h2 class="text-xl font-extrabold text-slate-800 mb-2">🖨️ Imprimir Códigos</h2>
                 <p class="text-xs text-gray-500 mb-4">Elegí el tamaño de etiqueta y el tipo de plantilla. Se descargan 2 PDFs.</p>
 
-                <!-- Selector de tamaño -->
+   <!-- Selector de tamaño -->
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-4">
                     <h3 class="text-sm font-bold text-slate-800 mb-3">📏 Tamaño de etiqueta</h3>
-                    <div class="space-y-2">
-                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-white cursor-pointer">
-                            <input type="radio" name="tamanoEtiqueta" value="35x20" class="w-4 h-4 accent-orange-500">
-                            <span class="text-sm text-slate-700">Chico (35 x 20 mm) — hasta 70 por hoja</span>
-                        </label>
-                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-white cursor-pointer">
-                            <input type="radio" name="tamanoEtiqueta" value="42x26" checked class="w-4 h-4 accent-orange-500">
-                            <span class="text-sm text-slate-700">Mediano (42 x 26 mm) — hasta 36 por hoja</span>
-                        </label>
-                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-white cursor-pointer">
-                            <input type="radio" name="tamanoEtiqueta" value="55x35" class="w-4 h-4 accent-orange-500">
-                            <span class="text-sm text-slate-700">Grande (55 x 35 mm) — hasta 21 por hoja</span>
-                        </label>
-                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-white cursor-pointer">
-                            <input type="radio" name="tamanoEtiqueta" value="70x45" class="w-4 h-4 accent-orange-500">
-                            <span class="text-sm text-slate-700">Extra Grande (70 x 45 mm) — hasta 10 por hoja</span>
-                        </label>
+                    
+                    <!-- Grupo horizontal (sin logo) -->
+                    <div id="grupoHorizontal">
+                        <p class="text-[11px] font-bold text-gray-500 uppercase mb-2">Horizontales (sin logo)</p>
+                        <div class="space-y-2 mb-3">
+                            <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-white cursor-pointer">
+                                <input type="radio" name="tamanoEtiqueta" value="35x20" class="w-4 h-4 accent-orange-500">
+                                <span class="text-sm text-slate-700">Chico (35 x 20 mm)</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-white cursor-pointer">
+                                <input type="radio" name="tamanoEtiqueta" value="42x26" checked class="w-4 h-4 accent-orange-500">
+                                <span class="text-sm text-slate-700">Mediano (42 x 26 mm)</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-white cursor-pointer">
+                                <input type="radio" name="tamanoEtiqueta" value="55x35" class="w-4 h-4 accent-orange-500">
+                                <span class="text-sm text-slate-700">Grande (55 x 35 mm)</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-white cursor-pointer">
+                                <input type="radio" name="tamanoEtiqueta" value="70x45" class="w-4 h-4 accent-orange-500">
+                                <span class="text-sm text-slate-700">Extra Grande (70 x 45 mm)</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-white cursor-pointer">
+                                <input type="radio" name="tamanoEtiqueta" value="90x60" class="w-4 h-4 accent-orange-500">
+                                <span class="text-sm text-slate-700">Extra Grande (90 x 60 mm)</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Grupo vertical (con logo) -->
+                    <div id="grupoVertical" class="hidden">
+                        <p class="text-[11px] font-bold text-gray-500 uppercase mb-2">Verticales (con logo)</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-white cursor-pointer">
+                                <input type="radio" name="tamanoEtiqueta" value="35x45" class="w-4 h-4 accent-orange-500">
+                                <span class="text-sm text-slate-700">Chico Vertical (35 x 45 mm)</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-white cursor-pointer">
+                                <input type="radio" name="tamanoEtiqueta" value="42x55" checked class="w-4 h-4 accent-orange-500">
+                                <span class="text-sm text-slate-700">Mediano Vertical (42 x 55 mm)</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-white cursor-pointer">
+                                <input type="radio" name="tamanoEtiqueta" value="55x70" class="w-4 h-4 accent-orange-500">
+                                <span class="text-sm text-slate-700">Grande Vertical (55 x 70 mm)</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-white cursor-pointer">
+                                <input type="radio" name="tamanoEtiqueta" value="70x90" class="w-4 h-4 accent-orange-500">
+                                <span class="text-sm text-slate-700">Extra Grande Vertical (70 x 90 mm)</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-white cursor-pointer">
+                                <input type="radio" name="tamanoEtiqueta" value="120x80" class="w-4 h-4 accent-orange-500">
+                                <span class="text-sm text-slate-700">Extra Extra Vertical (120 x 80 mm)</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
@@ -1818,8 +1854,27 @@ function abrirVistaPreviaDesdeTabla(codigo) {
         }
 
          // ==================== IMPRIMIR CÓDIGOS ====================
-        function abrirPopupImprimir() {
+       function abrirPopupImprimir() {
+            // Detectar si hay logo
+            const tieneLogo = comercioActual?.logo_etiqueta && String(comercioActual.logo_etiqueta).trim() !== '';
+            
+            // Mostrar el grupo correcto
+            if (tieneLogo) {
+                document.getElementById('grupoHorizontal').classList.add('hidden');
+                document.getElementById('grupoVertical').classList.remove('hidden');
+                // Marcar "Mediano Vertical" por defecto
+                const radioVertical = document.querySelector('input[name="tamanoEtiqueta"][value="42x55"]');
+                if (radioVertical) radioVertical.checked = true;
+            } else {
+                document.getElementById('grupoHorizontal').classList.remove('hidden');
+                document.getElementById('grupoVertical').classList.add('hidden');
+                // Marcar "Mediano" por defecto
+                const radioHorizontal = document.querySelector('input[name="tamanoEtiqueta"][value="42x26"]');
+                if (radioHorizontal) radioHorizontal.checked = true;
+            }
+            
             document.getElementById('popupImprimir').classList.add('activo');
+        }
         }
         function cerrarPopupImprimir() {
             document.getElementById('popupImprimir').classList.remove('activo');
