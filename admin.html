@@ -2050,7 +2050,8 @@ function abrirVistaPreviaDesdeTabla(codigo) {
                     // 4. Texto del código
                     doc.setTextColor(rgbTexto[0], rgbTexto[1], rgbTexto[2]);
                     doc.setFont(fontPDF, 'bold');
-                    doc.setFontSize(Math.min(20, anchoEtiqueta / 2));
+                    // El font crece con el ancho, sin tope tan bajo
+                    doc.setFontSize(Math.min(48, anchoEtiqueta * 0.55));
                     doc.text(cod, x + anchoEtiqueta / 2, yTextoBase, { align: 'center' });
 
                     // Avanzar
