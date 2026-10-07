@@ -654,6 +654,7 @@
         let articuloEditandoId = null;
         let colorFondoSeleccionado = '#0f172a';
         let colorTextoSeleccionado = '#ffffff';
+        let logoEtiquetaBase64 = '';
 
         const PALETA_COLORES = [
             '#0f172a', '#1f2937', '#334155', '#64748b', '#cbd5e1', '#ffffff',
@@ -868,52 +869,197 @@
                 contTexto.appendChild(btn);
             });
         }
+function cargarLogoEtiqueta(event) {
+    const archivo = event.target.files[0];
+    if (!archivo) return;
 
- function actualizarPreviewEtiquetas() {
+    const tiposPermitidos = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/svg+xml'];
+    if (!tiposPermitidos.includes(archivo.type)) {
+        mostrarMensajeFlotante('❌ Formato no permitido', 'error');
+        event.target.value = '';
+        return;
+    }
+    const maxBytes = 100 * 1024;
+    if (archivo.size > maxBytes) {
+        mostrarMensajeFlotante(`❌ La imagen pesa ${(archivo.size/1024).toFixed(1)} KB. Máx: 100 KB`, 'error');
+        event.target.value = '';
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        logoEtiquetaBase64 = e.target.result;
+        document.getElementById('previewLogoEtiqueta').src = logoEtiquetaBase64;
+        const cont = document.getElementById('previewLogoEtiquetaContenedor');
+        cont.classList.remove('hidden');
+        cont.classList.add('flex');
+        mostrarMensajeFlotante('✅ Logo cargado', 'ok');
+        actualizarPreviewEtiquetas();
+    };
+    reader.readAsDataURL(archivo);
+}
+
+function quitarLogoEtiqueta() {
+    logoEtiquetaBase64 = '';
+    document.getElementById('inputLogoEtiqueta').value = '';
+    document.getElementById('previewLogoEtiqueta').src = '';
+    const cont = document.getElementById('previewLogoEtiquetaContenedor');
+    cont.classList.add('hidden');
+    cont.classList.remove('flex');
+    actualizarPreviewEtiquetas();
+}
+
+function actualizarPreviewEtiquetas() {
     const cont = document.getElementById('previewEtiquetas');
     if (!cont) return;
+
     const tipografia = document.getElementById('layoutTipografia').value || 'Inter';
+    const borde = document.getElementById('layoutBorde')?.value || 'sin_borde';
+    const logoPos = document.getElementById('layoutLogoPosicion')?.value || 'arriba';
 
     // Detectar plan para saber cuántos dígitos usar
     const plan = (comercioActual.plan || 'standard').toLowerCase();
     const digitos = (plan.includes('power') || plan.includes('premium')) ? 3 : 2;
+    const codigoEjemplo = 'A' + String(1).padStart(digitos, '0');
 
-    // Generar códigos de ejemplo según el plan
-    const ejemplos = ['A', 'B', 'C', 'D'].map((letra, i) => {
-        const num = String(i + 1).padStart(digitos, '0');
-        return letra + num;
-    });
-
+    // Limpiar
     cont.innerHTML = '';
-    ejemplos.forEach(cod => {
-        const div = document.createElement('div');
-        div.style.backgroundColor = colorFondoSeleccionado;
-        div.style.color = colorTextoSeleccionado;
-        div.style.fontFamily = `'${tipografia}', sans-serif`;
-        div.style.fontWeight = '700';
-        div.style.fontStyle = 'normal';
-        div.style.fontSize = '18px';
-        div.style.padding = '8px 14px';
-        div.style.borderRadius = '10px';
-        div.style.border = '2px solid #f97316';
-        div.style.letterSpacing = '1px';
-        div.innerText = cod;
-        cont.appendChild(div);
-    });
+    cont.className = 'flex justify-center items-center flex-wrap';
+
+    // Crear la etiqueta
+    const etiqueta = document.createElement('div');
+    etiqueta.style.backgroundColor = colorFondoSeleccionado;
+    etiqueta.style.color = colorTextoSeleccionado;
+    etiqueta.style.fontFamily = `'${tipografia}', sans-serif`;
+    etiqueta.style.fontWeight = '900';
+    etiqueta.style.fontSize = '32px';
+    etiqueta.style.width = '200px';
+    etiqueta.style.minHeight = '120px';
+    etiqueta.style.display = 'flex';
+    etiqueta.style.flexDirection = 'column';
+    etiqueta.style.alignItems = 'center';
+    etiqueta.style.justifyContent = 'center';
+    etiqueta.style.padding = '20px 14px';
+    etiqueta.style.letterSpacing = '2px';
+    etiqueta.style.position = 'relative';
+    etiqueta.style.boxSizing = 'border-box';
+    etiqueta.style.gap = '10px';
+    etiqueta.style.borderRadius = '0';
+
+    // Aplicar estilo de borde
+    const colorBorde = colorTextoSeleccionado;
+    if (borde === 'simple') {
+        etiqueta.style.border = `3px solid ${colorBorde}`;
+    } else if (borde === 'doble') {
+        etiqueta.style.border = `3px double ${colorBorde}`;
+    } else if (borde === 'punteado') {
+        etiqueta.style.border = `3px dashed ${colorBorde}`;
+    } else if (borde === 'esquinas') {
+        etiqueta.style.border = 'none';
+        ['tl', 'tr', 'bl', 'br'].forEach(pos => {
+            const linea = document.createElement('span');
+            linea.style.position = 'absolute';
+            linea.style.width = '20px';
+            linea.style.height = '20px';
+            if (pos === 'tl') {
+                linea.style.top = '0';
+                linea.style.left = '0';
+                linea.style.borderTop = `3px solid ${colorBorde}`;
+                linea.style.borderLeft = `3px solid ${colorBorde}`;
+            } else if (pos === 'tr') {
+                linea.style.top = '0';
+                linea.style.right = '0';
+                linea.style.borderTop = `3px solid ${colorBorde}`;
+                linea.style.borderRight = `3px solid ${colorBorde}`;
+            } else if (pos === 'bl') {
+                linea.style.bottom = '0';
+                linea.style.left = '0';
+                linea.style.borderBottom = `3px solid ${colorBorde}`;
+                linea.style.borderLeft = `3px solid ${colorBorde}`;
+            } else if (pos === 'br') {
+                linea.style.bottom = '0';
+                linea.style.right = '0';
+                linea.style.borderBottom = `3px solid ${colorBorde}`;
+                linea.style.borderRight = `3px solid ${colorBorde}`;
+            }
+            etiqueta.appendChild(linea);
+        });
+    } else if (borde === 'filigrana') {
+        etiqueta.style.border = 'none';
+        const posiciones = [
+            { top: '2px', left: '4px' },
+            { top: '2px', right: '4px' },
+            { bottom: '2px', left: '4px' },
+            { bottom: '2px', right: '4px' }
+        ];
+        posiciones.forEach(pos => {
+            const span = document.createElement('span');
+            span.innerText = '✦';
+            span.style.position = 'absolute';
+            span.style.color = colorBorde;
+            span.style.fontSize = '14px';
+            Object.assign(span.style, pos);
+            etiqueta.appendChild(span);
+        });
+    }
+
+    // Logo (si hay)
+    const logoData = logoEtiquetaBase64 || comercioActual?.logo_etiqueta || '';
+    if (logoData) {
+        const img = document.createElement('img');
+        img.src = logoData;
+        img.style.maxHeight = '40px';
+        img.style.maxWidth = '100%';
+        img.style.objectFit = 'contain';
+        if (logoPos === 'arriba') {
+            etiqueta.insertBefore(img, etiqueta.firstChild);
+        } else {
+            etiqueta.appendChild(img);
+        }
+    }
+
+    // Código
+    const codSpan = document.createElement('span');
+    codSpan.innerText = codigoEjemplo;
+    codSpan.style.lineHeight = '1';
+    etiqueta.appendChild(codSpan);
+
+    cont.appendChild(etiqueta);
+
+    // Texto de ayuda
+    const ayuda = document.createElement('p');
+    ayuda.innerText = 'Así se verá la etiqueta impresa (borde recto)';
+    ayuda.className = 'text-[10px] text-gray-400 w-full text-center mt-2';
+    cont.appendChild(ayuda);
 }
 
         function abrirPopupCategorias() {
-            renderizarPaletas();
-            renderizarTablaCategorias();
-            document.getElementById('layoutFilas').value = comercioActual.filas_vidriera || 5;
-            document.getElementById('layoutColumnas').value = comercioActual.columnas_vidriera || 5;
-            document.getElementById('layoutTipografia').value = comercioActual.tipografia_etiqueta || 'Inter';
-            colorFondoSeleccionado = comercioActual.color_etiqueta_fondo || '#0f172a';
-            colorTextoSeleccionado = comercioActual.color_etiqueta_texto || '#ffffff';
-            actualizarPreviewEtiquetas();
-            document.getElementById('popupCategorias').classList.add('activo');
-            document.body.style.overflow = 'hidden';
-        }
+    renderizarPaletas();
+    renderizarTablaCategorias();
+    document.getElementById('layoutFilas').value = comercioActual.filas_vidriera || 5;
+    document.getElementById('layoutColumnas').value = comercioActual.columnas_vidriera || 5;
+    document.getElementById('layoutTipografia').value = comercioActual.tipografia_etiqueta || 'Inter';
+    document.getElementById('layoutBorde').value = comercioActual.estilo_borde || 'sin_borde';
+    document.getElementById('layoutLogoPosicion').value = comercioActual.logo_etiqueta_posicion || 'arriba';
+    
+    if (comercioActual.logo_etiqueta && String(comercioActual.logo_etiqueta).trim() !== '') {
+        logoEtiquetaBase64 = comercioActual.logo_etiqueta;
+        document.getElementById('previewLogoEtiqueta').src = comercioActual.logo_etiqueta;
+        const cont = document.getElementById('previewLogoEtiquetaContenedor');
+        cont.classList.remove('hidden');
+        cont.classList.add('flex');
+    } else {
+        logoEtiquetaBase64 = '';
+        const cont = document.getElementById('previewLogoEtiquetaContenedor');
+        cont.classList.add('hidden');
+        cont.classList.remove('flex');
+    }
+    
+    colorFondoSeleccionado = comercioActual.color_etiqueta_fondo || '#0f172a';
+    colorTextoSeleccionado = comercioActual.color_etiqueta_texto || '#ffffff';
+    actualizarPreviewEtiquetas();
+    document.getElementById('popupCategorias').classList.add('activo');
+    document.body.style.overflow = 'hidden';
+}
 
         function cerrarPopupCategorias() {
             document.getElementById('popupCategorias').classList.remove('activo');
@@ -957,15 +1103,21 @@
                 const columnas = parseInt(document.getElementById('layoutColumnas').value) || 5;
                 const tipografia = document.getElementById('layoutTipografia').value || 'Inter';
 
-                const { data: dataLayout, error: errorLayout } = await supabaseClient.rpc('actualizar_layout_comercio', {
-                    p_cuit: cuitLimpioActual,
-                    p_filas: filas,
-                    p_columnas: columnas,
-                    p_color_fondo: colorFondoSeleccionado,
-                    p_color_texto: colorTextoSeleccionado,
-                    p_tipografia: tipografia,
-                    p_token: localStorage.getItem('qrpretium_token')
-                });
+                 const estiloBorde = document.getElementById('layoutBorde').value || 'sin_borde';
+        const logoPosicion = document.getElementById('layoutLogoPosicion').value || 'arriba';
+
+        const { data: dataLayout, error: errorLayout } = await supabaseClient.rpc('actualizar_layout_comercio', {
+            p_cuit: cuitLimpioActual,
+            p_filas: filas,
+            p_columnas: columnas,
+            p_color_fondo: colorFondoSeleccionado,
+            p_color_texto: colorTextoSeleccionado,
+            p_tipografia: tipografia,
+            p_estilo_borde: estiloBorde,
+            p_logo_etiqueta: logoEtiquetaBase64 || null,
+            p_logo_etiqueta_posicion: logoPosicion,
+            p_token: localStorage.getItem('qrpretium_token')
+        });
                 if (errorLayout) throw errorLayout;
                 let respLayout = dataLayout;
                 if (dataLayout && dataLayout.actualizar_layout_comercio) respLayout = dataLayout.actualizar_layout_comercio;
@@ -976,6 +1128,9 @@
                 comercioActual.color_etiqueta_fondo = colorFondoSeleccionado;
                 comercioActual.color_etiqueta_texto = colorTextoSeleccionado;
                 comercioActual.tipografia_etiqueta = tipografia;
+                comercioActual.estilo_borde = estiloBorde;
+        comercioActual.logo_etiqueta = logoEtiquetaBase64 || null;
+        comercioActual.logo_etiqueta_posicion = logoPosicion;
 
                 mostrarMensajeFlotante('✅ Categorías y layout guardados', 'ok');
                 await cargarCategorias();
