@@ -925,6 +925,10 @@ function actualizarPreviewEtiquetas() {
     cont.innerHTML = '';
     cont.className = 'flex justify-center items-center flex-wrap';
 
+    // Detectar si hay logo
+    const logoData = logoEtiquetaBase64 || comercioActual?.logo_etiqueta || '';
+    const tieneLogo = logoData && String(logoData).trim() !== '';
+
     // Crear la etiqueta
     const etiqueta = document.createElement('div');
     etiqueta.style.backgroundColor = colorFondoSeleccionado;
@@ -932,19 +936,27 @@ function actualizarPreviewEtiquetas() {
     etiqueta.style.fontFamily = `'${tipografia}', sans-serif`;
     etiqueta.style.fontWeight = '900';
     etiqueta.style.fontSize = '32px';
-    etiqueta.style.width = '200px';
-    etiqueta.style.minHeight = '120px';
+    
+    // Cambiar dimensiones según si tiene logo
+    if (tieneLogo) {
+        etiqueta.style.width = '140px';
+        etiqueta.style.minHeight = '180px';
+        etiqueta.style.padding = '16px 10px';
+    } else {
+        etiqueta.style.width = '200px';
+        etiqueta.style.minHeight = '120px';
+        etiqueta.style.padding = '20px 14px';
+    }
+    
     etiqueta.style.display = 'flex';
     etiqueta.style.flexDirection = 'column';
     etiqueta.style.alignItems = 'center';
     etiqueta.style.justifyContent = 'center';
-    etiqueta.style.padding = '20px 14px';
     etiqueta.style.letterSpacing = '2px';
     etiqueta.style.position = 'relative';
     etiqueta.style.boxSizing = 'border-box';
     etiqueta.style.gap = '10px';
     etiqueta.style.borderRadius = '0';
-
     // Aplicar estilo de borde
     const colorBorde = colorTextoSeleccionado;
     if (borde === 'simple') {
@@ -1002,12 +1014,11 @@ function actualizarPreviewEtiquetas() {
         });
     }
 
-    // Logo (si hay)
-    const logoData = logoEtiquetaBase64 || comercioActual?.logo_etiqueta || '';
-    if (logoData) {
+      // Logo (si hay)
+    if (tieneLogo) {
         const img = document.createElement('img');
         img.src = logoData;
-        img.style.maxHeight = '40px';
+        img.style.maxHeight = '60px';
         img.style.maxWidth = '100%';
         img.style.objectFit = 'contain';
         if (logoPos === 'arriba') {
@@ -1016,7 +1027,6 @@ function actualizarPreviewEtiquetas() {
             etiqueta.appendChild(img);
         }
     }
-
     // Código
     const codSpan = document.createElement('span');
     codSpan.innerText = codigoEjemplo;
