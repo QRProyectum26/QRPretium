@@ -925,7 +925,7 @@ function actualizarPreviewEtiquetas() {
     cont.innerHTML = '';
     cont.className = 'flex justify-center items-center flex-wrap';
 
-    // Detectar si hay logo
+ // Detectar si hay logo
     const logoData = logoEtiquetaBase64 || comercioActual?.logo_etiqueta || '';
     const tieneLogo = logoData && String(logoData).trim() !== '';
 
@@ -940,23 +940,24 @@ function actualizarPreviewEtiquetas() {
     // Cambiar dimensiones según si tiene logo
     if (tieneLogo) {
         etiqueta.style.width = '140px';
-        etiqueta.style.minHeight = '180px';
-        etiqueta.style.padding = '16px 10px';
+        etiqueta.style.height = '200px';
+        etiqueta.style.padding = '20px 10px';
+        etiqueta.style.justifyContent = 'space-between';
     } else {
         etiqueta.style.width = '200px';
         etiqueta.style.minHeight = '120px';
         etiqueta.style.padding = '20px 14px';
+        etiqueta.style.justifyContent = 'center';
     }
     
     etiqueta.style.display = 'flex';
     etiqueta.style.flexDirection = 'column';
     etiqueta.style.alignItems = 'center';
-    etiqueta.style.justifyContent = 'center';
     etiqueta.style.letterSpacing = '2px';
     etiqueta.style.position = 'relative';
     etiqueta.style.boxSizing = 'border-box';
-    etiqueta.style.gap = '10px';
     etiqueta.style.borderRadius = '0';
+ 
     // Aplicar estilo de borde
     const colorBorde = colorTextoSeleccionado;
     if (borde === 'simple') {
@@ -1014,24 +1015,30 @@ function actualizarPreviewEtiquetas() {
         });
     }
 
-      // Logo (si hay)
-    if (tieneLogo) {
-        const img = document.createElement('img');
+ // Crear los 3 posibles elementos (logo, código, logo) y agregarlos en orden
+    const img = tieneLogo ? document.createElement('img') : null;
+    if (img) {
         img.src = logoData;
-        img.style.maxHeight = '60px';
+        img.style.maxHeight = '70px';
         img.style.maxWidth = '100%';
         img.style.objectFit = 'contain';
-        if (logoPos === 'arriba') {
-            etiqueta.insertBefore(img, etiqueta.firstChild);
-        } else {
-            etiqueta.appendChild(img);
-        }
     }
-    // Código
+
     const codSpan = document.createElement('span');
     codSpan.innerText = codigoEjemplo;
     codSpan.style.lineHeight = '1';
-    etiqueta.appendChild(codSpan);
+    codSpan.style.textAlign = 'center';
+
+    // Insertar según la posición elegida
+    if (tieneLogo && logoPos === 'arriba') {
+        etiqueta.appendChild(img);       // logo primero
+        etiqueta.appendChild(codSpan);   // código después
+    } else if (tieneLogo && logoPos === 'abajo') {
+        etiqueta.appendChild(codSpan);   // código primero
+        etiqueta.appendChild(img);       // logo después
+    } else {
+        etiqueta.appendChild(codSpan);   // solo código
+    }
 
     cont.appendChild(etiqueta);
 
