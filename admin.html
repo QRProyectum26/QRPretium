@@ -2085,7 +2085,175 @@ function abrirVistaPreviaDesdeTabla(codigo) {
             cerrarPopupImprimir();
             mostrarMensajeFlotante('✅ PDF de códigos generado', 'ok');
         }
+// ==================== GUÍA DE UBICACIÓN ====================
+function generarGuiaUbicacion(tipo) {
+    if (!window.jspdf) {
+        console.warn('jsPDF no disponible para la guía');
+        return;
+    }
+    if (!articulosLista || articulosLista.length === 0) {
+        return;
+    }
 
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+    const filas = comercioActual.filas_vidriera || 5;
+    const columnas = comercioActual.columnas_vidriera || 5;
+    const nombreComercio = comercioActual.nombre || 'Mi Comercio';
+
+    // Detectar plan y dígitos (por consistencia con el otro PDF)
+    const plan = (comercioActual.plan || 'standard').toLowerCase();
+    const digitos = (plan.includes('power') || plan.includes('premium')) ? 3 : 2;
+
+    // Colores de la plantilla (o neutros para "base")
+    const colorFondo = tipo === 'plantilla' ? (comercioActual.color_etiqueta_fondo || '#0f172a') : '#ffffff';
+    const colorTexto = tipo === 'plantilla' ? (comercioActual.color_etiqueta_texto || '#ffffff') : '#000000';
+    const rgbFondo = hexToRgb(colorFondo);
+    const rgbTexto = hexToRgb(colorTexto);
+
+    // ===== ENCABEZADO =====
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.setTextColor(0, 0, 0);
+    doc.text('GUÍA DE UBICACIÓN', 105, 18, { align: 'center' });
+
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
+    doc.text(nombreComercio, 105, 25, { align: 'center' });
+    doc.setFontSize(9);
+    doc.setTextColor(100, 100, 100);
+    doc.text(`CUIT: ${cuitLimpioActual}`, 105, 30, { align: 'center' });
+
+    const hoy = new Date();
+    const fecha = hoy.toLocaleDateString('es-AR');
+    doc.text(`Fecha: ${fecha}`, 105, 35, { align: 'center' });
+
+    // ===== GRILLA =====
+    // Agrupar artículos por celda (fila-columna)
+    const celdas = {};
+    articulosLista.forEach(a => {
+        const f = parseInt(a.fila) || 1;
+        const c = parseInt(a.columna) || 1;
+        const key = `${f}-${c}`;
+        if (!celdas[key]) celdas[key] = [];
+        celdas[key].push(a.codigo || '-');
+    });
+
+    // Ordenar los códigos dentro de cada celda alfabéticamente
+    Object.keys(celdas).forEach(k => celdas[k].sort());
+
+    // Dimensiones de la grilla
+    const margenX = 15;
+    const anchoUtil = 210 - (margenX * 2);   // 180 mm
+    const anchoEtiquetaFila = 22;            // ancho de la columna "Fila N"
+    const anchoCelda = (anchoUtil - anchoEtiquetaFila) / columnas;
+    const altoCelda = 22;                    // altura base de cada celda
+    const yInicio = 48;
+
+    // ===== ENCABEZADOS DE COLUMNAS =====
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(0, 0, 0);
+
+    // Esquina vacía
+    doc.setFillColor(240, 240, 240);
+    doc.rect(margenX, yInicio, anchoEtiquetaFila, altoCelda, 'F');
+    doc.rect(margenX, yInicio, anchoEtiquetaFila, altoCelda);
+
+    // Columnas
+    for (let c = 1; c <= columnas; c++) {
+        const x = margenX + anchoEtiquetaFila + ((c - 1) * anchoCelda);
+        doc.setFillColor(240, 240, 240);
+        doc.rect(x, yInicio, anchoCelda, altoCelda, 'F');
+        doc.rect(x, yInicio, anchoCelda, altoCelda);
+        doc.text(`Col ${c}`, x + anchoCelda / 2, yInicio + altoCelda / 2 + 1.5, { align: 'center' });
+    }
+
+    // ===== FILAS =====
+    let yActual = yInicio + altoCelda;
+
+    for (let f = 1; f <= filas; f++) {
+        // Encabezado de la fila
+        doc.setFillColor(240, 240, 240);
+        doc.rect(margenX, yActual, anchoEtiquetaFila, altoCelda, 'F');
+        doc.rect(margenX, yActual, anchoEtiquetaFila, altoCelda);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.text(`Fila ${f}`, margenX + anchoEtiquetaFila / 2, yActual + altoCelda / 2 + 1.5, { align: 'center' });
+
+        // Celdas
+        for (let c = 1; c <= columnas; c++) {
+            const x = margenX + anchoEtiquetaFila + ((c - 1) * anchoCelda);
+            const key = `${f}-${c}`;
+            const codigos = celdas[key] || [];
+
+            // Borde de la celda
+            doc.setDrawColor(180, 180, 180);
+            doc.setLineWidth(0.2);
+            doc.rect(x, yActual, anchoCelda, altoCelda);
+
+            // Contenido (códigos apilados)
+            if (codigos.length > 0) {
+                // Fondo de la celda con color del tema
+                doc.setFillColor(rgbFondo[0], rgbFondo[1], rgbFondo[2]);
+                doc.rect(x + 0.5, yActual + 0.5, anchoCelda - 1, altoCelda - 1, 'F');
+
+                doc.setTextColor(rgbTexto[0], rgbTexto[1], rgbTexto[2]);
+                doc.setFont('helvetica', 'bold');
+
+                // Ajustar tamaño según cantidad de códigos
+                let fontTam = 10;
+                if (codigos.length === 2) fontTam = 8;
+                else if (codigos.length === 3) fontTam = 6.5;
+                else if (codigos.length >= 4) fontTam = 5.5;
+                doc.setFontSize(fontTam);
+
+                // Apilar verticalmente centrado
+                const total = codigos.length;
+                const lineHeight = fontTam * 0.42;
+                const alturaTotal = total * lineHeight;
+                const yBase = yActual + (altoCelda / 2) - (alturaTotal / 2) + lineHeight;
+
+                codigos.forEach((cod, i) => {
+                    doc.text(cod, x + anchoCelda / 2, yBase + (i * lineHeight), { align: 'center' });
+                });
+            }
+        }
+
+        yActual += altoCelda;
+
+        // Salto de página si no entra la próxima fila
+        if (yActual + altoCelda > 285 && f < filas) {
+            doc.addPage();
+            yActual = 20;
+            // Repetir encabezado de columnas en nueva página
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(9);
+            doc.setTextColor(0, 0, 0);
+            doc.setFillColor(240, 240, 240);
+            doc.rect(margenX, yActual, anchoEtiquetaFila, altoCelda, 'F');
+            doc.rect(margenX, yActual, anchoEtiquetaFila, altoCelda);
+            for (let c = 1; c <= columnas; c++) {
+                const x = margenX + anchoEtiquetaFila + ((c - 1) * anchoCelda);
+                doc.setFillColor(240, 240, 240);
+                doc.rect(x, yActual, anchoCelda, altoCelda, 'F');
+                doc.rect(x, yActual, anchoCelda, altoCelda);
+                doc.text(`Col ${c}`, x + anchoCelda / 2, yActual + altoCelda / 2 + 1.5, { align: 'center' });
+            }
+            yActual += altoCelda;
+        }
+    }
+
+    // ===== PIE =====
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    doc.setTextColor(150, 150, 150);
+    doc.text('QRPretium · Guía de ubicación para armado de vidriera', 105, 292, { align: 'center' });
+
+    // ===== GUARDAR =====
+    doc.save(`Guia-Ubicacion-${cuitLimpioActual}-${tipo}.pdf`);
+}
         // ==================== CIERRE CON ESC ====================
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
