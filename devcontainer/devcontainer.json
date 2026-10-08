@@ -1,0 +1,24 @@
+{
+  "name": "TrigoScript 3D (Rust)",
+  "image": "mcr.microsoft.com/devcontainers/rust:1-bookworm",
+
+  "workspaceFolder": "/workspaces/QRProyectum26/trigoscript3d",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "rust-lang.rust-analyzer",
+        "vadimcn.vscode-lldb",
+        "tamasfe.even-better-toml"
+      ],
+      "settings": {
+        "terminal.integrated.cwd": "/workspaces/QRProyectum26/trigoscript3d",
+        "rust-analyzer.linkedProjects": [
+          "/workspaces/QRProyectum26/trigoscript3d/Cargo.toml"
+        ]
+      }
+    }
+  },
+
+  "postCreateCommand": "cd /workspaces/QRProyectum26/trigoscript3d && cargo --version && cargo check || true"
+}
