@@ -1640,5 +1640,59 @@ function llamarAsesorIaDesdeEtiqueta() {
 
         window.onload = cargarDatos;
     </script>
+    <!-- ===== BLOQUE SAFELIST - NO BORRAR ===== -->
+<div class="hidden" aria-hidden="true">
+
+    <!-- Grilla de códigos (crearCelda) -->
+    <div class="codigo-celda"></div>
+    <div class="grilla-fila"></div>
+    <div class="grilla-filas"></div>
+
+    <!-- Botones de popup etiqueta (creados dinámicamente) -->
+    <button class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-3 rounded-xl text-sm transition flex items-center justify-center gap-1"></button>
+
+    <!-- Mensajes del chat IA (agregarMensajePanel) -->
+    <div class="mensaje usuario"></div>
+    <div class="mensaje ia"></div>
+    <div class="mensaje pensando"></div>
+    <div class="chat-body"></div>
+
+    <!-- Estado del cubo (aplicarEfectoCubo) -->
+    <div class="estado-cubo-sutil activo"></div>
+    <div class="estado-cubo-sutil escuchando"></div>
+    <div class="estado-cubo-sutil hablando"></div>
+    <div class="estado-cubo-sutil error"></div>
+    <div class="estado-cubo-sutil ok"></div>
+
+    <!-- Icono estado panel -->
+    <div class="icono-estado escuchando"></div>
+    <div class="icono-estado pensando"></div>
+    <div class="icono-estado hablando"></div>
+
+    <!-- Botón micrófono -->
+    <button class="btn-mic escuchando"></button>
+
+    <!-- Clases de popup activas -->
+    <div class="popup-overlay activo"></div>
+    <div class="popup-ia-contextual activo"></div>
+    <div class="panel-chat abierto"></div>
+    <div class="overlay-panel activo"></div>
+
+    <!-- Contenedores de ondas -->
+    <div class="contenedor-ondas hidden"></div>
+
+    <!-- Estados de elementos visuales -->
+    <div class="marco-verde-pastel glow-escuchando glow-hablando shake-error"></div>
+
+    <!-- Modal info comercio -->
+    <div class="hidden flex"></div>
+    <div class="hidden items-center gap-2 ml-auto"></div>
+
+    <!-- Clases usadas en tablas y textos varios -->
+    <td class=""></td>
+    <span class="text-orange-500"></span>
+
+</div>
+<!-- ===== FIN BLOQUE SAFELIST ===== -->
 </body>
 </html>
