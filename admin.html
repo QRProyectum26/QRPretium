@@ -163,11 +163,11 @@
                     <div class="flex items-center justify-center gap-2 flex-wrap">
                        <!-- NUEVO: Botón de Ayuda -->
                         <button onclick="abrirPopupAyuda()" 
-                            class="text-xs bg-black/20 hover:bg-black/20 text-emerald-500 font-bold px-3 py-1.5 rounded-lg shadow">
-                             Panel Admin❓:
-                        </button> 
+                         class="text-xs bg-black/20 hover:bg-black/20 text-emerald-500 font-bold px-3 py-1.5 rounded-lg shadow">
+                         Panel Admin <span class="text-base font-black">?</span>:
+                         </button>
                         <div class="flex items-center space-x-2 bg-black/20 p-1.5 rounded-xl backdrop-blur-sm border border-white/10">
-                            <label for="inputColor" class="text-sm font-bold text-white">Color:</label>
+                            <label for="inputColor" class="text-sm font-medium text-white">Color:</label>
                             <input type="color" id="inputColor" value="#334155" class="h-7 w-10 rounded cursor-pointer border-0 bg-transparent">
                             <button onclick="guardarColor(document.getElementById('inputColor').value)" class="text-xs bg-white text-slate-800 font-bold px-2.5 py-1 rounded-lg shadow hover:bg-gray-100">
                                 Guardar
