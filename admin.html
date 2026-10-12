@@ -2267,5 +2267,77 @@ function generarGuiaUbicacion(tipo) {
             }
         });
     </script>
+    <!-- ===== BLOQUE SAFELIST - NO BORRAR ===== -->
+<!-- Estas clases se generan dinámicamente por JS y Tailwind Play no las detecta sin este bloque -->
+<div class="hidden" aria-hidden="true">
+
+    <!-- Botones de categorías -->
+    <span class="categoria-btn seleccionada"></span>
+
+    <!-- Tabla de categorías (generada por renderizarTablaCategorias) -->
+    <input type="text" class="w-full px-2 py-1 border rounded-lg text-xs">
+    <span class="font-mono font-black text-lg text-slate-800"></span>
+    <input type="number" class="w-full px-2 py-1 border rounded-lg text-xs">
+    <input type="checkbox" class="accent-orange-500">
+
+    <!-- Paletas de colores (renderizarPaletas) -->
+    <button class="w-7 h-7 rounded-lg border-2 transition"></button>
+
+    <!-- Tabla de artículos (renderizarTabla) -->
+    <span class="codigo-badge"></span>
+    <span class="badge-promo"></span>
+    <span class="badge-promo" style="background:#dbeafe;color:#1d4ed8;"></span>
+    <button class="px-2 py-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded font-bold text-xs"></button>
+    <button class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-bold text-xs"></button>
+    <button class="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded font-bold text-xs"></button>
+    <td colspan="6" class="p-6 text-center text-gray-400"></td>
+
+    <!-- Textos varios usados dinámicamente -->
+    <span class="font-semibold text-slate-800"></span>
+    <span class="text-xs text-emerald-600"></span>
+    <span class="text-xs text-orange-500"></span>
+    <span class="text-xs text-gray-400"></span>
+    <span class="font-black text-slate-800"></span>
+
+    <!-- Especificaciones (esp-fila) -->
+    <div class="esp-fila">
+        <input type="text" placeholder="Campo">
+        <input type="text" placeholder="Valor">
+        <button class="esp-eliminar">✕</button>
+    </div>
+    <button class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold px-3 py-2 rounded-lg transition w-full mb-4"></button>
+
+    <!-- Preview etiquetas (actualizarPreviewEtiquetas) -->
+    <span class="text-[10px] text-gray-400 w-full text-center mt-2"></span>
+
+    <!-- Mensajes flotantes -->
+    <div class="mensaje-flotante activo ok"></div>
+    <div class="mensaje-flotante activo error"></div>
+
+    <!-- Mensajes de estado del formulario -->
+    <div class="mb-4 p-3 text-xs font-bold rounded-xl text-center leading-relaxed bg-red-50 text-red-600 border border-red-200"></div>
+    <div class="mb-4 p-3 text-xs font-bold rounded-xl text-center leading-relaxed bg-emerald-50 text-emerald-700 border border-emerald-200"></div>
+    <div class="mt-3 p-3 text-xs font-bold rounded-xl text-center bg-emerald-50 text-emerald-700 border border-emerald-200"></div>
+    <div class="mt-3 p-3 text-xs font-bold rounded-xl text-center bg-red-50 text-red-600 border border-red-200"></div>
+
+    <!-- Icono de video en tabla -->
+    <span class="inline-block bg-red-100 text-red-600 text-[10px] font-bold px-1.5 py-0.5 rounded-md ml-1"></span>
+
+    <!-- Colores y utilidades usadas por JS -->
+    <span class="text-red-600 text-xs text-center font-bold hidden p-3 bg-red-50 rounded-lg border border-red-200 leading-relaxed"></span>
+
+    <!-- Botones que se generan al abrir popup etiqueta (catalogo) -->
+    <button class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-3 rounded-xl text-sm transition flex items-center justify-center gap-1"></button>
+
+    <!-- Clases de estados hover y disabled que aparecen condicionalmente -->
+    <button disabled class="bg-slate-800 text-white font-bold rounded-xl opacity-50"></button>
+
+    <!-- Clases de barra de progreso según plan -->
+    <div class="bg-red-500 h-full transition-all"></div>
+    <div class="bg-amber-500 h-full transition-all"></div>
+    <div class="bg-zinc-700 h-full transition-all"></div>
+
+</div>
+<!-- ===== FIN BLOQUE SAFELIST ===== -->
 </body>
 </html>
