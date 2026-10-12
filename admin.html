@@ -161,6 +161,11 @@
                         <p id="adminCuitComercio" class="text-xs text-zinc-900 font-medium mt-1">CUIT: -</p>
                     </div>
                     <div class="flex items-center justify-center gap-2 flex-wrap">
+                       <!-- NUEVO: Botón de Ayuda -->
+                        <button onclick="abrirPopupAyuda()" 
+                            class="text-xs bg-black/20 hover:bg-black/20 text-white font-bold px-3 py-1.5 rounded-lg shadow">
+                            ❓ Panel Admin
+                        </button> 
                         <div class="flex items-center space-x-2 bg-black/20 p-1.5 rounded-xl backdrop-blur-sm border border-white/10">
                             <label for="inputColor" class="text-xs font-bold text-white uppercase">Color:</label>
                             <input type="color" id="inputColor" value="#334155" class="h-7 w-10 rounded cursor-pointer border-0 bg-transparent">
@@ -692,7 +697,119 @@
         </div>
     </div>
     <div id="mensajeFlotante" class="mensaje-flotante"></div>
+    <!-- POPUP: GUÍA DEL ADMIN -->
+    <div id="popupAyuda" class="popup-overlay" onclick="if(event.target===this) cerrarPopupAyuda()">
+        <div class="popup-caja popup-caja-grande">
+            <button class="popup-cerrar" onclick="cerrarPopupAyuda()">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-4">Guía del Panel Admin</h2>
 
+                <div class="space-y-4 text-sm text-slate-700">
+
+                    <section>
+                        <h3 class="font-bold text-slate-800 mb-1">🎨 Cambiar Color</h3>
+                        <p>Cambiá el color del header del admin y del catálogo. Elegí un color de la paleta y hacé clic en "Guardar". El cambio se aplica al instante en tu panel y en la vidriera que ven tus clientes.</p>
+                    </section>
+
+                    <section>
+                        <h3 class="font-bold text-slate-800 mb-1">📊 Plan y Cupo</h3>
+                        <p>Arriba del panel ves tu plan actual y cuántos artículos tenés cargados sobre el total permitido (ej: "12 de 35 artículos"). La barra se pone amarilla al 80% y roja al 100%. Si llegás al límite, contactanos para ampliar tu plan.</p>
+                    </section>
+
+                    <section>
+                        <h3 class="font-bold text-slate-800 mb-1">🖨️ Imprimir Códigos</h3>
+                        <p>Genera los PDFs de las etiquetas para imprimir y pegar en tu vidriera. Se descargan 2 archivos:</p>
+                        <ul class="list-disc pl-5 mt-1 space-y-1 text-slate-600">
+                            <li><span class="font-semibold text-slate-700">Códigos:</span> las etiquetas con los códigos de cada artículo. Elegís tamaño (chico, mediano, grande, vertical con logo, etc.).</li>
+                            <li><span class="font-semibold text-slate-700">Guía de ubicación:</span> una grilla que muestra en qué fila y columna va cada código, para que armes la vidriera tal cual la ve el cliente al escanear el QR.</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="font-bold text-slate-800 mb-1">🏪 Mi Comercio</h3>
+                        <p>Cargá los datos que van a ver tus clientes cuando hagan clic en el botón "+" del catálogo:</p>
+                        <ul class="list-disc pl-5 mt-1 space-y-1 text-slate-600">
+                            <li>Nombre del comercio y logo (hasta 200 KB)</li>
+                            <li>Dirección, ciudad y provincia (con link a Google Maps)</li>
+                            <li>Teléfono y WhatsApp (con botón directo a la app)</li>
+                            <li>Sitio web (opcional)</li>
+                            <li>Horarios de atención</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="font-bold text-slate-800 mb-1">📱 Mi QR</h3>
+                        <p>Generá el código QR de tu vidriera. Tus clientes lo escanean con el celular y acceden a tu catálogo digital. Podés:</p>
+                        <ul class="list-disc pl-5 mt-1 space-y-1 text-slate-600">
+                            <li><span class="font-semibold text-slate-700">Copiar</span> el link del catálogo.</li>
+                            <li><span class="font-semibold text-slate-700">Descargar</span> el cartel QR (PNG) para imprimir.</li>
+                            <li><span class="font-semibold text-slate-700">Imprimir</span> directamente desde el navegador.</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="font-bold text-slate-800 mb-1">📋 Cargar Categorías</h3>
+                        <p>Definí las categorías de tus productos por letras (ej: A = Carteras, B = Bolsos, C = Calzado). Cada categoría tiene su letra y su tope de códigos. Cuando crees un artículo, elegís una categoría y el sistema le asigna un código automático.</p>
+                        <p class="mt-1">Además configurás:</p>
+                        <ul class="list-disc pl-5 mt-1 space-y-1 text-slate-600">
+                            <li><span class="font-semibold text-slate-700">Layout de la vidriera:</span> filas y columnas (ej: 5x5 = 25 códigos visibles).</li>
+                            <li><span class="font-semibold text-slate-700">Estilo de las etiquetas:</span> colores de fondo y texto, tipografía, borde, logo y su posición.</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="font-bold text-slate-800 mb-1">➕ Nuevo Artículo</h3>
+                        <p>Cargá cada producto de tu comercio. Los campos son:</p>
+                        <ul class="list-disc pl-5 mt-1 space-y-1 text-slate-600">
+                            <li><span class="font-semibold text-slate-700">Código:</span> se autocompleta al elegir la categoría.</li>
+                            <li><span class="font-semibold text-slate-700">Fila y columna:</span> dónde va ubicado en la vidriera.</li>
+                            <li><span class="font-semibold text-slate-700">Artículo:</span> nombre del producto.</li>
+                            <li><span class="font-semibold text-slate-700">Descripción:</span> texto que destaca cualidades (aparece en el popup del cliente).</li>
+                            <li><span class="font-semibold text-slate-700">Especificaciones:</span> datos técnicos (medidas, material, etc.).</li>
+                            <li><span class="font-semibold text-slate-700">Video:</span> URL de YouTube o Vimeo (opcional).</li>
+                            <li><span class="font-semibold text-slate-700">Disponibilidad:</span> talles, colores o stock.</li>
+                            <li><span class="font-semibold text-slate-700">Precio:</span> obligatorio.</li>
+                            <li><span class="font-semibold text-slate-700">Promoción:</span> texto llamativo (ej: "10% OFF EFECTIVO").</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="font-bold text-slate-800 mb-1">📋 Tabla de Artículos</h3>
+                        <p>Todos tus artículos cargados aparecen listados. Cada fila muestra: código, nombre, disponibilidad, promoción y precio. Los que tienen video se marcan con un ícono ▶️.</p>
+                    </section>
+
+                    <section>
+                        <h3 class="font-bold text-slate-800 mb-1">👁️ Columna "Acciones"</h3>
+                        <p>En cada artículo de la tabla tenés 3 botones:</p>
+                        <ul class="list-disc pl-5 mt-1 space-y-1 text-slate-600">
+                            <li><span class="font-semibold text-slate-700">Ver 👁️:</span> abre el catálogo tal como lo ve el cliente, con ese artículo destacado.</li>
+                            <li><span class="font-semibold text-slate-700">Editar ✏️:</span> abre el formulario para modificar cualquier dato.</li>
+                            <li><span class="font-semibold text-slate-700">Borrar 🗑️:</span> elimina el artículo (pide confirmación).</li>
+                        </ul>
+                    </section>
+
+                    <div class="border-t border-slate-200 pt-4 mt-6">
+                        <h3 class="font-bold text-slate-800 mb-2">💡 Recomendaciones</h3>
+                        <ul class="list-disc pl-5 space-y-1 text-slate-600">
+                            <li><span class="font-semibold text-slate-700">Cargá primero las categorías</span> antes de crear artículos. Sin categorías activas, no podés crear códigos.</li>
+                            <li><span class="font-semibold text-slate-700">Usá la guía de ubicación</span> al imprimir códigos: te ayuda a armar la vidriera en el orden correcto.</li>
+                            <li><span class="font-semibold text-slate-700">Probá el catálogo</span> con el botón "Ver" (👁️) después de cargar un artículo, para ver cómo queda del lado del cliente.</li>
+                            <li><span class="font-semibold text-slate-700">Revisá el cupo</span> de tu plan antes de cargar muchos artículos.</li>
+                            <li><span class="font-semibold text-slate-700">Cambiá el color</span> del header para que coincida con tu marca.</li>
+                        </ul>
+                    </div>
+
+                </div>
+
+                <div class="flex justify-end mt-6 pt-4 border-t border-slate-100">
+                    <button onclick="cerrarPopupAyuda()" 
+                        class="px-6 py-2 bg-slate-800 text-white font-bold rounded-xl text-sm hover:bg-slate-900 shadow">
+                        Entendido
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script>
         // ==================== VARIABLES GLOBALES ====================
         let comercioActual = null;
@@ -1877,7 +1994,15 @@ function abrirVistaPreviaDesdeTabla(codigo) {
         function cerrarPopupImprimir() {
             document.getElementById('popupImprimir').classList.remove('activo');
         }
-
+        // ==================== GUÍA DEL ADMIN ====================
+        function abrirPopupAyuda() {
+            document.getElementById('popupAyuda').classList.add('activo');
+            document.body.style.overflow = 'hidden';
+        }
+        function cerrarPopupAyuda() {
+            document.getElementById('popupAyuda').classList.remove('activo');
+            document.body.style.overflow = '';
+        }
         function hexToRgb(hex) {
             hex = (hex || '#000000').replace('#', '');
             if (hex.length === 3) {
@@ -2258,6 +2383,7 @@ function generarGuiaUbicacion(tipo) {
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 if (document.getElementById('popupImprimir').classList.contains('activo')) cerrarPopupImprimir();
+                else if (document.getElementById('popupAyuda').classList.contains('activo')) cerrarPopupAyuda();  // ← NUEVA LÍNEA    
                 else if (document.getElementById('popupVideo').classList.contains('activo')) cerrarPopupVideo();
                 else if (document.getElementById('popupEspecificaciones').classList.contains('activo')) cerrarPopupEspecificaciones();
                 else if (document.getElementById('popupArticulo').classList.contains('activo')) cerrarPopupArticulo();
