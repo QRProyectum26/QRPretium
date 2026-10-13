@@ -226,21 +226,24 @@
         <div class="max-w-7xl mx-auto">
 
             <!-- HEADER -->
-            <header class="bg-pizarra-card p-4 sm:p-6 rounded-2xl border border-slate-700 shadow-lg mb-6">
-                <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div class="flex items-center gap-3">
-                        <img src="img/logoqrpretium1.jpg" alt="QRPretium" class="w-10 h-10 rounded-xl object-cover shadow-md">
-                        <div>
-                            <h1 class="text-xl font-black text-white">Panel de Solicitudes</h1>
-                            <p class="text-xs text-slate-400">Gestión de altas QRPretium</p>
-                        </div>
-                    </div>
-                    <button onclick="cerrarSesion()" class="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-lg shadow transition">
-                        Cerrar Sesión
-                    </button>
-                </div>
-            </header>
-
+           <header class="bg-pizarra-card p-4 sm:p-6 rounded-2xl border border-slate-700 shadow-lg mb-6">
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+            <img src="img/logoqrpretium1.jpg" alt="QRPretium" class="w-10 h-10 rounded-xl object-cover shadow-md">
+            <div>
+                <h1 class="text-xl font-black text-white">Panel de Solicitudes</h1>
+                <p class="text-xs text-slate-400">Gestión de altas QRPretium</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="https://qrpretium.com.ar/qrx7-moderatio.html" class="text-sm text-slate-400 hover:text-white transition">← Volver al panel</a>
+            <button onclick="cerrarSesionPanel()" class="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-lg shadow transition">
+                Cerrar Sesión
+            </button>
+        </div>
+    </div>
+</header>
+      
             <!-- MENSAJES DE ESTADO -->
             <div id="mensajeEstado" class="mensaje-estado"></div>
 
@@ -369,7 +372,16 @@
             document.getElementById('loginUsuario').value = '';
             document.getElementById('loginPassword').value = '';
         }
-
+        // NUEVA FUNCIÓN: cierra sesión, pero si viene del superadmin, vuelve al panel
+        function cerrarSesionPanel() {
+            // Si viene del superadmin, volver al panel sin borrar la sesión de superadmin
+            if (localStorage.getItem('qrpretium_superadmin') === 'true') {
+                window.location.href = 'https://qrpretium.com.ar/qrx7-moderatio.html';
+                return;
+            }
+            // Si no, cerrar sesión normal
+            cerrarSesion();
+        }
         // ==================== CARGAR SOLICITUDES ====================
         async function cargarSolicitudes() {
             try {
@@ -575,6 +587,18 @@
                 div.className = 'mensaje-estado';
             }, 6000);
         }
+                // ==================== AUTO-LOGIN ====================
+        document.addEventListener('DOMContentLoaded', async () => {
+            // ✅ Si viene del superadmin, saltar login automáticamente
+            const superadminLogueado = localStorage.getItem('qrpretium_superadmin') === 'true';
+
+            if (superadminLogueado) {
+                usuarioActual = localStorage.getItem('qrpretium_superadmin_email') || 'superadmin';
+                document.getElementById('seccionLogin').classList.add('hidden');
+                document.getElementById('seccionPanel').classList.remove('hidden');
+                await cargarSolicitudes();
+            }
+        });
     </script>
 </body>
 </html>
