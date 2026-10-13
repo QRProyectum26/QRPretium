@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>QRPretium · Moderatio</title>
+    <script src="https://cdn.tailwindcss.com/3.4.3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    </script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 min-h-screen">
+
+    <!-- SECCIÓN 1: LOGIN -->
+    <div id="seccionLogin" class="max-w-md mx-auto mt-16 p-6 bg-white rounded-2xl shadow-xl border border-gray-200">
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-black text-slate-800 tracking-tight">Moderatio QRPretium</h1>
+            <p class="text-xs text-gray-500 mt-1">Acceso exclusivo</p>
+        </div>
+        <form onsubmit="iniciarSesionSuperadmin(event)" class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Email</label>
+                <input type="email" id="loginEmail" required 
+                    class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-600 text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Contraseña</label>
+                <input type="password" id="loginPassword" required 
+                    class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-600 text-sm">
+            </div>
+            <div id="errorLogin" class="text-red-600 text-xs text-center font-bold hidden p-3 bg-red-50 rounded-lg border border-red-200"></div>
+            <button type="submit" 
+                class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-xl shadow-md transition text-sm">
+                Ingresar
+            </button>
+        </form>
+    </div>
+
+    <!-- SECCIÓN 2: PANEL -->
+    <div id="seccionPanel" class="hidden">
+        <header class="bg-slate-800 text-white shadow-lg rounded-b-2xl">
+            <div class="max-w-5xl mx-auto p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <div>
+                    <h1 class="text-2xl font-extrabold uppercase tracking-wide">Moderatio</h1>
+                    <p class="text-xs text-slate-300 mt-1">QRPretium · Panel de gestión</p>
+                </div>
+                <button onclick="cerrarSesionSuperadmin()" 
+                    class="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-lg shadow">
+                    Cerrar Sesión
+                </button>
+            </div>
+        </header>
+
+        <main class="max-w-5xl mx-auto px-4 mt-6">
+
+            <!-- ESTADÍSTICAS -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 text-center">
+                    <p class="text-[11px] font-bold text-gray-500 uppercase">Comercios</p>
+                    <p id="statComercios" class="text-2xl font-black text-slate-800 mt-1">-</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 text-center">
+                    <p class="text-[11px] font-bold text-gray-500 uppercase">Artículos</p>
+                    <p id="statArticulos" class="text-2xl font-black text-slate-800 mt-1">-</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 text-center">
+                    <p class="text-[11px] font-bold text-gray-500 uppercase">Altas del mes</p>
+                    <p id="statAltas" class="text-2xl font-black text-emerald-600 mt-1">-</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 text-center">
+                    <p class="text-[11px] font-bold text-gray-500 uppercase">Solicitudes</p>
+                    <p id="statSolicitudes" class="text-2xl font-black text-orange-500 mt-1">-</p>
+                </div>
+            </div>
+
+            <!-- GRÁFICO -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 mb-6">
+                <h2 class="font-bold text-slate-800 mb-3 text-sm uppercase">Altas por mes</h2>
+                <div style="position: relative; height: 260px;">
+                    <canvas id="graficoAltas"></canvas>
+                </div>
+            </div>
+
+            <!-- ACCESOS DIRECTOS -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 mb-6">
+                <h2 class="font-bold text-slate-800 mb-3 text-sm uppercase">Accesos directos</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <a href="alta.html" class="bg-slate-50 hover:bg-slate-100 p-5 rounded-xl border border-slate-200 text-center transition">
+                        <p class="text-3xl mb-2">📝</p>
+                        <p class="font-bold text-slate-800 text-sm">Alta de Comercio</p>
+                        <p class="text-[11px] text-gray-500 mt-1">Registrar nuevo comercio</p>
+                    </a>
+                    <a href="dashboard.html" class="bg-slate-50 hover:bg-slate-100 p-5 rounded-xl border border-slate-200 text-center transition">
+                        <p class="text-3xl mb-2">📊</p>
+                        <p class="font-bold text-slate-800 text-sm">Dashboard</p>
+                        <p class="text-[11px] text-gray-500 mt-1">Ver métricas generales</p>
+                    </a>
+                    <a href="solicitudes.html" class="bg-slate-50 hover:bg-slate-100 p-5 rounded-xl border border-slate-200 text-center transition">
+                        <p class="text-3xl mb-2">📬</p>
+                        <p class="font-bold text-slate-800 text-sm">Solicitudes</p>
+                        <p class="text-[11px] text-gray-500 mt-1">Gestionar pedidos</p>
+                    </a>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        let graficoInstance = null;
+
+        async function iniciarSesionSuperadmin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const pass = document.getElementById('loginPassword').value.trim();
+            const errorDiv = document.getElementById('errorLogin');
+            errorDiv.classList.add('hidden');
+
+            try {
+                const { data, error } = await supabaseClient.rpc('login_superadmin', {
+                    p_email: email,
+                    p_password: pass
+                });
+                if (error) throw error;
+                const resp = (data && data.login_superadmin) ? data.login_superadmin : data;
+
+                if (!resp || !resp.success) {
+                    errorDiv.innerText = resp?.error || 'Credenciales incorrectas';
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+
+                localStorage.setItem('qrpretium_superadmin', 'true');
+                localStorage.setItem('qrpretium_superadmin_email', resp.email);
+                mostrarPanel();
+            } catch (err) {
+                console.error(err);
+                errorDiv.innerText = 'Error al conectar: ' + err.message;
+                errorDiv.classList.remove('hidden');
+            }
+        }
+
+        function cerrarSesionSuperadmin() {
+            localStorage.removeItem('qrpretium_superadmin');
+            localStorage.removeItem('qrpretium_superadmin_email');
+            document.getElementById('seccionPanel').classList.add('hidden');
+            document.getElementById('seccionLogin').classList.remove('hidden');
+            document.getElementById('loginPassword').value = '';
+        }
+
+        async function mostrarPanel() {
+            document.getElementById('seccionLogin').classList.add('hidden');
+            document.getElementById('seccionPanel').classList.remove('hidden');
+            await cargarEstadisticas();
+            await cargarGrafico();
+        }
+
+        async function cargarEstadisticas() {
+            try {
+                const { data, error } = await supabaseClient.rpc('get_dashboard_stats');
+                if (error) throw error;
+                const resp = (data && data.get_dashboard_stats) ? data.get_dashboard_stats : data;
+                if (!resp) return;
+
+                document.getElementById('statComercios').innerText = resp.total_comercios || 0;
+                document.getElementById('statArticulos').innerText = resp.total_articulos || 0;
+                document.getElementById('statAltas').innerText = resp.altas_mes || 0;
+                document.getElementById('statSolicitudes').innerText = resp.solicitudes_pendientes || 0;
+            } catch (err) {
+                console.error('Error stats:', err);
+                document.getElementById('statComercios').innerText = '?';
+                document.getElementById('statArticulos').innerText = '?';
+                document.getElementById('statAltas').innerText = '?';
+                document.getElementById('statSolicitudes').innerText = '?';
+            }
+        }
+
+        async function cargarGrafico() {
+            // Datos de ejemplo (después los reemplazamos por datos reales)
+            const labels = ['May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct'];
+            const dataAltas = [3, 7, 5, 12, 8, 15];
+
+            const ctx = document.getElementById('graficoAltas');
+            if (graficoInstance) graficoInstance.destroy();
+
+            graficoInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Altas',
+                        data: dataAltas,
+                        backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                        borderColor: 'rgb(16, 185, 129)',
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { 
+                            beginAtZero: true, 
+                            ticks: { stepSize: 1 } 
+                        }
+                    }
+                }
+            });
+        }
+
+        // Verificar sesión al cargar
+        window.onload = () => {
+            if (localStorage.getItem('qrpretium_superadmin') === 'true') {
+                mostrarPanel();
+            }
+        };
+    </script>
+</body>
+</html>
