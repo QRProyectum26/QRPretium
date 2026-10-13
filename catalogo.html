@@ -1077,30 +1077,96 @@
             return contexto;
         }
 
+  // ==================== HISTORIAL DE CONVERSACIÓN ====================
+        let historialConversacion = [];
+
         async function procesarConsultaIaPanel(consultaTexto) {
             aplicarEfectoCubo('pensando'); actualizarEstadoPanel('pensando');
             agregarMensajePanel('ia', '⏳ Pensando respuesta...', true);
             try {
-                const contexto = generarContextoIA(codigoActualPopup);
-                const mensajeCompleto = `${contexto}\n\nUsuario: ${consultaTexto}`;
+                // Armar producto actual (si el cliente está viendo uno)
+                let productoActual = null;
+                if (codigoActualPopup) {
+                    const prod = productosGlobales.find(p => p.codigo === codigoActualPopup);
+                    if (prod) {
+                        productoActual = {
+                            codigo: prod.codigo,
+                            articulo: prod.articulo,
+                            descripcion: prod.descripcion,
+                            precio: prod.precio,
+                            promocion: prod.promocion,
+                            disponibilidad: prod.disponibilidad
+                        };
+                    }
+                }
+
+                // Armar catálogo resumido (código + nombre + precio)
+                const catalogoResumen = productosGlobales.map(p => ({
+                    codigo: p.codigo,
+                    articulo: p.articulo,
+                    precio: p.precio
+                }));
+
+                // Armar datos del comercio
+                const comercio = datosComercioGlobal ? {
+                    nombre: datosComercioGlobal.nombre,
+                    direccion: datosComercioGlobal.direccion,
+                    ciudad: datosComercioGlobal.ciudad,
+                    telefono: datosComercioGlobal.telefono,
+                    whatsapp: datosComercioGlobal.whatsapp,
+                    horarios: datosComercioGlobal.horarios,
+                    web: datosComercioGlobal.web
+                } : null;
+
+                // Armar payload
+                const payload = {
+                    mensaje: consultaTexto,
+                    comercio: comercio,
+                    productoActual: productoActual,
+                    catalogoResumen: catalogoResumen,
+                    historial: historialConversacion
+                };
+
+                // Llamar a la Edge Function
                 const respuesta = await fetch(`${SUPABASE_URL}/functions/v1/chat-asistente`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: mensajeCompleto })
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_ANON_KEY
+                    },
+                    body: JSON.stringify(payload)
                 });
+
                 const data = await respuesta.json();
+
                 if (chatBody.lastChild && chatBody.lastChild.textContent.includes('⏳ Pensando respuesta...')) {
                     chatBody.removeChild(chatBody.lastChild);
                 }
-                if (data.choices && data.choices.length > 0) {
-                    const botReply = data.choices[0].message.content;
+
+                // Aceptar tanto "respuesta" (nuevo) como "choices" (viejo)
+                let botReply = null;
+                if (data.success && data.respuesta) {
+                    botReply = data.respuesta;
+                } else if (data.choices && data.choices.length > 0) {
+                    botReply = data.choices[0].message.content;
+                }
+
+                if (botReply) {
                     agregarMensajePanel('ia', botReply);
                     reproducirVozPanel(botReply);
                     aplicarEfectoCubo('ok'); actualizarEstadoPanel('ok');
+
+                    // Guardar en historial
+                    historialConversacion.push({ role: 'user', content: consultaTexto });
+                    historialConversacion.push({ role: 'assistant', content: botReply });
+                    // Mantener solo las últimas 10 interacciones
+                    if (historialConversacion.length > 20) {
+                        historialConversacion = historialConversacion.slice(-20);
+                    }
                 } else {
-                    const errDefault = "No pude procesar tu solicitud. Intenta de nuevo.";
+                    const errDefault = data.error || "No pude procesar tu solicitud. Intenta de nuevo.";
                     agregarMensajePanel('ia', errDefault);
-                    reproducirVozPanel(errDefault);
+                    reproducirVozPanel("No pude procesar tu solicitud.");
                     aplicarEfectoCubo('error'); actualizarEstadoPanel('error');
                 }
             } catch (err) {
