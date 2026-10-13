@@ -97,10 +97,10 @@
             <div class="flex items-center justify-between mb-6">
                 <h1 class="text-2xl font-black text-slate-800">📍 Dashboard de Clientes</h1>
                 <div class="flex items-center gap-3">
-                    <a href="index.html" class="text-sm text-slate-600 hover:text-slate-900">← Volver al inicio</a>
-                    <button onclick="cerrarSesion()" class="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-lg shadow transition">
-                        Cerrar Sesión
-                    </button>
+                    <a href="https://qrpretium.com.ar/qrx7-moderatio.html" class="text-sm text-slate-600 hover:text-slate-900">← Volver al panel</a>
+                   <button onclick="cerrarSesionDashboard()" class="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-lg shadow transition">
+           Cerrar Sesión
+                  </button>
                 </div>
             </div>
 
@@ -265,6 +265,16 @@
             // Limpiar formulario
             document.getElementById('loginUsuario').value = '';
             document.getElementById('loginPassword').value = '';
+        }
+        // NUEVA FUNCIÓN: cierra sesión del dashboard, pero si viene del superadmin, vuelve al panel
+        function cerrarSesionDashboard() {
+            // Si viene del superadmin, volver al panel sin borrar la sesión de superadmin
+            if (localStorage.getItem('qrpretium_superadmin') === 'true') {
+                window.location.href = 'https://qrpretium.com.ar/qrx7-moderatio.html';
+                return;
+            }
+            // Si no, cerrar sesión normal del dashboard
+            cerrarSesion();
         }
 
         // ==================== INICIALIZAR DASHBOARD ====================
@@ -465,11 +475,25 @@
             });
         }
 
-        // ==================== AUTO-LOGIN ====================
+                // ==================== AUTO-LOGIN ====================
         document.addEventListener('DOMContentLoaded', async () => {
-            // ✅ Si ya hay sesión guardada, saltar el login
+            // ✅ Si viene del superadmin, saltar login automáticamente
+            const superadminLogueado = localStorage.getItem('qrpretium_superadmin') === 'true';
+            
+            // ✅ Si ya hay sesión del dashboard, saltar login
             const usuarioGuardado = sessionStorage.getItem('qrpretium_dashboard_user');
+
+            if (superadminLogueado) {
+                // Viene del superadmin → entrar directo
+                usuarioActual = localStorage.getItem('qrpretium_superadmin_email') || 'superadmin';
+                document.getElementById('seccionLogin').classList.add('hidden');
+                document.getElementById('seccionDashboard').classList.remove('hidden');
+                await inicializarDashboard();
+                return;
+            }
+
             if (usuarioGuardado) {
+                // Ya se logueó antes en esta sesión
                 usuarioActual = usuarioGuardado;
                 document.getElementById('seccionLogin').classList.add('hidden');
                 document.getElementById('seccionDashboard').classList.remove('hidden');
