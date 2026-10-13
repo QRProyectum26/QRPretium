@@ -1077,7 +1077,7 @@
             return contexto;
         }
 
-  // ==================== HISTORIAL DE CONVERSACIÓN ====================
+ // ==================== HISTORIAL DE CONVERSACIÓN ====================
         let historialConversacion = [];
 
         async function procesarConsultaIaPanel(consultaTexto) {
@@ -1127,27 +1127,22 @@
                     historial: historialConversacion
                 };
 
-                // Llamar a la Edge Function
-                const respuesta = await fetch(`${SUPABASE_URL}/functions/v1/chat-asistente`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'apikey': SUPABASE_ANON_KEY
-                    },
-                    body: JSON.stringify(payload)
+                // ✅ Llamar a la Edge Function con functions.invoke (evita CORS)
+                const { data, error } = await supabaseClient.functions.invoke('chat-asistente', {
+                    body: payload
                 });
-
-                const data = await respuesta.json();
 
                 if (chatBody.lastChild && chatBody.lastChild.textContent.includes('⏳ Pensando respuesta...')) {
                     chatBody.removeChild(chatBody.lastChild);
                 }
 
+                if (error) throw error;
+
                 // Aceptar tanto "respuesta" (nuevo) como "choices" (viejo)
                 let botReply = null;
-                if (data.success && data.respuesta) {
+                if (data && data.success && data.respuesta) {
                     botReply = data.respuesta;
-                } else if (data.choices && data.choices.length > 0) {
+                } else if (data && data.choices && data.choices.length > 0) {
                     botReply = data.choices[0].message.content;
                 }
 
@@ -1164,13 +1159,13 @@
                         historialConversacion = historialConversacion.slice(-20);
                     }
                 } else {
-                    const errDefault = data.error || "No pude procesar tu solicitud. Intenta de nuevo.";
+                    const errDefault = "No pude procesar tu solicitud. Intenta de nuevo.";
                     agregarMensajePanel('ia', errDefault);
-                    reproducirVozPanel("No pude procesar tu solicitud.");
+                    reproducirVozPanel(errDefault);
                     aplicarEfectoCubo('error'); actualizarEstadoPanel('error');
                 }
             } catch (err) {
-                console.error(err);
+                console.error('Error en chat IA:', err);
                 if (chatBody.lastChild && chatBody.lastChild.textContent.includes('⏳ Pensando respuesta...')) {
                     chatBody.removeChild(chatBody.lastChild);
                 }
