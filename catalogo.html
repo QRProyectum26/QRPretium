@@ -1049,23 +1049,77 @@
             chatBody.scrollTop = chatBody.scrollHeight;
         }
 
-        function reproducirVozPanel(texto) {
-            if (!synth) return;
-            if (estaHablando) { synth.cancel(); estaHablando = false; }
-            const utterance = new SpeechSynthesisUtterance(texto);
-            utterance.lang = 'es-AR'; utterance.rate = 1.0;
-            utterance.onstart = () => { estaHablando = true; aplicarEfectoCubo('hablando'); actualizarEstadoPanel('hablando'); };
-            utterance.onend = () => {
-                estaHablando = false;
-                aplicarEfectoCubo('ok'); actualizarEstadoPanel('ok');
-                setTimeout(() => {
-                    if (!estaEscuchando && estadoCuboActual !== 'escuchando') {
-                        aplicarEfectoCubo('normal'); actualizarEstadoPanel('normal');
+ // ==================== CONFIGURACIÓN DE VOZ ====================
+        const VOZ_CONFIG = {
+            voice: 'es-AR-TomasNeural',  // ← Voz por defecto (Tomas masculino)
+            speed: 1.05,
+            pitch: '-5',
+            response_format: 'mp3'
+        };
+        const TTS_URL = 'https://tts.qrproyectum26.workers.dev/v1/audio/speech';
+
+        async function reproducirVozPanel(texto, onComplete = null) {
+            if (estaHablando) { estaHablando = false; }
+            try {
+                aplicarEfectoCubo('hablando');
+                actualizarEstadoPanel('hablando');
+                
+                const response = await fetch(TTS_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        input: texto,
+                        voice: VOZ_CONFIG.voice,
+                        speed: VOZ_CONFIG.speed,
+                        pitch: VOZ_CONFIG.pitch,
+                        response_format: VOZ_CONFIG.response_format
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`TTS error ${response.status}: ${errorText}`);
+                }
+                
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                const audio = new Audio(url);
+                
+                audio.onplay = () => {
+                    estaHablando = true;
+                    aplicarEfectoCubo('hablando');
+                    actualizarEstadoPanel('hablando');
+                };
+                
+                audio.onended = () => {
+                    estaHablando = false;
+                    aplicarEfectoCubo('ok');
+                    actualizarEstadoPanel('ok');
+                    // Callback opcional (para cerrar el panel al terminar la voz)
+                    if (typeof onComplete === 'function') {
+                        onComplete();
                     }
-                }, 2000);
-            };
-            utterance.onerror = () => { estaHablando = false; aplicarEfectoCubo('error'); actualizarEstadoPanel('error'); };
-            synth.speak(utterance);
+                    setTimeout(() => {
+                        if (!estaEscuchando && estadoCuboActual !== 'escuchando') {
+                            aplicarEfectoCubo('normal');
+                            actualizarEstadoPanel('normal');
+                        }
+                    }, 2000);
+                };
+                
+                audio.onerror = () => {
+                    estaHablando = false;
+                    aplicarEfectoCubo('error');
+                    actualizarEstadoPanel('error');
+                };
+                
+                audio.play();
+            } catch (err) {
+                console.error('Error TTS:', err);
+                estaHablando = false;
+                aplicarEfectoCubo('error');
+                actualizarEstadoPanel('error');
+            }
         }
 
         function generarContextoIA(codigoEspecifico = null) {
@@ -1299,7 +1353,37 @@
                 productosGlobales = productos;
                 renderizarGrilla(productosGlobales);
                 inicializarReconocimientoVoz();
-
+// ==================== AUTO-BIENVENIDA ====================
+                // A los 3 segundos, abrir el panel IA, saludar, y cerrarlo al terminar
+                setTimeout(() => {
+                    // Solo si el cliente no abrió el panel manualmente
+                    if (!panelChat.classList.contains('abierto')) {
+                        abrirPanelIA();
+                        
+                        // Esperar a que el panel se abra, después saludar
+                        setTimeout(() => {
+                            const saludo = '¡Hola qué tal! Soy tu asesor de Vidriera Inmersiva. Por favor, elegí un código de tu preferencia o interés.';
+                            agregarMensajePanel('ia', saludo);
+                            
+                            // Reproducir la voz Y al terminar, cerrar el panel
+                            reproducirVozPanel(saludo, () => {
+                                // Callback: se ejecuta al terminar la voz
+                                setTimeout(() => {
+                                    if (panelChat.classList.contains('abierto')) {
+                                        cerrarPanelIA();
+                                        // Limpiar el chat para la próxima apertura
+                                        setTimeout(() => {
+                                            const chatBody = document.getElementById('chatBody');
+                                            if (chatBody) {
+                                                chatBody.innerHTML = '<div class="mensaje ia">HOLA !!, Soy El ASESOR IA De Esta Vidriera. Consultame sobre cualquier código de artículo que ves..!</div>';
+                                            }
+                                        }, 500);
+                                    }
+                                }, 1000); // 1 segundo de pausa después de la voz
+                            });
+                        }, 800); // 800ms para que el panel termine de abrirse
+                    }
+                }, 3000); // 3 segundos después de cargar
                 // Si hay ?codigo=XXX, abrir popup automáticamente
                 if (codigoParam) {
                     const articuloParam = productosGlobales.find(p => (p.codigo || '').toLowerCase() === codigoParam.toLowerCase());
@@ -1503,8 +1587,16 @@ setTimeout(() => iniciarMiniCubo3D(), 100);
 
 limpiarTemporizadorPopupIA();
 temporizadorPopupIA = setTimeout(() => {
-    mostrarPopupIaContextual(item.articulo);
-}, 12000); 
+    // Si el panel IA ya está abierto, agregar el mensaje directamente
+    if (panelChat.classList.contains('abierto')) {
+        const mensaje = '¡Hola de nuevo! Consultame lo que necesites sobre este artículo: talles, números, especificaciones, precios, promociones, disponibilidad, o lo que estés buscando. ¡Te ayudo!';
+        agregarMensajePanel('ia', mensaje);
+        reproducirVozPanel(mensaje);
+    } else {
+        // Si no está abierto, mostrar el popup contextual
+        mostrarPopupIaContextual(item.articulo);
+    }
+}, 10000); // 10 segundos después de abrir el popup
         }
 
         function cerrarPopupEtiqueta() {
