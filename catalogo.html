@@ -571,11 +571,7 @@
             <button class="btn-cerrar-panel" onclick="cerrarPanelIA()">✕</button>
         </div>
 
-        <div id="chatBody" class="chat-body">
-            <div class="mensaje ia">
-                HOLA !!, Soy El ASESOR IA De Esta Vidriera. Consultame sobre cualquier código de artículo que ves..!
-            </div>
-        </div>
+     <div id="chatBody" class="chat-body"></div>
 
         <div class="controles-voz">
             <button id="btnMicPanel" class="btn-mic" onclick="alternarEscuchaPanel()">
@@ -1375,7 +1371,7 @@
                                         setTimeout(() => {
                                             const chatBody = document.getElementById('chatBody');
                                             if (chatBody) {
-                                                chatBody.innerHTML = '<div class="mensaje ia">HOLA !!, Soy El ASESOR IA De Esta Vidriera. Consultame sobre cualquier código de artículo que ves..!</div>';
+                                              chatBody.innerHTML = ''; // Dejar vacío
                                             }
                                         }, 500);
                                     }
