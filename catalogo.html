@@ -1599,23 +1599,6 @@
             } else {
                 document.getElementById('popupPromocion').classList.add('hidden');
             }
-
-            const botonesCont = document.getElementById('popupBotones');
-            botonesCont.innerHTML = '';
-            if (item.id) {
-                const botonEsp = document.createElement('button');
-                botonEsp.className = 'flex-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-3 rounded-xl text-sm transition flex items-center justify-center gap-1';
-                botonEsp.innerHTML = '🔍 VER ESPECIFICACIÓN';
-                botonEsp.onclick = () => abrirPopupEspecificaciones(item.id, item.codigo);
-                botonesCont.appendChild(botonEsp);
-            }
-            if (item.video_url && String(item.video_url).trim() !== '') {
-                const botonVid = document.createElement('button');
-                botonVid.className = 'flex-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-3 rounded-xl text-sm transition flex items-center justify-center gap-1';
-                botonVid.innerHTML = '▶️ Ver Video';
-                botonVid.onclick = () => abrirPopupVideo(item.video_url, item.codigo);
-                botonesCont.appendChild(botonVid);
-            }
              // Mostrar u ocultar botones según disponibilidad de datos
             const btnFotos = document.getElementById('btnFotos');
             const btnVideo = document.getElementById('btnVideo');
