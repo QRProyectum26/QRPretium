@@ -92,7 +92,6 @@
         }
         
         /* ===== GRILLA DE CÓDIGOS ===== */
-        /* ===== GRILLA DE CÓDIGOS (POR FILAS) ===== */
         .grilla-filas {
             display: flex;
             flex-direction: column;
@@ -641,7 +640,7 @@
                     <p class="text-[12px] font-bold text-emerald-700 uppercase mb-1 text-center">📦 Disponibilidad</p>
                     <p id="popupDisponibilidadTexto" class="text-sm text-gray-800 text-center leading-snug"></p>
                 </div>
-                <div class="bg-slate-50 border border-slate-200 rounded-lg p-2 mb-2">
+                 <div class="bg-slate-50 border border-slate-200 rounded-lg p-2 mb-2">
                     <div class="flex items-center justify-between">
                         <p class="text-[16px] font-bold text-orange-500 uppercase">💰 Precio Final</p>
                         <p id="popupPrecio" class="text-xl font-black text-slate-800">$0</p>
@@ -1214,7 +1213,6 @@
                     articulo: p.articulo,
                     precio: p.precio
                 }));
-
                 // Armar datos del comercio
                 const comercio = datosComercioGlobal ? {
                     nombre: datosComercioGlobal.nombre,
@@ -1599,7 +1597,8 @@
             } else {
                 document.getElementById('popupPromocion').classList.add('hidden');
             }
-             // Mostrar u ocultar botones según disponibilidad de datos
+
+            // Mostrar u ocultar botones según disponibilidad de datos
             const btnFotos = document.getElementById('btnFotos');
             const btnVideo = document.getElementById('btnVideo');
 
@@ -1616,33 +1615,34 @@
             }
 
            document.getElementById('popupEtiqueta').classList.add('activo');
-document.body.style.overflow = 'hidden';
+           document.body.style.overflow = 'hidden';
 
-// Iniciar el mini-cubo
-setTimeout(() => iniciarMiniCubo3D(), 100);
+            // Iniciar el mini-cubo
+            setTimeout(() => iniciarMiniCubo3D(), 100);
 
-limpiarTemporizadorPopupIA();
-temporizadorPopupIA = setTimeout(() => {
-    // Si el panel IA ya está abierto, agregar el mensaje directamente
-    if (panelChat.classList.contains('abierto')) {
-        const mensaje = '¡Hola de nuevo! Consultame lo que necesites sobre este artículo: talles, números, especificaciones, precios, promociones, disponibilidad, o lo que estés buscando. ¡Te ayudo!';
-        agregarMensajePanel('ia', mensaje);
-        reproducirVozPanel(mensaje);
-    } else {
-        // Si no está abierto, mostrar el popup contextual
-        mostrarPopupIaContextual(item.articulo);
-    }
-}, 10000); // 10 segundos después de abrir el popup
+            limpiarTemporizadorPopupIA();
+            temporizadorPopupIA = setTimeout(() => {
+                // Si el panel IA ya está abierto, agregar el mensaje directamente
+                if (panelChat.classList.contains('abierto')) {
+                    const mensaje = '¡Hola de nuevo! Consultame lo que necesites sobre este artículo: talles, números, especificaciones, precios, promociones, disponibilidad, o lo que estés buscando. ¡Te ayudo!';
+                    agregarMensajePanel('ia', mensaje);
+                    reproducirVozPanel(mensaje);
+                } else {
+                    // Si no está abierto, mostrar el popup contextual
+                    mostrarPopupIaContextual(item.articulo);
+                }
+            }, 10000); // 10 segundos después de abrir el popup
         }
 
         function cerrarPopupEtiqueta() {
-    document.getElementById('popupEtiqueta').classList.remove('activo');
-    document.body.style.overflow = '';
-    codigoActualPopup = null;
-    miniCuboRenderizando = false; // ← DETENER
-    limpiarTemporizadorPopupIA();
-    cerrarPopupIaContextual();
-}
+            document.getElementById('popupEtiqueta').classList.remove('activo');
+            document.body.style.overflow = '';
+            codigoActualPopup = null;
+            miniCuboRenderizando = false; // ← DETENER
+            limpiarTemporizadorPopupIA();
+            cerrarPopupIaContextual();
+        }
+
         async function abrirPopupEspecificaciones(articuloId, codigo) {
             try {
                 const { data, error } = await supabaseClient.rpc('listar_especificaciones', { p_articulo_id: articuloId });
@@ -1838,6 +1838,7 @@ function iniciarMiniCubo3D() {
             if (e.key === 'Escape') {
                 if (document.getElementById('popupVideo').classList.contains('activo')) cerrarPopupVideo();
                 else if (document.getElementById('popupEspecificaciones').classList.contains('activo')) cerrarPopupEspecificaciones();
+                else if (document.getElementById('popupFotos').classList.contains('activo')) cerrarPopupFotos();
                 else if (document.getElementById('popupEtiqueta').classList.contains('activo')) cerrarPopupEtiqueta();
                 else if (document.getElementById('modalInfo').classList.contains('hidden') === false) cerrarModalInfo();
             }
@@ -1953,7 +1954,7 @@ function llamarAsesorIaDesdeEtiqueta() {
     <!-- Estados de elementos visuales -->
     <div class="marco-verde-pastel glow-escuchando glow-hablando shake-error"></div>
 
-    <!-- Modal info comercio -->
+     <!-- Modal info comercio -->
     <div class="hidden flex"></div>
     <div class="hidden items-center gap-2 ml-auto"></div>
 
@@ -1965,3 +1966,6 @@ function llamarAsesorIaDesdeEtiqueta() {
 <!-- ===== FIN BLOQUE SAFELIST ===== -->
 </body>
 </html>
+
+   
+                    
