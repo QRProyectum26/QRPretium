@@ -1362,20 +1362,27 @@ function actualizarPreviewEtiquetas() {
             try {
                 const { data, error } = await supabaseClient.rpc('listar_articulos_by_cuit', { p_cuit: cuitLimpioActual });
                 if (error) throw error;
-                let respuesta = data;
-                if (data && data.listar_articulos_by_cuit) respuesta = data.listar_articulos_by_cuit;
+
+                // El resultado viene como un array con un objeto adentro
                 let lista = [];
-                if (respuesta && respuesta.success) {
-                    lista = respuesta.articulos;
-                    if (typeof lista === 'string') {
-                        try { lista = JSON.parse(lista); } catch(e) { lista = []; }
+                if (Array.isArray(data) && data.length > 0 && data[0].listar_articulos_by_cuit) {
+                    const respuesta = data[0].listar_articulos_by_cuit;
+                    if (respuesta.success && respuesta.articulos) {
+                        lista = respuesta.articulos;
+                        // Si viene como string, lo parseamos
+                        if (typeof lista === 'string') {
+                            try { lista = JSON.parse(lista); } catch(e) { lista = []; }
+                        }
                     }
                 }
+
                 articulosLista = Array.isArray(lista) ? lista : [];
                 renderizarTabla();
 
                 const planComercio = comercioActual.plan || 'standard';
                 actualizarIndicadorCupo(planComercio, articulosLista.length);
+
+                console.log('Artículos cargados:', articulosLista.length); // Para debug
             } catch (err) {
                 console.error('Error al cargar artículos:', err);
                 mostrarMensajeFlotante('❌ Error al cargar artículos', 'error');
