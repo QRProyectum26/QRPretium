@@ -841,7 +841,7 @@
             </div>
         </div>
     </div>
-    <script>
+     <script>
         // ==================== VARIABLES GLOBALES ====================
         let comercioActual = null;
         let cuitLimpioActual = '';
@@ -854,6 +854,7 @@
         let colorFondoSeleccionado = '#0f172a';
         let colorTextoSeleccionado = '#ffffff';
         let logoEtiquetaBase64 = '';
+        let fotosTemporales = { foto1: null, foto2: null, foto3: null }; // <-- AGREGADO ACÁ
 
         const PALETA_COLORES = [
             '#0f172a', '#1f2937', '#334155', '#64748b', '#cbd5e1', '#ffffff',
@@ -1068,214 +1069,206 @@
                 contTexto.appendChild(btn);
             });
         }
-function cargarLogoEtiqueta(event) {
-    const archivo = event.target.files[0];
-    if (!archivo) return;
 
-    const tiposPermitidos = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/svg+xml'];
-    if (!tiposPermitidos.includes(archivo.type)) {
-        mostrarMensajeFlotante('❌ Formato no permitido', 'error');
-        event.target.value = '';
-        return;
-    }
-    const maxBytes = 100 * 1024;
-    if (archivo.size > maxBytes) {
-        mostrarMensajeFlotante(`❌ La imagen pesa ${(archivo.size/1024).toFixed(1)} KB. Máx: 100 KB`, 'error');
-        event.target.value = '';
-        return;
-    }
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        logoEtiquetaBase64 = e.target.result;
-        document.getElementById('previewLogoEtiqueta').src = logoEtiquetaBase64;
-        const cont = document.getElementById('previewLogoEtiquetaContenedor');
-        cont.classList.remove('hidden');
-        cont.classList.add('flex');
-        mostrarMensajeFlotante('✅ Logo cargado', 'ok');
-        actualizarPreviewEtiquetas();
-    };
-    reader.readAsDataURL(archivo);
-}
+        function cargarLogoEtiqueta(event) {
+            const archivo = event.target.files[0];
+            if (!archivo) return;
 
-function quitarLogoEtiqueta() {
-    logoEtiquetaBase64 = '';
-    document.getElementById('inputLogoEtiqueta').value = '';
-    document.getElementById('previewLogoEtiqueta').src = '';
-    const cont = document.getElementById('previewLogoEtiquetaContenedor');
-    cont.classList.add('hidden');
-    cont.classList.remove('flex');
-    actualizarPreviewEtiquetas();
-}
-
-function actualizarPreviewEtiquetas() {
-    const cont = document.getElementById('previewEtiquetas');
-    if (!cont) return;
-
-    const tipografia = document.getElementById('layoutTipografia').value || 'Inter';
-    const borde = document.getElementById('layoutBorde')?.value || 'sin_borde';
-    const logoPos = document.getElementById('layoutLogoPosicion')?.value || 'arriba';
-
-    // Detectar plan para saber cuántos dígitos usar
-    const plan = (comercioActual.plan || 'standard').toLowerCase();
-    const digitos = (plan.includes('power') || plan.includes('premium')) ? 3 : 2;
-    const codigoEjemplo = 'A' + String(1).padStart(digitos, '0');
-
-    // Limpiar
-    cont.innerHTML = '';
-    cont.className = 'flex justify-center items-center flex-wrap';
-
- // Detectar si hay logo
-    const logoData = logoEtiquetaBase64 || comercioActual?.logo_etiqueta || '';
-    const tieneLogo = logoData && String(logoData).trim() !== '';
-
-    // Crear la etiqueta
-    const etiqueta = document.createElement('div');
-    etiqueta.style.backgroundColor = colorFondoSeleccionado;
-    etiqueta.style.color = colorTextoSeleccionado;
-    etiqueta.style.fontFamily = `'${tipografia}', sans-serif`;
-    etiqueta.style.fontWeight = '900';
-    etiqueta.style.fontSize = '32px';
-    
-    // Cambiar dimensiones según si tiene logo
-    if (tieneLogo) {
-        etiqueta.style.width = '140px';
-        etiqueta.style.height = '200px';
-        etiqueta.style.padding = '20px 10px';
-        etiqueta.style.justifyContent = 'space-between';
-    } else {
-        etiqueta.style.width = '200px';
-        etiqueta.style.minHeight = '120px';
-        etiqueta.style.padding = '20px 14px';
-        etiqueta.style.justifyContent = 'center';
-    }
-    
-    etiqueta.style.display = 'flex';
-    etiqueta.style.flexDirection = 'column';
-    etiqueta.style.alignItems = 'center';
-    etiqueta.style.letterSpacing = '2px';
-    etiqueta.style.position = 'relative';
-    etiqueta.style.boxSizing = 'border-box';
-    etiqueta.style.borderRadius = '0';
- 
-    // Aplicar estilo de borde
-    const colorBorde = colorTextoSeleccionado;
-    if (borde === 'simple') {
-        etiqueta.style.border = `3px solid ${colorBorde}`;
-    } else if (borde === 'doble') {
-        etiqueta.style.border = `3px double ${colorBorde}`;
-    } else if (borde === 'punteado') {
-        etiqueta.style.border = `3px dashed ${colorBorde}`;
-    } else if (borde === 'esquinas') {
-        etiqueta.style.border = 'none';
-        ['tl', 'tr', 'bl', 'br'].forEach(pos => {
-            const linea = document.createElement('span');
-            linea.style.position = 'absolute';
-            linea.style.width = '20px';
-            linea.style.height = '20px';
-            if (pos === 'tl') {
-                linea.style.top = '0';
-                linea.style.left = '0';
-                linea.style.borderTop = `3px solid ${colorBorde}`;
-                linea.style.borderLeft = `3px solid ${colorBorde}`;
-            } else if (pos === 'tr') {
-                linea.style.top = '0';
-                linea.style.right = '0';
-                linea.style.borderTop = `3px solid ${colorBorde}`;
-                linea.style.borderRight = `3px solid ${colorBorde}`;
-            } else if (pos === 'bl') {
-                linea.style.bottom = '0';
-                linea.style.left = '0';
-                linea.style.borderBottom = `3px solid ${colorBorde}`;
-                linea.style.borderLeft = `3px solid ${colorBorde}`;
-            } else if (pos === 'br') {
-                linea.style.bottom = '0';
-                linea.style.right = '0';
-                linea.style.borderBottom = `3px solid ${colorBorde}`;
-                linea.style.borderRight = `3px solid ${colorBorde}`;
+            const tiposPermitidos = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/svg+xml'];
+            if (!tiposPermitidos.includes(archivo.type)) {
+                mostrarMensajeFlotante('❌ Formato no permitido', 'error');
+                event.target.value = '';
+                return;
             }
-            etiqueta.appendChild(linea);
-        });
-    } else if (borde === 'filigrana') {
-        etiqueta.style.border = 'none';
-        const posiciones = [
-            { top: '2px', left: '4px' },
-            { top: '2px', right: '4px' },
-            { bottom: '2px', left: '4px' },
-            { bottom: '2px', right: '4px' }
-        ];
-        posiciones.forEach(pos => {
-            const span = document.createElement('span');
-            span.innerText = '✦';
-            span.style.position = 'absolute';
-            span.style.color = colorBorde;
-            span.style.fontSize = '14px';
-            Object.assign(span.style, pos);
-            etiqueta.appendChild(span);
-        });
-    }
+            const maxBytes = 100 * 1024;
+            if (archivo.size > maxBytes) {
+                mostrarMensajeFlotante(`❌ La imagen pesa ${(archivo.size/1024).toFixed(1)} KB. Máx: 100 KB`, 'error');
+                event.target.value = '';
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                logoEtiquetaBase64 = e.target.result;
+                document.getElementById('previewLogoEtiqueta').src = logoEtiquetaBase64;
+                const cont = document.getElementById('previewLogoEtiquetaContenedor');
+                cont.classList.remove('hidden');
+                cont.classList.add('flex');
+                mostrarMensajeFlotante('✅ Logo cargado', 'ok');
+                actualizarPreviewEtiquetas();
+            };
+            reader.readAsDataURL(archivo);
+        }
 
- // Crear los 3 posibles elementos (logo, código, logo) y agregarlos en orden
-    const img = tieneLogo ? document.createElement('img') : null;
-    if (img) {
-        img.src = logoData;
-        img.style.maxHeight = '70px';
-        img.style.maxWidth = '100%';
-        img.style.objectFit = 'contain';
-    }
+        function quitarLogoEtiqueta() {
+            logoEtiquetaBase64 = '';
+            document.getElementById('inputLogoEtiqueta').value = '';
+            document.getElementById('previewLogoEtiqueta').src = '';
+            const cont = document.getElementById('previewLogoEtiquetaContenedor');
+            cont.classList.add('hidden');
+            cont.classList.remove('flex');
+            actualizarPreviewEtiquetas();
+        }
 
-    const codSpan = document.createElement('span');
-    codSpan.innerText = codigoEjemplo;
-    codSpan.style.lineHeight = '1';
-    codSpan.style.textAlign = 'center';
+        function actualizarPreviewEtiquetas() {
+            const cont = document.getElementById('previewEtiquetas');
+            if (!cont) return;
 
-    // Insertar según la posición elegida
-    if (tieneLogo && logoPos === 'arriba') {
-        etiqueta.appendChild(img);       // logo primero
-        etiqueta.appendChild(codSpan);   // código después
-    } else if (tieneLogo && logoPos === 'abajo') {
-        etiqueta.appendChild(codSpan);   // código primero
-        etiqueta.appendChild(img);       // logo después
-    } else {
-        etiqueta.appendChild(codSpan);   // solo código
-    }
+            const tipografia = document.getElementById('layoutTipografia').value || 'Inter';
+            const borde = document.getElementById('layoutBorde')?.value || 'sin_borde';
+            const logoPos = document.getElementById('layoutLogoPosicion')?.value || 'arriba';
 
-    cont.appendChild(etiqueta);
+            const plan = (comercioActual.plan || 'standard').toLowerCase();
+            const digitos = (plan.includes('power') || plan.includes('premium')) ? 3 : 2;
+            const codigoEjemplo = 'A' + String(1).padStart(digitos, '0');
 
-    // Texto de ayuda
-    const ayuda = document.createElement('p');
-    ayuda.innerText = 'Así se verá la etiqueta impresa (borde recto)';
-    ayuda.className = 'text-[10px] text-gray-400 w-full text-center mt-2';
-    cont.appendChild(ayuda);
-}
+            cont.innerHTML = '';
+            cont.className = 'flex justify-center items-center flex-wrap';
+
+            const logoData = logoEtiquetaBase64 || comercioActual?.logo_etiqueta || '';
+            const tieneLogo = logoData && String(logoData).trim() !== '';
+
+            const etiqueta = document.createElement('div');
+            etiqueta.style.backgroundColor = colorFondoSeleccionado;
+            etiqueta.style.color = colorTextoSeleccionado;
+            etiqueta.style.fontFamily = `'${tipografia}', sans-serif`;
+            etiqueta.style.fontWeight = '900';
+            etiqueta.style.fontSize = '32px';
+            
+            if (tieneLogo) {
+                etiqueta.style.width = '140px';
+                etiqueta.style.height = '200px';
+                etiqueta.style.padding = '20px 10px';
+                etiqueta.style.justifyContent = 'space-between';
+            } else {
+                etiqueta.style.width = '200px';
+                etiqueta.style.minHeight = '120px';
+                etiqueta.style.padding = '20px 14px';
+                etiqueta.style.justifyContent = 'center';
+            }
+            
+            etiqueta.style.display = 'flex';
+            etiqueta.style.flexDirection = 'column';
+            etiqueta.style.alignItems = 'center';
+            etiqueta.style.letterSpacing = '2px';
+            etiqueta.style.position = 'relative';
+            etiqueta.style.boxSizing = 'border-box';
+            etiqueta.style.borderRadius = '0';
+         
+            const colorBorde = colorTextoSeleccionado;
+            if (borde === 'simple') {
+                etiqueta.style.border = `3px solid ${colorBorde}`;
+            } else if (borde === 'doble') {
+                etiqueta.style.border = `3px double ${colorBorde}`;
+            } else if (borde === 'punteado') {
+                etiqueta.style.border = `3px dashed ${colorBorde}`;
+            } else if (borde === 'esquinas') {
+                etiqueta.style.border = 'none';
+                ['tl', 'tr', 'bl', 'br'].forEach(pos => {
+                    const linea = document.createElement('span');
+                    linea.style.position = 'absolute';
+                    linea.style.width = '20px';
+                    linea.style.height = '20px';
+                    if (pos === 'tl') {
+                        linea.style.top = '0';
+                        linea.style.left = '0';
+                        linea.style.borderTop = `3px solid ${colorBorde}`;
+                        linea.style.borderLeft = `3px solid ${colorBorde}`;
+                    } else if (pos === 'tr') {
+                        linea.style.top = '0';
+                        linea.style.right = '0';
+                        linea.style.borderTop = `3px solid ${colorBorde}`;
+                        linea.style.borderRight = `3px solid ${colorBorde}`;
+                    } else if (pos === 'bl') {
+                        linea.style.bottom = '0';
+                        linea.style.left = '0';
+                        linea.style.borderBottom = `3px solid ${colorBorde}`;
+                        linea.style.borderLeft = `3px solid ${colorBorde}`;
+                    } else if (pos === 'br') {
+                        linea.style.bottom = '0';
+                        linea.style.right = '0';
+                        linea.style.borderBottom = `3px solid ${colorBorde}`;
+                        linea.style.borderRight = `3px solid ${colorBorde}`;
+                    }
+                    etiqueta.appendChild(linea);
+                });
+            } else if (borde === 'filigrana') {
+                etiqueta.style.border = 'none';
+                const posiciones = [
+                    { top: '2px', left: '4px' },
+                    { top: '2px', right: '4px' },
+                    { bottom: '2px', left: '4px' },
+                    { bottom: '2px', right: '4px' }
+                ];
+                posiciones.forEach(pos => {
+                    const span = document.createElement('span');
+                    span.innerText = '✦';
+                    span.style.position = 'absolute';
+                    span.style.color = colorBorde;
+                    span.style.fontSize = '14px';
+                    Object.assign(span.style, pos);
+                    etiqueta.appendChild(span);
+                });
+            }
+
+            const img = tieneLogo ? document.createElement('img') : null;
+            if (img) {
+                img.src = logoData;
+                img.style.maxHeight = '70px';
+                img.style.maxWidth = '100%';
+                img.style.objectFit = 'contain';
+            }
+
+            const codSpan = document.createElement('span');
+            codSpan.innerText = codigoEjemplo;
+            codSpan.style.lineHeight = '1';
+            codSpan.style.textAlign = 'center';
+
+            if (tieneLogo && logoPos === 'arriba') {
+                etiqueta.appendChild(img);
+                etiqueta.appendChild(codSpan);
+            } else if (tieneLogo && logoPos === 'abajo') {
+                etiqueta.appendChild(codSpan);
+                etiqueta.appendChild(img);
+            } else {
+                etiqueta.appendChild(codSpan);
+            }
+
+            cont.appendChild(etiqueta);
+
+            const ayuda = document.createElement('p');
+            ayuda.innerText = 'Así se verá la etiqueta impresa (borde recto)';
+            ayuda.className = 'text-[10px] text-gray-400 w-full text-center mt-2';
+            cont.appendChild(ayuda);
+        }
 
         function abrirPopupCategorias() {
-    renderizarPaletas();
-    renderizarTablaCategorias();
-    document.getElementById('layoutFilas').value = comercioActual.filas_vidriera || 5;
-    document.getElementById('layoutColumnas').value = comercioActual.columnas_vidriera || 5;
-    document.getElementById('layoutTipografia').value = comercioActual.tipografia_etiqueta || 'Inter';
-    document.getElementById('layoutBorde').value = comercioActual.estilo_borde || 'sin_borde';
-    document.getElementById('layoutLogoPosicion').value = comercioActual.logo_etiqueta_posicion || 'arriba';
-    
-    if (comercioActual.logo_etiqueta && String(comercioActual.logo_etiqueta).trim() !== '') {
-        logoEtiquetaBase64 = comercioActual.logo_etiqueta;
-        document.getElementById('previewLogoEtiqueta').src = comercioActual.logo_etiqueta;
-        const cont = document.getElementById('previewLogoEtiquetaContenedor');
-        cont.classList.remove('hidden');
-        cont.classList.add('flex');
-    } else {
-        logoEtiquetaBase64 = '';
-        const cont = document.getElementById('previewLogoEtiquetaContenedor');
-        cont.classList.add('hidden');
-        cont.classList.remove('flex');
-    }
-    
-    colorFondoSeleccionado = comercioActual.color_etiqueta_fondo || '#0f172a';
-    colorTextoSeleccionado = comercioActual.color_etiqueta_texto || '#ffffff';
-    actualizarPreviewEtiquetas();
-    document.getElementById('popupCategorias').classList.add('activo');
-    document.body.style.overflow = 'hidden';
-}
+            renderizarPaletas();
+            renderizarTablaCategorias();
+            document.getElementById('layoutFilas').value = comercioActual.filas_vidriera || 5;
+            document.getElementById('layoutColumnas').value = comercioActual.columnas_vidriera || 5;
+            document.getElementById('layoutTipografia').value = comercioActual.tipografia_etiqueta || 'Inter';
+            document.getElementById('layoutBorde').value = comercioActual.estilo_borde || 'sin_borde';
+            document.getElementById('layoutLogoPosicion').value = comercioActual.logo_etiqueta_posicion || 'arriba';
+            
+            if (comercioActual.logo_etiqueta && String(comercioActual.logo_etiqueta).trim() !== '') {
+                logoEtiquetaBase64 = comercioActual.logo_etiqueta;
+                document.getElementById('previewLogoEtiqueta').src = comercioActual.logo_etiqueta;
+                const cont = document.getElementById('previewLogoEtiquetaContenedor');
+                cont.classList.remove('hidden');
+                cont.classList.add('flex');
+            } else {
+                logoEtiquetaBase64 = '';
+                const cont = document.getElementById('previewLogoEtiquetaContenedor');
+                cont.classList.add('hidden');
+                cont.classList.remove('flex');
+            }
+            
+            colorFondoSeleccionado = comercioActual.color_etiqueta_fondo || '#0f172a';
+            colorTextoSeleccionado = comercioActual.color_etiqueta_texto || '#ffffff';
+            actualizarPreviewEtiquetas();
+            document.getElementById('popupCategorias').classList.add('activo');
+            document.body.style.overflow = 'hidden';
+        }
 
         function cerrarPopupCategorias() {
             document.getElementById('popupCategorias').classList.remove('activo');
@@ -1318,22 +1311,21 @@ function actualizarPreviewEtiquetas() {
                 const filas = parseInt(document.getElementById('layoutFilas').value) || 5;
                 const columnas = parseInt(document.getElementById('layoutColumnas').value) || 5;
                 const tipografia = document.getElementById('layoutTipografia').value || 'Inter';
+                const estiloBorde = document.getElementById('layoutBorde').value || 'sin_borde';
+                const logoPosicion = document.getElementById('layoutLogoPosicion').value || 'arriba';
 
-                 const estiloBorde = document.getElementById('layoutBorde').value || 'sin_borde';
-        const logoPosicion = document.getElementById('layoutLogoPosicion').value || 'arriba';
-
-        const { data: dataLayout, error: errorLayout } = await supabaseClient.rpc('actualizar_layout_comercio', {
-            p_cuit: cuitLimpioActual,
-            p_filas: filas,
-            p_columnas: columnas,
-            p_color_fondo: colorFondoSeleccionado,
-            p_color_texto: colorTextoSeleccionado,
-            p_tipografia: tipografia,
-            p_estilo_borde: estiloBorde,
-            p_logo_etiqueta: logoEtiquetaBase64 || null,
-            p_logo_etiqueta_posicion: logoPosicion,
-            p_token: localStorage.getItem('qrpretium_token')
-        });
+                const { data: dataLayout, error: errorLayout } = await supabaseClient.rpc('actualizar_layout_comercio', {
+                    p_cuit: cuitLimpioActual,
+                    p_filas: filas,
+                    p_columnas: columnas,
+                    p_color_fondo: colorFondoSeleccionado,
+                    p_color_texto: colorTextoSeleccionado,
+                    p_tipografia: tipografia,
+                    p_estilo_borde: estiloBorde,
+                    p_logo_etiqueta: logoEtiquetaBase64 || null,
+                    p_logo_etiqueta_posicion: logoPosicion,
+                    p_token: localStorage.getItem('qrpretium_token')
+                });
                 if (errorLayout) throw errorLayout;
                 let respLayout = dataLayout;
                 if (dataLayout && dataLayout.actualizar_layout_comercio) respLayout = dataLayout.actualizar_layout_comercio;
@@ -1345,8 +1337,8 @@ function actualizarPreviewEtiquetas() {
                 comercioActual.color_etiqueta_texto = colorTextoSeleccionado;
                 comercioActual.tipografia_etiqueta = tipografia;
                 comercioActual.estilo_borde = estiloBorde;
-        comercioActual.logo_etiqueta = logoEtiquetaBase64 || null;
-        comercioActual.logo_etiqueta_posicion = logoPosicion;
+                comercioActual.logo_etiqueta = logoEtiquetaBase64 || null;
+                comercioActual.logo_etiqueta_posicion = logoPosicion;
 
                 mostrarMensajeFlotante('✅ Categorías y layout guardados', 'ok');
                 await cargarCategorias();
@@ -1363,13 +1355,11 @@ function actualizarPreviewEtiquetas() {
                 const { data, error } = await supabaseClient.rpc('listar_articulos_by_cuit', { p_cuit: cuitLimpioActual });
                 if (error) throw error;
 
-                // El resultado viene como un array con un objeto adentro
                 let lista = [];
                 if (Array.isArray(data) && data.length > 0 && data[0].listar_articulos_by_cuit) {
                     const respuesta = data[0].listar_articulos_by_cuit;
                     if (respuesta.success && respuesta.articulos) {
                         lista = respuesta.articulos;
-                        // Si viene como string, lo parseamos
                         if (typeof lista === 'string') {
                             try { lista = JSON.parse(lista); } catch(e) { lista = []; }
                         }
@@ -1381,8 +1371,6 @@ function actualizarPreviewEtiquetas() {
 
                 const planComercio = comercioActual.plan || 'standard';
                 actualizarIndicadorCupo(planComercio, articulosLista.length);
-
-                console.log('Artículos cargados:', articulosLista.length); // Para debug
             } catch (err) {
                 console.error('Error al cargar artículos:', err);
                 mostrarMensajeFlotante('❌ Error al cargar artículos', 'error');
@@ -1404,52 +1392,53 @@ function actualizarPreviewEtiquetas() {
                             : porcentaje >= 80 ? 'bg-amber-500 h-full transition-all'
                             : 'bg-zinc-700 h-full transition-all';
         }
-function renderizarTabla() {
-    const tbody = document.getElementById('tbodyArticulos');
-    document.getElementById('cantArticulos').innerText = `${articulosLista.length} productos`;
-    tbody.innerHTML = '';
 
-    if (articulosLista.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-gray-400">No hay artículos cargados. Hacé click en "➕ Nuevo Artículo" para empezar.</td></tr>`;
-        return;
-    }
+        function renderizarTabla() {
+            const tbody = document.getElementById('tbodyArticulos');
+            document.getElementById('cantArticulos').innerText = `${articulosLista.length} productos`;
+            tbody.innerHTML = '';
 
-    articulosLista.forEach(item => {
-        const id = item.id;
-        const cod = item.codigo || '-';
-        const art = item.articulo || '-';
-        const disp = item.disponibilidad || '-';
-        const precio = item.precio || 0;
-        const promo = item.promocion || '';
-        const tienePromo = promo && promo.trim() !== '';
-        const tieneVideo = item.video_url && String(item.video_url).trim() !== '';
+            if (articulosLista.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-gray-400">No hay artículos cargados. Hacé click en "➕ Nuevo Artículo" para empezar.</td></tr>`;
+                return;
+            }
 
-        tbody.innerHTML += `
-            <tr>
-                <td><span class="codigo-badge">${cod}</span></td>
-                <td class="font-semibold text-slate-800">
-                    ${art}
-                    ${tieneVideo ? '<span class="badge-promo" style="background:#dbeafe;color:#1d4ed8;">▶️</span>' : ''}
-                </td>
-                <td class="text-xs text-emerald-600">${disp}</td>
-                <td class="text-xs ${tienePromo ? 'text-orange-500' : 'text-gray-400'}">
-                    ${tienePromo ? '🔥 ' + promo : '—'}
-                </td>
-                <td class="font-black text-slate-800">$${Number(precio).toLocaleString('es-AR')}</td>
-                <td class="text-right space-x-1">
-                    <button onclick="abrirVistaPreviaDesdeTabla('${cod}')" class="px-2 py-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded font-bold text-xs">👁️ Ver</button>
-                    <button onclick="prepararEdicion(${id})" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-bold text-xs">✏️ Editar</button>
-                    <button onclick="eliminarArticulo(${id})" class="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded font-bold text-xs">🗑️ Borrar</button>
-                </td>
-            </tr>
-        `;
-    });
-}
+            articulosLista.forEach(item => {
+                const id = item.id;
+                const cod = item.codigo || '-';
+                const art = item.articulo || '-';
+                const disp = item.disponibilidad || '-';
+                const precio = item.precio || 0;
+                const promo = item.promocion || '';
+                const tienePromo = promo && promo.trim() !== '';
+                const tieneVideo = item.video_url && String(item.video_url).trim() !== '';
 
-function abrirVistaPreviaDesdeTabla(codigo) {
-    const cuit = cuitLimpioActual;
-    window.open(`catalogo.html?cuit=${cuit}&codigo=${codigo}`, '_blank');
-}
+                tbody.innerHTML += `
+                    <tr>
+                        <td><span class="codigo-badge">${cod}</span></td>
+                        <td class="font-semibold text-slate-800">
+                            ${art}
+                            ${tieneVideo ? '<span class="badge-promo" style="background:#dbeafe;color:#1d4ed8;">▶️</span>' : ''}
+                        </td>
+                        <td class="text-xs text-emerald-600">${disp}</td>
+                        <td class="text-xs ${tienePromo ? 'text-orange-500' : 'text-gray-400'}">
+                            ${tienePromo ? '🔥 ' + promo : '—'}
+                        </td>
+                        <td class="font-black text-slate-800">$${Number(precio).toLocaleString('es-AR')}</td>
+                        <td class="text-right space-x-1">
+                            <button onclick="abrirVistaPreviaDesdeTabla('${cod}')" class="px-2 py-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded font-bold text-xs">👁️ Ver</button>
+                            <button onclick="prepararEdicion(${id})" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-bold text-xs">✏️ Editar</button>
+                            <button onclick="eliminarArticulo(${id})" class="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded font-bold text-xs">🗑️ Borrar</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function abrirVistaPreviaDesdeTabla(codigo) {
+            const cuit = cuitLimpioActual;
+            window.open(`catalogo.html?cuit=${cuit}&codigo=${codigo}`, '_blank');
+        }
 
         // ==================== POPUP NUEVO ARTÍCULO ====================
         function abrirPopupNuevoArticulo() {
@@ -1471,6 +1460,19 @@ function abrirVistaPreviaDesdeTabla(codigo) {
             document.getElementById('artVideoUrl').value = '';
             especificacionesTemporales = [];
             videoUrlTemporal = '';
+            fotosTemporales = { foto1: null, foto2: null, foto3: null }; // Limpiar fotos
+            
+            // Limpiar inputs de fotos
+            document.getElementById('inputFoto1').value = '';
+            document.getElementById('inputFoto2').value = '';
+            document.getElementById('inputFoto3').value = '';
+            document.getElementById('nombreFoto1').innerText = 'Ningún archivo seleccionado';
+            document.getElementById('nombreFoto2').innerText = 'Ningún archivo seleccionado';
+            document.getElementById('nombreFoto3').innerText = 'Ningún archivo seleccionado';
+            document.getElementById('previewFoto1').classList.add('hidden');
+            document.getElementById('previewFoto2').classList.add('hidden');
+            document.getElementById('previewFoto3').classList.add('hidden');
+
             document.getElementById('tituloFormArticulo').innerText = '➕ Nuevo Artículo';
             document.querySelectorAll('#categoriasDisponibles .categoria-btn').forEach(b => b.classList.remove('seleccionada'));
 
@@ -1547,6 +1549,9 @@ function abrirVistaPreviaDesdeTabla(codigo) {
                         p_video_url: video_url,
                         p_fila: fila,
                         p_columna: columna,
+                        p_foto1: fotosTemporales.foto1 || null,
+                        p_foto2: fotosTemporales.foto2 || null,
+                        p_foto3: fotosTemporales.foto3 || null,
                         p_token: token
                     });
                     resultado = res.data;
@@ -1563,6 +1568,9 @@ function abrirVistaPreviaDesdeTabla(codigo) {
                         p_video_url: video_url,
                         p_fila: fila,
                         p_columna: columna,
+                        p_foto1: fotosTemporales.foto1 || null,
+                        p_foto2: fotosTemporales.foto2 || null,
+                        p_foto3: fotosTemporales.foto3 || null,
                         p_token: token
                     });
                     resultado = res.data;
@@ -1610,6 +1618,27 @@ function abrirVistaPreviaDesdeTabla(codigo) {
             document.getElementById('artPromocion').value = item.promocion || '';
             document.getElementById('artVideoUrl').value = item.video_url || '';
             videoUrlTemporal = item.video_url || '';
+            
+            // Cargar fotos existentes
+            fotosTemporales = { 
+                foto1: item.foto1 || null, 
+                foto2: item.foto2 || null, 
+                foto3: item.foto3 || null 
+            };
+
+            // Mostrar previews de fotos si existen
+            for (let i = 1; i <= 3; i++) {
+                const foto = item[`foto${i}`];
+                if (foto) {
+                    document.getElementById(`nombreFoto${i}`).innerText = 'Foto cargada';
+                    const img = document.getElementById(`previewFoto${i}`);
+                    img.src = foto;
+                    img.classList.remove('hidden');
+                } else {
+                    document.getElementById('nombreFoto' + i).innerText = 'Ningún archivo seleccionado';
+                    document.getElementById('previewFoto' + i).classList.add('hidden');
+                }
+            }
 
             const maxFilas = comercioActual.filas_vidriera || 5;
             const maxColumnas = comercioActual.columnas_vidriera || 5;
@@ -1784,9 +1813,8 @@ function abrirVistaPreviaDesdeTabla(codigo) {
             mostrarMensajeFlotante('✅ URL del video guardada', 'ok');
             cerrarPopupVideo();
         }
-    // Variables y funciones para las Fotos
-        let fotosTemporales = { foto1: null, foto2: null, foto3: null };
 
+        // ==================== FOTOS ====================
         function cargarFoto(event, numeroFoto) {
             const archivo = event.target.files[0];
             if (!archivo) return;
@@ -1803,7 +1831,6 @@ function abrirVistaPreviaDesdeTabla(codigo) {
                 const base64 = e.target.result;
                 fotosTemporales[`foto${numeroFoto}`] = base64;
                 
-                // Mostrar preview
                 document.getElementById(`nombreFoto${numeroFoto}`).innerText = archivo.name;
                 const img = document.getElementById(`previewFoto${numeroFoto}`);
                 img.src = base64;
@@ -1811,6 +1838,7 @@ function abrirVistaPreviaDesdeTabla(codigo) {
             };
             reader.readAsDataURL(archivo);
         }
+
         // ==================== MI QR ====================
         function abrirPopupMiQr() {
             document.getElementById('popupMiQr').classList.add('activo');
@@ -2014,7 +2042,8 @@ function abrirVistaPreviaDesdeTabla(codigo) {
                 btn.disabled = false;
                 btn.innerText = 'Guardar Datos del Comercio';
             }
- }
+        }
+
         async function guardarColor(nuevoColor) {
             document.getElementById('headerAdmin').style.backgroundColor = nuevoColor;
             try {
@@ -2031,24 +2060,20 @@ function abrirVistaPreviaDesdeTabla(codigo) {
             } catch (err) {
                 mostrarMensajeFlotante('❌ ' + err.message, 'error');
             }
-     }
+        }
 
-         // ==================== IMPRIMIR CÓDIGOS ====================
-       function abrirPopupImprimir() {
-            // Detectar si hay logo
+        // ==================== IMPRIMIR CÓDIGOS ====================
+        function abrirPopupImprimir() {
             const tieneLogo = comercioActual?.logo_etiqueta && String(comercioActual.logo_etiqueta).trim() !== '';
             
-            // Mostrar el grupo correcto
             if (tieneLogo) {
                 document.getElementById('grupoHorizontal').classList.add('hidden');
                 document.getElementById('grupoVertical').classList.remove('hidden');
-                // Marcar "Mediano Vertical" por defecto
                 const radioVertical = document.querySelector('input[name="tamanoEtiqueta"][value="42x55"]');
                 if (radioVertical) radioVertical.checked = true;
             } else {
                 document.getElementById('grupoHorizontal').classList.remove('hidden');
                 document.getElementById('grupoVertical').classList.add('hidden');
-                // Marcar "Mediano" por defecto
                 const radioHorizontal = document.querySelector('input[name="tamanoEtiqueta"][value="42x26"]');
                 if (radioHorizontal) radioHorizontal.checked = true;
             }
@@ -2058,6 +2083,7 @@ function abrirVistaPreviaDesdeTabla(codigo) {
         function cerrarPopupImprimir() {
             document.getElementById('popupImprimir').classList.remove('activo');
         }
+
         // ==================== GUÍA DEL ADMIN ====================
         function abrirPopupAyuda() {
             document.getElementById('popupAyuda').classList.add('activo');
@@ -2067,6 +2093,7 @@ function abrirVistaPreviaDesdeTabla(codigo) {
             document.getElementById('popupAyuda').classList.remove('activo');
             document.body.style.overflow = '';
         }
+
         function hexToRgb(hex) {
             hex = (hex || '#000000').replace('#', '');
             if (hex.length === 3) {
@@ -2078,6 +2105,7 @@ function abrirVistaPreviaDesdeTabla(codigo) {
                 parseInt(hex.substring(4, 6), 16)
             ];
         }
+
         function generarPDFs(tipo) {
             if (!window.jspdf) {
                 alert('❌ jsPDF no está cargado. Esperá unos segundos y volvé a intentar.');
@@ -2088,7 +2116,6 @@ function abrirVistaPreviaDesdeTabla(codigo) {
                 return;
             }
 
-            // Leer tamaño seleccionado
             const radioSel = document.querySelector('input[name="tamanoEtiqueta"]:checked');
             const tamanoStr = radioSel ? radioSel.value : '42x26';
             const [anchoEtiqueta, altoEtiqueta] = tamanoStr.split('x').map(n => parseInt(n));
@@ -2096,7 +2123,6 @@ function abrirVistaPreviaDesdeTabla(codigo) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
-            // Agrupar artículos por categoría
             const porCategoria = {};
             articulosLista.forEach(a => {
                 const letra = (a.codigo || 'A').charAt(0).toUpperCase();
@@ -2104,11 +2130,9 @@ function abrirVistaPreviaDesdeTabla(codigo) {
                 porCategoria[letra].push(a);
             });
 
-            // Detectar plan y dígitos
             const plan = (comercioActual.plan || 'standard').toLowerCase();
             const digitos = (plan.includes('power') || plan.includes('premium')) ? 3 : 2;
 
-            // Colores y estilos
             const colorFondo = tipo === 'plantilla' ? (comercioActual.color_etiqueta_fondo || '#0f172a') : '#ffffff';
             const colorTexto = tipo === 'plantilla' ? (comercioActual.color_etiqueta_texto || '#ffffff') : '#000000';
             const colorBorde = tipo === 'plantilla' ? (comercioActual.color_etiqueta_texto || '#ffffff') : '#000000';
@@ -2132,7 +2156,6 @@ function abrirVistaPreviaDesdeTabla(codigo) {
             };
             const fontPDF = fontMap[tipografia] || 'helvetica';
 
-            // Layout
             const espacioX = 3;
             const espacioY = 3;
             const margenX = 10;
@@ -2169,13 +2192,11 @@ function abrirVistaPreviaDesdeTabla(codigo) {
                         columna = 0;
                     }
 
-                    // 1. Fondo
                     if (tipo === 'plantilla') {
                         doc.setFillColor(rgbFondo[0], rgbFondo[1], rgbFondo[2]);
                         doc.rect(x, y, anchoEtiqueta, altoEtiqueta, 'F');
                     }
 
-                    // 2. Borde
                     doc.setDrawColor(rgbBorde[0], rgbBorde[1], rgbBorde[2]);
                     doc.setLineWidth(0.4);
                     if (estiloBorde === 'simple') {
@@ -2191,16 +2212,12 @@ function abrirVistaPreviaDesdeTabla(codigo) {
                         doc.setLineDashPattern([], 0);
                     } else if (estiloBorde === 'esquinas') {
                         const largo = 6;
-                        // Esquina superior izquierda
                         doc.line(x, y, x + largo, y);
                         doc.line(x, y, x, y + largo);
-                        // Esquina superior derecha
                         doc.line(x + anchoEtiqueta - largo, y, x + anchoEtiqueta, y);
                         doc.line(x + anchoEtiqueta, y, x + anchoEtiqueta, y + largo);
-                        // Esquina inferior izquierda
                         doc.line(x, y + altoEtiqueta - largo, x, y + altoEtiqueta);
                         doc.line(x, y + altoEtiqueta, x + largo, y + altoEtiqueta);
-                        // Esquina inferior derecha
                         doc.line(x + anchoEtiqueta - largo, y + altoEtiqueta, x + anchoEtiqueta, y + altoEtiqueta);
                         doc.line(x + anchoEtiqueta, y + altoEtiqueta - largo, x + anchoEtiqueta, y + altoEtiqueta);
                     } else if (estiloBorde === 'filigrana') {
@@ -2212,7 +2229,6 @@ function abrirVistaPreviaDesdeTabla(codigo) {
                         doc.text('✦', x + anchoEtiqueta - 4, y + altoEtiqueta - 2);
                     }
 
-                    // 3. Logo (si hay)
                     let yTextoBase = y + altoEtiqueta / 2 + 3;
                     let hayLogo = false;
 
@@ -2236,14 +2252,11 @@ function abrirVistaPreviaDesdeTabla(codigo) {
                         }
                     }
 
-                    // 4. Texto del código
                     doc.setTextColor(rgbTexto[0], rgbTexto[1], rgbTexto[2]);
                     doc.setFont(fontPDF, 'bold');
-                    // El font crece con el ancho, sin tope tan bajo
                     doc.setFontSize(Math.min(48, anchoEtiqueta * 0.55));
                     doc.text(cod, x + anchoEtiqueta / 2, yTextoBase, { align: 'center' });
 
-                    // Avanzar
                     columna++;
                     if (columna >= porFila) {
                         columna = 0;
@@ -2274,180 +2287,160 @@ function abrirVistaPreviaDesdeTabla(codigo) {
             cerrarPopupImprimir();
             mostrarMensajeFlotante('✅ PDF de códigos generado', 'ok');
         }
-// ==================== GUÍA DE UBICACIÓN ====================
-function generarGuiaUbicacion(tipo) {
-    if (!window.jspdf) {
-        console.warn('jsPDF no disponible para la guía');
-        return;
-    }
-    if (!articulosLista || articulosLista.length === 0) {
-        return;
-    }
 
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-
-    const filas = comercioActual.filas_vidriera || 5;
-    const columnas = comercioActual.columnas_vidriera || 5;
-    const nombreComercio = comercioActual.nombre || 'Mi Comercio';
-
-    // Detectar plan y dígitos (por consistencia con el otro PDF)
-    const plan = (comercioActual.plan || 'standard').toLowerCase();
-    const digitos = (plan.includes('power') || plan.includes('premium')) ? 3 : 2;
-
-    // Colores de la plantilla (o neutros para "base")
-    const colorFondo = tipo === 'plantilla' ? (comercioActual.color_etiqueta_fondo || '#0f172a') : '#ffffff';
-    const colorTexto = tipo === 'plantilla' ? (comercioActual.color_etiqueta_texto || '#ffffff') : '#000000';
-    const rgbFondo = hexToRgb(colorFondo);
-    const rgbTexto = hexToRgb(colorTexto);
-
-    // ===== ENCABEZADO =====
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(16);
-    doc.setTextColor(0, 0, 0);
-    doc.text('GUÍA DE UBICACIÓN', 105, 18, { align: 'center' });
-
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'normal');
-    doc.text(nombreComercio, 105, 25, { align: 'center' });
-    doc.setFontSize(9);
-    doc.setTextColor(100, 100, 100);
-    doc.text(`CUIT: ${cuitLimpioActual}`, 105, 30, { align: 'center' });
-
-    const hoy = new Date();
-    const fecha = hoy.toLocaleDateString('es-AR');
-    doc.text(`Fecha: ${fecha}`, 105, 35, { align: 'center' });
-
-    // ===== GRILLA =====
-    // Agrupar artículos por celda (fila-columna)
-    const celdas = {};
-    articulosLista.forEach(a => {
-        const f = parseInt(a.fila) || 1;
-        const c = parseInt(a.columna) || 1;
-        const key = `${f}-${c}`;
-        if (!celdas[key]) celdas[key] = [];
-        celdas[key].push(a.codigo || '-');
-    });
-
-    // Ordenar los códigos dentro de cada celda alfabéticamente
-    Object.keys(celdas).forEach(k => celdas[k].sort());
-
-    // Dimensiones de la grilla
-    const margenX = 15;
-    const anchoUtil = 210 - (margenX * 2);   // 180 mm
-    const anchoEtiquetaFila = 22;            // ancho de la columna "Fila N"
-    const anchoCelda = (anchoUtil - anchoEtiquetaFila) / columnas;
-    const altoCelda = 22;                    // altura base de cada celda
-    const yInicio = 48;
-
-    // ===== ENCABEZADOS DE COLUMNAS =====
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9);
-    doc.setTextColor(0, 0, 0);
-
-    // Esquina vacía
-    doc.setFillColor(240, 240, 240);
-    doc.rect(margenX, yInicio, anchoEtiquetaFila, altoCelda, 'F');
-    doc.rect(margenX, yInicio, anchoEtiquetaFila, altoCelda);
-
-    // Columnas
-    for (let c = 1; c <= columnas; c++) {
-        const x = margenX + anchoEtiquetaFila + ((c - 1) * anchoCelda);
-        doc.setFillColor(240, 240, 240);
-        doc.rect(x, yInicio, anchoCelda, altoCelda, 'F');
-        doc.rect(x, yInicio, anchoCelda, altoCelda);
-        doc.text(`Col ${c}`, x + anchoCelda / 2, yInicio + altoCelda / 2 + 1.5, { align: 'center' });
-    }
-
-    // ===== FILAS =====
-    let yActual = yInicio + altoCelda;
-
-    for (let f = 1; f <= filas; f++) {
-        // Encabezado de la fila
-        doc.setFillColor(240, 240, 240);
-        doc.rect(margenX, yActual, anchoEtiquetaFila, altoCelda, 'F');
-        doc.rect(margenX, yActual, anchoEtiquetaFila, altoCelda);
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(9);
-        doc.text(`Fila ${f}`, margenX + anchoEtiquetaFila / 2, yActual + altoCelda / 2 + 1.5, { align: 'center' });
-
-        // Celdas
-        for (let c = 1; c <= columnas; c++) {
-            const x = margenX + anchoEtiquetaFila + ((c - 1) * anchoCelda);
-            const key = `${f}-${c}`;
-            const codigos = celdas[key] || [];
-
-            // Borde de la celda
-            doc.setDrawColor(180, 180, 180);
-            doc.setLineWidth(0.2);
-            doc.rect(x, yActual, anchoCelda, altoCelda);
-
-            // Contenido (códigos apilados)
-            if (codigos.length > 0) {
-                // Fondo de la celda con color del tema
-                doc.setFillColor(rgbFondo[0], rgbFondo[1], rgbFondo[2]);
-                doc.rect(x + 0.5, yActual + 0.5, anchoCelda - 1, altoCelda - 1, 'F');
-
-                doc.setTextColor(rgbTexto[0], rgbTexto[1], rgbTexto[2]);
-                doc.setFont('helvetica', 'bold');
-
-                // Ajustar tamaño según cantidad de códigos
-                let fontTam = 10;
-                if (codigos.length === 2) fontTam = 8;
-                else if (codigos.length === 3) fontTam = 6.5;
-                else if (codigos.length >= 4) fontTam = 5.5;
-                doc.setFontSize(fontTam);
-
-                // Apilar verticalmente centrado
-                const total = codigos.length;
-                const lineHeight = fontTam * 0.42;
-                const alturaTotal = total * lineHeight;
-                const yBase = yActual + (altoCelda / 2) - (alturaTotal / 2) + lineHeight;
-
-                codigos.forEach((cod, i) => {
-                    doc.text(cod, x + anchoCelda / 2, yBase + (i * lineHeight), { align: 'center' });
-                });
+        // ==================== GUÍA DE UBICACIÓN ====================
+        function generarGuiaUbicacion(tipo) {
+            if (!window.jspdf) {
+                console.warn('jsPDF no disponible para la guía');
+                return;
             }
-        }
+            if (!articulosLista || articulosLista.length === 0) {
+                return;
+            }
 
-        yActual += altoCelda;
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
-        // Salto de página si no entra la próxima fila
-        if (yActual + altoCelda > 285 && f < filas) {
-            doc.addPage();
-            yActual = 20;
-            // Repetir encabezado de columnas en nueva página
+            const filas = comercioActual.filas_vidriera || 5;
+            const columnas = comercioActual.columnas_vidriera || 5;
+            const nombreComercio = comercioActual.nombre || 'Mi Comercio';
+
+            const plan = (comercioActual.plan || 'standard').toLowerCase();
+            const digitos = (plan.includes('power') || plan.includes('premium')) ? 3 : 2;
+
+            const colorFondo = tipo === 'plantilla' ? (comercioActual.color_etiqueta_fondo || '#0f172a') : '#ffffff';
+            const colorTexto = tipo === 'plantilla' ? (comercioActual.color_etiqueta_texto || '#ffffff') : '#000000';
+            const rgbFondo = hexToRgb(colorFondo);
+            const rgbTexto = hexToRgb(colorTexto);
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(16);
+            doc.setTextColor(0, 0, 0);
+            doc.text('GUÍA DE UBICACIÓN', 105, 18, { align: 'center' });
+
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'normal');
+            doc.text(nombreComercio, 105, 25, { align: 'center' });
+            doc.setFontSize(9);
+            doc.setTextColor(100, 100, 100);
+            doc.text(`CUIT: ${cuitLimpioActual}`, 105, 30, { align: 'center' });
+
+            const hoy = new Date();
+            const fecha = hoy.toLocaleDateString('es-AR');
+            doc.text(`Fecha: ${fecha}`, 105, 35, { align: 'center' });
+
+            const celdas = {};
+            articulosLista.forEach(a => {
+                const f = parseInt(a.fila) || 1;
+                const c = parseInt(a.columna) || 1;
+                const key = `${f}-${c}`;
+                if (!celdas[key]) celdas[key] = [];
+                celdas[key].push(a.codigo || '-');
+            });
+
+            Object.keys(celdas).forEach(k => celdas[k].sort());
+
+            const margenX = 15;
+            const anchoUtil = 210 - (margenX * 2);
+            const anchoEtiquetaFila = 22;
+            const anchoCelda = (anchoUtil - anchoEtiquetaFila) / columnas;
+            const altoCelda = 22;
+            const yInicio = 48;
+
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(9);
             doc.setTextColor(0, 0, 0);
+
             doc.setFillColor(240, 240, 240);
-            doc.rect(margenX, yActual, anchoEtiquetaFila, altoCelda, 'F');
-            doc.rect(margenX, yActual, anchoEtiquetaFila, altoCelda);
+            doc.rect(margenX, yInicio, anchoEtiquetaFila, altoCelda, 'F');
+            doc.rect(margenX, yInicio, anchoEtiquetaFila, altoCelda);
+
             for (let c = 1; c <= columnas; c++) {
                 const x = margenX + anchoEtiquetaFila + ((c - 1) * anchoCelda);
                 doc.setFillColor(240, 240, 240);
-                doc.rect(x, yActual, anchoCelda, altoCelda, 'F');
-                doc.rect(x, yActual, anchoCelda, altoCelda);
-                doc.text(`Col ${c}`, x + anchoCelda / 2, yActual + altoCelda / 2 + 1.5, { align: 'center' });
+                doc.rect(x, yInicio, anchoCelda, altoCelda, 'F');
+                doc.rect(x, yInicio, anchoCelda, altoCelda);
+                doc.text(`Col ${c}`, x + anchoCelda / 2, yInicio + altoCelda / 2 + 1.5, { align: 'center' });
             }
-            yActual += altoCelda;
+
+            let yActual = yInicio + altoCelda;
+
+            for (let f = 1; f <= filas; f++) {
+                doc.setFillColor(240, 240, 240);
+                doc.rect(margenX, yActual, anchoEtiquetaFila, altoCelda, 'F');
+                doc.rect(margenX, yActual, anchoEtiquetaFila, altoCelda);
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(9);
+                doc.text(`Fila ${f}`, margenX + anchoEtiquetaFila / 2, yActual + altoCelda / 2 + 1.5, { align: 'center' });
+
+                for (let c = 1; c <= columnas; c++) {
+                    const x = margenX + anchoEtiquetaFila + ((c - 1) * anchoCelda);
+                    const key = `${f}-${c}`;
+                    const codigos = celdas[key] || [];
+
+                    doc.setDrawColor(180, 180, 180);
+                    doc.setLineWidth(0.2);
+                    doc.rect(x, yActual, anchoCelda, altoCelda);
+
+                    if (codigos.length > 0) {
+                        doc.setFillColor(rgbFondo[0], rgbFondo[1], rgbFondo[2]);
+                        doc.rect(x + 0.5, yActual + 0.5, anchoCelda - 1, altoCelda - 1, 'F');
+
+                        doc.setTextColor(rgbTexto[0], rgbTexto[1], rgbTexto[2]);
+                        doc.setFont('helvetica', 'bold');
+
+                        let fontTam = 10;
+                        if (codigos.length === 2) fontTam = 8;
+                        else if (codigos.length === 3) fontTam = 6.5;
+                        else if (codigos.length >= 4) fontTam = 5.5;
+                        doc.setFontSize(fontTam);
+
+                        const total = codigos.length;
+                        const lineHeight = fontTam * 0.42;
+                        const alturaTotal = total * lineHeight;
+                        const yBase = yActual + (altoCelda / 2) - (alturaTotal / 2) + lineHeight;
+
+                        codigos.forEach((cod, i) => {
+                            doc.text(cod, x + anchoCelda / 2, yBase + (i * lineHeight), { align: 'center' });
+                        });
+                    }
+                }
+
+                yActual += altoCelda;
+
+                if (yActual + altoCelda > 285 && f < filas) {
+                    doc.addPage();
+                    yActual = 20;
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(9);
+                    doc.setTextColor(0, 0, 0);
+                    doc.setFillColor(240, 240, 240);
+                    doc.rect(margenX, yActual, anchoEtiquetaFila, altoCelda, 'F');
+                    doc.rect(margenX, yActual, anchoEtiquetaFila, altoCelda);
+                    for (let c = 1; c <= columnas; c++) {
+                        const x = margenX + anchoEtiquetaFila + ((c - 1) * anchoCelda);
+                        doc.setFillColor(240, 240, 240);
+                        doc.rect(x, yActual, anchoCelda, altoCelda, 'F');
+                        doc.rect(x, yActual, anchoCelda, altoCelda);
+                        doc.text(`Col ${c}`, x + anchoCelda / 2, yActual + altoCelda / 2 + 1.5, { align: 'center' });
+                    }
+                    yActual += altoCelda;
+                }
+            }
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(7);
+            doc.setTextColor(150, 150, 150);
+            doc.text('QRPretium · Guía de ubicación para armar vidriera', 105, 292, { align: 'center' });
+
+            doc.save(`Guia-Ubicacion-${cuitLimpioActual}-${tipo}.pdf`);
         }
-    }
 
-    // ===== PIE =====
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(7);
-    doc.setTextColor(150, 150, 150);
-    doc.text('QRPretium · Guía de ubicación para armado de vidriera', 105, 292, { align: 'center' });
-
-    // ===== GUARDAR =====
-    doc.save(`Guia-Ubicacion-${cuitLimpioActual}-${tipo}.pdf`);
-}
         // ==================== CIERRE CON ESC ====================
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 if (document.getElementById('popupImprimir').classList.contains('activo')) cerrarPopupImprimir();
-                else if (document.getElementById('popupAyuda').classList.contains('activo')) cerrarPopupAyuda();  // ← NUEVA LÍNEA    
+                else if (document.getElementById('popupAyuda').classList.contains('activo')) cerrarPopupAyuda();
                 else if (document.getElementById('popupVideo').classList.contains('activo')) cerrarPopupVideo();
                 else if (document.getElementById('popupEspecificaciones').classList.contains('activo')) cerrarPopupEspecificaciones();
                 else if (document.getElementById('popupArticulo').classList.contains('activo')) cerrarPopupArticulo();
