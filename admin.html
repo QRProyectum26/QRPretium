@@ -1349,34 +1349,37 @@
             }
         }
 
-        // ==================== ARTÍCULOS ====================
+              // ==================== ARTÍCULOS ====================
         async function cargarArticulos() {
             try {
                 const { data, error } = await supabaseClient.rpc('listar_articulos_by_cuit', { p_cuit: cuitLimpioActual });
+                
                 if (error) throw error;
 
+                // La respuesta de Supabase es DIRECTO el objeto { success: true, articulos: [...] }
                 let lista = [];
-                if (Array.isArray(data) && data.length > 0 && data[0].listar_articulos_by_cuit) {
-                    const respuesta = data[0].listar_articulos_by_cuit;
-                    if (respuesta.success && respuesta.articulos) {
-                        lista = respuesta.articulos;
-                        if (typeof lista === 'string') {
-                            try { lista = JSON.parse(lista); } catch(e) { lista = []; }
-                        }
-                    }
+                if (data && data.success && data.articulos) {
+                    lista = data.articulos;
+                }
+
+                // Si por alguna razón viene como string, lo parseamos
+                if (typeof lista === 'string') {
+                    try { lista = JSON.parse(lista); } catch(e) { lista = []; }
                 }
 
                 articulosLista = Array.isArray(lista) ? lista : [];
+                console.log('Artículos cargados en la lista:', articulosLista.length);
+                
                 renderizarTabla();
-
+                
                 const planComercio = comercioActual.plan || 'standard';
                 actualizarIndicadorCupo(planComercio, articulosLista.length);
+                
             } catch (err) {
                 console.error('Error al cargar artículos:', err);
                 mostrarMensajeFlotante('❌ Error al cargar artículos', 'error');
             }
         }
-
         function actualizarIndicadorCupo(planComercio, totalGuardados) {
             const plan = (planComercio || 'standard').toLowerCase();
             const limites = { 'standard': 35, 'power': 350, 'premium': 2800, 'prueba gratuita': 35 };
