@@ -311,6 +311,34 @@
                         <button type="button" onclick="abrirPopupVideo()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1">
                             ▶️ Video
                         </button>
+                        <!-- NUEVOS CAMPOS: FOTOS Y VIDEO -->
+<div class="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-3">
+    <h4 class="text-xs font-bold text-slate-700 uppercase">📸 Fotos del Artículo (Máx. 3)</h4>
+    
+    <!-- Foto 1 -->
+    <div class="flex items-center gap-2">
+        <input type="file" id="inputFoto1" accept="image/*" class="hidden" onchange="cargarFoto(event, 1)">
+        <button type="button" onclick="document.getElementById('inputFoto1').click()" class="px-3 py-2 bg-white border border-slate-300 text-slate-700 font-bold text-xs rounded-lg shadow-sm">Subir Foto 1</button>
+        <span id="nombreFoto1" class="text-[10px] text-gray-500 truncate flex-1">Ningún archivo seleccionado</span>
+        <img id="previewFoto1" src="" class="h-8 w-8 object-cover rounded hidden">
+    </div>
+    
+    <!-- Foto 2 -->
+    <div class="flex items-center gap-2">
+        <input type="file" id="inputFoto2" accept="image/*" class="hidden" onchange="cargarFoto(event, 2)">
+        <button type="button" onclick="document.getElementById('inputFoto2').click()" class="px-3 py-2 bg-white border border-slate-300 text-slate-700 font-bold text-xs rounded-lg shadow-sm">Subir Foto 2</button>
+        <span id="nombreFoto2" class="text-[10px] text-gray-500 truncate flex-1">Ningún archivo seleccionado</span>
+        <img id="previewFoto2" src="" class="h-8 w-8 object-cover rounded hidden">
+    </div>
+
+    <!-- Foto 3 -->
+    <div class="flex items-center gap-2">
+        <input type="file" id="inputFoto3" accept="image/*" class="hidden" onchange="cargarFoto(event, 3)">
+        <button type="button" onclick="document.getElementById('inputFoto3').click()" class="px-3 py-2 bg-white border border-slate-300 text-slate-700 font-bold text-xs rounded-lg shadow-sm">Subir Foto 3</button>
+        <span id="nombreFoto3" class="text-[10px] text-gray-500 truncate flex-1">Ningún archivo seleccionado</span>
+        <img id="previewFoto3" src="" class="h-8 w-8 object-cover rounded hidden">
+    </div>
+</div>
                     </div>
                     <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-2">
                         <label class="block text-[11px] font-bold text-emerald-700 uppercase mb-1">📦 Disponibilidad</label>
@@ -1749,7 +1777,33 @@ function abrirVistaPreviaDesdeTabla(codigo) {
             mostrarMensajeFlotante('✅ URL del video guardada', 'ok');
             cerrarPopupVideo();
         }
+    // Variables y funciones para las Fotos
+        let fotosTemporales = { foto1: null, foto2: null, foto3: null };
 
+        function cargarFoto(event, numeroFoto) {
+            const archivo = event.target.files[0];
+            if (!archivo) return;
+
+            const maxBytes = 500 * 1024; // 500 KB por foto
+            if (archivo.size > maxBytes) {
+                alert('La imagen es muy pesada (máx 500KB)');
+                event.target.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64 = e.target.result;
+                fotosTemporales[`foto${numeroFoto}`] = base64;
+                
+                // Mostrar preview
+                document.getElementById(`nombreFoto${numeroFoto}`).innerText = archivo.name;
+                const img = document.getElementById(`previewFoto${numeroFoto}`);
+                img.src = base64;
+                img.classList.remove('hidden');
+            };
+            reader.readAsDataURL(archivo);
+        }
         // ==================== MI QR ====================
         function abrirPopupMiQr() {
             document.getElementById('popupMiQr').classList.add('activo');
