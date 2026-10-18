@@ -1096,6 +1096,10 @@
         const TTS_URL = 'https://tts.qrproyectum26.workers.dev/v1/audio/speech';
 
         async function reproducirVozPanel(texto, onComplete = null) {
+            if (!datosComercioGlobal || datosComercioGlobal.tiene_voz_ia !== true) {
+                if (typeof onComplete === 'function') onComplete();
+                return;
+            }
             if (estaHablando) { estaHablando = false; }
             try {
                 aplicarEfectoCubo('hablando');
@@ -1364,6 +1368,7 @@
                 }
               const comercio = respuesta.comercio;
                 datosComercioGlobal = comercio;
+                datosComercioGlobal.tiene_voz_ia = (comercio.tiene_voz_ia === true);
                 document.getElementById('nombreComercio').innerText = comercio.nombre || 'Mi Comercio';
                 document.getElementById('modalNombreComercio').innerText = comercio.nombre || 'Mi Comercio';
                 if (comercio.color) document.getElementById('headerComercio').style.backgroundColor = comercio.color;
