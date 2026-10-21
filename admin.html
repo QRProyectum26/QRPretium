@@ -160,7 +160,27 @@
                         <h1 id="adminNombreComercio" class="text-2xl font-extrabold uppercase tracking-wide">Cargando...</h1>
                         <p id="adminCuitComercio" class="text-xs text-zinc-900 font-medium mt-1">CUIT: -</p>
                     </div>
-                    <div class="flex items-center justify-center gap-2 flex-wrap">
+                   <div class="flex items-center justify-center gap-3 flex-wrap bg-slate-600/40 backdrop-blur-md p-2 rounded-2xl border border-white/20 shadow-lg">
+    <!-- Botón 1: Panel Admin -->
+    <button onclick="abrirPopupAyuda()" 
+        class="text-xs bg-black/20 hover:bg-black/20 text-emerald-500 font-bold px-2.5 py-1 rounded-lg shadow">
+        PANEL ADMIN <span class="text-base font-black">?</span>:
+    </button>
+
+    <!-- Botón 2: Cerrar Sesión -->
+    <button onclick="cerrarSesion()" class="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-2 rounded-lg shadow">
+        Cerrar Sesión
+    </button>
+
+    <!-- Botón 3: Bloque de color -->
+    <div class="flex items-center space-x-2 bg-black/20 p-1.5 rounded-xl backdrop-blur-sm border border-white/10">
+        <label for="inputColor" class="text-xs font-bold text-white">Color:</label>
+        <input type="color" id="inputColor" value="#334155" class="h-7 w-10 rounded cursor-pointer border-0 bg-transparent">
+        <button onclick="guardarColor(document.getElementById('inputColor').value)" class="text-xs bg-white text-slate-800 font-bold px-2.5 py-1 rounded-lg shadow hover:bg-gray-100">
+            Guardar
+        </button>
+    </div>
+</div>
                       <!-- Botón 1: Panel Admin -->
                         <button onclick="abrirPopupAyuda()" 
                             class="text-xs bg-black/20 hover:bg-black/20 text-emerald-500 font-bold px-2.5 py-1 rounded-lg shadow">
