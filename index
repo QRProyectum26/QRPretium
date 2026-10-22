@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <title>QRPretium | Bienvenido</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pizarra: '#1E293B',
+                        pizarraOscura: '#0F172A',
+                        naranja: '#F97316',
+                        verdeVivo: '#10B981',
+                        azulComercio: '#1E40AF',
+                        grafitoExpo: '#334155'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* Efectos visuales extra */
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        }
+        .img-zoom img {
+            transition: transform 0.7s ease;
+        }
+        .img-zoom:hover img {
+            transform: scale(1.08);
+        }
+        .glow-btn-vidrieras {
+            transition: all 0.3s ease;
+        }
+        .glow-btn-vidrieras:hover {
+            box-shadow: 0 0 20px rgba(30, 64, 175, 0.8);
+            background-color: #1e3a8a;
+        }
+        .glow-btn-expo {
+            transition: all 0.3s ease;
+        }
+        .glow-btn-expo:hover {
+            box-shadow: 0 0 20px rgba(249, 115, 22, 0.8);
+            background-color: #ea580c;
+        }
+    </style>
+</head>
+<body class="bg-pizarraOscura text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-naranja selection:text-white">
+
+    <!-- HEADER CON LOGO -->
+    <header class="w-full py-6 px-4 sm:px-8 border-b border-slate-800/50 bg-pizarraOscura/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex items-center">
+            <a href="index.html" class="flex items-center gap-3 group">
+                <img src="img/logoqrpretium1.jpg" alt="QRPretium Logo" class="w-12 h-12 rounded-xl object-cover shadow-lg border border-slate-700 transition-transform group-hover:scale-105">
+                <div class="flex items-baseline font-sans">
+                    <span class="text-2xl font-black tracking-tight text-slate-300 mr-0.5">QR</span>
+                    <span class="text-2xl font-light tracking-tight text-naranja">Pretium</span>
+                </div>
+            </a>
+        </div>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL (LANDING) -->
+    <main class="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        
+        <!-- Adorno de fondo -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-naranja/5 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-6xl mx-auto w-full relative z-10">
+            
+            <div class="text-center mb-12">
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-4 tracking-tight">
+                    Bienvenido a <span class="text-transparent bg-clip-text bg-gradient-to-r from-naranja to-verdeVivo">QRPretium</span>
+                </h1>
+                <p class="text-slate-400 text-base sm:text-lg max-w-2xl mx-auto">
+                    Seleccioná el entorno al que querés ingresar para descubrir nuestra tecnología interactiva.
+                </p>
+            </div>
+
+            <!-- GRILLA DE 2 BOTONES / IMÁGENES -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+                
+                <!-- CARD 1: VIDRIERAS (COMERCIOS) -->
+                <div class="bg-pizarra rounded-3xl overflow-hidden border border-slate-700 shadow-2xl flex flex-col card-hover img-zoom relative group">
+                    <!-- Imagen -->
+                    <div class="h-64 sm:h-72 w-full relative overflow-hidden">
+                        <!-- 👇 ACÁ CAMBIAMOS EL SRC POR TU IMAGEN 👇 -->
+                        <img src="img010.jpg" alt="Vidrieras Inteligentes" class="w-full h-full object-cover object-center">
+                        
+                        <!-- Overlay sutil -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-pizarra via-transparent to-transparent opacity-80"></div>
+                        
+                        <!-- Etiqueta flotante -->
+                        <div class="absolute top-4 left-4 bg-azulComercio text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg border border-blue-400">
+                            RETAIL / COMERCIOS
+                        </div>
+                    </div>
+                    
+                    <!-- Contenido -->
+                    <div class="p-6 sm:p-8 flex flex-col flex-grow justify-between bg-pizarra relative z-10 -mt-6 rounded-t-3xl border-t border-slate-700/50">
+                        <div>
+                            <a href="vidrieras.html" class="block w-full text-center bg-azulComercio text-white font-bold py-3.5 px-6 rounded-xl text-lg glow-btn-vidrieras mb-4 shadow-lg flex items-center justify-center gap-2">
+                                Ingresar a Vidrieras <span class="text-xl">→</span>
+                            </a>
+                            <p class="text-sm text-slate-400 text-center leading-relaxed">
+                                Catálogo interactivo para locales físicos. Tus clientes escanean el QR de la vidriera y acceden a precios, stock, fotos y un <strong class="text-white">Asesor IA por voz</strong>.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 2: EXPOSITORES (STAND) -->
+                <div class="bg-pizarra rounded-3xl overflow-hidden border border-slate-700 shadow-2xl flex flex-col card-hover img-zoom relative group">
+                    <!-- Imagen -->
+                    <div class="h-64 sm:h-72 w-full relative overflow-hidden">
+                        <!-- 👇 ACÁ CAMBIAMOS EL SRC POR TU IMAGEN 👇 -->
+                        <img src="expos1.jpg" alt="Expositores Stand" class="w-full h-full object-cover object-center">
+                        
+                        <!-- Overlay sutil -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-pizarra via-transparent to-transparent opacity-80"></div>
+                        
+                        <!-- Etiqueta flotante -->
+                        <div class="absolute top-4 left-4 bg-grafitoExpo text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg border border-slate-400">
+                            FERIAS / EXPOSICIONES
+                        </div>
+                    </div>
+                    
+                    <!-- Contenido -->
+                    <div class="p-6 sm:p-8 flex flex-col flex-grow justify-between bg-pizarra relative z-10 -mt-6 rounded-t-3xl border-t border-slate-700/50">
+                        <div>
+                            <a href="expositores.html" class="block w-full text-center bg-naranja text-white font-bold py-3.5 px-6 rounded-xl text-lg glow-btn-expo mb-4 shadow-lg flex items-center justify-center gap-2">
+                                Ingresar a Expositores <span class="text-xl">→</span>
+                            </a>
+                            <p class="text-sm text-slate-400 text-center leading-relaxed">
+                                Catálogo técnico para stands en ferias. Escaneo de QR para acceder a fichas técnicas, manuales, videos y un <strong class="text-white">Asesor IA NEX</strong>.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="w-full py-6 text-center border-t border-slate-800 mt-auto">
+        <p class="text-xs text-slate-500">
+            &copy; 2026 QRPretium. Vidrieras Inteligentes 24/7 & Asistente IA.
+        </p>
+    </footer>
+
+</body>
+</html>
