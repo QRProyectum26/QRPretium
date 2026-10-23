@@ -3,8 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- FAVICON (Logo en la pestaña) -->
     <link rel="icon" type="image/png" href="img/favicon.png">
+    
     <title>QRPretium | Bienvenido</title>
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -27,6 +31,7 @@
         }
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    
     <style>
         /* Efectos visuales extra */
         .card-hover {
@@ -96,9 +101,9 @@
                 <!-- CARD 1: VIDRIERAS (COMERCIOS) -->
                 <div class="bg-pizarra rounded-3xl overflow-hidden border border-slate-700 shadow-2xl flex flex-col card-hover img-zoom relative group">
                     <!-- Imagen -->
-                    <div class="h-64 sm:h-72 w-full relative overflow-hidden">
-                        <!-- CORREGIDO: Ruta a la carpeta img -->
-                        <img src="img/img010.jpg" alt="Vidrieras Inteligentes" class="w-full h-full object-cover object-center">
+                    <div class="h-64 sm:h-72 w-full relative overflow-hidden bg-slate-800">
+                        <!-- RUTA ACTUALIZADA: IMG0101X.png -->
+                        <img src="img/IMG0101X.png" alt="Vidrieras Inteligentes" class="w-full h-full object-cover object-center">
                         
                         <!-- Overlay sutil -->
                         <div class="absolute inset-0 bg-gradient-to-t from-pizarra via-transparent to-transparent opacity-80"></div>
@@ -125,9 +130,9 @@
                 <!-- CARD 2: EXPOSITORES (STAND) -->
                 <div class="bg-pizarra rounded-3xl overflow-hidden border border-slate-700 shadow-2xl flex flex-col card-hover img-zoom relative group">
                     <!-- Imagen -->
-                    <div class="h-64 sm:h-72 w-full relative overflow-hidden">
-                        <!-- CORREGIDO: Ruta a la carpeta img y extensión .png -->
-                        <img src="img/expos1.png" alt="Expositores Stand" class="w-full h-full object-cover object-center">
+                    <div class="h-64 sm:h-72 w-full relative overflow-hidden bg-slate-800">
+                        <!-- RUTA ACTUALIZADA: imagex1026.jpg -->
+                        <img src="img/imagex1026.jpg" alt="Expositores Stand" class="w-full h-full object-cover object-center">
                         
                         <!-- Overlay sutil -->
                         <div class="absolute inset-0 bg-gradient-to-t from-pizarra via-transparent to-transparent opacity-80"></div>
