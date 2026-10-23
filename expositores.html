@@ -128,42 +128,62 @@
         </div>
     </section>
 
-    <!-- BENEFICIOS (Organizador vs Expositor) -->
+    <!-- BENEFICIOS (Organizador vs Expositor vs Visitante) -->
     <section id="beneficios" class="py-20 bg-pizarraOscura">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
                 <h2 class="text-3xl font-extrabold text-white mb-4">Un ecosistema diseñado para <span class="text-naranja">todos</span>.</h2>
-                <p class="text-slate-400">Escalabilidad, control y métricas en tiempo real.</p>
+                <p class="text-slate-400">Escalabilidad, control, métricas en tiempo real y la mejor experiencia para el público.</p>
             </div>
 
-            <div class="grid md:grid-cols-2 gap-8">
+            <!-- Grilla cambiada a 3 columnas -->
+            <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
+                
                 <!-- Beneficios Organizador -->
-                <div class="bg-pizarra p-8 rounded-3xl border border-slate-700 shadow-xl">
-                    <div class="w-14 h-14 bg-azulComercio/20 text-azulComercio rounded-2xl flex items-center justify-center text-2xl mb-6">
+                <div class="bg-pizarra p-6 lg:p-8 rounded-3xl border border-slate-700 shadow-xl flex flex-col h-full">
+                    <div class="w-14 h-14 bg-azulComercio/20 text-azulComercio rounded-2xl flex items-center justify-center text-2xl mb-6 flex-shrink-0">
                         <i class="fa-solid fa-user-tie"></i>
                     </div>
-                    <h3 class="text-2xl font-bold text-white mb-4">Para el Organizador</h3>
-                    <ul class="space-y-3 text-sm text-slate-300">
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-caret-right text-naranja"></i> <strong>Admin Org:</strong> Gestión de pabellones, filas y columnas.</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-caret-right text-naranja"></i> <strong>Licencias:</strong> Generación de claves de acceso por expositor.</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-caret-right text-naranja"></i> <strong>Soporte IA:</strong> Alertas automáticas y envío de técnicos por WhatsApp.</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-caret-right text-naranja"></i> <strong>Servicios:</strong> Control de rondas de negocios, sorteos y programa.</li>
+                    <h3 class="text-xl lg:text-2xl font-bold text-white mb-4">Para el Organizador</h3>
+                    <ul class="space-y-3 text-sm text-slate-300 flex-grow">
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-caret-right text-azulComercio mt-1"></i> <span><strong>Admin Org:</strong> Gestión de pabellones, filas y columnas.</span></li>
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-caret-right text-azulComercio mt-1"></i> <span><strong>Licencias:</strong> Claves de acceso por expositor.</span></li>
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-caret-right text-azulComercio mt-1"></i> <span><strong>Soporte IA:</strong> Alertas de incidencias y técnicos por WhatsApp.</span></li>
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-caret-right text-azulComercio mt-1"></i> <span><strong>Servicios:</strong> Control de rondas de negocios, sorteos y programa.</span></li>
                     </ul>
                 </div>
 
                 <!-- Beneficios Expositor -->
-                <div class="bg-pizarra p-8 rounded-3xl border border-slate-700 shadow-xl">
-                    <div class="w-14 h-14 bg-naranja/20 text-naranja rounded-2xl flex items-center justify-center text-2xl mb-6">
+                <div class="bg-pizarra p-6 lg:p-8 rounded-3xl border border-slate-700 shadow-xl flex flex-col h-full">
+                    <div class="w-14 h-14 bg-naranja/20 text-naranja rounded-2xl flex items-center justify-center text-2xl mb-6 flex-shrink-0">
                         <i class="fa-solid fa-store"></i>
                     </div>
-                    <h3 class="text-2xl font-bold text-white mb-4">Para el Expositor</h3>
-                    <ul class="space-y-3 text-sm text-slate-300">
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-caret-right text-verdeVivo"></i> <strong>Admin Stand:</strong> Panel propio para cargar productos, PDFs y videos.</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-caret-right text-verdeVivo"></i> <strong>Leads:</strong> Recepción de datos de visitantes interesados.</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-caret-right text-verdeVivo"></i> <strong>Ficha Técnica:</strong> Destacar especificaciones de maquinarias pesadas.</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-caret-right text-verdeVivo"></i> <strong>Notificaciones:</strong> Comunicación directa con la organización ante incidencias.</li>
+                    <h3 class="text-xl lg:text-2xl font-bold text-white mb-4">Para el Expositor</h3>
+                    <ul class="space-y-3 text-sm text-slate-300 flex-grow">
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-caret-right text-naranja mt-1"></i> <span><strong>Admin Stand:</strong> Panel propio para cargar productos, PDFs y videos.</span></li>
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-caret-right text-naranja mt-1"></i> <span><strong>Leads:</strong> Recepción de datos de visitantes interesados.</span></li>
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-caret-right text-naranja mt-1"></i> <span><strong>Ficha Técnica:</strong> Destacar especificaciones de maquinarias pesadas.</span></li>
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-caret-right text-naranja mt-1"></i> <span><strong>Notificaciones:</strong> Comunicación directa con la organización.</span></li>
                     </ul>
                 </div>
+
+                <!-- Beneficios Visitante -->
+                <div class="bg-pizarra p-6 lg:p-8 rounded-3xl border border-slate-700 shadow-xl flex flex-col h-full relative overflow-hidden">
+                    <!-- Adorno de fondo para destacar la tarjeta del visitante -->
+                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-verdeVivo/10 rounded-full blur-2xl pointer-events-none"></div>
+                    
+                    <div class="w-14 h-14 bg-verdeVivo/20 text-verdeVivo rounded-2xl flex items-center justify-center text-2xl mb-6 flex-shrink-0 relative z-10">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <h3 class="text-xl lg:text-2xl font-bold text-white mb-4 relative z-10">Para el Visitante</h3>
+                    <ul class="space-y-3 text-sm text-slate-300 flex-grow relative z-10">
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-caret-right text-verdeVivo mt-1"></i> <span><strong>Navegación Fácil:</strong> Encuentra cualquier stand con la grilla interactiva (ej: B6-021).</span></li>
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-caret-right text-verdeVivo mt-1"></i> <span><strong>Sin Fricción:</strong> No necesita descargar apps. Solo escanea el QR del tótem y navega.</span></li>
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-caret-right text-verdeVivo mt-1"></i> <span><strong>Asesor IA (NEX):</strong> Le indica dónde están los productos y qué charlas no perderse.</span></li>
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-caret-right text-verdeVivo mt-1"></i> <span><strong>Registro Rápido:</strong> Deja su DNI solo cuando se anota a una charla o sorteo.</span></li>
+                    </ul>
+                </div>
+
             </div>
         </div>
     </section>
