@@ -30,10 +30,16 @@
     
     <style>
         .texto-qr-borde { color: #94A3B8; -webkit-text-stroke: 1px #FFFFFF; }
-        .hero-bg {
-            background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.95)), url('img/expos1.png');
+          .hero-bg {
+            /* Bajamos la opacidad del degradado para que la imagen se vea más */
+            background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.3), rgba(15, 23, 42, 0.85)), url('img/expos1.png');
             background-size: cover;
             background-position: center;
+            background-attachment: fixed; /* Opcional: da un efecto parallax elegante */
+        }
+        /* Nueva clase para que los textos blancos resalten sobre la foto */
+        .text-shadow-strong {
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.8), 0 2px 4px rgba(0, 0, 0, 0.9);
         }
         .placeholder-img {
             background-color: #1E293B;
