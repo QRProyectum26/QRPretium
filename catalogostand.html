@@ -3,659 +3,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stand Inmersivo con Asesor IA NEX - Expo Stand</title>
-    <!-- Tailwind CSS -->
+    <title>Catálogo Stand Inmersivo - QRPretium</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Supabase JS Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pizarra: '#1E293B',
+                        pizarraOscura: '#0F172A',
+                        naranja: '#F97316',
+                        verdeVivo: '#10B981'
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        /* --- ESTILOS DE LA TARJETA VERTICAL DE NEX --- */
-        .tarjeta-nex-vertical {
-            box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.4), 0 0 15px rgba(249, 115, 22, 0.5);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .tarjeta-nex-vertical:hover {
-            box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.5), 0 0 25px rgba(249, 115, 22, 0.8);
-            transform: translateY(-2px);
-        }
-
-        .glow-hablando {
-            border-color: #f97316 !important;
-            box-shadow: 0 0 25px rgba(249, 115, 22, 0.9), 0 0 50px rgba(249, 115, 22, 0.5) !important;
-            animation: pulse-hablando 0.5s ease-in-out infinite alternate;
-        }
-
-        .glow-escuchando {
-            border-color: #10b981 !important;
-            box-shadow: 0 0 25px rgba(16, 185, 129, 0.9), 0 0 50px rgba(16, 185, 129, 0.5) !important;
-            animation: pulse-escuchando 0.5s ease-in-out infinite alternate;
-        }
-
-        @keyframes pulse-hablando {
-            from { transform: scale(1); }
-            to { transform: scale(1.03); }
-        }
-
-        @keyframes pulse-escuchando {
-            from { transform: scale(1); }
-            to { transform: scale(1.03); }
-        }
-
-        /* --- CLASE GENERAL PARA EL BOTÓN DE SOLICITAR DEMOSTRACIÓN --- */
-        .btn-solicitar-demo {
-            padding-top: 5.5px !important;    /* Ajusta aquí el alto superior */
-            padding-bottom: 6px !important;  /* Ajusta aquí el alto inferior */
-        }
-
-        /* --- CLASE GENERAL PARA LOS BOTONES TÉCNICOS (Brochure, Video, Tabla) --- */
-        .btn-tecnico-gral {
-            padding-top: 4.5px !important;    /* Ajusta aquí el alto superior */
-            padding-bottom: 4.5px !important; /* Ajusta aquí el alto inferior */
-        }
-
-        /* --- CLASE GENERAL PARA EL TEXTO DEL CÓDIGO DE PRODUCTO --- */
-        .codigo-producto-gral {
-            font-size: 14px !important;
-            letter-spacing: 0.05em;
-        }
-
-        /* --- GLOBO DE DIÁLOGO DE NEX --- */
-        .globo-dialogo-nex {
-            position: absolute;
-            top: calc(100% + 8px);
-            right: 0;
-            width: 270px;
-            background: #ffffff;
-            border: 2px solid #f97316;
-            border-radius: 16px;
-            padding: 12px 14px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
-            z-index: 60;
-            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .globo-dialogo-nex::before {
-            content: '';
-            position: absolute;
-            top: -10px;
-            right: 48px;
-            border-width: 0 10px 10px 10px;
-            border-style: solid;
-            border-color: transparent transparent #f97316 transparent;
-        }
-
-        .globo-dialogo-nex::after {
-            content: '';
-            position: absolute;
-            top: -7px;
-            right: 49px;
-            border-width: 0 9px 9px 9px;
-            border-style: solid;
-            border-color: transparent transparent #ffffff transparent;
-        }
-
-        @keyframes popIn {
-            from { opacity: 0; transform: translateY(-8px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        /* --- BOTÓN "+" DEBAJO DEL LOGO --- */
-        .btn-info-plus {
-            background-color: #f1f5f9;
-            color: #f97316;
-            border: 1.5px solid #ffedd5;
-            transition: all 0.2s ease;
-            width: 20px;
-            height: 20px;
-            font-size: 14px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            font-weight: 800;
-            margin-top: 4px;
-        }
-        .btn-info-plus:hover {
-            background-color: #f97316;
-            color: #ffffff;
-            border-color: #ea580c;
-            transform: scale(1.1);
-        }
-
-        /* Contenedores con Scroll */
-        .contenedor-principal {
-            max-height: calc(100vh - 200px);
-            overflow-y: auto;
-            padding-bottom: 30px;
-        }
-        .contenedor-principal::-webkit-scrollbar { width: 4px; }
-        .contenedor-principal::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
-
-        .desc-scroll::-webkit-scrollbar, .tabla-scroll::-webkit-scrollbar { width: 4px; }
-        .desc-scroll::-webkit-scrollbar-thumb, .tabla-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        /* Estilos para el Menú Hamburguesa */
+        .menu-desplegable { display: none; }
+        .menu-desplegable.activo { display: block; }
+        
+        /* Estilos NEX */
+        .tarjeta-nex { box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4); transition: all 0.3s ease; }
+        .tarjeta-nex:hover { transform: scale(1.05); box-shadow: 0 0 25px rgba(249, 115, 22, 0.8); }
+        .globo-nex { position: absolute; top: 110%; right: 0; width: 250px; z-index: 100; }
+        
+        /* Ocultar vistas */
+        .vista-oculta { display: none; }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800 min-h-screen">
+<body class="bg-gray-100 text-gray-800 font-sans min-h-screen">
 
-    <!-- ENCABEZADO COMPACTO -->
-    <header id="headerComercio" class="bg-slate-900 text-white py-3 px-4 rounded-b-2xl shadow-md relative z-10">
-        <div class="max-w-xl mx-auto flex items-start justify-between relative">
+    <!-- ================= HEADER DINÁMICO ================= -->
+    <header id="headerPrincipal" class="bg-slate-900 text-white sticky top-0 z-50 shadow-md transition-all duration-300">
+        <div class="max-w-xl mx-auto px-4 py-3 flex items-center justify-between relative">
             
-            <!-- LOGO + BOTÓN "+" ABAJO + DATOS DE LA EMPRESA -->
-            <div class="flex items-start space-x-3 pr-2">
-                <div class="flex flex-col items-center flex-shrink-0">
-                    <img id="imgLogo" src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Logo Stand" class="h-10 w-10 rounded-xl bg-white p-1 shadow-md object-cover border border-slate-700">
-                    <button onclick="abrirModalInfo()" title="Ver datos completos de la empresa" class="btn-info-plus shadow-sm active:scale-95">
-                        +
-                    </button>
+            <!-- LADO IZQUIERDO: LOGO + INFO EXPOSITOR (Se activa en Vista 3) -->
+            <div class="flex items-center gap-2 z-10">
+                <!-- Logo Feria (Siempre visible) -->
+                <div id="contenedorLogoFeria" class="flex items-center gap-1 transition-all">
+                    <img src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Logo Feria" class="w-10 h-10 rounded-lg bg-white p-0.5 object-contain transition-all" id="logoFeria">
+                    <span class="font-bold text-sm hidden sm:block">Expo 2026</span>
                 </div>
 
-                <div class="pt-0.5">
-                    <h1 id="nombreComercio" class="text-base font-extrabold uppercase tracking-wide leading-tight text-white">TechExpo Solutions</h1>
-                    <p class="text-[11px] text-orange-500 font-extrabold tracking-wider uppercase mt-0.5">STAND INMERSIVO + IA</p>
+                <!-- Logo y Nombre del Expositor (Oculto al principio, aparece en Vista 3) -->
+                <div id="contenedorExpositor" class="hidden items-center gap-2 border-l border-slate-600 pl-2 ml-1">
+                    <img id="imgLogoExpositor" src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Logo Empresa" class="w-8 h-8 rounded-lg bg-white p-0.5 object-contain">
+                    <div class="flex flex-col leading-none">
+                        <span id="txtNombreExpositor" class="font-black text-[11px] uppercase text-white">TechDrill S.A.</span>
+                        <button onclick="alert('Abre modal con info de la empresa')" class="text-[9px] text-naranja font-bold text-left mt-0.5 hover:underline">+ Info Empresa</button>
+                    </div>
                 </div>
             </div>
 
-            <!-- CONTENEDOR RECTANGULAR VERTICAL DE NEX -->
-            <div class="relative flex-shrink-0" style="margin-bottom: -58px;">
-                <div id="contenedorNex" onclick="alternarEscuchaOAccion()" 
-                     class="tarjeta-nex-vertical w-28 h-40 bg-slate-950 border-2 border-orange-500 rounded-2xl overflow-hidden cursor-pointer relative group flex flex-col justify-between p-1.5 transition-all">
-                    
-                    <div class="bg-orange-500 text-white font-black text-[9px] tracking-wider text-center py-0.5 px-1 rounded-md uppercase z-10">
-                        NEX • Asesor IA
-                    </div>
-
-                    <div class="w-full h-28 overflow-hidden rounded-lg relative my-auto">
-                        <img id="avatarNexImg" src="stand_ia/nex.jpg" alt="NEX Robot" class="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105">
-                    </div>
-
-                    <div id="indicadorEstadoNex" class="bg-slate-900 text-orange-400 text-[9px] font-extrabold text-center py-0.5 rounded-md border border-slate-800 flex items-center justify-center gap-1">
-                        <span>🎙️</span> <span id="textoEstadoNex">Consultar</span>
-                    </div>
+            <!-- LADO DERECHO: NEX -->
+            <div class="relative flex-shrink-0 z-10">
+                <!-- Botón NEX -->
+                <div onclick="toggleGloboNex()" class="tarjeta-nex w-14 h-20 bg-slate-950 border-2 border-naranja rounded-xl overflow-hidden cursor-pointer flex flex-col items-center justify-center">
+                    <span class="text-[8px] font-bold text-white bg-naranja w-full text-center py-0.5">NEX</span>
+                    <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="NEX" class="w-10 h-10 object-contain mt-1">
                 </div>
-
-                <!-- POP-UP / GLOBO DE TEXTO -->
-                <div id="globoTextoNex" class="globo-dialogo-nex hidden">
-                    <div class="flex items-start justify-between gap-2 border-b border-orange-100 pb-1.5 mb-1.5">
-                        <span class="text-[11px] font-extrabold text-orange-600 uppercase flex items-center gap-1">
-                            🤖 NEX Asesor IA:
-                        </span>
-                        <button onclick="cerrarGloboTexto()" class="text-gray-400 hover:text-red-500 text-xs font-bold px-1">✕</button>
+                <!-- Globo de Texto NEX -->
+                <div id="globoNex" class="globo-nex hidden bg-white border-2 border-naranja rounded-xl p-3 shadow-xl">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-[10px] font-bold text-orange-600">🤖 NEX Asesor</span>
+                        <button onclick="toggleGloboNex()" class="text-gray-400 font-bold text-xs">✕</button>
                     </div>
-                    <p id="textoRespuestaNex" class="text-xs text-slate-700 font-medium leading-relaxed">
-                        ¡Bienvenido a nuestro Stand! Haz clic sobre mi imagen para consultarme sobre cualquier producto o especificación técnica.
-                    </p>
+                    <p id="textoNex" class="text-xs text-gray-700 leading-tight">¡Hola! Seleccioná un pabellón en el mapa para empezar. O preguntame lo que necesites.</p>
                 </div>
             </div>
+        </div>
 
+        <!-- BARRA DE MENÚ HAMBURGUESA (Siempre visible abajo del header) -->
+        <div class="bg-slate-800 border-t border-slate-700 relative">
+            <div class="max-w-xl mx-auto px-4 py-2 flex items-center justify-between relative z-20">
+                <button onclick="toggleMenu()" class="flex items-center gap-2 text-sm font-bold text-white hover:text-naranja transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    Menú Feria
+                </button>
+                <button onclick="volverAlPredio()" id="btnVolver" class="hidden text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1 rounded-lg transition">
+                    ← Volver al Predio
+                </button>
+            </div>
+
+            <!-- MENÚ DESPLEGABLE (Oculto por defecto) -->
+            <div id="menuDesplegable" class="menu-desplegable absolute top-full left-0 w-full bg-slate-900 border-b border-slate-700 shadow-xl z-50 max-h-[70vh] overflow-y-auto">
+                <div class="max-w-xl mx-auto p-4 space-y-3 text-sm">
+                    <!-- Mapa y Sectores -->
+                    <div class="group">
+                        <button class="w-full text-left font-bold text-white flex justify-between items-center p-2 hover:bg-slate-800 rounded">
+                            🗺️ Mapa y Sectores <span>▼</span>
+                        </button>
+                        <div class="hidden group-hover:block pl-6 pt-1 space-y-1 text-xs text-slate-300">
+                            <a href="#" class="block hover:text-naranja">Pabellones y Salones</a>
+                            <a href="#" class="block hover:text-naranja">Sanitarios</a>
+                            <a href="#" class="block hover:text-naranja">Gastronomía</a>
+                            <a href="#" class="block hover:text-naranja">Acreditaciones</a>
+                        </div>
+                    </div>
+                    <!-- Programa -->
+                    <button class="w-full text-left font-bold text-white p-2 hover:bg-slate-800 rounded">📅 Programa y Actividades</button>
+                    <!-- Entretenimiento -->
+                    <button class="w-full text-left font-bold text-white p-2 hover:bg-slate-800 rounded">🎉 Entretenimiento (Bares, Shows)</button>
+                    <!-- Emergencias -->
+                    <button class="w-full text-left font-bold text-white p-2 hover:bg-slate-800 rounded">🚨 Emergencias (Salud, Seguridad)</button>
+                    <!-- Servicios -->
+                    <button class="w-full text-left font-bold text-white p-2 hover:bg-slate-800 rounded">🛠️ Servicios (Cajeros, Wifi)</button>
+                </div>
+            </div>
         </div>
     </header>
 
-    <!-- BARRA DE BÚSQUEDA Y LISTA DE ARTÍCULOS -->
-    <main class="max-w-xl mx-auto px-4 pt-3 relative z-0">
+    <!-- ================= CONTENIDO PRINCIPAL (Las 3 Vistas) ================= -->
+    <main class="max-w-xl mx-auto p-4 pb-20">
 
-        <!-- BUSCADOR CON BORDE GRIS OSCURO -->
-        <div class="flex items-center gap-3 mb-3 pr-32">
-            <div class="relative w-full shadow-sm rounded-xl">
-                <input type="text" id="inputBuscar" onkeyup="filtrarProductos()" placeholder="🔍 Código, artículo o especificación..." 
-                    class="w-full pl-3.5 pr-3.5 py-2 rounded-xl border-2 border-slate-600 focus:outline-none focus:ring-2 focus:ring-orange-500 text-xs bg-white shadow-sm font-medium">
+        <!-- VISTA 1: MAPA DEL PREDIO (Por defecto) -->
+        <div id="vistaPredio">
+            <h2 class="text-lg font-bold text-slate-800 mb-3">Mapa del Predio</h2>
+            <!-- Placeholder para el Mapa de Leaflet -->
+            <div class="w-full h-64 bg-slate-300 rounded-2xl border-2 border-slate-400 flex flex-col items-center justify-center relative overflow-hidden shadow-inner">
+                <span class="text-4xl mb-2">🗺️</span>
+                <p class="text-slate-600 font-bold">Mapa de Fexpocruz (Aquí va Leaflet)</p>
+                <div class="mt-4 flex gap-2">
+                    <button onclick="entrarAlPabellon('Pabellón 1')" class="bg-slate-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-slate-700">Entrar al Pab. 1</button>
+                    <button onclick="entrarAlPabellon('Pabellón 2')" class="bg-slate-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-slate-700">Entrar al Pab. 2</button>
+                </div>
             </div>
         </div>
 
-        <!-- LISTADO DE TARJETAS DE PRODUCTO DE FERIA -->
-        <div id="contenedorScroll" class="contenedor-principal">
-            <div id="listaProductos" class="space-y-4">
-                
-                <!-- TARJETA DE PRODUCTO 1 -->
-                <div class="tarjeta-producto bg-white p-4 rounded-2xl shadow-sm border border-gray-200 flex flex-col gap-2.5">
-                    
-                    <div class="flex items-center justify-between">
-                        <span class="bg-slate-800 text-white font-extrabold px-2.5 py-1 rounded-lg codigo-producto-gral">
-                            CÓD: VLV-500
-                        </span>
-                        <span class="bg-emerald-100 text-emerald-800 font-extrabold text-[11px] px-2.5 py-0.5 rounded-full border border-emerald-300 flex items-center gap-1">
-                            🔥 Bonificación Exclusiva de Expo
-                        </span>
-                    </div>
+        <!-- VISTA 2: GRILLA DE STANDS (Dentro del Pabellón) -->
+        <div id="vistaPabellon" class="vista-oculta">
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 mb-4">
+                <h2 id="tituloPabellon" class="text-lg font-bold text-slate-800 mb-1">Pabellón 1</h2>
+                <p class="text-xs text-slate-500">Seleccioná un stand para ver sus productos.</p>
+            </div>
+            
+            <!-- Grilla de Stands (Simulada) -->
+            <div class="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                <button onclick="entrarAlStand('021', 'TechDrill S.A.')" class="bg-white border-2 border-slate-300 hover:border-naranja rounded-xl p-3 flex flex-col items-center justify-center shadow-sm transition">
+                    <span class="text-[10px] text-slate-500 uppercase font-bold">Stand</span>
+                    <span class="text-2xl font-black text-slate-800">021</span>
+                </button>
+                <button onclick="entrarAlStand('022', 'Hidráulica Pro')" class="bg-white border-2 border-slate-300 hover:border-naranja rounded-xl p-3 flex flex-col items-center justify-center shadow-sm transition">
+                    <span class="text-[10px] text-slate-500 uppercase font-bold">Stand</span>
+                    <span class="text-2xl font-black text-slate-800">022</span>
+                </button>
+            </div>
+        </div>
 
-                    <h3 class="font-black text-slate-800 text-base leading-snug">
-                        Válvula Reguladora de Flujo Industrial Pro
-                    </h3>
-
-                    <div class="desc-scroll bg-slate-50 p-2.5 rounded-xl text-xs text-slate-600 border border-slate-200/60 max-h-20 overflow-y-auto font-medium leading-relaxed">
-                        Fabricada en aleación de titanio de alta resistencia química y térmica. Tolerancia hasta 350 BAR de presión contínua. Módulo de diagnóstico remoto integrado mediante protocolo HART y Modbus RS485. Apta para plantas petroquímicas y farmacéuticas de alta exigencia.
-                    </div>
-
-                    <!-- 3 Botones de Acción Técnica -->
-                    <div class="grid grid-cols-3 gap-2 pt-1">
-                        <button onclick="abrirModalBrochure('Válvula VLV-500', 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')" class="bg-slate-800 hover:bg-slate-900 text-slate-100 font-bold btn-tecnico-gral px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-slate-700 transition active:scale-95">
-                            📄 Brochure
-                        </button>
-                        <button onclick="abrirModalVideo('Válvula VLV-500', 'https://www.youtube.com/embed/dQw4w9WgXcQ')" class="bg-slate-800 hover:bg-slate-900 text-slate-100 font-bold btn-tecnico-gral px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-slate-700 transition active:scale-95">
-                            🎬 Video
-                        </button>
-                        <button onclick="abrirModalTabla('Válvula VLV-500', [
-                            ['Presión Máx.', '350 BAR'],
-                            ['Material', 'Titanio Grado 5 / Vitón'],
-                            ['Conexión', 'Flange 2 pulgadas NPT'],
-                            ['Tolerancia Temp.', '-40°C a +280°C'],
-                            ['Protocolo Com.', 'HART 7.0 / Modbus'],
-                            ['Normativa', 'ISO 9001 / CE / ATEX'],
-                            ['Fluido Apto', 'Gases, Petróleo, Ácidos'],
-                            ['Peso Total', '12.4 Kg'],
-                            ['Mantenimiento', 'Cada 10.000 horas'],
-                            ['Garantía', '3 Años de fábrica']
-                        ])" class="bg-slate-800 hover:bg-slate-900 text-slate-100 font-bold btn-tecnico-gral px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-slate-700 transition active:scale-95">
-                            📊 Tabla
-                        </button>
-                    </div>
-
-                    <button onclick="abrirModalConsulta('Válvula Reguladora de Flujo Industrial Pro (CÓD: VLV-500)')" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold btn-solicitar-demo px-3 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-sm active:scale-95">
-                        ✉️ Solicitar Demostración / Dejar Datos
-                    </button>
+        <!-- VISTA 3: GRILLA DE CÓDIGOS DEL STAND (Productos) -->
+        <div id="vistaStand" class="vista-oculta">
+            <div class="bg-slate-800 text-white p-3 rounded-xl mb-4 flex justify-between items-center">
+                <div>
+                    <p class="text-[10px] text-slate-400 uppercase font-bold">Expositor</p>
+                    <h2 id="tituloStandExpositor" class="text-base font-black">TechDrill S.A.</h2>
                 </div>
+                <span id="codigoStandHeader" class="bg-naranja text-white font-black px-3 py-1 rounded-lg text-sm">021</span>
+            </div>
 
-                <!-- TARJETA DE PRODUCTO 2 -->
-                <div class="tarjeta-producto bg-white p-4 rounded-2xl shadow-sm border border-gray-200 flex flex-col gap-2.5">
-                    
-                    <div class="flex items-center justify-between">
-                        <span class="bg-slate-800 text-white font-extrabold px-2.5 py-1 rounded-lg codigo-producto-gral">
-                            CÓD: SENS-90
-                        </span>
-                        <span class="bg-emerald-100 text-emerald-800 font-extrabold text-[11px] px-2.5 py-0.5 rounded-full border border-emerald-300 flex items-center gap-1">
-                            🎁 Incluye Kit de Calibración
-                        </span>
-                    </div>
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 mb-4">
+                <p class="text-xs text-slate-500 text-center mb-1">Hacé clic en un código para ver el detalle del producto</p>
+            </div>
 
-                    <h3 class="font-black text-slate-800 text-base leading-snug">
-                        Sensor Óptico de Partículas IoT Ultra-Preciso
-                    </h3>
-
-                    <div class="desc-scroll bg-slate-50 p-2.5 rounded-xl text-xs text-slate-600 border border-slate-200/60 max-h-20 overflow-y-auto font-medium leading-relaxed">
-                        Sensor ambiental para medición continua de material particulado PM2.5 y PM10 en salas limpias. Conexión nativa Wi-Fi/LoRaWAN con telemetría en la nube en tiempo real. Algoritmo de autocalibración laser adaptativo contra acumulación de polvo.
-                    </div>
-
-                    <div class="grid grid-cols-3 gap-2 pt-1">
-                        <button onclick="abrirModalBrochure('Sensor SENS-90', 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')" class="bg-slate-800 hover:bg-slate-900 text-slate-100 font-bold btn-tecnico-gral px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-slate-700 transition active:scale-95">
-                            📄 Brochure
-                        </button>
-                        <button onclick="abrirModalVideo('Sensor SENS-90', 'https://www.youtube.com/embed/dQw4w9WgXcQ')" class="bg-slate-800 hover:bg-slate-900 text-slate-100 font-bold btn-tecnico-gral px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-slate-700 transition active:scale-95">
-                            🎬 Video
-                        </button>
-                        <button onclick="abrirModalTabla('Sensor SENS-90', [
-                            ['Rango Medición', '0.3 a 10 µm'],
-                            ['Conectividad', 'LoRaWAN, Wi-Fi, RS485'],
-                            ['Alimentación', '12-24V DC / Batería Li-Ion'],
-                            ['Sensibilidad', '± 2% precisión óptica'],
-                            ['Frecuencia Muestra', '1 lectura / segundo'],
-                            ['Protección', 'IP65 contra intemperie'],
-                            ['Temperatura Op.', '0°C a 60°C'],
-                            ['Consumo', '0.8 Watts máx.'],
-                            ['Certificación', 'ISO 14644-1 Cleanrooms'],
-                            ['Calibración', 'Anual recomendada']
-                        ])" class="bg-slate-800 hover:bg-slate-900 text-slate-100 font-bold btn-tecnico-gral px-2 rounded-xl text-[11px] flex items-center justify-center gap-1 border border-slate-700 transition active:scale-95">
-                            📊 Tabla
-                        </button>
-                    </div>
-
-                    <button onclick="abrirModalConsulta('Sensor Óptico de Partículas IoT (CÓD: SENS-90)')" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold btn-solicitar-demo px-3 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-sm active:scale-95">
-                        ✉️ Solicitar Demostración / Dejar Datos
-                    </button>
-                </div>
-
+            <!-- Grilla de Códigos de Productos -->
+            <div class="grid grid-cols-4 sm:grid-cols-5 gap-3">
+                <button onclick="alert('Abre etiqueta del producto H03')" class="bg-pizarraOscura border-2 border-slate-600 hover:border-naranja text-white rounded-lg p-3 flex flex-col items-center justify-center shadow-md transition">
+                    <span class="text-xl font-black text-verdeVivo">H03</span>
+                </button>
+                <button onclick="alert('Abre etiqueta del producto F05')" class="bg-pizarraOscura border-2 border-slate-600 hover:border-naranja text-white rounded-lg p-3 flex flex-col items-center justify-center shadow-md transition">
+                    <span class="text-xl font-black text-verdeVivo">F05</span>
+                </button>
             </div>
         </div>
 
     </main>
 
-    <!-- ==================== POP-UPS / MODALES ==================== -->
-
-    <!-- MODAL 1: INFORMACIÓN DE LA EMPRESA (CON RUBRO Y DIRECCIÓN) -->
-    <div id="modalInfo" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden border border-gray-100">
-            <div class="p-4 bg-slate-900 text-white relative border-b-2 border-orange-500">
-                <button onclick="cerrarModalInfo()" class="absolute top-3.5 right-4 text-slate-400 hover:text-white text-lg font-bold">✕</button>
-                <p class="text-[10px] font-black text-orange-500 uppercase tracking-widest">Ficha de la Empresa</p>
-                <h2 id="modalNombreComercio" class="text-base font-black uppercase tracking-wide text-white">TechExpo Solutions</h2>
-            </div>
-            <div class="p-4 space-y-2.5 text-xs text-slate-700 max-h-[75vh] overflow-y-auto desc-scroll">
-                <div class="flex items-start space-x-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                    <span class="text-base">📍</span>
-                    <div>
-                        <h4 class="font-bold text-slate-900 uppercase text-[10px]">Ubicación en Stand</h4>
-                        <p class="font-medium mt-0.5">Pabellón A • Stand #104, Centro de Convenciones</p>
-                    </div>
-                </div>
-                <div class="flex items-start space-x-3 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200">
-                    <span class="text-base">📞</span>
-                    <div class="w-full">
-                        <h4 class="font-bold text-emerald-950 uppercase text-[10px]">Atención & WhatsApp</h4>
-                        <p class="font-medium mt-0.5">+54 11 4444-9999</p>
-                        <a href="https://wa.me/541144449999" target="_blank" class="mt-1.5 w-full bg-emerald-600 text-white font-bold py-1.5 px-3 rounded-lg flex items-center justify-center gap-1">
-                            💬 Abrir WhatsApp Directo
-                        </a>
-                    </div>
-                </div>
-                <div class="flex items-start space-x-3 bg-orange-50 p-2.5 rounded-xl border border-orange-200">
-                    <span class="text-base">🌐</span>
-                    <div>
-                        <h4 class="font-bold text-orange-950 uppercase text-[10px]">Sitio Web Oficial</h4>
-                        <a href="https://www.techexpo.demo" target="_blank" class="text-orange-600 hover:underline font-bold block mt-0.5">www.techexpo.demo</a>
-                    </div>
-                </div>
-                <!-- RECUADRO RUBRO -->
-                <div class="flex items-start space-x-3 bg-blue-50 p-2.5 rounded-xl border border-blue-200">
-                    <span class="text-base">🏭</span>
-                    <div>
-                        <h4 class="font-bold text-blue-950 uppercase text-[10px]">Rubro / Sector</h4>
-                        <p class="font-medium mt-0.5 text-slate-800">Automatización Industrial & Instrumentación IoT</p>
-                    </div>
-                </div>
-                <!-- RECUADRO DIRECCIÓN / SEDE -->
-                <div class="flex items-start space-x-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                    <span class="text-base">🏢</span>
-                    <div>
-                        <h4 class="font-bold text-slate-900 uppercase text-[10px]">Dirección / Sede Central</h4>
-                        <p class="font-medium mt-0.5 text-slate-800">Av. Industrial 4550, Parque Tecnológico, Buenos Aires, Argentina</p>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-gray-50 px-4 py-2.5 text-center border-t">
-                <button onclick="cerrarModalInfo()" class="w-full py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 font-extrabold rounded-xl text-xs">Cerrar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL 2: TABLA DE ESPECIFICACIONES TÉCNICAS (SOPORTA HASTA 10 FILAS x 2 COLUMNAS) -->
-    <div id="modalTabla" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden border border-gray-100 flex flex-col max-h-[85vh]">
-            <div class="p-4 bg-slate-900 text-white relative border-b-2 border-orange-500 flex-shrink-0">
-                <button onclick="cerrarModalTabla()" class="absolute top-3.5 right-4 text-slate-400 hover:text-white text-lg font-bold">✕</button>
-                <p class="text-[10px] font-black text-orange-500 uppercase tracking-widest">Ficha Técnica</p>
-                <h3 id="tituloTablaModal" class="text-sm font-black uppercase text-white">Especificaciones del Producto</h3>
-            </div>
-            <div class="p-3 overflow-y-auto tabla-scroll flex-grow">
-                <table class="w-full text-left text-xs border-collapse">
-                    <tbody id="cuerpoTablaModal" class="divide-y divide-gray-200">
-                        <!-- Llenado dinámico -->
-                    </tbody>
-                </table>
-            </div>
-            <div class="bg-gray-50 px-4 py-2.5 text-center border-t flex-shrink-0">
-                <button onclick="cerrarModalTabla()" class="w-full py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 font-extrabold rounded-xl text-xs">Volver a Tarjeta</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL 3: VISOR DE BROCHURE PDF (VISUALIZACIÓN DIRECTA + BOTÓN DESCARGA/VOLVER) -->
-    <div id="modalBrochure" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full h-[85vh] overflow-hidden flex flex-col">
-            <div class="p-3 bg-slate-900 text-white flex justify-between items-center px-4 border-b border-slate-700 flex-shrink-0">
-                <div>
-                    <p class="text-[9px] font-black text-orange-500 uppercase tracking-widest">Documento PDF</p>
-                    <h3 id="tituloBrochureModal" class="text-xs font-bold text-slate-100 truncate">Brochure Técnico</h3>
-                </div>
-                <button onclick="cerrarModalBrochure()" class="text-slate-400 hover:text-white font-bold text-base">✕</button>
-            </div>
-            
-            <!-- Previsualizador PDF incorporado -->
-            <div class="flex-grow bg-slate-200 relative">
-                <iframe id="iframeBrochureModal" class="w-full h-full" src="" frameborder="0"></iframe>
-            </div>
-
-            <!-- Footer del Modal con Opciones -->
-            <div class="p-3 bg-gray-50 border-t flex items-center justify-between gap-2 flex-shrink-0">
-                <button onclick="cerrarModalBrochure()" class="w-1/2 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 font-extrabold rounded-xl text-xs">
-                    ⬅️ Volver a Tarjeta
-                </button>
-                <a id="linkDescargarBrochure" href="#" target="_blank" download class="w-1/2 py-2 bg-orange-500 hover:bg-orange-600 text-white font-extrabold rounded-xl text-xs flex items-center justify-center gap-1 shadow-sm">
-                    📥 Descargar PDF
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL 4: VIDEO DEMOSTRATIVO -->
-    <div id="modalVideo" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden">
-            <div class="p-3 bg-slate-900 text-white flex justify-between items-center px-4 border-b border-slate-700">
-                <span id="tituloVideoModal" class="text-xs font-bold text-orange-400 truncate">Video Demostrativo</span>
-                <button onclick="cerrarModalVideo()" class="text-slate-400 hover:text-white font-bold text-base">✕</button>
-            </div>
-            <div class="aspect-video bg-black">
-                <iframe id="iframeVideoModal" class="w-full h-full" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL 5: FORMULARIO DE DEMOSTRACIÓN COMPACTO -->
-    <div id="modalConsulta" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden">
-            <div class="py-3 px-4 bg-orange-500 text-white relative">
-                <button onclick="cerrarModalConsulta()" class="absolute top-2.5 right-4 text-orange-100 hover:text-white text-lg font-bold">✕</button>
-                <p class="text-[9px] font-black text-orange-100 uppercase tracking-widest">Contacto Directo Stand</p>
-                <h3 class="text-xs font-black uppercase">Solicitar Información / Cita</h3>
-            </div>
-            <form onsubmit="enviarConsulta(event)" class="p-3.5 space-y-2 text-xs">
-                <div>
-                    <label class="block font-bold text-slate-700 mb-0.5 text-[11px]">Producto de Interés:</label>
-                    <input type="text" id="inputProductoConsulta" readonly class="w-full py-1 px-2.5 bg-slate-100 border border-slate-300 rounded-lg font-bold text-slate-800 text-[10px]">
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-700 mb-0.5 text-[11px]">Nombre Completo *</label>
-                    <input type="text" required placeholder="Ej: Juan Pérez" class="w-full py-1 px-2.5 border border-slate-300 rounded-lg focus:ring-1 focus:ring-orange-500 focus:outline-none text-[11px]">
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-700 mb-0.5 text-[11px]">Empresa / Organización (Opcional)</label>
-                    <input type="text" placeholder="Ej: Industria Global S.A." class="w-full py-1 px-2.5 border border-slate-300 rounded-lg focus:ring-1 focus:ring-orange-500 focus:outline-none text-[11px]">
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-700 mb-0.5 text-[11px]">Teléfono / WhatsApp *</label>
-                    <input type="tel" required placeholder="Ej: +54 11 1234 5678" class="w-full py-1 px-2.5 border border-slate-300 rounded-lg focus:ring-1 focus:ring-orange-500 focus:outline-none text-[11px]">
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-700 mb-0.5 text-[11px]">Correo Electrónico</label>
-                    <input type="email" placeholder="ejemplo@empresa.com" class="w-full py-1 px-2.5 border border-slate-300 rounded-lg focus:ring-1 focus:ring-orange-500 focus:outline-none text-[11px]">
-                </div>
-                <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-extrabold py-2 rounded-xl transition shadow-md mt-1 text-xs">
-                    🚀 Enviar Solicitud
-                </button>
-            </form>
-        </div>
-    </div>
-
-
-    <!-- LÓGICA DE SCRIPT E INTERACCIONES -->
+    <!-- ================= LÓGICA DE NAVEGACIÓN Y UI ================= -->
     <script>
-        let escuchando = false;
-        let sintesisVoz = window.speechSynthesis;
-        let reconocedorVoz = null;
-
-        // Configuración de Reconocimiento de Voz Web Speech API
-        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            reconocedorVoz = new SpeechRecognition();
-            reconocedorVoz.lang = 'es-ES';
-            reconocedorVoz.continuous = false;
-
-            reconocedorVoz.onstart = function() {
-                escuchando = true;
-                const nex = document.getElementById('contenedorNex');
-                nex.classList.remove('glow-hablando');
-                nex.classList.add('glow-escuchando');
-                document.getElementById('textoEstadoNex').innerText = 'Escuchando...';
-            };
-
-            reconocedorVoz.onresult = function(event) {
-                const mensaje = event.results[0][0].transcript;
-                procesarConsultaIA(mensaje);
-            };
-
-            reconocedorVoz.onerror = function(e) {
-                detenerEstadoNex();
-                mostrarGloboTexto("No logré escucharte bien. Por favor intenta de nuevo o escribe en el buscador.");
-            };
-
-            reconocedorVoz.onend = function() {
-                detenerEstadoNex();
-            };
+        // 1. Control del Menú Hamburguesa
+        function toggleMenu() {
+            const menu = document.getElementById('menuDesplegable');
+            menu.classList.toggle('activo');
         }
 
-        // Alternar Reconocimiento por Voz o Entrada
-        function alternarEscuchaOAccion() {
-            if (sintesisVoz.speaking) {
-                sintesisVoz.cancel();
-                detenerEstadoNex();
-                return;
-            }
-
-            if (!reconocedorVoz) {
-                const consulta = prompt("Ingresa tu consulta sobre nuestros productos:");
-                if (consulta) procesarConsultaIA(consulta);
-                return;
-            }
-
-            if (escuchando) {
-                reconocedorVoz.stop();
-            } else {
-                try {
-                    reconocedorVoz.start();
-                } catch(e) {
-                    reconocedorVoz.stop();
-                }
-            }
+        // 2. Control del Globo de NEX
+        function toggleGloboNex() {
+            const globo = document.getElementById('globoNex');
+            globo.classList.toggle('hidden');
         }
 
-        function detenerEstadoNex() {
-            escuchando = false;
-            const nex = document.getElementById('contenedorNex');
-            nex.classList.remove('glow-escuchando', 'glow-hablando');
-            document.getElementById('textoEstadoNex').innerText = 'Consultar';
-        }
-
-        // Búsqueda en Vivo de Productos
-        function filtrarProductos() {
-            const texto = document.getElementById('inputBuscar').value.toLowerCase();
-            const tarjetas = document.querySelectorAll('.tarjeta-producto');
-
-            tarjetas.forEach(tarjeta => {
-                const contenido = tarjeta.innerText.toLowerCase();
-                if (contenido.includes(texto)) {
-                    tarjeta.style.display = 'flex';
-                } else {
-                    tarjeta.style.display = 'none';
-                }
-            });
-        }
-
-        // Respuestas Básicas de IA NEX
-        function procesarConsultaIA(consulta) {
-            const consultaLower = consulta.toLowerCase();
-            let respuesta = "Contamos con tecnología de punta en automatización industrial. Puedes revisar nuestro catálogo en pantalla para más especificaciones.";
-
-            if (consultaLower.includes("válvula") || consultaLower.includes("vlv-500") || consultaLower.includes("presión")) {
-                respuesta = "La Válvula VLV-500 soporta hasta 350 BAR de presión continua y cuenta con comunicación HART y Modbus.";
-            } else if (consultaLower.includes("sensor") || consultaLower.includes("sens-90") || consultaLower.includes("partículas")) {
-                respuesta = "El Sensor SENS-90 mide partículas PM2.5 y PM10 en tiempo real con conectividad LoRaWAN y Wi-Fi.";
-            } else if (consultaLower.includes("ubicación") || consultaLower.includes("dónde") || consultaLower.includes("stand")) {
-                respuesta = "Nos encontramos en el Pabellón A, Stand número 104 del Centro de Convenciones.";
-            }
-
-            responderNex(respuesta);
-        }
-
-        // Respuesta NEX (Voz y Texto)
-        function responderNex(texto) {
-            mostrarGloboTexto(texto);
-
-            if ('speechSynthesis' in window) {
-                sintesisVoz.cancel();
-                const utterance = new SpeechSynthesisUtterance(texto);
-                utterance.lang = 'es-ES';
-                utterance.rate = 1.0;
-
-                utterance.onstart = function() {
-                    const nex = document.getElementById('contenedorNex');
-                    nex.classList.remove('glow-escuchando');
-                    nex.classList.add('glow-hablando');
-                    document.getElementById('textoEstadoNex').innerText = 'Hablando...';
-                };
-
-                utterance.onend = function() {
-                    detenerEstadoNex();
-                };
-
-                sintesisVoz.speak(utterance);
-            }
-        }
-
-        // Abrir / Cerrar Modales
-        function abrirModalInfo() { document.getElementById('modalInfo').classList.remove('hidden'); }
-        function cerrarModalInfo() { document.getElementById('modalInfo').classList.add('hidden'); }
-
-        // Tabla Modal: Soporta hasta 10 filas de 2 columnas
-        function abrirModalTabla(nombre, datos) {
-            document.getElementById('tituloTablaModal').innerText = nombre;
-            const cuerpo = document.getElementById('cuerpoTablaModal');
-            cuerpo.innerHTML = '';
+        // 3. Navegación: Entrar a un Pabellón (Vista 1 -> Vista 2)
+        function entrarAlPabellon(nombrePabellon) {
+            document.getElementById('vistaPredio').classList.add('vista-oculta');
+            document.getElementById('vistaStand').classList.add('vista-oculta');
+            document.getElementById('vistaPabellon').classList.remove('vista-oculta');
             
-            datos.slice(0, 10).forEach((fila, idx) => {
-                cuerpo.innerHTML += `
-                    <tr class="${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50'} hover:bg-orange-50 transition">
-                        <td class="py-2 px-2.5 font-bold text-slate-800 border-r border-gray-200 w-1/2">${fila[0]}</td>
-                        <td class="py-2 px-2.5 text-slate-600 w-1/2 font-medium">${fila[1]}</td>
-                    </tr>
-                `;
-            });
-            document.getElementById('modalTabla').classList.remove('hidden');
-        }
-        function cerrarModalTabla() { document.getElementById('modalTabla').classList.add('hidden'); }
-
-        // Previsualizador de Brochure PDF
-        function abrirModalBrochure(nombre, urlPdf) {
-            document.getElementById('tituloBrochureModal').innerText = 'Brochure: ' + nombre;
-            document.getElementById('iframeBrochureModal').src = urlPdf;
-            document.getElementById('linkDescargarBrochure').href = urlPdf;
-            document.getElementById('modalBrochure').classList.remove('hidden');
-        }
-        function cerrarModalBrochure() {
-            document.getElementById('iframeBrochureModal').src = '';
-            document.getElementById('modalBrochure').classList.add('hidden');
+            document.getElementById('tituloPabellon').innerText = nombrePabellon;
+            document.getElementById('btnVolver').classList.remove('hidden');
+            
+            // NEX nos habla
+            document.getElementById('textoNex').innerText = `Ya estás en el ${nombrePabellon}. Elegí el stand que quieras visitar.`;
+            document.getElementById('globoNex').classList.remove('hidden');
+            document.getElementById('menuDesplegable').classList.remove('activo');
         }
 
-        // Video Demostrativo Modal
-        function abrirModalVideo(nombre, url) {
-            document.getElementById('tituloVideoModal').innerText = 'Video: ' + nombre;
-            document.getElementById('iframeVideoModal').src = url;
-            document.getElementById('modalVideo').classList.remove('hidden');
-        }
-        function cerrarModalVideo() {
-            document.getElementById('iframeVideoModal').src = '';
-            document.getElementById('modalVideo').classList.add('hidden');
-        }
-
-        // Formulario de Consulta
-        function abrirModalConsulta(producto) {
-            document.getElementById('inputProductoConsulta').value = producto;
-            document.getElementById('modalConsulta').classList.remove('hidden');
-        }
-        function cerrarModalConsulta() { document.getElementById('modalConsulta').classList.add('hidden'); }
-
-        function enviarConsulta(e) {
-            e.preventDefault();
-            alert('✅ Solicitud recibida. Un representante de nuestro Stand se contactará a la brevedad.');
-            cerrarModalConsulta();
+        // 4. Navegación: Entrar a un Stand (Vista 2 -> Vista 3)
+        function entrarAlStand(numeroStand, nombreEmpresa) {
+            document.getElementById('vistaPredio').classList.add('vista-oculta');
+            document.getElementById('vistaPabellon').classList.add('vista-oculta');
+            document.getElementById('vistaStand').classList.remove('vista-oculta');
+            
+            // Cambiamos el Header
+            document.getElementById('logoFeria').classList.add('w-6', 'h-6'); // Logo se achica
+            document.getElementById('contenedorExpositor').classList.remove('hidden');
+            document.getElementById('contenedorExpositor').classList.add('flex');
+            document.getElementById('txtNombreExpositor').innerText = nombreEmpresa;
+            document.getElementById('tituloStandExpositor').innerText = nombreEmpresa;
+            document.getElementById('codigoStandHeader').innerText = numeroStand;
+            
+            document.getElementById('btnVolver').classList.remove('hidden');
+            
+            // NEX nos habla
+            document.getElementById('textoNex').innerText = `¡Bienvenido al stand de ${nombreEmpresa}! Hacé clic en un código para ver los detalles.`;
+            document.getElementById('globoNex').classList.remove('hidden');
         }
 
-        // Mostrar / Ocultar Globo de Texto NEX
-        function mostrarGloboTexto(texto) {
-            const globo = document.getElementById('globoTextoNex');
-            document.getElementById('textoRespuestaNex').innerText = texto;
-            globo.classList.remove('hidden');
+        // 5. Navegación: Volver al Predio (Reset)
+        function volverAlPredio() {
+            document.getElementById('vistaPabellon').classList.add('vista-oculta');
+            document.getElementById('vistaStand').classList.add('vista-oculta');
+            document.getElementById('vistaPredio').classList.remove('vista-oculta');
+            
+            // Reseteamos el Header
+            document.getElementById('logoFeria').classList.remove('w-6', 'h-6');
+            document.getElementById('contenedorExpositor').classList.add('hidden');
+            document.getElementById('contenedorExpositor').classList.remove('flex');
+            document.getElementById('btnVolver').classList.add('hidden');
+            
+            document.getElementById('textoNex').innerText = "Volvimos al mapa principal. ¿A dónde querés ir ahora?";
+            document.getElementById('globoNex').classList.remove('hidden');
         }
-        function cerrarGloboTexto() { document.getElementById('globoTextoNex').classList.add('hidden'); }
     </script>
 </body>
-</html>      
+</html>
