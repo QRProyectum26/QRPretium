@@ -13,6 +13,7 @@
                         pizarra: '#1E293B',
                         pizarraOscura: '#0F172A',
                         naranja: '#F97316',
+                        verdeQR: '#0D9488', /* Verde azulado oficial de QRPretium */
                         verdeVivo: '#10B981'
                     }
                 }
@@ -20,38 +21,37 @@
         }
     </script>
     <style>
-        /* Estilos para el Menú Hamburguesa (Más transparente y gris claro) */
+        /* Menú Hamburguesa (Más transparente y gris) */
         .menu-desplegable { 
             display: none; 
-            background-color: rgba(226, 232, 240, 0.75); /* Gris claro (slate-200) con 75% opacidad */
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(0,0,0,0.1);
+            background-color: rgba(241, 245, 249, 0.85); /* Gris muy claro con 85% opacidad */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
         .menu-desplegable.activo { display: block; }
         
-        /* Ajuste para que el texto del menú sea oscuro y legible sobre el fondo claro */
-        .menu-desplegable button { color: #0f172a; }
-        .menu-desplegable button:hover { background-color: rgba(255, 255, 255, 0.5); }
-        
-        /* Submenús */
-        .submenu {
-            background-color: rgba(226, 232, 240, 0.9);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(0,0,0,0.1);
+        /* Submenús como Acordeón (hacia abajo) */
+        .submenu-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
         }
-        .submenu a { color: #0f172a; }
-        .submenu a:hover { background-color: #F97316; color: white; }
+        .submenu-container.abierto {
+            max-height: 300px; /* Altura máxima para que quepan los submenús */
+        }
+
+        /* Colores de los items del menú */
+        .menu-item { color: #0f172a; transition: all 0.2s; }
+        .menu-item:hover { background-color: rgba(13, 148, 136, 0.1); color: #0D9488; }
+        .submenu-item { color: #334155; font-weight: 500; }
+        .submenu-item:hover { color: #0D9488; background-color: rgba(13, 148, 136, 0.05); }
 
         /* Estilos NEX */
         .tarjeta-nex { 
             box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4); 
             transition: all 0.3s ease; 
         }
-        .tarjeta-nex:hover { 
-            transform: scale(1.05); 
-            box-shadow: 0 0 25px rgba(249, 115, 22, 0.8); 
-        }
+        .tarjeta-nex:hover { transform: scale(1.05); box-shadow: 0 0 25px rgba(249, 115, 22, 0.8); }
         .globo-nex { position: absolute; top: 110%; right: 0; width: 260px; z-index: 100; }
         
         /* Ocultar vistas */
@@ -62,45 +62,51 @@
 
     <!-- ================= HEADER DINÁMICO ================= -->
     <header id="headerPrincipal" class="bg-slate-900 text-white sticky top-0 z-50 shadow-md transition-all duration-300">
-        <div class="max-w-xl mx-auto px-4 py-2 flex items-start justify-between relative">
+        <div class="max-w-xl mx-auto px-4 py-3 flex items-start justify-between relative">
             
             <!-- LADO IZQUIERDO: LOGOS Y DATOS -->
-            <div class="flex flex-col z-10 w-full pr-16"> <!-- pr-16 para no chocar con NEX -->
+            <div class="flex flex-col z-10 w-full pr-20"> 
                 
-                <!-- Nivel 1: Nombre de la Feria (Siempre visible) -->
-                <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-1">Expo ConstruTech 2026</span>
-                
-                <!-- Nivel 2: Logos (Feria a la izq, Expositor si estamos en Vista 3) -->
-                <div class="flex items-center gap-2">
-                    <!-- Logo Feria -->
-                    <img src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Logo Feria" class="w-8 h-8 rounded bg-white p-0.5 object-contain" id="logoFeria">
+                <!-- FILA 1: Logo Feria (Chiquito) y Nombre Feria -->
+                <div class="flex items-center gap-1.5 mb-1">
+                    <img src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Logo Feria" class="w-4 h-4 rounded bg-white p-0.5 object-contain" id="logoFeria">
+                    <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider" id="nombreFeriaHeader">Expo ConstruTech 2026</span>
+                </div>
+
+                <!-- FILA 2: Nombre del Pabellón (Aparece en Vista 2 y 3) -->
+                <div id="contenedorPabellonHeader" class="hidden mb-1">
+                    <span id="txtPabellonHeader" class="text-xs font-black text-verdeQR uppercase">Pabellón 1</span>
+                </div>
+
+                <!-- FILA 3: Logo y Nombre del Expositor (Aparece en Vista 3) -->
+                <div id="contenedorExpositor" class="hidden items-start gap-2 mt-1">
+                    <img id="imgLogoExpositor" src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Logo Empresa" class="w-8 h-8 rounded bg-white p-0.5 object-contain flex-shrink-0">
                     
-                    <!-- Contenedor Expositor (Oculto por defecto) -->
-                    <div id="contenedorExpositor" class="hidden items-start gap-2 border-l border-slate-600 pl-2 ml-1 w-full">
-                        <img id="imgLogoExpositor" src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Logo Empresa" class="w-8 h-8 rounded bg-white p-0.5 object-contain flex-shrink-0">
+                    <div class="flex flex-col leading-tight w-full">
+                        <!-- Nombre de la Empresa -->
+                        <span id="txtNombreExpositor" class="font-black text-sm uppercase text-white truncate">TechDrill S.A.</span>
                         
-                        <div class="flex flex-col leading-tight w-full">
-                            <!-- Nombre de la Empresa -->
-                            <span id="txtNombreExpositor" class="font-black text-xs uppercase text-white truncate">TechDrill S.A.</span>
-                            
-                            <!-- Botón + Info Empresa -->
-                            <button onclick="alert('Abre modal con info de la empresa')" class="text-[9px] text-slate-400 font-bold text-left hover:text-white transition mt-0.5">+ Info Empresa</button>
-                            
-                            <!-- Texto: Stand y Pabellón -->
-                            <span id="txtStandPabellon" class="text-[10px] text-naranja font-bold mt-1">Stand 021 • Pabellón 1</span>
+                        <!-- Botón + Info Empresa -->
+                        <button onclick="alert('Abre modal con info de la empresa')" class="text-[9px] text-slate-400 font-bold text-left hover:text-white transition mt-0.5">+ Info Empresa</button>
+                        
+                        <!-- Texto: Stand (Gris) y Pabellón (Verde) -->
+                        <div class="mt-1 flex items-center gap-1">
+                            <span id="txtCodigoStand" class="text-[10px] text-slate-300 font-mono font-bold bg-slate-800 px-1.5 py-0.5 rounded border border-slate-600">B3-021</span>
+                            <span id="txtPabellonStand" class="text-[10px] text-verdeQR font-bold">• Pabellón 1</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- LADO DERECHO: NEX -->
-            <div class="relative flex-shrink-0 z-10 absolute right-4 top-2">
+            <div class="absolute right-4 top-3 flex-shrink-0 z-10">
                 <div id="contenedorNex" onclick="toggleGloboNex()" class="tarjeta-nex w-24 h-32 bg-slate-950 border-2 border-orange-500 rounded-xl overflow-hidden cursor-pointer relative group flex flex-col justify-between p-1">
                     <div class="bg-orange-500 text-white font-black text-[8px] tracking-wider text-center py-0.5 px-1 rounded uppercase z-10">
                         NEX • Asesor IA
                     </div>
                     <div class="w-full h-20 overflow-hidden rounded relative my-auto">
-                        <img id="avatarNexImg" src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="NEX Robot" class="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105">
+                        <!-- Imagen de NEX (Reemplazar por la que estaba en el código original) -->
+                        <img id="avatarNexImg" src="stand_ia/nex.jpg" alt="NEX Robot" class="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105">
                     </div>
                     <div class="bg-slate-900 text-orange-400 text-[8px] font-extrabold text-center py-0.5 rounded border border-slate-800 flex items-center justify-center gap-1">
                         <span>🎙️</span> <span>Consultar</span>
@@ -113,7 +119,12 @@
                         <span class="text-[10px] font-bold text-orange-600">🤖 NEX Asesor</span>
                         <button onclick="toggleGloboNex()" class="text-gray-400 font-bold text-xs">✕</button>
                     </div>
-                    <p id="textoNex" class="text-xs text-gray-700 leading-tight">¡Hola! Seleccioná un pabellón en el mapa para empezar. O preguntame lo que necesites.</p>
+                    <p id="textoNex" class="text-xs text-gray-700 leading-tight mb-2">¡Hola! Seleccioná un pabellón en el mapa para empezar.</p>
+                    
+                    <!-- Botón Volver atrás dentro del globo de NEX -->
+                    <button id="btnNexVolver" onclick="volverAlPabellonDesdeNex()" class="hidden w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] py-1.5 rounded transition border border-slate-300">
+                        ← Volver a los Stands del Pabellón
+                    </button>
                 </div>
             </div>
         </div>
@@ -122,97 +133,97 @@
         <div class="bg-slate-800 border-t border-slate-700 relative">
             <div class="max-w-xl mx-auto px-4 py-1.5 flex items-center justify-between relative z-20">
                 <div class="flex items-center gap-3">
-                    <!-- NUEVO BOTÓN DISCRETO: PREDIO -->
+                    <!-- BOTÓN DISCRETO: PREDIO -->
                     <button onclick="irAlPredio()" class="text-[10px] bg-slate-700 hover:bg-slate-600 text-white font-bold px-2.5 py-1 rounded border border-slate-600 transition">
-                        🏠 Predio
+                        Predio
                     </button>
 
                     <!-- BOTÓN MENÚ HAMBURGUESA -->
-                    <button onclick="toggleMenu()" class="flex items-center gap-1.5 text-xs font-bold text-white hover:text-naranja transition py-1">
+                    <button onclick="toggleMenu()" class="flex items-center gap-1.5 text-xs font-bold text-white hover:text-verdeQR transition py-1">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                         Menú Feria
                     </button>
                 </div>
             </div>
 
-            <!-- MENÚ DESPLEGABLE (Fondo gris claro transparente) -->
-            <div id="menuDesplegable" class="menu-desplegable absolute top-full left-0 w-full shadow-2xl z-50 max-h-[70vh] overflow-y-auto">
-                <div class="max-w-xl mx-auto p-3 space-y-1 text-sm font-bold">
+            <!-- MENÚ DESPLEGABLE (Acordeón hacia abajo) -->
+            <div id="menuDesplegable" class="menu-desplegable absolute top-full left-0 w-full shadow-2xl z-50 max-h-[70vh] overflow-y-auto border-b border-slate-300">
+                <div class="max-w-xl mx-auto p-2 space-y-1 text-sm font-bold">
                     
                     <!-- Mapa -->
-                    <div class="relative group">
-                        <button class="w-full text-left p-2 rounded flex justify-between items-center transition">
-                            🗺️ Mapa <span class="text-[10px]">▶</span>
+                    <div class="rounded">
+                        <button onclick="toggleSubmenu('submenuMapa')" class="menu-item w-full text-left p-2 rounded flex justify-between items-center">
+                            🗺️ Mapa <span class="text-[10px]">▼</span>
                         </button>
-                        <div class="submenu hidden group-hover:block absolute left-full top-0 ml-1 w-48 rounded-lg shadow-xl py-1 z-50 text-xs">
-                            <a href="#" onclick="seleccionarMenu('Acreditaciones')" class="block px-3 py-1.5 transition">Acreditaciones</a>
-                            <a href="#" onclick="seleccionarMenu('Pabellones')" class="block px-3 py-1.5 transition">Pabellones</a>
-                            <a href="#" onclick="seleccionarMenu('Salones')" class="block px-3 py-1.5 transition">Salones</a>
-                            <a href="#" onclick="seleccionarMenu('Sanitarios')" class="block px-3 py-1.5 transition">Sanitarios</a>
-                            <a href="#" onclick="seleccionarMenu('Gastronomía')" class="block px-3 py-1.5 transition">Gastronomía</a>
+                        <div id="submenuMapa" class="submenu-container pl-6 text-xs">
+                            <a href="#" onclick="seleccionarMenu('Acreditaciones')" class="submenu-item block py-2">Acreditaciones</a>
+                            <a href="#" onclick="seleccionarMenu('Pabellones')" class="submenu-item block py-2">Pabellones</a>
+                            <a href="#" onclick="seleccionarMenu('Salones')" class="submenu-item block py-2">Salones</a>
+                            <a href="#" onclick="seleccionarMenu('Sanitarios')" class="submenu-item block py-2">Sanitarios</a>
+                            <a href="#" onclick="seleccionarMenu('Gastronomía')" class="submenu-item block py-2">Gastronomía</a>
                         </div>
                     </div>
 
-                    <button onclick="seleccionarMenu('Programa')" class="w-full text-left p-2 rounded transition">📅 Programa</button>
+                    <button onclick="seleccionarMenu('Programa')" class="menu-item w-full text-left p-2 rounded transition">📅 Programa</button>
 
                     <!-- Actividades -->
-                    <div class="relative group">
-                        <button class="w-full text-left p-2 rounded flex justify-between items-center transition">
-                            🎓 Actividades <span class="text-[10px]">▶</span>
+                    <div class="rounded">
+                        <button onclick="toggleSubmenu('submenuActividades')" class="menu-item w-full text-left p-2 rounded flex justify-between items-center">
+                            🎓 Actividades <span class="text-[10px]">▼</span>
                         </button>
-                        <div class="submenu hidden group-hover:block absolute left-full top-0 ml-1 w-48 rounded-lg shadow-xl py-1 z-50 text-xs">
-                            <a href="#" onclick="seleccionarMenu('Cursos')" class="block px-3 py-1.5 transition">Cursos</a>
-                            <a href="#" onclick="seleccionarMenu('Jornadas')" class="block px-3 py-1.5 transition">Jornadas</a>
-                            <a href="#" onclick="seleccionarMenu('Ronda de Negocios')" class="block px-3 py-1.5 transition">Ronda de Negocios</a>
+                        <div id="submenuActividades" class="submenu-container pl-6 text-xs">
+                            <a href="#" onclick="seleccionarMenu('Cursos')" class="submenu-item block py-2">Cursos</a>
+                            <a href="#" onclick="seleccionarMenu('Jornadas')" class="submenu-item block py-2">Jornadas</a>
+                            <a href="#" onclick="seleccionarMenu('Ronda de Negocios')" class="submenu-item block py-2">Ronda de Negocios</a>
                         </div>
                     </div>
 
                     <!-- Entretenimiento -->
-                    <div class="relative group">
-                        <button class="w-full text-left p-2 rounded flex justify-between items-center transition">
-                            🎉 Entretenimiento <span class="text-[10px]">▶</span>
+                    <div class="rounded">
+                        <button onclick="toggleSubmenu('submenuEntretenimiento')" class="menu-item w-full text-left p-2 rounded flex justify-between items-center">
+                            🎉 Entretenimiento <span class="text-[10px]">▼</span>
                         </button>
-                        <div class="submenu hidden group-hover:block absolute left-full top-0 ml-1 w-48 rounded-lg shadow-xl py-1 z-50 text-xs">
-                            <a href="#" onclick="seleccionarMenu('Bares')" class="block px-3 py-1.5 transition">Bares</a>
-                            <a href="#" onclick="seleccionarMenu('Boliches')" class="block px-3 py-1.5 transition">Boliches</a>
-                            <a href="#" onclick="seleccionarMenu('Show')" class="block px-3 py-1.5 transition">Show</a>
+                        <div id="submenuEntretenimiento" class="submenu-container pl-6 text-xs">
+                            <a href="#" onclick="seleccionarMenu('Bares')" class="submenu-item block py-2">Bares</a>
+                            <a href="#" onclick="seleccionarMenu('Boliches')" class="submenu-item block py-2">Boliches</a>
+                            <a href="#" onclick="seleccionarMenu('Show')" class="submenu-item block py-2">Show</a>
                         </div>
                     </div>
 
                     <!-- Eventos -->
-                    <div class="relative group">
-                        <button class="w-full text-left p-2 rounded flex justify-between items-center transition">
-                            🎁 Eventos <span class="text-[10px]">▶</span>
+                    <div class="rounded">
+                        <button onclick="toggleSubmenu('submenuEventos')" class="menu-item w-full text-left p-2 rounded flex justify-between items-center">
+                            🎁 Eventos <span class="text-[10px]">▼</span>
                         </button>
-                        <div class="submenu hidden group-hover:block absolute left-full top-0 ml-1 w-48 rounded-lg shadow-xl py-1 z-50 text-xs">
-                            <a href="#" onclick="seleccionarMenu('Sorteos')" class="block px-3 py-1.5 transition">Sorteos</a>
-                            <a href="#" onclick="seleccionarMenu('Remates')" class="block px-3 py-1.5 transition">Remates</a>
-                            <a href="#" onclick="seleccionarMenu('Otros')" class="block px-3 py-1.5 transition">Otros</a>
+                        <div id="submenuEventos" class="submenu-container pl-6 text-xs">
+                            <a href="#" onclick="seleccionarMenu('Sorteos')" class="submenu-item block py-2">Sorteos</a>
+                            <a href="#" onclick="seleccionarMenu('Remates')" class="submenu-item block py-2">Remates</a>
+                            <a href="#" onclick="seleccionarMenu('Otros')" class="submenu-item block py-2">Otros</a>
                         </div>
                     </div>
 
                     <!-- Emergencias -->
-                    <div class="relative group">
-                        <button class="w-full text-left p-2 rounded flex justify-between items-center transition">
-                            🚨 Emergencias <span class="text-[10px]">▶</span>
+                    <div class="rounded">
+                        <button onclick="toggleSubmenu('submenuEmergencias')" class="menu-item w-full text-left p-2 rounded flex justify-between items-center">
+                            🚨 Emergencias <span class="text-[10px]">▼</span>
                         </button>
-                        <div class="submenu hidden group-hover:block absolute left-full top-0 ml-1 w-48 rounded-lg shadow-xl py-1 z-50 text-xs">
-                            <a href="#" onclick="seleccionarMenu('Salud')" class="block px-3 py-1.5 transition">Salud</a>
-                            <a href="#" onclick="seleccionarMenu('Seguridad')" class="block px-3 py-1.5 transition">Seguridad</a>
+                        <div id="submenuEmergencias" class="submenu-container pl-6 text-xs">
+                            <a href="#" onclick="seleccionarMenu('Salud')" class="submenu-item block py-2">Salud</a>
+                            <a href="#" onclick="seleccionarMenu('Seguridad')" class="submenu-item block py-2">Seguridad</a>
                         </div>
                     </div>
 
                     <!-- Servicios -->
-                    <div class="relative group">
-                        <button class="w-full text-left p-2 rounded flex justify-between items-center transition">
-                            🛠️ Servicios <span class="text-[10px]">▶</span>
+                    <div class="rounded">
+                        <button onclick="toggleSubmenu('submenuServicios')" class="menu-item w-full text-left p-2 rounded flex justify-between items-center">
+                            🛠️ Servicios <span class="text-[10px]">▼</span>
                         </button>
-                        <div class="submenu hidden group-hover:block absolute left-full top-0 ml-1 w-48 rounded-lg shadow-xl py-1 z-50 text-xs">
-                            <a href="#" onclick="seleccionarMenu('Hidratación')" class="block px-3 py-1.5 transition">Hidratación</a>
-                            <a href="#" onclick="seleccionarMenu('Estacionamiento')" class="block px-3 py-1.5 transition">Estacionamiento</a>
-                            <a href="#" onclick="seleccionarMenu('Cajeros')" class="block px-3 py-1.5 transition">Cajeros</a>
-                            <a href="#" onclick="seleccionarMenu('Wifi')" class="block px-3 py-1.5 transition">Wifi</a>
-                            <a href="#" onclick="seleccionarMenu('Guardería')" class="block px-3 py-1.5 transition">Guardería</a>
+                        <div id="submenuServicios" class="submenu-container pl-6 text-xs">
+                            <a href="#" onclick="seleccionarMenu('Hidratación')" class="submenu-item block py-2">Hidratación</a>
+                            <a href="#" onclick="seleccionarMenu('Estacionamiento')" class="submenu-item block py-2">Estacionamiento</a>
+                            <a href="#" onclick="seleccionarMenu('Cajeros')" class="submenu-item block py-2">Cajeros</a>
+                            <a href="#" onclick="seleccionarMenu('Wifi')" class="submenu-item block py-2">Wifi</a>
+                            <a href="#" onclick="seleccionarMenu('Guardería')" class="submenu-item block py-2">Guardería</a>
                         </div>
                     </div>
                 </div>
@@ -235,29 +246,24 @@
             </div>
         </div>
 
-        <!-- VISTA 2: GRILLA DE STANDS -->
+        <!-- VISTA 2: GRILLA DE STANDS (Sin el cartel que ocupaba espacio) -->
         <div id="vistaPabellon" class="vista-oculta">
-            <div class="bg-white px-3 py-1.5 rounded-lg shadow-sm border border-gray-200 mb-3 flex justify-between items-center">
-                <h2 id="tituloPabellon" class="text-xs font-bold text-slate-800">Pabellón 1</h2>
-                <span class="text-[10px] text-slate-500 italic">Seleccioná un stand</span>
-            </div>
-            
-            <div class="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                <button onclick="entrarAlStand('021', 'TechDrill S.A.')" class="bg-white border-2 border-slate-300 hover:border-naranja rounded-xl p-3 flex flex-col items-center justify-center shadow-sm transition">
+            <div class="grid grid-cols-3 sm:grid-cols-4 gap-3 mt-2">
+                <!-- Código de Stand con formato B3-021 -->
+                <button onclick="entrarAlStand('B3-021', 'TechDrill S.A.')" class="bg-white border-2 border-slate-300 hover:border-verdeQR rounded-xl p-3 flex flex-col items-center justify-center shadow-sm transition">
                     <span class="text-[10px] text-slate-500 uppercase font-bold">Stand</span>
-                    <span class="text-2xl font-black text-slate-800">021</span>
+                    <span class="text-sm font-black text-slate-800">B3-021</span>
                 </button>
-                <button onclick="entrarAlStand('022', 'Hidráulica Pro')" class="bg-white border-2 border-slate-300 hover:border-naranja rounded-xl p-3 flex flex-col items-center justify-center shadow-sm transition">
+                <button onclick="entrarAlStand('B3-022', 'Hidráulica Pro')" class="bg-white border-2 border-slate-300 hover:border-verdeQR rounded-xl p-3 flex flex-col items-center justify-center shadow-sm transition">
                     <span class="text-[10px] text-slate-500 uppercase font-bold">Stand</span>
-                    <span class="text-2xl font-black text-slate-800">022</span>
+                    <span class="text-sm font-black text-slate-800">B3-022</span>
                 </button>
             </div>
         </div>
 
-        <!-- VISTA 3: GRILLA DE CÓDIGOS (Se eliminó la leyenda) -->
+        <!-- VISTA 3: GRILLA DE CÓDIGOS -->
         <div id="vistaStand" class="vista-oculta">
-            <!-- Grilla de Códigos directo -->
-            <div class="grid grid-cols-4 sm:grid-cols-5 gap-3">
+            <div class="grid grid-cols-4 sm:grid-cols-5 gap-3 mt-2">
                 <button onclick="alert('Abre etiqueta del producto H03')" class="bg-pizarraOscura border-2 border-slate-600 hover:border-naranja text-white rounded-lg p-3 flex flex-col items-center justify-center shadow-md transition">
                     <span class="text-xl font-black text-verdeVivo">H03</span>
                 </button>
@@ -273,77 +279,90 @@
     <script>
         let pabellonActual = '';
 
+        // 1. Menú y Submenús
         function toggleMenu() {
             document.getElementById('menuDesplegable').classList.toggle('activo');
+        }
+
+        function toggleSubmenu(idSubmenu) {
+            const submenu = document.getElementById(idSubmenu);
+            // Cierra todos los otros submenús
+            document.querySelectorAll('.submenu-container').forEach(el => {
+                if (el.id !== idSubmenu) el.classList.remove('abierto');
+            });
+            // Abre o cierra el seleccionado
+            submenu.classList.toggle('abierto');
         }
 
         function seleccionarMenu(opcion) {
             document.getElementById('menuDesplegable').classList.remove('activo');
             document.getElementById('textoNex').innerText = `Buscando "${opcion}" en el mapa...`;
             document.getElementById('globoNex').classList.remove('hidden');
+            document.getElementById('btnNexVolver').classList.add('hidden'); // Ocultamos boton volver
         }
 
+        // 2. NEX
         function toggleGloboNex() {
             document.getElementById('globoNex').classList.toggle('hidden');
         }
 
-        // 1. Entrar a Pabellón (Vista 1 -> 2)
+        function volverAlPabellonDesdeNex() {
+            document.getElementById('globoNex').classList.add('hidden');
+            document.getElementById('vistaStand').classList.add('vista-oculta');
+            document.getElementById('vistaPabellon').classList.remove('vista-oculta');
+            document.getElementById('contenedorExpositor').classList.add('hidden');
+            document.getElementById('contenedorExpositor').classList.remove('flex');
+        }
+
+        // 3. Navegación
         function entrarAlPabellon(nombrePabellon) {
             pabellonActual = nombrePabellon;
             document.getElementById('vistaPredio').classList.add('vista-oculta');
             document.getElementById('vistaStand').classList.add('vista-oculta');
             document.getElementById('vistaPabellon').classList.remove('vista-oculta');
             
-            document.getElementById('tituloPabellon').innerText = nombrePabellon;
-            
-            // Reseteamos header por si veníamos de un stand
+            // Actualizamos Header
+            document.getElementById('contenedorPabellonHeader').classList.remove('hidden');
+            document.getElementById('txtPabellonHeader').innerText = nombrePabellon;
             document.getElementById('contenedorExpositor').classList.add('hidden');
-            document.getElementById('contenedorExpositor').classList.remove('flex');
             
+            // NEX habla
             document.getElementById('textoNex').innerText = `Ya estás en el ${nombrePabellon}. Elegí el stand que quieras visitar.`;
             document.getElementById('globoNex').classList.remove('hidden');
-            document.getElementById('menuDesplegable').classList.remove('activo');
+            document.getElementById('btnNexVolver').classList.add('hidden');
         }
 
-        // 2. Entrar a Stand (Vista 2 -> 3)
-        function entrarAlStand(numeroStand, nombreEmpresa) {
+        function entrarAlStand(codigoStand, nombreEmpresa) {
             document.getElementById('vistaPredio').classList.add('vista-oculta');
             document.getElementById('vistaPabellon').classList.add('vista-oculta');
             document.getElementById('vistaStand').classList.remove('vista-oculta');
             
+            // Actualizamos Header con datos del stand
             document.getElementById('contenedorExpositor').classList.remove('hidden');
             document.getElementById('contenedorExpositor').classList.add('flex');
             
             document.getElementById('txtNombreExpositor').innerText = nombreEmpresa;
-            // Mostramos el stand Y el pabellón en el que estamos
-            document.getElementById('txtStandPabellon').innerText = `Stand ${numeroStand} • ${pabellonActual}`;
+            document.getElementById('txtCodigoStand').innerText = codigoStand; // Ej: B3-021 (gris)
+            document.getElementById('txtPabellonStand').innerText = `• ${pabellonActual}`; // Ej: Pabellón 1 (verde)
             
+            // NEX habla y muestra boton volver
             document.getElementById('textoNex').innerText = `¡Bienvenido al stand de ${nombreEmpresa}! Hacé clic en un código para ver los detalles.`;
             document.getElementById('globoNex').classList.remove('hidden');
+            document.getElementById('btnNexVolver').classList.remove('hidden');
         }
 
-        // 3. Botón "Volver al Predio" de la barra (Vuelve al Pabellón si estabas en un stand)
-        function volverAlPredio() {
-            if (!document.getElementById('vistaStand').classList.contains('vista-oculta')) {
-                // Si estamos en un stand, volvemos al pabellón donde estábamos
-                entrarAlPabellon(pabellonActual);
-            } else {
-                // Si estamos en un pabellón, volvemos al predio
-                irAlPredio();
-            }
-        }
-
-        // 4. Botón Discreto "Predio" (Siempre vuelve al inicio)
         function irAlPredio() {
             document.getElementById('vistaPabellon').classList.add('vista-oculta');
             document.getElementById('vistaStand').classList.add('vista-oculta');
             document.getElementById('vistaPredio').classList.remove('vista-oculta');
             
+            document.getElementById('contenedorPabellonHeader').classList.add('hidden');
             document.getElementById('contenedorExpositor').classList.add('hidden');
             document.getElementById('contenedorExpositor').classList.remove('flex');
             
             document.getElementById('textoNex').innerText = "Volvimos al mapa principal. ¿A dónde querés ir ahora?";
             document.getElementById('globoNex').classList.remove('hidden');
+            document.getElementById('btnNexVolver').classList.add('hidden');
         }
     </script>
 </body>
