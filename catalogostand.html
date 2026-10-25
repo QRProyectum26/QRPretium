@@ -30,14 +30,14 @@
         }
         .menu-desplegable.activo { display: block; }
         
-        /* Submenús flotantes (Popups) */
+        /* Submenús Popups */
         .submenu-popup {
             display: none;
             position: absolute;
-            left: 100%; /* A la derecha del item */
+            left: 100%; 
             top: 0;
             margin-left: 4px;
-            background-color: rgba(255, 255, 255, 0.95);
+            background-color: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(10px);
             border: 1px solid #cbd5e1;
             border-radius: 8px;
@@ -45,19 +45,18 @@
             min-width: 180px;
             z-index: 100;
         }
-        /* En celulares, que se abra un poco hacia la izquierda si no cabe */
         @media (max-width: 640px) {
             .submenu-popup { left: 50%; }
         }
         .submenu-popup.activo { display: block; }
 
-        /* Colores de los items del menú */
+        /* Colores Menú */
         .menu-item { color: #0f172a; transition: all 0.2s; position: relative; }
         .menu-item:hover, .menu-item.active { background-color: rgba(13, 148, 136, 0.1); color: #0D9488; }
         .submenu-item { color: #334155; font-weight: 500; display: block; padding: 8px 12px; font-size: 12px; }
         .submenu-item:hover { color: #0D9488; background-color: rgba(13, 148, 136, 0.05); }
 
-        /* Estilos NEX */
+        /* NEX */
         .tarjeta-nex { box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4); transition: all 0.3s ease; }
         .tarjeta-nex:hover { transform: scale(1.05); box-shadow: 0 0 25px rgba(249, 115, 22, 0.8); }
         .globo-nex { position: absolute; top: 110%; right: 0; width: 260px; z-index: 100; }
@@ -80,32 +79,38 @@
                     <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Expo ConstruTech 2026</span>
                 </div>
 
-                <!-- FILA 2: Link del Pabellón (Visible en Vista 2 y 3) -->
-                <div id="contenedorPabellonHeader" class="hidden mb-1 flex-col">
-                    <a href="#" onclick="volverAlPabellonDesdeHeader(event)" id="linkPabellonHeader" class="text-xs font-black text-verdeQR uppercase hover:underline cursor-pointer">
-                        Pabellón X12
-                    </a>
-                    <!-- Descripción del Pabellón (Solo visible en Vista 2) -->
-                    <span id="descPabellonHeader" class="text-[9px] text-slate-300 italic mt-0.5">Integración Bolivia</span>
+                <!-- FILA 2: Link del Pabellón (Centrado en Vista Stand) -->
+                <div id="contenedorPabellonHeader" class="hidden mb-1 flex-col items-center justify-center text-center">
+                    <div class="flex items-center justify-center gap-1">
+                        <!-- Flechita de volver (solo visible en vista stand) -->
+                        <span id="flechaVolverPabellon" class="hidden text-verdeQR text-xs">←</span>
+                        <a href="#" onclick="volverAlPabellonDesdeHeader(event)" id="linkPabellonHeader" class="text-xs font-black text-verdeQR uppercase hover:underline cursor-pointer">
+                            Pabellón X12
+                        </a>
+                    </div>
+                    <!-- Descripción del Pabellón (Más grande) -->
+                    <span id="descPabellonHeader" class="text-[11px] text-slate-300 italic mt-0.5">Integración Bolivia</span>
                 </div>
 
-                <!-- FILA 3: Logo y Nombre del Expositor (Visible en Vista 3) -->
+                <!-- FILA 3: Logo y Nombre del Expositor -->
                 <div id="contenedorExpositor" class="hidden items-start gap-2 mt-1">
-                    <img id="imgLogoExpositor" src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Logo Empresa" class="w-8 h-8 rounded bg-white p-0.5 object-contain flex-shrink-0">
-                    
-                    <div class="flex flex-col leading-tight w-full">
-                        <!-- Nombre de la Empresa -->
-                        <span id="txtNombreExpositor" class="font-black text-sm uppercase text-white truncate">TechDrill S.A.</span>
-                        
-                        <!-- Código de Stand (Debajo del logo) y Sector -->
-                        <div class="mt-0.5 flex items-center gap-1.5">
-                            <span id="txtCodigoStand" class="text-[10px] text-slate-300 font-mono font-bold bg-slate-800 px-1.5 py-0.5 rounded border border-slate-600">B3-021</span>
-                            <span id="txtSectorStand" class="text-[9px] text-verdeQR font-bold">(Metalurgia)</span>
-                        </div>
+                    <!-- Columna Izquierda: Logo y Código -->
+                    <div class="flex flex-col items-center flex-shrink-0">
+                        <img id="imgLogoExpositor" src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Logo Empresa" class="w-8 h-8 rounded bg-white p-0.5 object-contain">
+                        <!-- Código de Stand Simple (Sin botón) -->
+                        <span id="txtCodigoStand" class="text-[11px] text-slate-300 font-mono font-bold mt-1">B3-021</span>
                     </div>
                     
-                    <!-- Botón + Info Empresa (Movido a la derecha) -->
-                    <button onclick="alert('Abre modal con info de la empresa')" class="text-[9px] text-slate-400 font-bold whitespace-nowrap hover:text-white transition ml-2 mt-1 border border-slate-600 px-1.5 py-0.5 rounded">+ Info Empresa</button>
+                    <!-- Columna Derecha: Nombre, Info y Sector -->
+                    <div class="flex flex-col leading-tight w-full">
+                        <span id="txtNombreExpositor" class="font-black text-sm uppercase text-white truncate">TechDrill S.A.</span>
+                        
+                        <!-- Botón + Info Empresa (Centrado debajo del nombre) -->
+                        <button onclick="alert('Abre modal con info de la empresa')" class="text-[9px] text-slate-400 font-bold hover:text-white transition mt-0.5 text-left">+ Info Empresa</button>
+                        
+                        <!-- Sector a la derecha -->
+                        <span id="txtSectorStand" class="text-[10px] text-verdeQR font-bold mt-0.5">(Metalurgia)</span>
+                    </div>
                 </div>
             </div>
 
@@ -140,12 +145,13 @@
 
         <!-- BARRA DE MENÚ HAMBURGUESA -->
         <div class="bg-slate-800 border-t border-slate-700 relative">
-            <div class="max-w-xl mx-auto px-4 py-1.5 flex items-center justify-between relative z-20">
+            <div class="max-w-xl mx-auto px-4 py-0.5 flex items-center justify-between relative z-20">
                 <div class="flex items-center gap-3">
-                    <button onclick="irAlPredio()" class="text-[10px] bg-slate-700 hover:bg-slate-600 text-white font-bold px-2.5 py-1 rounded border border-slate-600 transition">Predio</button>
+                    <!-- Botón Predio (Bajado de altura y Naranja) -->
+                    <button onclick="irAlPredio()" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-naranja font-bold px-2 py-0.5 rounded border border-slate-600 transition">Predio</button>
                     
                     <!-- Botón Hamburguesa -->
-                    <button onclick="toggleMenu(event)" id="btnHamburguesa" class="flex items-center gap-1.5 text-xs font-bold text-white hover:text-verdeQR transition py-1">
+                    <button onclick="toggleMenu(event)" id="btnHamburguesa" class="flex items-center gap-1.5 text-xs font-bold text-white hover:text-verdeQR transition py-0.5">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                         Menú Feria
                     </button>
@@ -156,7 +162,7 @@
             <div id="menuDesplegable" class="menu-desplegable absolute top-full left-0 w-full shadow-2xl z-50 max-h-[70vh] overflow-y-auto border-b border-slate-300" onclick="event.stopPropagation()">
                 <div class="max-w-xl mx-auto p-2 space-y-1 text-sm font-bold">
                     
-                    <!-- Item con Submenú Popup -->
+                    <!-- Mapa -->
                     <div class="menu-item w-full text-left p-2 rounded flex justify-between items-center cursor-pointer" onclick="toggleSubmenu(event, 'submenuMapa')">
                         🗺️ Mapa <span class="text-[10px]">▶</span>
                         <div id="submenuMapa" class="submenu-popup">
@@ -170,6 +176,18 @@
 
                     <div class="menu-item w-full text-left p-2 rounded cursor-pointer" onclick="seleccionarMenu('Programa')">📅 Programa</div>
 
+                    <!-- NUEVO MENÚ: SECTORES -->
+                    <div class="menu-item w-full text-left p-2 rounded flex justify-between items-center cursor-pointer" onclick="toggleSubmenu(event, 'submenuSectores')">
+                        🏭 Sectores <span class="text-[10px]">▶</span>
+                        <div id="submenuSectores" class="submenu-popup">
+                            <a href="#" onclick="seleccionarMenu('Metalurgia')" class="submenu-item">Metalurgia</a>
+                            <a href="#" onclick="seleccionarMenu('Alimentos')" class="submenu-item">Alimentos</a>
+                            <a href="#" onclick="seleccionarMenu('Tecnología')" class="submenu-item">Tecnología</a>
+                            <a href="#" onclick="seleccionarMenu('Textil')" class="submenu-item">Textil</a>
+                        </div>
+                    </div>
+
+                    <!-- Actividades -->
                     <div class="menu-item w-full text-left p-2 rounded flex justify-between items-center cursor-pointer" onclick="toggleSubmenu(event, 'submenuActividades')">
                         🎓 Actividades <span class="text-[10px]">▶</span>
                         <div id="submenuActividades" class="submenu-popup">
@@ -179,6 +197,7 @@
                         </div>
                     </div>
 
+                    <!-- Entretenimiento -->
                     <div class="menu-item w-full text-left p-2 rounded flex justify-between items-center cursor-pointer" onclick="toggleSubmenu(event, 'submenuEntretenimiento')">
                         🎉 Entretenimiento <span class="text-[10px]">▶</span>
                         <div id="submenuEntretenimiento" class="submenu-popup">
@@ -188,6 +207,7 @@
                         </div>
                     </div>
 
+                    <!-- Eventos -->
                     <div class="menu-item w-full text-left p-2 rounded flex justify-between items-center cursor-pointer" onclick="toggleSubmenu(event, 'submenuEventos')">
                         🎁 Eventos <span class="text-[10px]">▶</span>
                         <div id="submenuEventos" class="submenu-popup">
@@ -197,6 +217,7 @@
                         </div>
                     </div>
 
+                    <!-- Emergencias -->
                     <div class="menu-item w-full text-left p-2 rounded flex justify-between items-center cursor-pointer" onclick="toggleSubmenu(event, 'submenuEmergencias')">
                         🚨 Emergencias <span class="text-[10px]">▶</span>
                         <div id="submenuEmergencias" class="submenu-popup">
@@ -205,6 +226,7 @@
                         </div>
                     </div>
 
+                    <!-- Servicios -->
                     <div class="menu-item w-full text-left p-2 rounded flex justify-between items-center cursor-pointer" onclick="toggleSubmenu(event, 'submenuServicios')">
                         🛠️ Servicios <span class="text-[10px]">▶</span>
                         <div id="submenuServicios" class="submenu-popup">
@@ -238,7 +260,6 @@
         <!-- VISTA 2: GRILLA DE STANDS -->
         <div id="vistaPabellon" class="vista-oculta">
             <div class="grid grid-cols-3 sm:grid-cols-4 gap-3 mt-2">
-                <!-- Código de Stand con formato B3-021 -->
                 <button onclick="entrarAlStand('B3-021', 'TechDrill S.A.', 'Metalurgia')" class="bg-white border-2 border-slate-300 hover:border-verdeQR rounded-xl p-3 flex flex-col items-center justify-center shadow-sm transition">
                     <span class="text-[10px] text-slate-500 uppercase font-bold">Stand</span>
                     <span class="text-sm font-black text-slate-800">B3-021</span>
@@ -269,6 +290,7 @@
         let pabellonActual = '';
         let descPabellonActual = '';
         let timerCierreMenu = null;
+        let timerCierreNex = null;
 
         // 1. Control del Menú y Auto-Cierre
         function toggleMenu(e) {
@@ -278,7 +300,6 @@
                 cerrarMenuYSubmenus();
             } else {
                 menu.classList.add('activo');
-                // Timer para cerrar en 10 segundos
                 clearTimeout(timerCierreMenu);
                 timerCierreMenu = setTimeout(() => {
                     cerrarMenuYSubmenus();
@@ -291,11 +312,9 @@
             document.querySelectorAll('.submenu-popup').forEach(el => el.classList.remove('activo'));
         }
 
-        // Cerrar menú si se clickea afuera
         function cerrarMenuSiClickFuera(e) {
             const menu = document.getElementById('menuDesplegable');
             const btnHamburguesa = document.getElementById('btnHamburguesa');
-            // Si el menú está abierto y el clic NO fue en la hamburguesa ni dentro del menú
             if (menu.classList.contains('activo') && !menu.contains(e.target) && !btnHamburguesa.contains(e.target)) {
                 cerrarMenuYSubmenus();
             }
@@ -306,11 +325,7 @@
             e.stopPropagation();
             const submenu = document.getElementById(idSubmenu);
             const estaAbierto = submenu.classList.contains('activo');
-            
-            // Cierra todos los demás
             document.querySelectorAll('.submenu-popup').forEach(el => el.classList.remove('activo'));
-            
-            // Si no estaba abierto, lo abre
             if (!estaAbierto) {
                 submenu.classList.add('activo');
             }
@@ -338,12 +353,13 @@
             document.getElementById('vistaStand').classList.add('vista-oculta');
             document.getElementById('vistaPabellon').classList.remove('vista-oculta');
             
-            // Header: Mostramos Pabellón y su descripción
+            // Header
             document.getElementById('contenedorPabellonHeader').classList.remove('hidden');
             document.getElementById('contenedorPabellonHeader').classList.add('flex');
             document.getElementById('linkPabellonHeader').innerText = nombrePabellon;
             document.getElementById('descPabellonHeader').innerText = descripcion;
-            document.getElementById('descPabellonHeader').classList.remove('hidden'); // Mostrar desc
+            document.getElementById('descPabellonHeader').classList.remove('hidden');
+            document.getElementById('flechaVolverPabellon').classList.add('hidden'); // Sin flecha aquí
             
             document.getElementById('contenedorExpositor').classList.add('hidden');
             
@@ -360,8 +376,9 @@
             document.getElementById('vistaPabellon').classList.add('vista-oculta');
             document.getElementById('vistaStand').classList.remove('vista-oculta');
             
-            // Header: Link del pabellón (sin descripción)
+            // Header: Ocultar descripción del pabellón y mostrar flechita
             document.getElementById('descPabellonHeader').classList.add('hidden');
+            document.getElementById('flechaVolverPabellon').classList.remove('hidden');
             
             // Header: Datos del Expositor
             document.getElementById('contenedorExpositor').classList.remove('hidden');
@@ -371,25 +388,32 @@
             document.getElementById('txtCodigoStand').innerText = codigoStand; 
             document.getElementById('txtSectorStand').innerText = `(${sector})`; 
             
-            // NEX
-            document.getElementById('textoNex').innerText = `¡Bienvenido al stand de ${nombreEmpresa}! Hacé clic en un código para ver los detalles.`;
+            // NEX: Bienvenida + Auto-cierre a los 5 seg
+            document.getElementById('textoNex').innerText = `¡Bienvenido al stand de ${nombreEmpresa}! Hacé clic en un código para ver los detalles. Cualquier cosa estoy aquí por cualquier consulta.`;
             document.getElementById('globoNex').classList.remove('hidden');
             document.getElementById('btnNexVolver').classList.remove('hidden');
+            
+            clearTimeout(timerCierreNex);
+            timerCierreNex = setTimeout(() => {
+                document.getElementById('globoNex').classList.add('hidden');
+            }, 5000);
         }
 
-        // 5. Volver al Pabellón desde el Link del Header o desde NEX
+        // 5. Volver al Pabellón desde el Link del Header o NEX
         function volverAlPabellonDesdeHeader(e) {
             if(e) e.preventDefault();
             document.getElementById('vistaStand').classList.add('vista-oculta');
             document.getElementById('vistaPabellon').classList.remove('vista-oculta');
             
-            // Restaurar Header de Pabellón
+            // Restaurar Header
             document.getElementById('contenedorExpositor').classList.add('hidden');
             document.getElementById('contenedorExpositor').classList.remove('flex');
-            document.getElementById('descPabellonHeader').classList.remove('hidden'); // Mostrar desc de nuevo
+            document.getElementById('descPabellonHeader').classList.remove('hidden'); 
+            document.getElementById('flechaVolverPabellon').classList.add('hidden');
             
             // NEX
             document.getElementById('globoNex').classList.add('hidden');
+            clearTimeout(timerCierreNex);
         }
 
         function irAlPredio() {
@@ -407,6 +431,7 @@
             document.getElementById('btnNexVolver').classList.add('hidden');
             
             cerrarMenuYSubmenus();
+            clearTimeout(timerCierreNex);
         }
     </script>
 </body>
