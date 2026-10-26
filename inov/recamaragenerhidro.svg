@@ -1,0 +1,71 @@
+<svg width="800" height="900" viewBox="0 0 800 900" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo -->
+  <rect width="100%" height="100%" fill="#f8f9fa"/>
+  
+  <!-- Título -->
+  <text x="400" y="40" font-family="Arial" font-size="24" text-anchor="middle" font-weight="bold">MÓDULO DE POTENCIA - CORTE TRANSVERSAL</text>
+  <text x="400" y="70" font-family="Arial" font-size="16" text-anchor="middle" fill="#555">Escala relativa | Pistón Ø120mm x Carrera 60mm</text>
+
+  <!-- CÁMARA DE AIRE (Inferior) -->
+  <path d="M 250 650 L 250 450 L 550 450 L 550 650 Z" fill="#e3f2fd" stroke="#1565c0" stroke-width="3"/>
+  <text x="400" y="550" font-family="Arial" font-size="18" text-anchor="middle" fill="#1565c0" font-weight="bold">AIRE COMPRIMIDO</text>
+  <text x="400" y="580" font-family="Arial" font-size="16" text-anchor="middle" fill="#1565c0">9 BARES</text>
+  
+  <!-- Tubería de entrada aire (Ø20mm) -->
+  <rect x="200" y="620" width="50" height="30" fill="#bbdefb" stroke="#1565c0" stroke-width="2"/>
+  <text x="180" y="640" font-family="Arial" font-size="14" text-anchor="end">ENTRADA AIRE Ø20mm</text>
+  <polygon points="240,635 260,635 250,625" fill="#1565c0"/> <!-- Flecha flujo -->
+
+  <!-- PISTÓN SEPARADOR CENTRAL (Ø120mm) -->
+  <rect x="250" y="430" width="300" height="20" fill="#757575" stroke="#212121" stroke-width="2"/>
+  <!-- Sellos PTFE -->
+  <rect x="245" y="425" width="10" height="30" fill="#ffeb3b" stroke="#fbc02d" stroke-width="1"/>
+  <rect x="545" y="425" width="10" height="30" fill="#ffeb3b" stroke="#fbc02d" stroke-width="1"/>
+  <text x="400" y="420" font-family="Arial" font-size="14" text-anchor="middle" fill="#333">PISTÓN SEP. Ø120mm (PTFE)</text>
+
+  <!-- CÁMARA DE ACEITE (Superior) -->
+  <path d="M 250 430 L 250 200 L 550 200 L 550 430 Z" fill="#d7ccc8" stroke="#5d4037" stroke-width="3"/>
+  <text x="400" y="320" font-family="Arial" font-size="18" text-anchor="middle" fill="#5d4037" font-weight="bold">ACEITE PAO VG15/22</text>
+  
+  <!-- Líneas de carrera y holgura -->
+  <line x1="230" y1="430" x2="570" y2="430" stroke="#999" stroke-width="1" stroke-dasharray="5,5"/>
+  <line x1="230" y1="370" x2="570" y2="370" stroke="#d32f2f" stroke-width="1" stroke-dasharray="5,5"/>
+  <text x="580" y="400" font-family="Arial" font-size="12" fill="#d32f2f">PMS (+5mm holgura)</text>
+  <text x="580" y="435" font-family="Arial" font-size="12" fill="#d32f2f">PMI (Base carrera)</text>
+  <text x="580" y="375" font-family="Arial" font-size="12" fill="#d32f2f">Tope sup. pistón</text>
+
+  <!-- CONO DE SALIDA A1 (Transición cónica 120mm -> 45mm) -->
+  <path d="M 377 200 L 423 200 L 410 150 L 390 150 Z" fill="#a1887f" stroke="#5d4037" stroke-width="2"/>
+  <text x="400" y="130" font-family="Arial" font-size="14" text-anchor="middle" fill="#5d4037">SALIDA A1 Ø45mm</text>
+  
+  <!-- Tubería de salida aceite hacia arriba -->
+  <rect x="390" y="50" width="20" height="100" fill="#bcaaa4" stroke="#5d4037" stroke-width="2"/>
+  <polygon points="400,80 390,100 410,100" fill="#5d4037"/> <!-- Flecha flujo arriba -->
+  <text x="350" y="80" font-family="Arial" font-size="14" text-anchor="end">HACIA CILINDRO SIGUIENTE</text>
+
+  <!-- PURGADOR SUPERIOR -->
+  <circle cx="530" cy="210" r="8" fill="none" stroke="#2e7d32" stroke-width="2"/>
+  <line x1="530" y1="210" x2="530" y2="190" stroke="#2e7d32" stroke-width="2"/>
+  <text x="550" y="200" font-family="Arial" font-size="12" fill="#2e7d32">PURGADOR</text>
+
+  <!-- Cotas dimensionales -->
+  <line x1="200" y1="430" x2="200" y2="370" stroke="#000" stroke-width="1"/>
+  <line x1="195" y1="430" x2="205" y2="430" stroke="#000" stroke-width="1"/>
+  <line x1="195" y1="370" x2="205" y2="370" stroke="#000" stroke-width="1"/>
+  <text x="180" y="400" font-family="Arial" font-size="14" text-anchor="middle" transform="rotate(-90 180 400)">CARRERA 60mm</text>
+
+  <line x1="600" y1="430" x2="600" y2="200" stroke="#000" stroke-width="1"/>
+  <line x1="595" y1="430" x2="605" y2="430" stroke="#000" stroke-width="1"/>
+  <line x1="595" y1="200" x2="605" y2="200" stroke="#000" stroke-width="1"/>
+  <text x="620" y="315" font-family="Arial" font-size="14" text-anchor="middle" transform="rotate(90 620 315)">LONG. INT. 70mm</text>
+
+  <!-- Leyenda inferior -->
+  <rect x="50" y="750" width="20" height="20" fill="#e3f2fd" stroke="#1565c0"/>
+  <text x="80" y="765" font-family="Arial" font-size="14">Cámara Aire</text>
+  <rect x="200" y="750" width="20" height="20" fill="#d7ccc8" stroke="#5d4037"/>
+  <text x="230" y="765" font-family="Arial" font-size="14">Cámara Aceite</text>
+  <rect x="350" y="750" width="20" height="20" fill="#757575" stroke="#212121"/>
+  <text x="380" y="765" font-family="Arial" font-size="14">Pistón Separador</text>
+  <rect x="500" y="750" width="20" height="20" fill="#ffeb3b" stroke="#fbc02d"/>
+  <text x="530" y="765" font-family="Arial" font-size="14">Sellos PTFE</text>
+</svg>
