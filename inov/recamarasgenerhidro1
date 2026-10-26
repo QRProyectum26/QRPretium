@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esquema Técnico 2D - Módulo de Potencia</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 30px;
+            max-width: 900px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 { color: #2c3e50; margin-bottom: 10px; }
+        p.subtitle { color: #7f8c8d; margin-top: 0; margin-bottom: 30px; }
+        
+        /* Estilos del SVG */
+        svg {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #ffffff;
+        }
+        
+        /* Interactividad básica */
+        .interactive-part:hover { opacity: 0.8; cursor: pointer; transition: 0.3s; }
+        .tooltip { font-size: 12px; fill: #fff; pointer-events: none; opacity: 0; transition: 0.3s;}
+        
+        .footer-note {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #555;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Módulo de Potencia Neumático-Hidráulico</h1>
+    <p class="subtitle">Vista en Corte Transversal | Escala Relativa Basada en Cálculos v1.0</p>
+
+    <!-- INICIO DEL ESQUEMA SVG -->
+    <svg viewBox="0 0 800 900" xmlns="http://www.w3.org/2000/svg">
+      <!-- Fondo técnico -->
+      <rect width="100%" height="100%" fill="#fafafa"/>
+      
+      <!-- Título interno del plano -->
+      <text x="400" y="40" font-family="Arial" font-size="22" text-anchor="middle" font-weight="bold" fill="#333">CORTE LONGITUDINAL - UNIDAD DE POTENCIA</text>
+      <text x="400" y="65" font-family="Arial" font-size="14" text-anchor="middle" fill="#666">Pistón Ø120mm | Carrera 60mm | Presión 9 Bar</text>
+
+      <!-- CÁMARA DE AIRE (Inferior) -->
+      <path d="M 250 650 L 250 450 L 550 450 L 550 650 Z" fill="#e3f2fd" stroke="#1565c0" stroke-width="3" class="interactive-part"/>
+      <text x="400" y="550" font-family="Arial" font-size="18" text-anchor="middle" fill="#1565c0" font-weight="bold">AIRE COMPRIMIDO</text>
+      <text x="400" y="580" font-family="Arial" font-size="16" text-anchor="middle" fill="#1565c0">9 BARES</text>
+      
+      <!-- Tubería de entrada aire (Ø20mm) -->
+      <rect x="200" y="620" width="50" height="30" fill="#bbdefb" stroke="#1565c0" stroke-width="2"/>
+      <text x="180" y="640" font-family="Arial" font-size="14" text-anchor="end" fill="#333">ENTRADA AIRE Ø20mm</text>
+      <polygon points="240,635 260,635 250,625" fill="#1565c0"/> 
+
+      <!-- PISTÓN SEPARADOR CENTRAL (Ø120mm) -->
+      <rect x="250" y="430" width="300" height="20" fill="#757575" stroke="#212121" stroke-width="2" class="interactive-part"/>
+      <!-- Sellos PTFE -->
+      <rect x="245" y="425" width="10" height="30" fill="#ffeb3b" stroke="#fbc02d" stroke-width="1"/>
+      <rect x="545" y="425" width="10" height="30" fill="#ffeb3b" stroke="#fbc02d" stroke-width="1"/>
+      <text x="400" y="420" font-family="Arial" font-size="14" text-anchor="middle" fill="#333" font-weight="bold">PISTÓN SEP. Ø120mm (PTFE)</text>
+
+      <!-- CÁMARA DE ACEITE (Superior) -->
+      <path d="M 250 430 L 250 200 L 550 200 L 550 430 Z" fill="#d7ccc8" stroke="#5d4037" stroke-width="3" class="interactive-part"/>
+      <text x="400" y="320" font-family="Arial" font-size="18" text-anchor="middle" fill="#5d4037" font-weight="bold">ACEITE PAO VG15/22</text>
+      
+      <!-- Líneas de carrera y holgura -->
+      <line x1="230" y1="430" x2="570" y2="430" stroke="#999" stroke-width="1" stroke-dasharray="5,5"/>
+      <line x1="230" y1="370" x2="570" y2="370" stroke="#d32f2f" stroke-width="1" stroke-dasharray="5,5"/>
+      <text x="580" y="400" font-family="Arial" font-size="12" fill="#d32f2f">PMS (+5mm holgura)</text>
+      <text x="580" y="435" font-family="Arial" font-size="12" fill="#d32f2f">PMI (Base carrera)</text>
+      <text x="580" y="375" font-family="Arial" font-size="12" fill="#d32f2f">Tope sup. pistón</text>
+
+      <!-- CONO DE SALIDA A1 (Transición cónica 120mm -> 45mm) -->
+      <path d="M 377 200 L 423 200 L 410 150 L 390 150 Z" fill="#a1887f" stroke="#5d4037" stroke-width="2"/>
+      <text x="400" y="130" font-family="Arial" font-size="14" text-anchor="middle" fill="#5d4037" font-weight="bold">SALIDA A1 Ø45mm</text>
+      
+      <!-- Tubería de salida aceite hacia arriba -->
+      <rect x="390" y="50" width="20" height="100" fill="#bcaaa4" stroke="#5d4037" stroke-width="2"/>
+      <polygon points="400,80 390,100 410,100" fill="#5d4037"/> 
+      <text x="350" y="80" font-family="Arial" font-size="14" text-anchor="end" fill="#333">HACIA SIGUIENTE ETAPA</text>
+
+      <!-- PURGADOR SUPERIOR -->
+      <circle cx="530" cy="210" r="8" fill="none" stroke="#2e7d32" stroke-width="2"/>
+      <line x1="530" y1="210" x2="530" y2="190" stroke="#2e7d32" stroke-width="2"/>
+      <text x="550" y="200" font-family="Arial" font-size="12" fill="#2e7d32" font-weight="bold">PURGADOR</text>
+
+      <!-- Cotas dimensionales -->
+      <line x1="200" y1="430" x2="200" y2="370" stroke="#000" stroke-width="1"/>
+      <line x1="195" y1="430" x2="205" y2="430" stroke="#000" stroke-width="1"/>
+      <line x1="195" y1="370" x2="205" y2="370" stroke="#000" stroke-width="1"/>
+      <text x="180" y="400" font-family="Arial" font-size="14" text-anchor="middle" transform="rotate(-90 180 400)">CARRERA 60mm</text>
+
+      <line x1="600" y1="430" x2="600" y2="200" stroke="#000" stroke-width="1"/>
+      <line x1="595" y1="430" x2="605" y2="430" stroke="#000" stroke-width="1"/>
+      <line x1="595" y1="200" x2="605" y2="200" stroke="#000" stroke-width="1"/>
+      <text x="620" y="315" font-family="Arial" font-size="14" text-anchor="middle" transform="rotate(90 620 315)">LONG. INT. 70mm</text>
+
+      <!-- Leyenda inferior -->
+      <rect x="50" y="750" width="20" height="20" fill="#e3f2fd" stroke="#1565c0"/>
+      <text x="80" y="765" font-family="Arial" font-size="14" fill="#333">Cámara Aire</text>
+      <rect x="200" y="750" width="20" height="20" fill="#d7ccc8" stroke="#5d4037"/>
+      <text x="230" y="765" font-family="Arial" font-size="14" fill="#333">Cámara Aceite</text>
+      <rect x="350" y="750" width="20" height="20" fill="#757575" stroke="#212121"/>
+      <text x="380" y="765" font-family="Arial" font-size="14" fill="#333">Pistón Separador</text>
+      <rect x="500" y="750" width="20" height="20" fill="#ffeb3b" stroke="#fbc02d"/>
+      <text x="530" y="765" font-family="Arial" font-size="14" fill="#333">Sellos PTFE</text>
+    </svg>
+    <!-- FIN DEL ESQUEMA SVG -->
+
+    <div class="footer-note">
+        <strong>Instrucciones:</strong> Puedes hacer clic derecho sobre el esquema > "Guardar imagen como..." para usarlo de referencia.<br>
+        Las proporciones son relativas. Usa la cota de "Carrera 60mm" como base para escalar en tu software CAD.
+    </div>
+</div>
+
+</body>
+</html>
