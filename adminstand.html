@@ -339,7 +339,63 @@
             </div>
         </div>
     </div>
-    <div id="popupReuniones" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupReuniones')"><div class="popup-caja"><button class="popup-cerrar" onclick="cerrarPopup('popupReuniones')">✕</button><div class="p-6"><h2 class="text-xl font-extrabold mb-4">Mis Reuniones</h2><p class="text-sm text-gray-500">Próximamente.</p></div></div></div>
+       <!-- POPUP: MIS REUNIONES -->
+    <div id="popupReuniones" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupReuniones')">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupReuniones')">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-4">🤝 Mis Reuniones</h2>
+                
+                <!-- Formulario de carga -->
+                <form onsubmit="guardarReunion(event)" class="bg-slate-50 p-3 rounded-xl border border-slate-200 mb-4 space-y-2">
+                    <h3 class="text-xs font-bold text-slate-700 uppercase">Agendar Nueva Reunión</h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Tipo</label>
+                            <select id="reunionTipo" required class="w-full px-2 py-1.5 border rounded-lg text-xs">
+                                <option value="Trabajo">Trabajo</option>
+                                <option value="Institucional">Institucional</option>
+                                <option value="Negocios">Negocios</option>
+                                <option value="Otros">Otros</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Estado</label>
+                            <select id="reunionEstado" class="w-full px-2 py-1.5 border rounded-lg text-xs">
+                                <option value="Pendiente">Pendiente</option>
+                                <option value="Confirmada">Confirmada</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Título / Motivo</label>
+                        <input type="text" id="reunionTitulo" required placeholder="Ej: Reunión con distribuidor" class="w-full px-2 py-1.5 border rounded-lg text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Empresa / Persona</label>
+                        <input type="text" id="reunionContraparte" placeholder="Ej: Juan Pérez de Industrias S.A." class="w-full px-2 py-1.5 border rounded-lg text-xs">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Fecha</label>
+                            <input type="date" id="reunionFecha" required class="w-full px-2 py-1.5 border rounded-lg text-xs">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Hora</label>
+                            <input type="time" id="reunionHora" required class="w-full px-2 py-1.5 border rounded-lg text-xs">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-verdeQR hover:bg-teal-700 text-white font-bold py-2 rounded-lg text-xs transition mt-1">Agendar Reunión</button>
+                </form>
+
+                <!-- Lista de reuniones -->
+                <h3 class="text-xs font-bold text-slate-700 uppercase mb-2">Mis Reuniones Agendadas</h3>
+                <div id="listaReuniones" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                    <p class="text-xs text-gray-500 text-center">Cargando...</p>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="popupAgenda" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupAgenda')"><div class="popup-caja"><button class="popup-cerrar" onclick="cerrarPopup('popupAgenda')">✕</button><div class="p-6"><h2 class="text-xl font-extrabold mb-4">Mi Agenda</h2><p class="text-sm text-gray-500">Próximamente.</p></div></div></div>
     <div id="popupDocumentacion" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupDocumentacion')"><div class="popup-caja"><button class="popup-cerrar" onclick="cerrarPopup('popupDocumentacion')">✕</button><div class="p-6"><h2 class="text-xl font-extrabold mb-4">Mi Documentación</h2><p class="text-sm text-gray-500">Próximamente.</p></div></div></div>
     <div id="popupImprimir" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupImprimir')"><div class="popup-caja"><button class="popup-cerrar" onclick="cerrarPopup('popupImprimir')">✕</button><div class="p-6"><h2 class="text-xl font-extrabold mb-4">Imprimir Códigos</h2><p class="text-sm text-gray-500">Próximamente.</p></div></div></div>
@@ -639,10 +695,91 @@
                 alert('Error al eliminar: ' + err.message);
             }
         }
-                function abrirPopup(id) { 
+                // 9. LÓGICA DE REUNIONES
+        async function cargarReuniones() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('reuniones_stand')
+                    .select('*')
+                    .eq('expositor_id', expositorActual.id)
+                    .order('fecha', { ascending: true })
+                    .order('hora', { ascending: true });
+
+                if (error) throw error;
+                
+                const contenedor = document.getElementById('listaReuniones');
+                contenedor.innerHTML = '';
+
+                if (data.length === 0) {
+                    contenedor.innerHTML = '<p class="text-xs text-gray-500 text-center">No tenés reuniones agendadas.</p>';
+                    return;
+                }
+
+                data.forEach(reunion => {
+                    const fechaFormateada = new Date(reunion.fecha + 'T00:00:00').toLocaleDateString('es-AR');
+                    const colorEstado = reunion.estado === 'Confirmada' ? 'text-emerald-600 bg-emerald-50' : 'text-amber-600 bg-amber-50';
+                    
+                    contenedor.innerHTML += `
+                        <div class="bg-white border border-slate-200 rounded-lg p-2 flex justify-between items-center shadow-sm">
+                            <div class="flex items-start gap-2">
+                                <span class="text-lg">💼</span>
+                                <div>
+                                    <p class="text-xs font-bold text-slate-800">${reunion.titulo}</p>
+                                    <p class="text-[10px] text-slate-500">${fechaFormateada} a las ${reunion.hora.substring(0,5)} hs</p>
+                                    <p class="text-[10px] text-slate-400">${reunion.contraparte ? 'Con: ' + reunion.contraparte : ''}</p>
+                                    <span class="inline-block text-[9px] font-bold px-1.5 py-0.5 rounded mt-1 ${colorEstado}">${reunion.estado}</span>
+                                </div>
+                            </div>
+                            <button onclick="eliminarReunion('${reunion.id}')" class="text-red-500 hover:text-red-700 text-xs font-bold px-2 py-1 bg-red-50 rounded">Borrar</button>
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                console.error('Error al cargar reuniones:', err);
+            }
+        }
+
+        async function guardarReunion(e) {
+            e.preventDefault();
+            const payload = {
+                expositor_id: expositorActual.id,
+                tipo: document.getElementById('reunionTipo').value,
+                titulo: document.getElementById('reunionTitulo').value.trim(),
+                contraparte: document.getElementById('reunionContraparte').value.trim(),
+                fecha: document.getElementById('reunionFecha').value,
+                hora: document.getElementById('reunionHora').value,
+                estado: document.getElementById('reunionEstado').value
+            };
+
+            try {
+                const { error } = await supabaseClient.from('reuniones_stand').insert([payload]);
+                if (error) throw error;
+                
+                document.getElementById('reunionTitulo').value = '';
+                document.getElementById('reunionContraparte').value = '';
+                
+                await cargarReuniones(); 
+            } catch (err) {
+                alert('Error al guardar: ' + err.message);
+            }
+        }
+
+        async function eliminarReunion(id) {
+            if (!confirm('¿Seguro que querés eliminar esta reunión?')) return;
+            try {
+                const { error } = await supabaseClient.from('reuniones_stand').delete().eq('id', id);
+                if (error) throw error;
+                await cargarReuniones();
+            } catch (err) {
+                alert('Error al eliminar: ' + err.message);
+            }
+        }
+                        function abrirPopup(id) { 
             document.getElementById(id).classList.add('activo'); 
             if (id === 'popupPresentaciones') {
                 cargarPresentaciones();
+            } else if (id === 'popupReuniones') {
+                cargarReuniones();
             }
         }
         function cerrarPopup(id) { document.getElementById(id).classList.remove('activo'); }
