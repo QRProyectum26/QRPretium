@@ -283,6 +283,17 @@
                         <span class="text-lg">📞</span>
                         <div><p class="text-xs font-bold text-gray-500 uppercase">Teléfono</p><p id="infoTelefono"></p></div>
                     </div>
+                     <!-- NUEVO: MAIL -->
+                    <div id="infoMailContenedor" class="flex items-start gap-2 hidden">
+                        <span class="text-lg">✉️</span>
+                        <div><p class="text-xs font-bold text-gray-500 uppercase">Email</p><a id="infoMail" href="#" class="text-blue-600 hover:underline"></a></div>
+                    </div>
+                    <!-- NUEVO: BOTÓN CÓMO LLEGAR -->
+                    <div id="infoMapaContenedor" class="hidden">
+                        <a id="infoMapa" href="#" target="_blank" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-xl transition flex items-center justify-center gap-2 mt-2">
+                            <span>📍</span> Cómo Llegar (Google Maps)
+                        </a>
+                    </div>
                     <div id="infoWebContenedor" class="flex items-start gap-2 hidden">
                         <span class="text-lg">🌐</span>
                         <div><p class="text-xs font-bold text-gray-500 uppercase">Sitio Web</p><a id="infoWeb" href="#" target="_blank" class="text-blue-600 hover:underline"></a></div>
@@ -540,7 +551,23 @@
                 document.getElementById('infoWeb').innerText = expositorActual.web;
                 document.getElementById('infoWebContenedor').classList.remove('hidden');
             } else { document.getElementById('infoWebContenedor').classList.add('hidden'); }
+            // Mail
+            if (expositorActual.mail) {
+                document.getElementById('infoMail').innerText = expositorActual.mail;
+                document.getElementById('infoMail').href = `mailto:${expositorActual.mail}`;
+                document.getElementById('infoMailContenedor').classList.remove('hidden');
+            } else {
+                document.getElementById('infoMailContenedor').classList.add('hidden');
+            }
 
+            // Google Maps (si hay dirección)
+            if (expositorActual.direccion) {
+                const query = encodeURIComponent(expositorActual.direccion);
+                document.getElementById('infoMapa').href = `https://www.google.com/maps/search/?api=1&query=${query}`;
+                document.getElementById('infoMapaContenedor').classList.remove('hidden');
+            } else {
+                document.getElementById('infoMapaContenedor').classList.add('hidden');
+            }
             if (expositorActual.whatsapp) { document.getElementById('infoBtnWhatsapp').classList.remove('hidden'); } 
             else { document.getElementById('infoBtnWhatsapp').classList.add('hidden'); }
 
