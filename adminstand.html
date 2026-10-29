@@ -285,7 +285,60 @@
     </div>
 
     <!-- POPUPS PLACEHOLDER -->
-    <div id="popupPresentaciones" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupPresentaciones')"><div class="popup-caja"><button class="popup-cerrar" onclick="cerrarPopup('popupPresentaciones')">✕</button><div class="p-6"><h2 class="text-xl font-extrabold mb-4">Mis Presentaciones</h2><p class="text-sm text-gray-500">Próximamente.</p></div></div></div>
+       <!-- POPUP: MIS PRESENTACIONES -->
+    <div id="popupPresentaciones" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupPresentaciones')">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupPresentaciones')">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-4">📅 Mis Presentaciones</h2>
+                
+                <!-- Formulario de carga -->
+                <form onsubmit="guardarPresentacion(event)" class="bg-slate-50 p-3 rounded-xl border border-slate-200 mb-4 space-y-2">
+                    <h3 class="text-xs font-bold text-slate-700 uppercase">Agregar Nueva Presentación</h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Tipo</label>
+                            <select id="presTipo" required class="w-full px-2 py-1.5 border rounded-lg text-xs">
+                                <option value="Capacitacion">Capacitación</option>
+                                <option value="Sorteo">Sorteo</option>
+                                <option value="Remate">Remate</option>
+                                <option value="Presentacion">Presentación</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Lugar</label>
+                            <input type="text" id="presLugar" placeholder="Ej: Salón Chino" class="w-full px-2 py-1.5 border rounded-lg text-xs">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Título</label>
+                        <input type="text" id="presTitulo" required placeholder="Ej: Charla de Seguridad Industrial" class="w-full px-2 py-1.5 border rounded-lg text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Descripción</label>
+                        <textarea id="presDescripcion" rows="2" class="w-full px-2 py-1.5 border rounded-lg text-xs"></textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Fecha</label>
+                            <input type="date" id="presFecha" required class="w-full px-2 py-1.5 border rounded-lg text-xs">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Hora</label>
+                            <input type="time" id="presHora" required class="w-full px-2 py-1.5 border rounded-lg text-xs">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-verdeQR hover:bg-teal-700 text-white font-bold py-2 rounded-lg text-xs transition mt-1">Agregar a mi Agenda</button>
+                </form>
+
+                <!-- Lista de presentaciones -->
+                <h3 class="text-xs font-bold text-slate-700 uppercase mb-2">Mis Presentaciones Agendadas</h3>
+                <div id="listaPresentaciones" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                    <p class="text-xs text-gray-500 text-center">Cargando...</p>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="popupReuniones" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupReuniones')"><div class="popup-caja"><button class="popup-cerrar" onclick="cerrarPopup('popupReuniones')">✕</button><div class="p-6"><h2 class="text-xl font-extrabold mb-4">Mis Reuniones</h2><p class="text-sm text-gray-500">Próximamente.</p></div></div></div>
     <div id="popupAgenda" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupAgenda')"><div class="popup-caja"><button class="popup-cerrar" onclick="cerrarPopup('popupAgenda')">✕</button><div class="p-6"><h2 class="text-xl font-extrabold mb-4">Mi Agenda</h2><p class="text-sm text-gray-500">Próximamente.</p></div></div></div>
     <div id="popupDocumentacion" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupDocumentacion')"><div class="popup-caja"><button class="popup-cerrar" onclick="cerrarPopup('popupDocumentacion')">✕</button><div class="p-6"><h2 class="text-xl font-extrabold mb-4">Mi Documentación</h2><p class="text-sm text-gray-500">Próximamente.</p></div></div></div>
@@ -507,8 +560,91 @@
                 expositorActual.color = color;
             } catch (err) { console.error('Error al guardar color:', err); }
         }
+                 // 8. LÓGICA DE PRESENTACIONES
+        async function cargarPresentaciones() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('presentaciones_stand')
+                    .select('*')
+                    .eq('expositor_id', expositorActual.id)
+                    .order('fecha', { ascending: true })
+                    .order('hora', { ascending: true });
 
-        function abrirPopup(id) { document.getElementById(id).classList.add('activo'); }
+                if (error) throw error;
+                
+                const contenedor = document.getElementById('listaPresentaciones');
+                contenedor.innerHTML = '';
+
+                if (data.length === 0) {
+                    contenedor.innerHTML = '<p class="text-xs text-gray-500 text-center">No tenés presentaciones agendadas.</p>';
+                    return;
+                }
+
+                data.forEach(pres => {
+                    const fechaFormateada = new Date(pres.fecha + 'T00:00:00').toLocaleDateString('es-AR');
+                    const icono = pres.tipo === 'Sorteo' ? '🎁' : pres.tipo === 'Remate' ? '⚖️' : pres.tipo === 'Capacitacion' ? '🎓' : '📢';
+                    
+                    contenedor.innerHTML += `
+                        <div class="bg-white border border-slate-200 rounded-lg p-2 flex justify-between items-center shadow-sm">
+                            <div class="flex items-center gap-2">
+                                <span class="text-lg">${icono}</span>
+                                <div>
+                                    <p class="text-xs font-bold text-slate-800">${pres.titulo}</p>
+                                    <p class="text-[10px] text-slate-500">${fechaFormateada} a las ${pres.hora.substring(0,5)} hs ${pres.lugar ? '- ' + pres.lugar : ''}</p>
+                                </div>
+                            </div>
+                            <button onclick="eliminarPresentacion('${pres.id}')" class="text-red-500 hover:text-red-700 text-xs font-bold px-2 py-1 bg-red-50 rounded">Borrar</button>
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                console.error('Error al cargar presentaciones:', err);
+            }
+        }
+
+        async function guardarPresentacion(e) {
+            e.preventDefault();
+            const payload = {
+                expositor_id: expositorActual.id,
+                tipo: document.getElementById('presTipo').value,
+                titulo: document.getElementById('presTitulo').value.trim(),
+                descripcion: document.getElementById('presDescripcion').value.trim(),
+                fecha: document.getElementById('presFecha').value,
+                hora: document.getElementById('presHora').value,
+                lugar: document.getElementById('presLugar').value.trim()
+            };
+
+            try {
+                const { error } = await supabaseClient.from('presentaciones_stand').insert([payload]);
+                if (error) throw error;
+                
+                // Limpiamos el form
+                document.getElementById('presTitulo').value = '';
+                document.getElementById('presDescripcion').value = '';
+                document.getElementById('presLugar').value = '';
+                
+                await cargarPresentaciones(); // Recargamos la lista
+            } catch (err) {
+                alert('Error al guardar: ' + err.message);
+            }
+        }
+
+        async function eliminarPresentacion(id) {
+            if (!confirm('¿Seguro que querés eliminar esta presentación?')) return;
+            try {
+                const { error } = await supabaseClient.from('presentaciones_stand').delete().eq('id', id);
+                if (error) throw error;
+                await cargarPresentaciones();
+            } catch (err) {
+                alert('Error al eliminar: ' + err.message);
+            }
+        }
+                function abrirPopup(id) { 
+            document.getElementById(id).classList.add('activo'); 
+            if (id === 'popupPresentaciones') {
+                cargarPresentaciones();
+            }
+        }
         function cerrarPopup(id) { document.getElementById(id).classList.remove('activo'); }
         function cerrarSesion() { location.reload(); }
     </script>
