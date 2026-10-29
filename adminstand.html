@@ -410,7 +410,46 @@
             </div>
         </div>
     </div>
-    <div id="popupDocumentacion" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupDocumentacion')"><div class="popup-caja"><button class="popup-cerrar" onclick="cerrarPopup('popupDocumentacion')">✕</button><div class="p-6"><h2 class="text-xl font-extrabold mb-4">Mi Documentación</h2><p class="text-sm text-gray-500">Próximamente.</p></div></div></div>
+         <!-- POPUP: MI DOCUMENTACION -->
+    <div id="popupDocumentacion" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupDocumentacion')">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupDocumentacion')">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-4">📄 Mi Documentación</h2>
+                
+                <!-- Formulario de carga -->
+                <form onsubmit="guardarDocumento(event)" class="bg-slate-50 p-3 rounded-xl border border-slate-200 mb-4 space-y-2">
+                    <h3 class="text-xs font-bold text-slate-700 uppercase">Agregar Nuevo Documento</h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Título</label>
+                            <input type="text" id="docTitulo" required placeholder="Ej: Manual de Válvulas 2026" class="w-full px-2 py-1.5 border rounded-lg text-xs">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Tipo</label>
+                            <select id="docTipo" class="w-full px-2 py-1.5 border rounded-lg text-xs">
+                                <option value="Manual">Manual</option>
+                                <option value="Ficha Técnica">Ficha Técnica</option>
+                                <option value="Catálogo">Catálogo</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">URL del PDF (Google Drive, Dropbox, etc.)</label>
+                        <input type="url" id="docUrl" required placeholder="https://..." class="w-full px-2 py-1.5 border rounded-lg text-xs">
+                    </div>
+                    <button type="submit" class="w-full bg-verdeQR hover:bg-teal-700 text-white font-bold py-2 rounded-lg text-xs transition mt-1">Guardar Documento</button>
+                </form>
+
+                <!-- Lista de documentos -->
+                <h3 class="text-xs font-bold text-slate-700 uppercase mb-2">Documentos Cargados</h3>
+                <div id="listaDocumentos" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                    <p class="text-xs text-gray-500 text-center">Cargando...</p>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="popupImprimir" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupImprimir')"><div class="popup-caja"><button class="popup-cerrar" onclick="cerrarPopup('popupImprimir')">✕</button><div class="p-6"><h2 class="text-xl font-extrabold mb-4">Imprimir Códigos</h2><p class="text-sm text-gray-500">Próximamente.</p></div></div></div>
 
     <!-- SCRIPT -->
@@ -867,7 +906,80 @@
                 contenedor.innerHTML = '<p class="text-red-500 text-xs text-center">Error al cargar la agenda.</p>';
             }
         }
-                               function abrirPopup(id) { 
+                // 11. LÓGICA DE DOCUMENTACIÓN
+        async function cargarDocumentos() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('documentacion_stand')
+                    .select('*')
+                    .eq('expositor_id', expositorActual.id)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                
+                const contenedor = document.getElementById('listaDocumentos');
+                contenedor.innerHTML = '';
+
+                if (data.length === 0) {
+                    contenedor.innerHTML = '<p class="text-xs text-gray-500 text-center">No tenés documentos cargados.</p>';
+                    return;
+                }
+
+                data.forEach(doc => {
+                    contenedor.innerHTML += `
+                        <div class="bg-white border border-slate-200 rounded-lg p-2 flex justify-between items-center shadow-sm">
+                            <div class="flex items-center gap-2">
+                                <span class="text-lg">📄</span>
+                                <div>
+                                    <p class="text-xs font-bold text-slate-800">${doc.titulo}</p>
+                                    <p class="text-[10px] text-slate-500">${doc.tipo}</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-1">
+                                <a href="${doc.url_pdf}" target="_blank" class="text-blue-500 hover:text-blue-700 text-xs font-bold px-2 py-1 bg-blue-50 rounded">Ver</a>
+                                <button onclick="eliminarDocumento('${doc.id}')" class="text-red-500 hover:text-red-700 text-xs font-bold px-2 py-1 bg-red-50 rounded">Borrar</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                console.error('Error al cargar documentos:', err);
+            }
+        }
+
+        async function guardarDocumento(e) {
+            e.preventDefault();
+            const payload = {
+                expositor_id: expositorActual.id,
+                titulo: document.getElementById('docTitulo').value.trim(),
+                tipo: document.getElementById('docTipo').value,
+                url_pdf: document.getElementById('docUrl').value.trim()
+            };
+
+            try {
+                const { error } = await supabaseClient.from('documentacion_stand').insert([payload]);
+                if (error) throw error;
+                
+                document.getElementById('docTitulo').value = '';
+                document.getElementById('docUrl').value = '';
+                
+                await cargarDocumentos(); 
+            } catch (err) {
+                alert('Error al guardar: ' + err.message);
+            }
+        }
+
+        async function eliminarDocumento(id) {
+            if (!confirm('¿Seguro que querés eliminar este documento?')) return;
+            try {
+                const { error } = await supabaseClient.from('documentacion_stand').delete().eq('id', id);
+                if (error) throw error;
+                await cargarDocumentos();
+            } catch (err) {
+                alert('Error al eliminar: ' + err.message);
+            }
+        }
+                                     function abrirPopup(id) { 
             document.getElementById(id).classList.add('activo'); 
             if (id === 'popupPresentaciones') {
                 cargarPresentaciones();
@@ -875,6 +987,8 @@
                 cargarReuniones();
             } else if (id === 'popupAgenda') {
                 cargarAgenda();
+            } else if (id === 'popupDocumentacion') {
+                cargarDocumentos();
             }
         }
         function cerrarPopup(id) { document.getElementById(id).classList.remove('activo'); }
