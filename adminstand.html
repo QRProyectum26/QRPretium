@@ -39,6 +39,7 @@
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5); position: relative;
         }
+        .popup-caja-grande { max-width: 700px; }
         .popup-overlay.activo .popup-caja { transform: scale(1); opacity: 1; }
         .popup-cerrar {
             position: absolute; top: 12px; right: 12px; background: rgba(15, 23, 42, 0.1);
@@ -58,8 +59,10 @@
         .tabla-articulos td { padding: 10px; font-size: 13px; border-bottom: 1px solid #f1f5f9; }
         .tabla-articulos tr:hover td { background: #f8fafc; }
         .codigo-badge { background: #0f172a; color: white; font-family: 'Courier New', monospace; font-weight: 900; font-size: 14px; padding: 4px 10px; border-radius: 8px; border: 2px solid #f97316; display: inline-block; }
-        .color-swatch { width: 30px; height: 30px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: transform 0.2s; }
+        .color-swatch { width: 26px; height: 26px; border-radius: 6px; cursor: pointer; border: 2px solid transparent; transition: transform 0.2s; }
         .color-swatch:hover { transform: scale(1.1); }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #0D9488; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; margin: 0 auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen pb-12">
@@ -85,7 +88,6 @@
 
     <!-- SECCIÓN 2: PANEL -->
     <div id="seccionPanel" class="hidden">
-        <!-- HEADER -->
         <header id="headerAdmin" class="text-white shadow-lg rounded-b-2xl transition-colors duration-300" style="background-color: #334155;">
             <div class="max-w-5xl mx-auto p-4">
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
@@ -98,7 +100,7 @@
                         </div>
                     </div>
                     <div class="flex items-center justify-center gap-2 flex-wrap bg-slate-600/40 backdrop-blur-md p-1.5 rounded-xl border border-white/20">
-                        <button onclick="abrirPopupAyuda()" class="text-xs bg-black/20 hover:bg-black/40 text-emerald-400 font-bold px-2 py-1 rounded-lg">PANEL ADMIN ?</button>
+                        <button onclick="alert('Próximamente: Guía del Panel')" class="text-xs bg-black/20 hover:bg-black/40 text-emerald-400 font-bold px-2 py-1 rounded-lg">PANEL ADMIN ?</button>
                         <button onclick="cerrarSesion()" class="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-2 py-1 rounded-lg">Salir</button>
                         <div class="flex items-center gap-1 bg-black/20 p-1 rounded-lg">
                             <input type="color" id="inputColor" value="#334155" class="h-6 w-8 rounded cursor-pointer border-0 bg-transparent">
@@ -107,7 +109,6 @@
                     </div>
                 </div>
 
-                <!-- BARRA DE BOTONES DE ACCIÓN -->
                 <div class="bg-zinc-100/90 backdrop-blur-sm rounded-xl p-2 border border-white/20 flex flex-wrap gap-2 justify-center">
                     <button onclick="abrirPopup('popupOrganizacion')" class="btn-accion flex items-center gap-1">🏢 Mi Organización</button>
                     <button onclick="abrirPopupCategorias()" class="btn-accion flex items-center gap-1">📁 Mis Categorías</button>
@@ -121,7 +122,6 @@
         </header>
 
         <main class="max-w-5xl mx-auto px-4 mt-6">
-            <!-- TABLA DE PRODUCTOS -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-6">
                 <div class="p-4 border-b border-gray-100 flex justify-between items-center">
                     <h3 class="font-bold text-slate-800 text-sm">Productos en Exhibición</h3>
@@ -140,9 +140,7 @@
                                 <th class="text-right">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody id="tbodyProductos">
-                            <!-- Se llena por JS -->
-                        </tbody>
+                        <tbody id="tbodyProductos"></tbody>
                     </table>
                 </div>
             </div>
@@ -169,11 +167,11 @@
                             <input type="text" id="orgRubro" class="w-full px-3 py-2 border rounded-xl text-sm">
                         </div>
                     </div>
-                       <div>
+                    <div>
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Descripción de la Empresa</label>
-                        <textarea id="orgDescripcion" rows="3" placeholder="Ej: Fabricación de válvulas industriales de alta presión con tecnología alemana..." class="w-full px-3 py-2 border rounded-xl text-sm"></textarea>
+                        <textarea id="orgDescripcion" rows="3" class="w-full px-3 py-2 border rounded-xl text-sm"></textarea>
                     </div>
-                      <div>
+                    <div>
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Correo Electrónico</label>
                         <input type="email" id="orgMail" class="w-full px-3 py-2 border rounded-xl text-sm">
                     </div>
@@ -203,7 +201,8 @@
             </div>
         </div>
     </div>
-<!-- POPUP: MIS CATEGORIAS (Layout Completo) -->
+
+    <!-- POPUP: MIS CATEGORIAS (Layout Completo) -->
     <div id="popupCategorias" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupCategorias')">
         <div class="popup-caja popup-caja-grande">
             <button class="popup-cerrar" onclick="cerrarPopup('popupCategorias')">✕</button>
@@ -211,7 +210,6 @@
                 <h2 class="text-xl font-extrabold text-slate-800 mb-2">📁 Mis Categorías y Etiquetas</h2>
                 <p class="text-xs text-gray-500 mb-4">Configurá el layout de tu stand y el estilo visual de tus etiquetas.</p>
 
-                <!-- 1. LAYOUT DEL STAND -->
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-4">
                     <h3 class="text-sm font-bold text-slate-800 mb-3">📐 Layout de mi Stand</h3>
                     <div class="grid grid-cols-2 gap-3">
@@ -226,10 +224,8 @@
                     </div>
                 </div>
 
-                <!-- 2. ESTILO DE LAS ETIQUETAS -->
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-4">
                     <h3 class="text-sm font-bold text-slate-800 mb-3">🎨 Estilo de mis Etiquetas</h3>
-                    
                     <label class="block text-[11px] font-bold text-gray-600 uppercase mb-2">Color de Fondo</label>
                     <div id="paletaFondo" class="flex flex-wrap gap-1.5 mb-4"></div>
                     
@@ -253,15 +249,11 @@
                     </select>
                 </div>
 
-                <!-- 3. PREVIEW -->
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-4">
                     <h3 class="text-sm font-bold text-slate-800 mb-3">👁️ Preview de mi Etiqueta</h3>
-                    <div class="flex justify-center">
-                        <div id="previewEtiquetas" class="flex flex-wrap gap-2"></div>
-                    </div>
+                    <div class="flex justify-center"><div id="previewEtiquetas" class="flex flex-wrap gap-2"></div></div>
                 </div>
 
-                <!-- 4. TABLA DE CATEGORÍAS -->
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-4">
                     <h3 class="text-sm font-bold text-slate-800 mb-3">📋 Mis Categorías (Letras)</h3>
                     <div class="max-h-48 overflow-y-auto pr-2">
@@ -342,15 +334,12 @@
         </div>
     </div>
 
-    <!-- POPUPS PLACEHOLDER -->
-       <!-- POPUP: MIS PRESENTACIONES -->
+    <!-- POPUP: MIS PRESENTACIONES -->
     <div id="popupPresentaciones" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupPresentaciones')">
         <div class="popup-caja">
             <button class="popup-cerrar" onclick="cerrarPopup('popupPresentaciones')">✕</button>
             <div class="p-6">
                 <h2 class="text-xl font-extrabold text-slate-800 mb-4">📅 Mis Presentaciones</h2>
-                
-                <!-- Formulario de carga -->
                 <form onsubmit="guardarPresentacion(event)" class="bg-slate-50 p-3 rounded-xl border border-slate-200 mb-4 space-y-2">
                     <h3 class="text-xs font-bold text-slate-700 uppercase">Agregar Nueva Presentación</h3>
                     <div class="grid grid-cols-2 gap-2">
@@ -388,8 +377,6 @@
                     </div>
                     <button type="submit" class="w-full bg-verdeQR hover:bg-teal-700 text-white font-bold py-2 rounded-lg text-xs transition mt-1">Agregar a mi Agenda</button>
                 </form>
-
-                <!-- Lista de presentaciones -->
                 <h3 class="text-xs font-bold text-slate-700 uppercase mb-2">Mis Presentaciones Agendadas</h3>
                 <div id="listaPresentaciones" class="space-y-2 max-h-60 overflow-y-auto pr-1">
                     <p class="text-xs text-gray-500 text-center">Cargando...</p>
@@ -397,14 +384,13 @@
             </div>
         </div>
     </div>
-       <!-- POPUP: MIS REUNIONES -->
+
+    <!-- POPUP: MIS REUNIONES -->
     <div id="popupReuniones" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupReuniones')">
         <div class="popup-caja">
             <button class="popup-cerrar" onclick="cerrarPopup('popupReuniones')">✕</button>
             <div class="p-6">
                 <h2 class="text-xl font-extrabold text-slate-800 mb-4">🤝 Mis Reuniones</h2>
-                
-                <!-- Formulario de carga -->
                 <form onsubmit="guardarReunion(event)" class="bg-slate-50 p-3 rounded-xl border border-slate-200 mb-4 space-y-2">
                     <h3 class="text-xs font-bold text-slate-700 uppercase">Agendar Nueva Reunión</h3>
                     <div class="grid grid-cols-2 gap-2">
@@ -445,8 +431,6 @@
                     </div>
                     <button type="submit" class="w-full bg-verdeQR hover:bg-teal-700 text-white font-bold py-2 rounded-lg text-xs transition mt-1">Agendar Reunión</button>
                 </form>
-
-                <!-- Lista de reuniones -->
                 <h3 class="text-xs font-bold text-slate-700 uppercase mb-2">Mis Reuniones Agendadas</h3>
                 <div id="listaReuniones" class="space-y-2 max-h-60 overflow-y-auto pr-1">
                     <p class="text-xs text-gray-500 text-center">Cargando...</p>
@@ -454,28 +438,27 @@
             </div>
         </div>
     </div>
-     <!-- POPUP: MI AGENDA (Unificada) -->
+
+    <!-- POPUP: MI AGENDA (Unificada) -->
     <div id="popupAgenda" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupAgenda')">
         <div class="popup-caja">
             <button class="popup-cerrar" onclick="cerrarPopup('popupAgenda')">✕</button>
             <div class="p-6">
                 <h2 class="text-xl font-extrabold text-slate-800 mb-2">🗓️ Mi Agenda</h2>
                 <p class="text-xs text-gray-500 mb-4">Resumen cronológico de tus presentaciones y reuniones.</p>
-                
                 <div id="listaAgenda" class="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
                     <div class="text-center py-4"><div class="loader"></div></div>
                 </div>
             </div>
         </div>
     </div>
-         <!-- POPUP: MI DOCUMENTACION -->
+
+    <!-- POPUP: MI DOCUMENTACION -->
     <div id="popupDocumentacion" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupDocumentacion')">
         <div class="popup-caja">
             <button class="popup-cerrar" onclick="cerrarPopup('popupDocumentacion')">✕</button>
             <div class="p-6">
                 <h2 class="text-xl font-extrabold text-slate-800 mb-4">📄 Mi Documentación</h2>
-                
-                <!-- Formulario de carga -->
                 <form onsubmit="guardarDocumento(event)" class="bg-slate-50 p-3 rounded-xl border border-slate-200 mb-4 space-y-2">
                     <h3 class="text-xs font-bold text-slate-700 uppercase">Agregar Nuevo Documento</h3>
                     <div class="grid grid-cols-2 gap-2">
@@ -499,8 +482,6 @@
                     </div>
                     <button type="submit" class="w-full bg-verdeQR hover:bg-teal-700 text-white font-bold py-2 rounded-lg text-xs transition mt-1">Guardar Documento</button>
                 </form>
-
-                <!-- Lista de documentos -->
                 <h3 class="text-xs font-bold text-slate-700 uppercase mb-2">Documentos Cargados</h3>
                 <div id="listaDocumentos" class="space-y-2 max-h-60 overflow-y-auto pr-1">
                     <p class="text-xs text-gray-500 text-center">Cargando...</p>
@@ -508,9 +489,19 @@
             </div>
         </div>
     </div>
-    <div id="popupImprimir" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupImprimir')"><div class="popup-caja"><button class="popup-cerrar" onclick="cerrarPopup('popupImprimir')">✕</button><div class="p-6"><h2 class="text-xl font-extrabold mb-4">Imprimir Códigos</h2><p class="text-sm text-gray-500">Próximamente.</p></div></div></div>
 
-    <!-- SCRIPT -->
+    <!-- POPUP: IMPRIMIR (Placeholder) -->
+    <div id="popupImprimir" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupImprimir')">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupImprimir')">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold mb-4">🖨️ Imprimir Códigos</h2>
+                <p class="text-sm text-gray-500">Próximamente: Generador de PDF de etiquetas.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= SCRIPT ================= -->
     <script>
         const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
@@ -519,16 +510,18 @@
         let expositorActual = null;
         let cuitActual = '';
         let productosLista = [];
+        let categoriasTemporales = [];
+        let colorFondoSeleccionado = '#0f172a';
+        let colorTextoSeleccionado = '#ffffff';
+
         const PALETA_COLORES = [
             '#0f172a', '#1f2937', '#334155', '#64748b', '#cbd5e1', '#ffffff',
             '#7f1d1d', '#dc2626', '#f87171', '#78350f', '#c2410c', '#f97316',
             '#fb923c', '#facc15', '#65a30d', '#166534', '#22c55e', '#a3e635',
             '#06b6d4', '#2563eb', '#1e40af', '#4f46e5', '#7c3aed', '#ec4899'
         ];
-        let categoriasTemporales = [];
-        let colorFondoSeleccionado = '#0f172a';
-        let colorTextoSeleccionado = '#ffffff';
 
+        // 1. INICIAR SESIÓN
         async function iniciarSesion(e) {
             e.preventDefault();
             const cuit = document.getElementById('loginCuit').value.trim();
@@ -557,6 +550,7 @@
             }
         }
 
+        // 2. CARGAR PANEL
         async function cargarPanel() {
             document.getElementById('seccionLogin').classList.add('hidden');
             document.getElementById('seccionPanel').classList.remove('hidden');
@@ -568,9 +562,9 @@
             }
             cargarDatosOrganizacion();
             await cargarProductos();
-            renderizarPaletaColores();
         }
 
+        // 3. PRODUCTOS
         async function cargarProductos() {
             try {
                 const { data, error } = await supabaseClient
@@ -609,6 +603,7 @@
             });
         }
 
+        // 4. ORGANIZACIÓN
         function cargarDatosOrganizacion() {
             document.getElementById('orgNombre').value = expositorActual.empresa_stand || '';
             document.getElementById('orgRubro').value = expositorActual.rubro || '';
@@ -640,6 +635,7 @@
             } catch (err) { alert('Error al guardar: ' + err.message); }
         }
 
+        // 5. PRODUCTOS: ABRIR/GUARDAR
         function abrirPopupNuevoProducto() {
             document.getElementById('prodId').value = '';
             document.getElementById('prodCodigo').value = '';
@@ -709,356 +705,16 @@
             } catch (err) { alert('Error al eliminar: ' + err.message); }
         }
 
-        function renderizarPaletaColores() {
-            const contenedor = document.getElementById('paletaColores');
-            contenedor.innerHTML = '';
-            const colorActual = expositorActual.color || '#334155';
-            PALETA_COLORES.forEach(color => {
-                const div = document.createElement('div');
-                div.className = 'color-swatch';
-                div.style.backgroundColor = color;
-                if (color === colorActual) div.style.borderColor = '#f97316';
-                div.onclick = () => {
-                    document.getElementById('headerAdmin').style.backgroundColor = color;
-                    document.querySelectorAll('.color-swatch').forEach(el => el.style.borderColor = 'transparent');
-                    div.style.borderColor = '#f97316';
-                };
-                contenedor.appendChild(div);
-            });
-        }
-
-        async function guardarColor(color) {
-            document.getElementById('headerAdmin').style.backgroundColor = color;
-            try {
-                await supabaseClient.from('standargentina').update({ color: color }).eq('id', expositorActual.id);
-                expositorActual.color = color;
-            } catch (err) { console.error('Error al guardar color:', err); }
-        }
-                 // 8. LÓGICA DE PRESENTACIONES
-        async function cargarPresentaciones() {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('presentaciones_stand')
-                    .select('*')
-                    .eq('expositor_id', expositorActual.id)
-                    .order('fecha', { ascending: true })
-                    .order('hora', { ascending: true });
-
-                if (error) throw error;
-                
-                const contenedor = document.getElementById('listaPresentaciones');
-                contenedor.innerHTML = '';
-
-                if (data.length === 0) {
-                    contenedor.innerHTML = '<p class="text-xs text-gray-500 text-center">No tenés presentaciones agendadas.</p>';
-                    return;
-                }
-
-                data.forEach(pres => {
-                    const fechaFormateada = new Date(pres.fecha + 'T00:00:00').toLocaleDateString('es-AR');
-                    const icono = pres.tipo === 'Sorteo' ? '🎁' : pres.tipo === 'Remate' ? '⚖️' : pres.tipo === 'Capacitacion' ? '🎓' : '📢';
-                    
-                    contenedor.innerHTML += `
-                        <div class="bg-white border border-slate-200 rounded-lg p-2 flex justify-between items-center shadow-sm">
-                            <div class="flex items-center gap-2">
-                                <span class="text-lg">${icono}</span>
-                                <div>
-                                    <p class="text-xs font-bold text-slate-800">${pres.titulo}</p>
-                                    <p class="text-[10px] text-slate-500">${fechaFormateada} a las ${pres.hora.substring(0,5)} hs ${pres.lugar ? '- ' + pres.lugar : ''}</p>
-                                </div>
-                            </div>
-                            <button onclick="eliminarPresentacion('${pres.id}')" class="text-red-500 hover:text-red-700 text-xs font-bold px-2 py-1 bg-red-50 rounded">Borrar</button>
-                        </div>
-                    `;
-                });
-            } catch (err) {
-                console.error('Error al cargar presentaciones:', err);
-            }
-        }
-
-        async function guardarPresentacion(e) {
-            e.preventDefault();
-            const payload = {
-                expositor_id: expositorActual.id,
-                tipo: document.getElementById('presTipo').value,
-                titulo: document.getElementById('presTitulo').value.trim(),
-                descripcion: document.getElementById('presDescripcion').value.trim(),
-                fecha: document.getElementById('presFecha').value,
-                hora: document.getElementById('presHora').value,
-                lugar: document.getElementById('presLugar').value.trim()
-            };
-
-            try {
-                const { error } = await supabaseClient.from('presentaciones_stand').insert([payload]);
-                if (error) throw error;
-                
-                // Limpiamos el form
-                document.getElementById('presTitulo').value = '';
-                document.getElementById('presDescripcion').value = '';
-                document.getElementById('presLugar').value = '';
-                
-                await cargarPresentaciones(); // Recargamos la lista
-            } catch (err) {
-                alert('Error al guardar: ' + err.message);
-            }
-        }
-
-        async function eliminarPresentacion(id) {
-            if (!confirm('¿Seguro que querés eliminar esta presentación?')) return;
-            try {
-                const { error } = await supabaseClient.from('presentaciones_stand').delete().eq('id', id);
-                if (error) throw error;
-                await cargarPresentaciones();
-            } catch (err) {
-                alert('Error al eliminar: ' + err.message);
-            }
-        }
-                // 9. LÓGICA DE REUNIONES
-        async function cargarReuniones() {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('reuniones_stand')
-                    .select('*')
-                    .eq('expositor_id', expositorActual.id)
-                    .order('fecha', { ascending: true })
-                    .order('hora', { ascending: true });
-
-                if (error) throw error;
-                
-                const contenedor = document.getElementById('listaReuniones');
-                contenedor.innerHTML = '';
-
-                if (data.length === 0) {
-                    contenedor.innerHTML = '<p class="text-xs text-gray-500 text-center">No tenés reuniones agendadas.</p>';
-                    return;
-                }
-
-                data.forEach(reunion => {
-                    const fechaFormateada = new Date(reunion.fecha + 'T00:00:00').toLocaleDateString('es-AR');
-                    const colorEstado = reunion.estado === 'Confirmada' ? 'text-emerald-600 bg-emerald-50' : 'text-amber-600 bg-amber-50';
-                    
-                    contenedor.innerHTML += `
-                        <div class="bg-white border border-slate-200 rounded-lg p-2 flex justify-between items-center shadow-sm">
-                            <div class="flex items-start gap-2">
-                                <span class="text-lg">💼</span>
-                                <div>
-                                    <p class="text-xs font-bold text-slate-800">${reunion.titulo}</p>
-                                    <p class="text-[10px] text-slate-500">${fechaFormateada} a las ${reunion.hora.substring(0,5)} hs</p>
-                                    <p class="text-[10px] text-slate-400">${reunion.contraparte ? 'Con: ' + reunion.contraparte : ''}</p>
-                                    <span class="inline-block text-[9px] font-bold px-1.5 py-0.5 rounded mt-1 ${colorEstado}">${reunion.estado}</span>
-                                </div>
-                            </div>
-                            <button onclick="eliminarReunion('${reunion.id}')" class="text-red-500 hover:text-red-700 text-xs font-bold px-2 py-1 bg-red-50 rounded">Borrar</button>
-                        </div>
-                    `;
-                });
-            } catch (err) {
-                console.error('Error al cargar reuniones:', err);
-            }
-        }
-
-        async function guardarReunion(e) {
-            e.preventDefault();
-            const payload = {
-                expositor_id: expositorActual.id,
-                tipo: document.getElementById('reunionTipo').value,
-                titulo: document.getElementById('reunionTitulo').value.trim(),
-                contraparte: document.getElementById('reunionContraparte').value.trim(),
-                fecha: document.getElementById('reunionFecha').value,
-                hora: document.getElementById('reunionHora').value,
-                estado: document.getElementById('reunionEstado').value
-            };
-
-            try {
-                const { error } = await supabaseClient.from('reuniones_stand').insert([payload]);
-                if (error) throw error;
-                
-                document.getElementById('reunionTitulo').value = '';
-                document.getElementById('reunionContraparte').value = '';
-                
-                await cargarReuniones(); 
-            } catch (err) {
-                alert('Error al guardar: ' + err.message);
-            }
-        }
-
-        async function eliminarReunion(id) {
-            if (!confirm('¿Seguro que querés eliminar esta reunión?')) return;
-            try {
-                const { error } = await supabaseClient.from('reuniones_stand').delete().eq('id', id);
-                if (error) throw error;
-                await cargarReuniones();
-            } catch (err) {
-                alert('Error al eliminar: ' + err.message);
-            }
-        }
-                // 10. LÓGICA DE MI AGENDA (Unificada)
-        async function cargarAgenda() {
-            const contenedor = document.getElementById('listaAgenda');
-            contenedor.innerHTML = '<div class="text-center py-4"><div class="loader"></div></div>';
-
-            try {
-                // 1. Traemos presentaciones
-                const { data: presentaciones, error: errorPres } = await supabaseClient
-                    .from('presentaciones_stand')
-                    .select('*')
-                    .eq('expositor_id', expositorActual.id);
-                if (errorPres) throw errorPres;
-
-                // 2. Traemos reuniones
-                const { data: reuniones, error: errorReu } = await supabaseClient
-                    .from('reuniones_stand')
-                    .select('*')
-                    .eq('expositor_id', expositorActual.id);
-                if (errorReu) throw errorReu;
-
-                // 3. Unificamos y ordenamos
-                let eventos = [];
-                
-                presentaciones.forEach(p => {
-                    eventos.push({ ...p, categoria: 'Presentación', icono: p.tipo === 'Sorteo' ? '🎁' : p.tipo === 'Remate' ? '⚖️' : '🎓' });
-                });
-                
-                reuniones.forEach(r => {
-                    eventos.push({ ...r, categoria: 'Reunión', icono: '💼' });
-                });
-
-                // Ordenamos por fecha y hora (las más próximas primero)
-                eventos.sort((a, b) => {
-                    const fechaA = new Date(a.fecha + 'T' + a.hora);
-                    const fechaB = new Date(b.fecha + 'T' + b.hora);
-                    return fechaA - fechaB;
-                });
-
-                contenedor.innerHTML = '';
-
-                if (eventos.length === 0) {
-                    contenedor.innerHTML = '<p class="text-sm text-gray-500 text-center py-4">No tenés eventos agendados para esta feria.</p>';
-                    return;
-                }
-
-                // Agrupamos por fecha
-                let fechaActual = '';
-                eventos.forEach(evento => {
-                    const fechaFormateada = new Date(evento.fecha + 'T00:00:00').toLocaleDateString('es-AR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-                    
-                    if (fechaActual !== fechaFormateada) {
-                        fechaActual = fechaFormateada;
-                        contenedor.innerHTML += `<h3 class="text-xs font-bold text-slate-500 uppercase mt-4 mb-2 border-b border-slate-200 pb-1">${fechaActual}</h3>`;
-                    }
-
-                    const badgeColor = evento.categoria === 'Reunión' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700';
-
-                    contenedor.innerHTML += `
-                        <div class="flex items-center gap-3 bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
-                            <div class="text-2xl">${evento.icono}</div>
-                            <div class="flex-1">
-                                <div class="flex justify-between items-start">
-                                    <p class="font-bold text-slate-800 text-sm">${evento.titulo}</p>
-                                    <span class="text-[10px] font-black text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded">${evento.hora.substring(0,5)} hs</span>
-                                </div>
-                                <div class="flex items-center gap-2 mt-1">
-                                    <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${badgeColor}">${evento.categoria}</span>
-                                    ${evento.lugar ? `<span class="text-[10px] text-slate-500">📍 ${evento.lugar}</span>` : ''}
-                                    ${evento.contraparte ? `<span class="text-[10px] text-slate-500">👤 ${evento.contraparte}</span>` : ''}
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-
-            } catch (err) {
-                console.error('Error al cargar agenda:', err);
-                contenedor.innerHTML = '<p class="text-red-500 text-xs text-center">Error al cargar la agenda.</p>';
-            }
-        }
-                // 11. LÓGICA DE DOCUMENTACIÓN
-        async function cargarDocumentos() {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('documentacion_stand')
-                    .select('*')
-                    .eq('expositor_id', expositorActual.id)
-                    .order('created_at', { ascending: false });
-
-                if (error) throw error;
-                
-                const contenedor = document.getElementById('listaDocumentos');
-                contenedor.innerHTML = '';
-
-                if (data.length === 0) {
-                    contenedor.innerHTML = '<p class="text-xs text-gray-500 text-center">No tenés documentos cargados.</p>';
-                    return;
-                }
-
-                data.forEach(doc => {
-                    contenedor.innerHTML += `
-                        <div class="bg-white border border-slate-200 rounded-lg p-2 flex justify-between items-center shadow-sm">
-                            <div class="flex items-center gap-2">
-                                <span class="text-lg">📄</span>
-                                <div>
-                                    <p class="text-xs font-bold text-slate-800">${doc.titulo}</p>
-                                    <p class="text-[10px] text-slate-500">${doc.tipo}</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-1">
-                                <a href="${doc.url_pdf}" target="_blank" class="text-blue-500 hover:text-blue-700 text-xs font-bold px-2 py-1 bg-blue-50 rounded">Ver</a>
-                                <button onclick="eliminarDocumento('${doc.id}')" class="text-red-500 hover:text-red-700 text-xs font-bold px-2 py-1 bg-red-50 rounded">Borrar</button>
-                            </div>
-                        </div>
-                    `;
-                });
-            } catch (err) {
-                console.error('Error al cargar documentos:', err);
-            }
-        }
-
-        async function guardarDocumento(e) {
-            e.preventDefault();
-            const payload = {
-                expositor_id: expositorActual.id,
-                titulo: document.getElementById('docTitulo').value.trim(),
-                tipo: document.getElementById('docTipo').value,
-                url_pdf: document.getElementById('docUrl').value.trim()
-            };
-
-            try {
-                const { error } = await supabaseClient.from('documentacion_stand').insert([payload]);
-                if (error) throw error;
-                
-                document.getElementById('docTitulo').value = '';
-                document.getElementById('docUrl').value = '';
-                
-                await cargarDocumentos(); 
-            } catch (err) {
-                alert('Error al guardar: ' + err.message);
-            }
-        }
-
-        async function eliminarDocumento(id) {
-            if (!confirm('¿Seguro que querés eliminar este documento?')) return;
-            try {
-                const { error } = await supabaseClient.from('documentacion_stand').delete().eq('id', id);
-                if (error) throw error;
-                await cargarDocumentos();
-            } catch (err) {
-                alert('Error al eliminar: ' + err.message);
-            }
-        }
-                // 13. LÓGICA DE CATEGORÍAS Y LAYOUT COMPLETO
+        // 6. CATEGORÍAS Y LAYOUT
         function abrirPopupCategorias() {
             abrirPopup('popupCategorias');
-            
-            // Cargar datos guardados
             categoriasTemporales = expositorActual.categorias || [];
             document.getElementById('layoutFilas').value = expositorActual.filas_vidriera || 5;
             document.getElementById('layoutColumnas').value = expositorActual.columnas_vidriera || 5;
             document.getElementById('layoutTipografia').value = expositorActual.tipografia_etiqueta || 'Inter';
             document.getElementById('layoutBorde').value = expositorActual.estilo_borde || 'sin_borde';
-            
             colorFondoSeleccionado = expositorActual.color_etiqueta_fondo || '#0f172a';
             colorTextoSeleccionado = expositorActual.color_etiqueta_texto || '#ffffff';
-
             renderizarTablaCategorias();
             renderizarPaletas();
             actualizarPreviewEtiquetas();
@@ -1068,7 +724,6 @@
             const tbody = document.getElementById('tbodyCategorias');
             tbody.innerHTML = '';
             const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-            
             letras.forEach(letra => {
                 const cat = categoriasTemporales.find(c => c.letra === letra);
                 const tipo = cat ? cat.tipo_producto : '';
@@ -1087,11 +742,8 @@
 
         function actualizarCategoria(letra, valor) {
             const index = categoriasTemporales.findIndex(c => c.letra === letra);
-            if (index !== -1) {
-                categoriasTemporales[index].tipo_producto = valor;
-            } else {
-                categoriasTemporales.push({ letra: letra, tipo_producto: valor });
-            }
+            if (index !== -1) categoriasTemporales[index].tipo_producto = valor;
+            else categoriasTemporales.push({ letra: letra, tipo_producto: valor });
         }
 
         function renderizarPaletas() {
@@ -1125,14 +777,11 @@
         function actualizarPreviewEtiquetas() {
             const cont = document.getElementById('previewEtiquetas');
             if (!cont) return;
-
             const tipografia = document.getElementById('layoutTipografia').value || 'Inter';
             const borde = document.getElementById('layoutBorde').value || 'sin_borde';
             const codigoEjemplo = 'H03';
-
             cont.innerHTML = '';
             cont.className = 'flex justify-center items-center flex-wrap';
-
             const etiqueta = document.createElement('div');
             etiqueta.style.backgroundColor = colorFondoSeleccionado;
             etiqueta.style.color = colorTextoSeleccionado;
@@ -1147,13 +796,11 @@
             etiqueta.style.letterSpacing = '2px';
             etiqueta.style.borderRadius = '8px';
             etiqueta.style.boxShadow = '0 4px 10px rgba(0,0,0,0.2)';
-
             const colorBorde = colorTextoSeleccionado;
             if (borde === 'simple') etiqueta.style.border = `3px solid ${colorBorde}`;
             else if (borde === 'doble') etiqueta.style.border = `3px double ${colorBorde}`;
             else if (borde === 'punteado') etiqueta.style.border = `3px dashed ${colorBorde}`;
             else etiqueta.style.border = 'none';
-
             etiqueta.innerText = codigoEjemplo;
             cont.appendChild(etiqueta);
         }
@@ -1163,24 +810,17 @@
             const columnas = parseInt(document.getElementById('layoutColumnas').value) || 5;
             const tipografia = document.getElementById('layoutTipografia').value;
             const estiloBorde = document.getElementById('layoutBorde').value;
-
             try {
-                const { error } = await supabaseClient
-                    .from('standargentina')
-                    .update({ 
-                        categorias: categoriasTemporales,
-                        filas_vidriera: filas,
-                        columnas_vidriera: columnas,
-                        tipografia_etiqueta: tipografia,
-                        estilo_borde: estiloBorde,
-                        color_etiqueta_fondo: colorFondoSeleccionado,
-                        color_etiqueta_texto: colorTextoSeleccionado
-                    })
-                    .eq('id', expositorActual.id);
-                
+                const { error } = await supabaseClient.from('standargentina').update({ 
+                    categorias: categoriasTemporales,
+                    filas_vidriera: filas,
+                    columnas_vidriera: columnas,
+                    tipografia_etiqueta: tipografia,
+                    estilo_borde: estiloBorde,
+                    color_etiqueta_fondo: colorFondoSeleccionado,
+                    color_etiqueta_texto: colorTextoSeleccionado
+                }).eq('id', expositorActual.id);
                 if (error) throw error;
-                
-                // Actualizar datos locales
                 expositorActual.categorias = categoriasTemporales;
                 expositorActual.filas_vidriera = filas;
                 expositorActual.columnas_vidriera = columnas;
@@ -1188,27 +828,255 @@
                 expositorActual.estilo_borde = estiloBorde;
                 expositorActual.color_etiqueta_fondo = colorFondoSeleccionado;
                 expositorActual.color_etiqueta_texto = colorTextoSeleccionado;
-
                 cerrarPopup('popupCategorias');
-                alert('Configuración del stand guardada con éxito');
+                alert('Configuración guardada con éxito');
+            } catch (err) { alert('Error al guardar: ' + err.message); }
+        }
+
+        // 7. PRESENTACIONES
+        async function cargarPresentaciones() {
+            try {
+                const { data, error } = await supabaseClient.from('presentaciones_stand').select('*').eq('expositor_id', expositorActual.id).order('fecha', { ascending: true }).order('hora', { ascending: true });
+                if (error) throw error;
+                const contenedor = document.getElementById('listaPresentaciones');
+                contenedor.innerHTML = '';
+                if (data.length === 0) {
+                    contenedor.innerHTML = '<p class="text-xs text-gray-500 text-center">No tenés presentaciones agendadas.</p>';
+                    return;
+                }
+                data.forEach(pres => {
+                    const fechaFormateada = new Date(pres.fecha + 'T00:00:00').toLocaleDateString('es-AR');
+                    const icono = pres.tipo === 'Sorteo' ? '🎁' : pres.tipo === 'Remate' ? '⚖️' : pres.tipo === 'Capacitacion' ? '🎓' : '📢';
+                    contenedor.innerHTML += `
+                        <div class="bg-white border border-slate-200 rounded-lg p-2 flex justify-between items-center shadow-sm">
+                            <div class="flex items-center gap-2">
+                                <span class="text-lg">${icono}</span>
+                                <div>
+                                    <p class="text-xs font-bold text-slate-800">${pres.titulo}</p>
+                                    <p class="text-[10px] text-slate-500">${fechaFormateada} a las ${pres.hora.substring(0,5)} hs ${pres.lugar ? '- ' + pres.lugar : ''}</p>
+                                </div>
+                            </div>
+                            <button onclick="eliminarPresentacion('${pres.id}')" class="text-red-500 hover:text-red-700 text-xs font-bold px-2 py-1 bg-red-50 rounded">Borrar</button>
+                        </div>
+                    `;
+                });
+            } catch (err) { console.error('Error al cargar presentaciones:', err); }
+        }
+
+        async function guardarPresentacion(e) {
+            e.preventDefault();
+            const payload = {
+                expositor_id: expositorActual.id,
+                tipo: document.getElementById('presTipo').value,
+                titulo: document.getElementById('presTitulo').value.trim(),
+                descripcion: document.getElementById('presDescripcion').value.trim(),
+                fecha: document.getElementById('presFecha').value,
+                hora: document.getElementById('presHora').value,
+                lugar: document.getElementById('presLugar').value.trim()
+            };
+            try {
+                const { error } = await supabaseClient.from('presentaciones_stand').insert([payload]);
+                if (error) throw error;
+                document.getElementById('presTitulo').value = '';
+                document.getElementById('presDescripcion').value = '';
+                document.getElementById('presLugar').value = '';
+                await cargarPresentaciones(); 
+            } catch (err) { alert('Error al guardar: ' + err.message); }
+        }
+
+        async function eliminarPresentacion(id) {
+            if (!confirm('¿Seguro que querés eliminar esta presentación?')) return;
+            try {
+                const { error } = await supabaseClient.from('presentaciones_stand').delete().eq('id', id);
+                if (error) throw error;
+                await cargarPresentaciones();
+            } catch (err) { alert('Error al eliminar: ' + err.message); }
+        }
+
+        // 8. REUNIONES
+        async function cargarReuniones() {
+            try {
+                const { data, error } = await supabaseClient.from('reuniones_stand').select('*').eq('expositor_id', expositorActual.id).order('fecha', { ascending: true }).order('hora', { ascending: true });
+                if (error) throw error;
+                const contenedor = document.getElementById('listaReuniones');
+                contenedor.innerHTML = '';
+                if (data.length === 0) {
+                    contenedor.innerHTML = '<p class="text-xs text-gray-500 text-center">No tenés reuniones agendadas.</p>';
+                    return;
+                }
+                data.forEach(reunion => {
+                    const fechaFormateada = new Date(reunion.fecha + 'T00:00:00').toLocaleDateString('es-AR');
+                    const colorEstado = reunion.estado === 'Confirmada' ? 'text-emerald-600 bg-emerald-50' : 'text-amber-600 bg-amber-50';
+                    contenedor.innerHTML += `
+                        <div class="bg-white border border-slate-200 rounded-lg p-2 flex justify-between items-center shadow-sm">
+                            <div class="flex items-start gap-2">
+                                <span class="text-lg">💼</span>
+                                <div>
+                                    <p class="text-xs font-bold text-slate-800">${reunion.titulo}</p>
+                                    <p class="text-[10px] text-slate-500">${fechaFormateada} a las ${reunion.hora.substring(0,5)} hs</p>
+                                    <p class="text-[10px] text-slate-400">${reunion.contraparte ? 'Con: ' + reunion.contraparte : ''}</p>
+                                    <span class="inline-block text-[9px] font-bold px-1.5 py-0.5 rounded mt-1 ${colorEstado}">${reunion.estado}</span>
+                                </div>
+                            </div>
+                            <button onclick="eliminarReunion('${reunion.id}')" class="text-red-500 hover:text-red-700 text-xs font-bold px-2 py-1 bg-red-50 rounded">Borrar</button>
+                        </div>
+                    `;
+                });
+            } catch (err) { console.error('Error al cargar reuniones:', err); }
+        }
+
+        async function guardarReunion(e) {
+            e.preventDefault();
+            const payload = {
+                expositor_id: expositorActual.id,
+                tipo: document.getElementById('reunionTipo').value,
+                titulo: document.getElementById('reunionTitulo').value.trim(),
+                contraparte: document.getElementById('reunionContraparte').value.trim(),
+                fecha: document.getElementById('reunionFecha').value,
+                hora: document.getElementById('reunionHora').value,
+                estado: document.getElementById('reunionEstado').value
+            };
+            try {
+                const { error } = await supabaseClient.from('reuniones_stand').insert([payload]);
+                if (error) throw error;
+                document.getElementById('reunionTitulo').value = '';
+                document.getElementById('reunionContraparte').value = '';
+                await cargarReuniones(); 
+            } catch (err) { alert('Error al guardar: ' + err.message); }
+        }
+
+        async function eliminarReunion(id) {
+            if (!confirm('¿Seguro que querés eliminar esta reunión?')) return;
+            try {
+                const { error } = await supabaseClient.from('reuniones_stand').delete().eq('id', id);
+                if (error) throw error;
+                await cargarReuniones();
+            } catch (err) { alert('Error al eliminar: ' + err.message); }
+        }
+
+        // 9. AGENDA UNIFICADA
+        async function cargarAgenda() {
+            const contenedor = document.getElementById('listaAgenda');
+            contenedor.innerHTML = '<div class="text-center py-4"><div class="loader"></div></div>';
+            try {
+                const { data: presentaciones } = await supabaseClient.from('presentaciones_stand').select('*').eq('expositor_id', expositorActual.id);
+                const { data: reuniones } = await supabaseClient.from('reuniones_stand').select('*').eq('expositor_id', expositorActual.id);
+                let eventos = [];
+                presentaciones.forEach(p => eventos.push({ ...p, categoria: 'Presentación', icono: p.tipo === 'Sorteo' ? '🎁' : p.tipo === 'Remate' ? '⚖️' : '🎓' }));
+                reuniones.forEach(r => eventos.push({ ...r, categoria: 'Reunión', icono: '💼' }));
+                eventos.sort((a, b) => new Date(a.fecha + 'T' + a.hora) - new Date(b.fecha + 'T' + b.hora));
+                contenedor.innerHTML = '';
+                if (eventos.length === 0) {
+                    contenedor.innerHTML = '<p class="text-sm text-gray-500 text-center py-4">No tenés eventos agendados para esta feria.</p>';
+                    return;
+                }
+                let fechaActual = '';
+                eventos.forEach(evento => {
+                    const fechaFormateada = new Date(evento.fecha + 'T00:00:00').toLocaleDateString('es-AR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                    if (fechaActual !== fechaFormateada) {
+                        fechaActual = fechaFormateada;
+                        contenedor.innerHTML += `<h3 class="text-xs font-bold text-slate-500 uppercase mt-4 mb-2 border-b border-slate-200 pb-1">${fechaActual}</h3>`;
+                    }
+                    const badgeColor = evento.categoria === 'Reunión' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700';
+                    contenedor.innerHTML += `
+                        <div class="flex items-center gap-3 bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
+                            <div class="text-2xl">${evento.icono}</div>
+                            <div class="flex-1">
+                                <div class="flex justify-between items-start">
+                                    <p class="font-bold text-slate-800 text-sm">${evento.titulo}</p>
+                                    <span class="text-[10px] font-black text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded">${evento.hora.substring(0,5)} hs</span>
+                                </div>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${badgeColor}">${evento.categoria}</span>
+                                    ${evento.lugar ? `<span class="text-[10px] text-slate-500">📍 ${evento.lugar}</span>` : ''}
+                                    ${evento.contraparte ? `<span class="text-[10px] text-slate-500">👤 ${evento.contraparte}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
             } catch (err) {
-                alert('Error al guardar: ' + err.message);
+                console.error('Error al cargar agenda:', err);
+                contenedor.innerHTML = '<p class="text-red-500 text-xs text-center">Error al cargar la agenda.</p>';
             }
         }
-                                     function abrirPopup(id) { 
+
+        // 10. DOCUMENTACIÓN
+        async function cargarDocumentos() {
+            try {
+                const { data, error } = await supabaseClient.from('documentacion_stand').select('*').eq('expositor_id', expositorActual.id).order('created_at', { ascending: false });
+                if (error) throw error;
+                const contenedor = document.getElementById('listaDocumentos');
+                contenedor.innerHTML = '';
+                if (data.length === 0) {
+                    contenedor.innerHTML = '<p class="text-xs text-gray-500 text-center">No tenés documentos cargados.</p>';
+                    return;
+                }
+                data.forEach(doc => {
+                    contenedor.innerHTML += `
+                        <div class="bg-white border border-slate-200 rounded-lg p-2 flex justify-between items-center shadow-sm">
+                            <div class="flex items-center gap-2">
+                                <span class="text-lg">📄</span>
+                                <div>
+                                    <p class="text-xs font-bold text-slate-800">${doc.titulo}</p>
+                                    <p class="text-[10px] text-slate-500">${doc.tipo}</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-1">
+                                <a href="${doc.url_pdf}" target="_blank" class="text-blue-500 hover:text-blue-700 text-xs font-bold px-2 py-1 bg-blue-50 rounded">Ver</a>
+                                <button onclick="eliminarDocumento('${doc.id}')" class="text-red-500 hover:text-red-700 text-xs font-bold px-2 py-1 bg-red-50 rounded">Borrar</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (err) { console.error('Error al cargar documentos:', err); }
+        }
+
+        async function guardarDocumento(e) {
+            e.preventDefault();
+            const payload = {
+                expositor_id: expositorActual.id,
+                titulo: document.getElementById('docTitulo').value.trim(),
+                tipo: document.getElementById('docTipo').value,
+                url_pdf: document.getElementById('docUrl').value.trim()
+            };
+            try {
+                const { error } = await supabaseClient.from('documentacion_stand').insert([payload]);
+                if (error) throw error;
+                document.getElementById('docTitulo').value = '';
+                document.getElementById('docUrl').value = '';
+                await cargarDocumentos(); 
+            } catch (err) { alert('Error al guardar: ' + err.message); }
+        }
+
+        async function eliminarDocumento(id) {
+            if (!confirm('¿Seguro que querés eliminar este documento?')) return;
+            try {
+                const { error } = await supabaseClient.from('documentacion_stand').delete().eq('id', id);
+                if (error) throw error;
+                await cargarDocumentos();
+            } catch (err) { alert('Error al eliminar: ' + err.message); }
+        }
+
+        // 11. FUNCIONES DE UI Y COLOR
+        function abrirPopup(id) { 
             document.getElementById(id).classList.add('activo'); 
-            if (id === 'popupPresentaciones') {
-                cargarPresentaciones();
-            } else if (id === 'popupReuniones') {
-                cargarReuniones();
-            } else if (id === 'popupAgenda') {
-                cargarAgenda();
-            } else if (id === 'popupDocumentacion') {
-                cargarDocumentos();
-            }
+            if (id === 'popupPresentaciones') cargarPresentaciones();
+            else if (id === 'popupReuniones') cargarReuniones();
+            else if (id === 'popupAgenda') cargarAgenda();
+            else if (id === 'popupDocumentacion') cargarDocumentos();
         }
+        
         function cerrarPopup(id) { document.getElementById(id).classList.remove('activo'); }
         function cerrarSesion() { location.reload(); }
+        
+        async function guardarColor(color) {
+            document.getElementById('headerAdmin').style.backgroundColor = color;
+            try {
+                await supabaseClient.from('standargentina').update({ color: color }).eq('id', expositorActual.id);
+                expositorActual.color = color;
+            } catch (err) { console.error('Error al guardar color:', err); }
+        }
     </script>
 </body>
 </html>
