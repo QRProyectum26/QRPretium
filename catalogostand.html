@@ -48,9 +48,7 @@
             min-width: 180px;
             z-index: 100;
         }
-        @media (max-width: 640px) {
-            .submenu-popup { left: 50%; }
-        }
+        @media (max-width: 640px) { .submenu-popup { left: 50%; } }
         .submenu-popup.activo { display: block; }
 
         /* Colores Menú */
@@ -69,6 +67,44 @@
         /* Spinner de carga */
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid #0D9488; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 0 auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Popups de Etiqueta */
+        .popup-overlay {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+            z-index: 200; display: flex; align-items: center; justify-content: center;
+            padding: 16px; opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+        }
+        .popup-overlay.activo { opacity: 1; pointer-events: auto; }
+        .popup-caja {
+            background: #ffffff; border-radius: 20px; max-width: 480px; width: 100%;
+            max-height: 90vh; overflow-y: auto; transform: scale(0.9); opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5); position: relative;
+        }
+        .popup-overlay.activo .popup-caja { transform: scale(1); opacity: 1; }
+        .popup-cerrar {
+            position: absolute; top: 10px; right: 10px; background: rgba(15, 23, 42, 0.08);
+            border: none; width: 30px; height: 30px; border-radius: 50%; font-size: 16px;
+            font-weight: 700; color: #334155; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; transition: all 0.2s ease; z-index: 10;
+        }
+        .popup-cerrar:hover { background: rgba(15, 23, 42, 0.18); transform: rotate(90deg); }
+
+        /* Estilos de etiqueta específicos */
+        .codigo-destacado {
+            background: #27272a; color: #ffffff; font-family: 'Courier New', monospace;
+            font-weight: 900; font-size: 26px; padding: 10px 22px; border-radius: 10px;
+            border: 2px solid #f97316; display: inline-block; letter-spacing: 2px;
+        }
+        .tabla-especificaciones {
+            width: 100%; border-collapse: collapse; border-radius: 12px;
+            overflow: hidden; border: 1px solid #e2e8f0;
+        }
+        .tabla-especificaciones tr:nth-child(odd) { background: #f8fafc; }
+        .tabla-especificaciones tr:nth-child(even) { background: #ffffff; }
+        .tabla-especificaciones td { padding: 10px 14px; font-size: 13px; border-bottom: 1px solid #e2e8f0; }
+        .tabla-especificaciones td:first-child { font-weight: 700; color: #475569; width: 40%; }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans min-h-screen" onclick="cerrarMenuSiClickFuera(event)">
@@ -77,33 +113,28 @@
     <header id="headerPrincipal" class="bg-slate-900 text-white sticky top-0 z-50 shadow-md transition-all duration-300">
         <div class="max-w-xl mx-auto px-4 py-3 flex items-start justify-between relative">
             
-            <!-- LADO IZQUIERDO: LOGOS Y DATOS -->
             <div class="flex flex-col z-10 w-full pr-20"> 
-                
-                <!-- FILA 1: Logo Feria y Nombre Feria (Hardcodeado por ahora) -->
+                <!-- Feria -->
                 <div class="flex items-center gap-1.5 mb-1">
                     <img src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Logo Feria" class="w-4 h-4 rounded bg-white p-0.5 object-contain">
                     <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Expo ConstruTech 2026</span>
                 </div>
 
-                <!-- FILA 2: Link del Pabellón -->
+                <!-- Pabellón -->
                 <div id="contenedorPabellonHeader" class="hidden mb-1 flex-col items-center justify-center text-center">
                     <div class="flex items-center justify-center gap-1">
                         <span id="flechaVolverPabellon" class="hidden text-verdeQR text-xs">←</span>
-                        <a href="#" onclick="volverAlPabellonDesdeHeader(event)" id="linkPabellonHeader" class="text-xs font-black text-verdeQR uppercase hover:underline cursor-pointer">
-                            Pabellón
-                        </a>
+                        <a href="#" onclick="volverAlPabellonDesdeHeader(event)" id="linkPabellonHeader" class="text-xs font-black text-verdeQR uppercase hover:underline cursor-pointer">Pabellón</a>
                     </div>
                     <span id="descPabellonHeader" class="text-[11px] text-slate-300 italic mt-0.5"></span>
                 </div>
 
-                <!-- FILA 3: Logo y Nombre del Expositor -->
+                <!-- Expositor -->
                 <div id="contenedorExpositor" class="hidden items-start gap-2 mt-1">
                     <div class="flex flex-col items-center flex-shrink-0">
                         <img id="imgLogoExpositor" src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Logo Empresa" class="w-8 h-8 rounded bg-white p-0.5 object-contain">
                         <span id="txtCodigoStand" class="text-[11px] text-slate-300 font-mono font-bold mt-1">B3-000</span>
                     </div>
-                    
                     <div class="flex flex-col leading-tight w-full">
                         <span id="txtNombreExpositor" class="font-black text-sm uppercase text-white truncate">Cargando...</span>
                         <button onclick="alert('Abre modal con info de la empresa')" class="text-[9px] text-slate-400 font-bold hover:text-white transition mt-0.5 text-left">+ Info Empresa</button>
@@ -112,12 +143,10 @@
                 </div>
             </div>
 
-            <!-- LADO DERECHO: NEX -->
+            <!-- NEX -->
             <div class="absolute right-4 top-3 flex-shrink-0 z-10">
                 <div id="contenedorNex" onclick="toggleGloboNex(event)" class="tarjeta-nex w-24 h-32 bg-slate-950 border-2 border-orange-500 rounded-xl overflow-hidden cursor-pointer relative group flex flex-col justify-between p-1">
-                    <div class="bg-orange-500 text-white font-black text-[8px] tracking-wider text-center py-0.5 px-1 rounded uppercase z-10">
-                        NEX • Asesor IA
-                    </div>
+                    <div class="bg-orange-500 text-white font-black text-[8px] tracking-wider text-center py-0.5 px-1 rounded uppercase z-10">NEX • Asesor IA</div>
                     <div class="w-full h-20 overflow-hidden rounded relative my-auto">
                         <img id="avatarNexImg" src="stand_ia/nex.jpg" alt="NEX Robot" class="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-105">
                     </div>
@@ -125,27 +154,22 @@
                         <span>🎙️</span> <span>Consultar</span>
                     </div>
                 </div>
-
                 <div id="globoNex" class="globo-nex hidden bg-white border-2 border-orange-500 rounded-xl p-3 shadow-xl" onclick="event.stopPropagation()">
                     <div class="flex justify-between items-center mb-1">
                         <span class="text-[10px] font-bold text-orange-600">🤖 NEX Asesor</span>
                         <button onclick="toggleGloboNex(event)" class="text-gray-400 font-bold text-xs">✕</button>
                     </div>
-                    <p id="textoNex" class="text-xs text-gray-700 leading-tight mb-2">¡Hola! Cargando datos de la feria...</p>
-                    
-                    <button id="btnNexVolver" onclick="volverAlPabellonDesdeHeader(event)" class="hidden w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] py-1.5 rounded transition border border-slate-300">
-                        ← Volver a los Stands del Pabellón
-                    </button>
+                    <p id="textoNex" class="text-xs text-gray-700 leading-tight mb-2">¡Hola! Cargando datos...</p>
+                    <button id="btnNexVolver" onclick="volverAlPabellonDesdeHeader(event)" class="hidden w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] py-1.5 rounded transition border border-slate-300">← Volver a los Stands</button>
                 </div>
             </div>
         </div>
 
-        <!-- BARRA DE MENÚ HAMBURGUESA -->
+        <!-- BARRA DE MENÚ -->
         <div class="bg-slate-800 border-t border-slate-700 relative">
             <div class="max-w-xl mx-auto px-4 py-0.5 flex items-center justify-between relative z-20">
                 <div class="flex items-center gap-3">
                     <button onclick="irAlPredio()" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-naranja font-bold px-2 py-0.5 rounded border border-slate-600 transition">Predio</button>
-                    
                     <button onclick="toggleMenu(event)" id="btnHamburguesa" class="flex items-center gap-1.5 text-xs font-bold text-white hover:text-verdeQR transition py-0.5">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                         Menú Feria
@@ -153,19 +177,70 @@
                 </div>
             </div>
 
-            <!-- MENÚ DESPLEGABLE -->
+            <!-- MENÚ DESPLEGABLE COMPLETO -->
             <div id="menuDesplegable" class="menu-desplegable absolute top-full left-0 w-full shadow-2xl z-50 max-h-[70vh] overflow-y-auto border-b border-slate-300" onclick="event.stopPropagation()">
                 <div class="max-w-xl mx-auto p-2 space-y-1 text-sm font-bold">
-                    <!-- (El código del menú hamburguesa se mantiene igual, lo omito por brevedad) -->
                     <div class="menu-item w-full text-left p-2 rounded flex justify-between items-center cursor-pointer" onclick="toggleSubmenu(event, 'submenuMapa')">
                         🗺️ Mapa <span class="text-[10px]">▶</span>
                         <div id="submenuMapa" class="submenu-popup">
                             <a href="#" onclick="seleccionarMenu('Acreditaciones')" class="submenu-item">Acreditaciones</a>
                             <a href="#" onclick="seleccionarMenu('Pabellones')" class="submenu-item">Pabellones</a>
+                            <a href="#" onclick="seleccionarMenu('Salones')" class="submenu-item">Salones</a>
+                            <a href="#" onclick="seleccionarMenu('Sanitarios')" class="submenu-item">Sanitarios</a>
+                            <a href="#" onclick="seleccionarMenu('Gastronomía')" class="submenu-item">Gastronomía</a>
                         </div>
                     </div>
                     <div class="menu-item w-full text-left p-2 rounded cursor-pointer" onclick="seleccionarMenu('Programa')">📅 Programa</div>
-                    <!-- ... resto de los menús ... -->
+                    <div class="menu-item w-full text-left p-2 rounded flex justify-between items-center cursor-pointer" onclick="toggleSubmenu(event, 'submenuSectores')">
+                        🏭 Sectores <span class="text-[10px]">▶</span>
+                        <div id="submenuSectores" class="submenu-popup">
+                            <a href="#" onclick="seleccionarMenu('Metalurgia')" class="submenu-item">Metalurgia</a>
+                            <a href="#" onclick="seleccionarMenu('Alimentos')" class="submenu-item">Alimentos</a>
+                            <a href="#" onclick="seleccionarMenu('Tecnología')" class="submenu-item">Tecnología</a>
+                            <a href="#" onclick="seleccionarMenu('Textil')" class="submenu-item">Textil</a>
+                        </div>
+                    </div>
+                    <div class="menu-item w-full text-left p-2 rounded flex justify-between items-center cursor-pointer" onclick="toggleSubmenu(event, 'submenuActividades')">
+                        🎓 Actividades <span class="text-[10px]">▶</span>
+                        <div id="submenuActividades" class="submenu-popup">
+                            <a href="#" onclick="seleccionarMenu('Cursos')" class="submenu-item">Cursos</a>
+                            <a href="#" onclick="seleccionarMenu('Jornadas')" class="submenu-item">Jornadas</a>
+                            <a href="#" onclick="seleccionarMenu('Ronda de Negocios')" class="submenu-item">Ronda de Negocios</a>
+                        </div>
+                    </div>
+                    <div class="menu-item w-full text-left p-2 rounded flex justify-between items-center cursor-pointer" onclick="toggleSubmenu(event, 'submenuEntretenimiento')">
+                        🎉 Entretenimiento <span class="text-[10px]">▶</span>
+                        <div id="submenuEntretenimiento" class="submenu-popup">
+                            <a href="#" onclick="seleccionarMenu('Bares')" class="submenu-item">Bares</a>
+                            <a href="#" onclick="seleccionarMenu('Boliches')" class="submenu-item">Boliches</a>
+                            <a href="#" onclick="seleccionarMenu('Show')" class="submenu-item">Show</a>
+                        </div>
+                    </div>
+                    <div class="menu-item w-full text-left p-2 rounded flex justify-between items-center cursor-pointer" onclick="toggleSubmenu(event, 'submenuEventos')">
+                        🎁 Eventos <span class="text-[10px]">▶</span>
+                        <div id="submenuEventos" class="submenu-popup">
+                            <a href="#" onclick="seleccionarMenu('Sorteos')" class="submenu-item">Sorteos</a>
+                            <a href="#" onclick="seleccionarMenu('Remates')" class="submenu-item">Remates</a>
+                            <a href="#" onclick="seleccionarMenu('Otros')" class="submenu-item">Otros</a>
+                        </div>
+                    </div>
+                    <div class="menu-item w-full text-left p-2 rounded flex justify-between items-center cursor-pointer" onclick="toggleSubmenu(event, 'submenuEmergencias')">
+                        🚨 Emergencias <span class="text-[10px]">▶</span>
+                        <div id="submenuEmergencias" class="submenu-popup">
+                            <a href="#" onclick="seleccionarMenu('Salud')" class="submenu-item">Salud</a>
+                            <a href="#" onclick="seleccionarMenu('Seguridad')" class="submenu-item">Seguridad</a>
+                        </div>
+                    </div>
+                    <div class="menu-item w-full text-left p-2 rounded flex justify-between items-center cursor-pointer" onclick="toggleSubmenu(event, 'submenuServicios')">
+                        🛠️ Servicios <span class="text-[10px]">▶</span>
+                        <div id="submenuServicios" class="submenu-popup">
+                            <a href="#" onclick="seleccionarMenu('Hidratación')" class="submenu-item">Hidratación</a>
+                            <a href="#" onclick="seleccionarMenu('Estacionamiento')" class="submenu-item">Estacionamiento</a>
+                            <a href="#" onclick="seleccionarMenu('Cajeros')" class="submenu-item">Cajeros</a>
+                            <a href="#" onclick="seleccionarMenu('Wifi')" class="submenu-item">Wifi</a>
+                            <a href="#" onclick="seleccionarMenu('Guardería')" class="submenu-item">Guardería</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -179,7 +254,6 @@
             <div class="w-full h-64 bg-slate-300 rounded-2xl border-2 border-slate-400 flex flex-col items-center justify-center relative overflow-hidden shadow-inner">
                 <span class="text-4xl mb-2">🗺️</span>
                 <p class="text-slate-600 font-bold">Mapa de Fexpocruz (Aquí va Leaflet)</p>
-                <!-- Los botones de pabellones ahora se cargan dinámicamente desde Supabase -->
                 <div id="contenedorPabellones" class="mt-4 flex gap-2 flex-wrap justify-center">
                     <div class="loader"></div>
                 </div>
@@ -188,7 +262,6 @@
 
         <!-- VISTA 2: GRILLA DE STANDS -->
         <div id="vistaPabellon" class="vista-oculta">
-            <!-- Contenedor dinámico para los stands -->
             <div id="contenedorStands" class="grid grid-cols-3 sm:grid-cols-4 gap-3 mt-2">
                 <div class="loader col-span-4"></div>
             </div>
@@ -196,7 +269,6 @@
 
         <!-- VISTA 3: GRILLA DE CÓDIGOS -->
         <div id="vistaStand" class="vista-oculta">
-            <!-- Contenedor dinámico para los productos -->
             <div id="contenedorProductos" class="grid grid-cols-4 sm:grid-cols-5 gap-3 mt-2">
                 <div class="loader col-span-5"></div>
             </div>
@@ -204,176 +276,238 @@
 
     </main>
 
+    <!-- ================= POPUPS (MODALES) DE LA ETIQUETA ================= -->
+    
+    <!-- POPUP PRINCIPAL: ETIQUETA DEL PRODUCTO -->
+    <div id="popupEtiqueta" class="popup-overlay" onclick="if(event.target===this) cerrarPopupEtiqueta()">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopupEtiqueta()">✕</button>
+            <div class="p-5">
+                <div class="text-center mb-4">
+                    <div id="popupCodigo" class="codigo-destacado">H03</div>
+                </div>
+                <h2 id="popupNombre" class="text-lg font-extrabold text-gray-900 uppercase text-center mb-3 leading-tight">Nombre</h2>
+                <div id="popupDescripcion" class="text-sm text-gray-700 leading-relaxed mb-3 text-center"></div>
+                
+                <div class="border-t border-gray-200 my-3"></div>
+                
+                <!-- Botones a la izquierda, MiniNex a la derecha -->
+                <div class="flex justify-between items-center gap-4 mb-3">
+                    <div class="flex flex-col gap-2 w-2/3">
+                        <button id="btnFotos" onclick="abrirPopupFotos()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-3 rounded-xl text-sm transition flex items-center justify-center gap-1 w-full hidden">📸 Ver Fotos</button>
+                        <button onclick="abrirPopupEspecificaciones()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-3 rounded-xl text-sm transition flex items-center justify-center gap-1 w-full">🔍 Ver Especificaciones</button>
+                        <button id="btnAplicaciones" onclick="abrirPopupAplicaciones()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-3 rounded-xl text-sm transition flex items-center justify-center gap-1 w-full hidden">⚙️ Ver Aplicaciones</button>
+                        <button id="btnVideo" onclick="abrirPopupVideo()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-3 rounded-xl text-sm transition flex items-center justify-center gap-1 w-full hidden">▶️ Ver Video</button>
+                        <button id="btnBrochure" onclick="abrirPopupBrochure()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-3 rounded-xl text-sm transition flex items-center justify-center gap-1 w-full hidden">📄 Descargar Brochure</button>
+                    </div>
+                    <div class="w-1/3 flex justify-center">
+                        <button onclick="llamarAsesorIaDesdeEtiqueta()" class="flex flex-col items-center group">
+                            <div class="w-20 h-20 rounded-full border-2 border-orange-300 shadow-lg bg-slate-950 overflow-hidden relative transition-transform duration-300 group-hover:scale-105">
+                                <img src="stand_ia/nex.jpg" alt="NEX Mini" class="w-full h-full object-cover object-top">
+                            </div>
+                            <span class="text-[11px] font-bold text-slate-700 uppercase mt-1">Asesor IA</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="border-t border-gray-200 my-3"></div>
+                
+                <!-- Disponibilidad y Precio -->
+                <div id="popupDisponibilidad" class="bg-emerald-50 border border-emerald-200 rounded-lg p-2 mb-2 hidden">
+                    <p class="text-[12px] font-bold text-emerald-700 uppercase mb-1 text-center">📦 Disponibilidad</p>
+                    <p id="popupDisponibilidadTexto" class="text-sm text-gray-800 text-center leading-snug"></p>
+                </div>
+                <div id="popupPrecioContenedor" class="bg-slate-50 border border-slate-200 rounded-lg p-2 mb-2 hidden">
+                    <div class="flex items-center justify-between">
+                        <p class="text-[16px] font-bold text-orange-500 uppercase">💰 Precio Final</p>
+                        <p id="popupPrecio" class="text-xl font-black text-slate-800">$0</p>
+                    </div>
+                </div>
+                <div id="popupPromocion" class="bg-orange-200 border border-orange-500 rounded-lg p-2 mb-2 hidden">
+                    <p class="text-[14px] font-bold text-orange-700 uppercase mb-1 text-center">🔥 Promoción</p>
+                    <p id="popupPromocionTexto" class="text-sm text-gray-600 font-semibold text-center leading-snug"></p>
+                </div>
+                <div id="popupFinanciacion" class="bg-blue-50 border border-blue-200 rounded-lg p-2 mb-3 hidden cursor-pointer hover:bg-blue-100 transition" onclick="abrirPopupFinanciacion()">
+                    <p class="text-[14px] font-bold text-blue-700 uppercase mb-1 text-center">💳 Tu Financiación</p>
+                    <p class="text-xs text-blue-600 text-center font-medium">Toca para ver opciones de pago</p>
+                </div>
+
+                <!-- Botones de Acción Finales -->
+                <div class="flex justify-between items-center mt-4">
+                    <button onclick="cerrarPopupEtiqueta()" class="bg-zinc-800 hover:bg-zinc-900 text-white font-bold py-2 px-6 rounded-xl transition flex items-center justify-center gap-2">
+                        <span style="color: #10b981; font-size: 18px; font-weight: 900;">←</span> Volver
+                    </button>
+                    <button onclick="abrirPopupContacto()" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded-xl transition flex items-center justify-center gap-2">
+                        <span>✉️</span> Dejar Contacto
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP: ESPECIFICACIONES -->
+    <div id="popupEspecificaciones" class="popup-overlay" onclick="if(event.target===this) cerrarPopupEspecificaciones()">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopupEspecificaciones()">✕</button>
+            <div class="p-5">
+                <h2 class="text-xl font-extrabold text-gray-900 mb-4 text-center">🔍 Especificaciones</h2>
+                <table class="tabla-especificaciones"><tbody id="tablaEspecificacionesBody"></tbody></table>
+                <button onclick="cerrarPopupEspecificaciones()" class="w-full mt-4 bg-zinc-800 hover:bg-zinc-900 text-white font-bold py-2 rounded-xl transition">← Volver</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP: FORMULARIO DE CONTACTO -->
+    <div id="popupContacto" class="popup-overlay" onclick="if(event.target===this) cerrarPopupContacto()">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopupContacto()">✕</button>
+            <div class="p-5">
+                <h2 class="text-lg font-extrabold text-gray-900 mb-4 text-center">✉️ Dejar Contacto</h2>
+                <p class="text-xs text-gray-500 text-center mb-4">El expositor recibirá tu consulta por WhatsApp.</p>
+                <form onsubmit="enviarContactoWhatsApp(event)" class="space-y-3 text-sm">
+                    <input type="hidden" id="contactoProducto" value="">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Nombre y Apellido *</label>
+                        <input type="text" id="contactoNombre" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Organización / Empresa</label>
+                        <input type="text" id="contactoOrganizacion" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Ciudad *</label>
+                            <input type="text" id="contactoCiudad" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Teléfono *</label>
+                            <input type="tel" id="contactoTelefono" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Email *</label>
+                        <input type="email" id="contactoEmail" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Mensaje</label>
+                        <textarea id="contactoMensaje" rows="2" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition mt-2 flex items-center justify-center gap-2">
+                        <span>💬</span> Enviar por WhatsApp
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- ================= LÓGICA DE NAVEGACIÓN Y SUPABASE ================= -->
     <script>
-        // 1. CONFIGURACIÓN DE SUPABASE
+        // 1. CONFIGURACIÓN
         const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Variables globales
         let pabellonActual = { id: null, nombre: '', descripcion: '' };
         let timerCierreMenu = null;
         let timerCierreNex = null;
+        let productoActual = null; // Guarda los datos del producto abierto en el popup
 
-        // 2. LÓGICA DE CARGA INICIAL (Traer Pabellones)
+        // 2. CARGA DE DATOS
         async function cargarPabellones() {
             try {
-                // Buscamos los pabellones de la feria de prueba (ID: 11111111-1111-1111-1111-111111111111)
-                const { data, error } = await supabaseClient
-                    .from('pabellones')
-                    .select('*')
-                    .eq('feria_id', '11111111-1111-1111-1111-111111111111');
-
+                const { data, error } = await supabaseClient.from('pabellones').select('*').eq('feria_id', '11111111-1111-1111-1111-111111111111');
                 if (error) throw error;
-
                 const contenedor = document.getElementById('contenedorPabellones');
                 contenedor.innerHTML = '';
-
-                if (data.length === 0) {
-                    contenedor.innerHTML = '<p class="text-slate-600 text-xs">No hay pabellones cargados.</p>';
-                    return;
-                }
-
                 data.forEach(pab => {
-                    // Usamos el nombre y el tipo como descripción
                     const boton = document.createElement('button');
                     boton.className = "bg-slate-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-slate-700 transition";
                     boton.innerText = pab.nombre;
                     boton.onclick = () => entrarAlPabellon(pab.id, pab.nombre, pab.tipo);
                     contenedor.appendChild(boton);
                 });
-
                 document.getElementById('textoNex').innerText = "¡Hola! Cargamos los pabellones. Seleccioná uno para empezar.";
                 document.getElementById('globoNex').classList.remove('hidden');
-
             } catch (error) {
                 console.error('Error al cargar pabellones:', error);
-                document.getElementById('textoNex').innerText = "Error al conectar con la base de datos.";
-                document.getElementById('globoNex').classList.remove('hidden');
             }
         }
 
-        // 3. CARGAR STANDS DE UN PABELLÓN
         async function cargarStands(pabellonId) {
             const contenedor = document.getElementById('contenedorStands');
             contenedor.innerHTML = '<div class="loader col-span-4"></div>';
-
             try {
-                const { data, error } = await supabaseClient
-                    .from('stands')
-                    .select('*')
-                    .eq('pabellon_id', pabellonId);
-
+                const { data, error } = await supabaseClient.from('stands').select('*').eq('pabellon_id', pabellonId);
                 if (error) throw error;
-
                 contenedor.innerHTML = '';
-
                 if (data.length === 0) {
-                    contenedor.innerHTML = '<p class="text-slate-500 text-xs col-span-4 text-center">No hay stands en este pabellón.</p>';
+                    contenedor.innerHTML = '<p class="text-slate-500 text-xs col-span-4 text-center">No hay stands.</p>';
                     return;
                 }
-
-                // Traemos los datos del expositor para cada stand (usando tu tabla standargentina)
-                // Nota: Para simplificar, haremos la consulta de expositores después. Por ahora mostramos el número.
                 data.forEach(stand => {
                     const boton = document.createElement('button');
                     boton.className = "bg-white border-2 border-slate-300 hover:border-verdeQR rounded-xl p-3 flex flex-col items-center justify-center shadow-sm transition";
-                    boton.innerHTML = `
-                        <span class="text-[10px] text-slate-500 uppercase font-bold">Stand</span>
-                        <span class="text-sm font-black text-slate-800">${stand.numero}</span>
-                    `;
-                    // Al hacer clic, entramos al stand. Pasamos el ID interno y el número visible.
+                    boton.innerHTML = `<span class="text-[10px] text-slate-500 uppercase font-bold">Stand</span><span class="text-sm font-black text-slate-800">${stand.numero}</span>`;
                     boton.onclick = () => entrarAlStand(stand.id, stand.numero, stand.rubro);
                     contenedor.appendChild(boton);
                 });
-
             } catch (error) {
                 console.error('Error al cargar stands:', error);
-                contenedor.innerHTML = '<p class="text-red-500 text-xs col-span-4 text-center">Error al cargar stands.</p>';
             }
         }
 
-        // 4. CARGAR PRODUCTOS DE UN STAND
         async function cargarProductos(standId) {
             const contenedor = document.getElementById('contenedorProductos');
             contenedor.innerHTML = '<div class="loader col-span-5"></div>';
-
             try {
-                // Primero, buscamos al expositor asignado a este stand en tu tabla 'standargentina'
-                const { data: expositores, error: errorExp } = await supabaseClient
-                    .from('standargentina')
-                    .select('id, empresa_stand, logo')
-                    .eq('stand_id', standId);
-
+                const { data: expositores, error: errorExp } = await supabaseClient.from('standargentina').select('id, empresa_stand, logo').eq('stand_id', standId);
                 if (errorExp) throw errorExp;
-
                 if (expositores.length === 0) {
-                    contenedor.innerHTML = '<p class="text-slate-500 text-xs col-span-5 text-center">Este stand no tiene expositor asignado.</p>';
+                    contenedor.innerHTML = '<p class="text-slate-500 text-xs col-span-5 text-center">Stand sin expositor.</p>';
                     return;
                 }
-
                 const expositor = expositores[0];
-                
-                // Actualizamos el header con los datos del expositor
                 document.getElementById('txtNombreExpositor').innerText = expositor.empresa_stand;
                 if(expositor.logo) document.getElementById('imgLogoExpositor').src = expositor.logo;
 
-                // Ahora buscamos los productos de ese expositor en tu tabla 'standproductos'
-                const { data: productos, error: errorProd } = await supabaseClient
-                    .from('standproductos')
-                    .select('*')
-                    .eq('expositor_id', expositor.id);
-
+                const { data: productos, error: errorProd } = await supabaseClient.from('standproductos').select('*').eq('expositor_id', expositor.id);
                 if (errorProd) throw errorProd;
-
                 contenedor.innerHTML = '';
-
                 if (productos.length === 0) {
-                    contenedor.innerHTML = '<p class="text-slate-500 text-xs col-span-5 text-center">Este expositor no tiene productos cargados.</p>';
+                    contenedor.innerHTML = '<p class="text-slate-500 text-xs col-span-5 text-center">Sin productos.</p>';
                     return;
                 }
-
                 productos.forEach(prod => {
                     const boton = document.createElement('button');
                     boton.className = "bg-pizarraOscura border-2 border-slate-600 hover:border-naranja text-white rounded-lg p-3 flex flex-col items-center justify-center shadow-md transition";
                     boton.innerHTML = `<span class="text-xl font-black text-verdeVivo">${prod.codigo || '---'}</span>`;
-                    boton.onclick = () => alert(`Abre etiqueta del producto ${prod.codigo}:\n${prod.nombre}\nPrecio: $${prod.precio}`);
+                    boton.onclick = () => abrirPopupEtiqueta(prod);
                     contenedor.appendChild(boton);
                 });
-
             } catch (error) {
                 console.error('Error al cargar productos:', error);
-                contenedor.innerHTML = '<p class="text-red-500 text-xs col-span-5 text-center">Error al cargar productos.</p>';
             }
         }
 
-        // ================= FUNCIONES DE NAVEGACIÓN =================
+        // 3. NAVEGACIÓN
         function entrarAlPabellon(id, nombre, descripcion) {
             pabellonActual = { id: id, nombre: nombre, descripcion: descripcion };
-            
             document.getElementById('vistaPredio').classList.add('vista-oculta');
             document.getElementById('vistaStand').classList.add('vista-oculta');
             document.getElementById('vistaPabellon').classList.remove('vista-oculta');
             
-            // Header
             document.getElementById('contenedorPabellonHeader').classList.remove('hidden');
             document.getElementById('contenedorPabellonHeader').classList.add('flex');
             document.getElementById('linkPabellonHeader').innerText = nombre;
             document.getElementById('descPabellonHeader').innerText = descripcion;
             document.getElementById('descPabellonHeader').classList.remove('hidden');
             document.getElementById('flechaVolverPabellon').classList.add('hidden'); 
-            
             document.getElementById('contenedorExpositor').classList.add('hidden');
             
-            // NEX
-            document.getElementById('textoNex').innerText = `Ya estás en el ${nombre}. Elegí el stand que quieras visitar.`;
+            document.getElementById('textoNex').innerText = `Ya estás en el ${nombre}. Elegí un stand.`;
             document.getElementById('globoNex').classList.remove('hidden');
             document.getElementById('btnNexVolver').classList.add('hidden');
-            
             cerrarMenuYSubmenus();
-
-            // Cargar los stands de este pabellón desde Supabase
             cargarStands(id);
         }
 
@@ -382,28 +516,20 @@
             document.getElementById('vistaPabellon').classList.add('vista-oculta');
             document.getElementById('vistaStand').classList.remove('vista-oculta');
             
-            // Header: Ocultar descripción del pabellón y mostrar flechita
             document.getElementById('descPabellonHeader').classList.add('hidden');
             document.getElementById('flechaVolverPabellon').classList.remove('hidden');
-            
-            // Header: Datos del Expositor (Nombre y logo se actualizan cuando cargan los productos)
             document.getElementById('contenedorExpositor').classList.remove('hidden');
             document.getElementById('contenedorExpositor').classList.add('flex');
             
             document.getElementById('txtCodigoStand').innerText = codigoStand; 
             document.getElementById('txtSectorStand').innerText = `(${sector || 'General'})`; 
             
-            // NEX
             document.getElementById('textoNex').innerText = `¡Bienvenido al stand ${codigoStand}! Hacé clic en un código para ver los detalles. Cualquier cosa estoy aquí por cualquier consulta.`;
             document.getElementById('globoNex').classList.remove('hidden');
             document.getElementById('btnNexVolver').classList.remove('hidden');
             
             clearTimeout(timerCierreNex);
-            timerCierreNex = setTimeout(() => {
-                document.getElementById('globoNex').classList.add('hidden');
-            }, 5000);
-
-            // Cargar productos
+            timerCierreNex = setTimeout(() => { document.getElementById('globoNex').classList.add('hidden'); }, 5000);
             cargarProductos(standId);
         }
 
@@ -412,12 +538,10 @@
             document.getElementById('vistaStand').classList.add('vista-oculta');
             document.getElementById('vistaPabellon').classList.remove('vista-oculta');
             
-            // Restaurar Header
             document.getElementById('contenedorExpositor').classList.add('hidden');
             document.getElementById('contenedorExpositor').classList.remove('flex');
             document.getElementById('descPabellonHeader').classList.remove('hidden'); 
             document.getElementById('flechaVolverPabellon').classList.add('hidden');
-            
             document.getElementById('globoNex').classList.add('hidden');
             clearTimeout(timerCierreNex);
         }
@@ -435,12 +559,113 @@
             document.getElementById('textoNex').innerText = "Volvimos al mapa principal. ¿A dónde querés ir ahora?";
             document.getElementById('globoNex').classList.remove('hidden');
             document.getElementById('btnNexVolver').classList.add('hidden');
-            
             cerrarMenuYSubmenus();
             clearTimeout(timerCierreNex);
         }
 
-        // ================= FUNCIONES DE UI (Menú, NEX) =================
+        // 4. LÓGICA DEL POPUP DE ETIQUETA
+        function abrirPopupEtiqueta(prod) {
+            productoActual = prod;
+            
+            document.getElementById('popupCodigo').innerText = prod.codigo || '---';
+            document.getElementById('popupNombre').innerText = prod.nombre || 'Producto';
+            document.getElementById('popupDescripcion').innerText = prod.descripcion || '';
+            
+            // Disponibilidad
+            if (prod.disponibilidad) {
+                document.getElementById('popupDisponibilidadTexto').innerText = prod.disponibilidad;
+                document.getElementById('popupDisponibilidad').classList.remove('hidden');
+            } else {
+                document.getElementById('popupDisponibilidad').classList.add('hidden');
+            }
+
+            // Precio (Opcional)
+            if (prod.precio && prod.precio !== "0" && prod.precio !== "") {
+                document.getElementById('popupPrecio').innerText = '$' + Number(prod.precio).toLocaleString('es-AR');
+                document.getElementById('popupPrecioContenedor').classList.remove('hidden');
+            } else {
+                document.getElementById('popupPrecioContenedor').classList.add('hidden');
+            }
+
+            // Promoción
+            if (prod.promocion) {
+                document.getElementById('popupPromocionTexto').innerText = prod.promocion;
+                document.getElementById('popupPromocion').classList.remove('hidden');
+            } else {
+                document.getElementById('popupPromocion').classList.add('hidden');
+            }
+
+            // Financiación (Opcional - Asumimos que si hay texto en un campo 'financiacion' o usamos un check)
+            if (prod.financiacion) {
+                document.getElementById('popupFinanciacion').classList.remove('hidden');
+            } else {
+                document.getElementById('popupFinanciacion').classList.add('hidden');
+            }
+
+            // Botones opcionales (se muestran si hay URL o datos)
+            document.getElementById('btnFotos').classList.toggle('hidden', !(prod.foto_1_url || prod.foto_2_url || prod.foto_3_url));
+            document.getElementById('btnVideo').classList.toggle('hidden', !prod.video_url);
+            document.getElementById('btnBrochure').classList.toggle('hidden', !prod.brochure_url);
+            document.getElementById('btnAplicaciones').classList.toggle('hidden', !prod.aplicaciones);
+
+            document.getElementById('popupEtiqueta').classList.add('activo');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function cerrarPopupEtiqueta() {
+            document.getElementById('popupEtiqueta').classList.remove('activo');
+            document.body.style.overflow = '';
+            productoActual = null;
+        }
+
+        // Sub-popups de la Etiqueta
+        function abrirPopupEspecificaciones() {
+            const body = document.getElementById('tablaEspecificacionesBody');
+            body.innerHTML = '';
+            // Simulamos que prod.especificaciones es un JSON o texto separado por comas
+            if (productoActual && productoActual.especificaciones) {
+                // Acá podrías parsear el JSON real. Por ahora, lo mostramos como texto.
+                body.innerHTML = `<tr><td>Especificaciones</td><td>${productoActual.especificaciones}</td></tr>`;
+            } else {
+                body.innerHTML = `<tr><td>Info</td><td>Sin especificaciones cargadas.</td></tr>`;
+            }
+            document.getElementById('popupEspecificaciones').classList.add('activo');
+        }
+        function cerrarPopupEspecificaciones() { document.getElementById('popupEspecificaciones').classList.remove('activo'); }
+
+        function abrirPopupContacto() {
+            document.getElementById('contactoProducto').value = productoActual.codigo;
+            document.getElementById('popupContacto').classList.add('activo');
+        }
+        function cerrarPopupContacto() { document.getElementById('popupContacto').classList.remove('activo'); }
+
+        function enviarContactoWhatsApp(e) {
+            e.preventDefault();
+            const nombre = document.getElementById('contactoNombre').value;
+            const org = document.getElementById('contactoOrganizacion').value;
+            const ciudad = document.getElementById('contactoCiudad').value;
+            const tel = document.getElementById('contactoTelefono').value;
+            const mail = document.getElementById('contactoEmail').value;
+            const msg = document.getElementById('contactoMensaje').value;
+            const cod = document.getElementById('contactoProducto').value;
+            
+            const texto = `*Consulta de Producto (${cod})*%0A%0A*Nombre:* ${nombre}%0A*Organización:* ${org}%0A*Ciudad:* ${ciudad}%0A*Teléfono:* ${tel}%0A*Email:* ${mail}%0A*Mensaje:* ${msg}`;
+            
+            // Acá deberías traer el número de WhatsApp del expositor desde la tabla standargentina
+            const telefonoExpositor = "5491112345678"; // Reemplazar con el real
+            
+            window.open(`https://wa.me/${telefonoExpositor}?text=${texto}`, '_blank');
+            cerrarPopupContacto();
+        }
+
+        function llamarAsesorIaDesdeEtiqueta() {
+            // Abre NEX y le pasa el contexto del producto
+            cerrarPopupEtiqueta();
+            document.getElementById('textoNex').innerText = `Veo que te interesa el producto ${productoActual.codigo}. ¿Qué querés saber?`;
+            document.getElementById('globoNex').classList.remove('hidden');
+        }
+
+        // 5. UI Y MENÚS
         function toggleMenu(e) {
             if(e) e.stopPropagation();
             const menu = document.getElementById('menuDesplegable');
@@ -452,12 +677,10 @@
                 timerCierreMenu = setTimeout(() => { cerrarMenuYSubmenus(); }, 10000); 
             }
         }
-
         function cerrarMenuYSubmenus() {
             document.getElementById('menuDesplegable').classList.remove('activo');
             document.querySelectorAll('.submenu-popup').forEach(el => el.classList.remove('activo'));
         }
-
         function cerrarMenuSiClickFuera(e) {
             const menu = document.getElementById('menuDesplegable');
             const btnHamburguesa = document.getElementById('btnHamburguesa');
@@ -465,7 +688,6 @@
                 cerrarMenuYSubmenus();
             }
         }
-
         function toggleSubmenu(e, idSubmenu) {
             e.stopPropagation();
             const submenu = document.getElementById(idSubmenu);
@@ -473,23 +695,18 @@
             document.querySelectorAll('.submenu-popup').forEach(el => el.classList.remove('activo'));
             if (!estaAbierto) submenu.classList.add('activo');
         }
-
         function seleccionarMenu(opcion) {
             cerrarMenuYSubmenus();
             document.getElementById('textoNex').innerText = `Buscando "${opcion}" en el mapa...`;
             document.getElementById('globoNex').classList.remove('hidden');
             document.getElementById('btnNexVolver').classList.add('hidden'); 
         }
-
         function toggleGloboNex(e) {
             if(e) e.stopPropagation();
             document.getElementById('globoNex').classList.toggle('hidden');
         }
 
-        // 5. INICIALIZACIÓN
-        window.onload = () => {
-            cargarPabellones();
-        };
+        window.onload = () => { cargarPabellones(); };
     </script>
 </body>
 </html>
