@@ -91,16 +91,12 @@
         }
         .popup-cerrar:hover { background: rgba(15, 23, 42, 0.18); transform: rotate(90deg); }
 
-        /* Estilos de etiqueta específicos */
         .codigo-destacado {
             background: #27272a; color: #ffffff; font-family: 'Courier New', monospace;
             font-weight: 900; font-size: 26px; padding: 10px 22px; border-radius: 10px;
             border: 2px solid #f97316; display: inline-block; letter-spacing: 2px;
         }
-        .tabla-especificaciones {
-            width: 100%; border-collapse: collapse; border-radius: 12px;
-            overflow: hidden; border: 1px solid #e2e8f0;
-        }
+        .tabla-especificaciones { width: 100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
         .tabla-especificaciones tr:nth-child(odd) { background: #f8fafc; }
         .tabla-especificaciones tr:nth-child(even) { background: #ffffff; }
         .tabla-especificaciones td { padding: 10px 14px; font-size: 13px; border-bottom: 1px solid #e2e8f0; }
@@ -114,13 +110,11 @@
         <div class="max-w-xl mx-auto px-4 py-3 flex items-start justify-between relative">
             
             <div class="flex flex-col z-10 w-full pr-20"> 
-                <!-- Feria -->
                 <div class="flex items-center gap-1.5 mb-1">
                     <img src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Logo Feria" class="w-4 h-4 rounded bg-white p-0.5 object-contain">
                     <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Expo ConstruTech 2026</span>
                 </div>
 
-                <!-- Pabellón -->
                 <div id="contenedorPabellonHeader" class="hidden mb-1 flex-col items-center justify-center text-center">
                     <div class="flex items-center justify-center gap-1">
                         <span id="flechaVolverPabellon" class="hidden text-verdeQR text-xs">←</span>
@@ -129,7 +123,6 @@
                     <span id="descPabellonHeader" class="text-[11px] text-slate-300 italic mt-0.5"></span>
                 </div>
 
-                <!-- Expositor -->
                 <div id="contenedorExpositor" class="hidden items-start gap-2 mt-1">
                     <div class="flex flex-col items-center flex-shrink-0">
                         <img id="imgLogoExpositor" src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Logo Empresa" class="w-8 h-8 rounded bg-white p-0.5 object-contain">
@@ -143,7 +136,6 @@
                 </div>
             </div>
 
-            <!-- NEX -->
             <div class="absolute right-4 top-3 flex-shrink-0 z-10">
                 <div id="contenedorNex" onclick="toggleGloboNex(event)" class="tarjeta-nex w-24 h-32 bg-slate-950 border-2 border-orange-500 rounded-xl overflow-hidden cursor-pointer relative group flex flex-col justify-between p-1">
                     <div class="bg-orange-500 text-white font-black text-[8px] tracking-wider text-center py-0.5 px-1 rounded uppercase z-10">NEX • Asesor IA</div>
@@ -165,7 +157,6 @@
             </div>
         </div>
 
-        <!-- BARRA DE MENÚ -->
         <div class="bg-slate-800 border-t border-slate-700 relative">
             <div class="max-w-xl mx-auto px-4 py-0.5 flex items-center justify-between relative z-20">
                 <div class="flex items-center gap-3">
@@ -177,7 +168,6 @@
                 </div>
             </div>
 
-            <!-- MENÚ DESPLEGABLE COMPLETO -->
             <div id="menuDesplegable" class="menu-desplegable absolute top-full left-0 w-full shadow-2xl z-50 max-h-[70vh] overflow-y-auto border-b border-slate-300" onclick="event.stopPropagation()">
                 <div class="max-w-xl mx-auto p-2 space-y-1 text-sm font-bold">
                     <div class="menu-item w-full text-left p-2 rounded flex justify-between items-center cursor-pointer" onclick="toggleSubmenu(event, 'submenuMapa')">
@@ -248,8 +238,6 @@
 
     <!-- ================= CONTENIDO PRINCIPAL ================= -->
     <main class="max-w-xl mx-auto p-4 pb-20">
-
-        <!-- VISTA 1: MAPA DEL PREDIO -->
         <div id="vistaPredio">
             <div class="w-full h-64 bg-slate-300 rounded-2xl border-2 border-slate-400 flex flex-col items-center justify-center relative overflow-hidden shadow-inner">
                 <span class="text-4xl mb-2">🗺️</span>
@@ -260,25 +248,55 @@
             </div>
         </div>
 
-        <!-- VISTA 2: GRILLA DE STANDS -->
         <div id="vistaPabellon" class="vista-oculta">
             <div id="contenedorStands" class="grid grid-cols-3 sm:grid-cols-4 gap-3 mt-2">
                 <div class="loader col-span-4"></div>
             </div>
         </div>
 
-        <!-- VISTA 3: GRILLA DE CÓDIGOS -->
         <div id="vistaStand" class="vista-oculta">
             <div id="contenedorProductos" class="grid grid-cols-4 sm:grid-cols-5 gap-3 mt-2">
                 <div class="loader col-span-5"></div>
             </div>
         </div>
-
     </main>
 
-    <!-- ================= POPUPS (MODALES) DE LA ETIQUETA ================= -->
+    <!-- ================= POPUPS ================= -->
     
-    <!-- POPUP PRINCIPAL: ETIQUETA DEL PRODUCTO -->
+    <!-- POPUP: INFO EMPRESA -->
+    <div id="popupInfoEmpresa" class="popup-overlay" onclick="if(event.target===this) cerrarPopupInfoEmpresa()">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopupInfoEmpresa()">✕</button>
+            <div class="p-5">
+                <div class="text-center mb-4">
+                    <img id="infoLogo" src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Logo" class="w-16 h-16 rounded-xl mx-auto bg-white p-1 shadow-sm border border-gray-200 mb-2">
+                    <h2 id="infoNombre" class="text-lg font-extrabold text-gray-900 uppercase">Empresa</h2>
+                    <p id="infoRubro" class="text-xs text-verdeQR font-bold uppercase mt-1 hidden">Rubro</p>
+                </div>
+                <div class="border-t border-gray-200 my-3"></div>
+                <div class="space-y-3 text-sm text-gray-700">
+                    <div id="infoDirContenedor" class="flex items-start gap-2 hidden">
+                        <span class="text-lg">📍</span>
+                        <div><p class="text-xs font-bold text-gray-500 uppercase">Dirección</p><p id="infoDireccion"></p></div>
+                    </div>
+                    <div id="infoTelContenedor" class="flex items-start gap-2 hidden">
+                        <span class="text-lg">📞</span>
+                        <div><p class="text-xs font-bold text-gray-500 uppercase">Teléfono</p><p id="infoTelefono"></p></div>
+                    </div>
+                    <div id="infoWebContenedor" class="flex items-start gap-2 hidden">
+                        <span class="text-lg">🌐</span>
+                        <div><p class="text-xs font-bold text-gray-500 uppercase">Sitio Web</p><a id="infoWeb" href="#" target="_blank" class="text-blue-600 hover:underline"></a></div>
+                    </div>
+                </div>
+                <div class="border-t border-gray-200 my-3"></div>
+                <button id="infoBtnWhatsapp" onclick="abrirWhatsappExpositor()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 rounded-xl transition flex items-center justify-center gap-2 hidden">
+                    <span>💬</span> Contactar por WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP: ETIQUETA PRODUCTO -->
     <div id="popupEtiqueta" class="popup-overlay" onclick="if(event.target===this) cerrarPopupEtiqueta()">
         <div class="popup-caja">
             <button class="popup-cerrar" onclick="cerrarPopupEtiqueta()">✕</button>
@@ -288,10 +306,7 @@
                 </div>
                 <h2 id="popupNombre" class="text-lg font-extrabold text-gray-900 uppercase text-center mb-3 leading-tight">Nombre</h2>
                 <div id="popupDescripcion" class="text-sm text-gray-700 leading-relaxed mb-3 text-center"></div>
-                
                 <div class="border-t border-gray-200 my-3"></div>
-                
-                <!-- Botones a la izquierda, MiniNex a la derecha -->
                 <div class="flex justify-between items-center gap-4 mb-3">
                     <div class="flex flex-col gap-2 w-2/3">
                         <button id="btnFotos" onclick="abrirPopupFotos()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 px-3 rounded-xl text-sm transition flex items-center justify-center gap-1 w-full hidden">📸 Ver Fotos</button>
@@ -309,10 +324,7 @@
                         </button>
                     </div>
                 </div>
-                
                 <div class="border-t border-gray-200 my-3"></div>
-                
-                <!-- Disponibilidad y Precio -->
                 <div id="popupDisponibilidad" class="bg-emerald-50 border border-emerald-200 rounded-lg p-2 mb-2 hidden">
                     <p class="text-[12px] font-bold text-emerald-700 uppercase mb-1 text-center">📦 Disponibilidad</p>
                     <p id="popupDisponibilidadTexto" class="text-sm text-gray-800 text-center leading-snug"></p>
@@ -331,8 +343,6 @@
                     <p class="text-[14px] font-bold text-blue-700 uppercase mb-1 text-center">💳 Tu Financiación</p>
                     <p class="text-xs text-blue-600 text-center font-medium">Toca para ver opciones de pago</p>
                 </div>
-
-                <!-- Botones de Acción Finales -->
                 <div class="flex justify-between items-center mt-4">
                     <button onclick="cerrarPopupEtiqueta()" class="bg-zinc-800 hover:bg-zinc-900 text-white font-bold py-2 px-6 rounded-xl transition flex items-center justify-center gap-2">
                         <span style="color: #10b981; font-size: 18px; font-weight: 900;">←</span> Volver
@@ -357,7 +367,7 @@
         </div>
     </div>
 
-    <!-- POPUP: FORMULARIO DE CONTACTO -->
+    <!-- POPUP: CONTACTO -->
     <div id="popupContacto" class="popup-overlay" onclick="if(event.target===this) cerrarPopupContacto()">
         <div class="popup-caja">
             <button class="popup-cerrar" onclick="cerrarPopupContacto()">✕</button>
@@ -366,90 +376,33 @@
                 <p class="text-xs text-gray-500 text-center mb-4">El expositor recibirá tu consulta por WhatsApp.</p>
                 <form onsubmit="enviarContactoWhatsApp(event)" class="space-y-3 text-sm">
                     <input type="hidden" id="contactoProducto" value="">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Nombre y Apellido *</label>
-                        <input type="text" id="contactoNombre" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Organización / Empresa</label>
-                        <input type="text" id="contactoOrganizacion" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none">
-                    </div>
+                    <div><label class="block text-xs font-bold text-gray-700 uppercase mb-1">Nombre y Apellido *</label><input type="text" id="contactoNombre" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"></div>
+                    <div><label class="block text-xs font-bold text-gray-700 uppercase mb-1">Organización / Empresa</label><input type="text" id="contactoOrganizacion" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"></div>
                     <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Ciudad *</label>
-                            <input type="text" id="contactoCiudad" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Teléfono *</label>
-                            <input type="tel" id="contactoTelefono" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none">
-                        </div>
+                        <div><label class="block text-xs font-bold text-gray-700 uppercase mb-1">Ciudad *</label><input type="text" id="contactoCiudad" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"></div>
+                        <div><label class="block text-xs font-bold text-gray-700 uppercase mb-1">Teléfono *</label><input type="tel" id="contactoTelefono" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"></div>
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Email *</label>
-                        <input type="email" id="contactoEmail" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Mensaje</label>
-                        <textarea id="contactoMensaje" rows="2" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"></textarea>
-                    </div>
-                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition mt-2 flex items-center justify-center gap-2">
-                        <span>💬</span> Enviar por WhatsApp
-                    </button>
+                    <div><label class="block text-xs font-bold text-gray-700 uppercase mb-1">Email *</label><input type="email" id="contactoEmail" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"></div>
+                    <div><label class="block text-xs font-bold text-gray-700 uppercase mb-1">Mensaje</label><textarea id="contactoMensaje" rows="2" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"></textarea></div>
+                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition mt-2 flex items-center justify-center gap-2"><span>💬</span> Enviar por WhatsApp</button>
                 </form>
             </div>
         </div>
     </div>
-      <!-- POPUP: INFO EMPRESA (Datos del Expositor) -->
-    <div id="popupInfoEmpresa" class="popup-overlay" onclick="if(event.target===this) cerrarPopupInfoEmpresa()">
-        <div class="popup-caja">
-            <button class="popup-cerrar" onclick="cerrarPopupInfoEmpresa()">✕</button>
-            <div class="p-5">
-                <div class="text-center mb-4">
-                    <img id="infoLogo" src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Logo" class="w-16 h-16 rounded-xl mx-auto bg-white p-1 shadow-sm border border-gray-200 mb-2">
-                    <h2 id="infoNombre" class="text-lg font-extrabold text-gray-900 uppercase">Empresa</h2>
-                    <p id="infoRubro" class="text-xs text-verdeQR font-bold uppercase mt-1">Rubro</p>
-                </div>
-                
-                <div class="border-t border-gray-200 my-3"></div>
-                
-                <div class="space-y-3 text-sm text-gray-700">
-                    <div id="infoDirContenedor" class="flex items-start gap-2 hidden">
-                        <span class="text-lg">📍</span>
-                        <div><p class="text-xs font-bold text-gray-500 uppercase">Dirección</p><p id="infoDireccion"></p></div>
-                    </div>
-                    <div id="infoTelContenedor" class="flex items-start gap-2 hidden">
-                        <span class="text-lg">📞</span>
-                        <div><p class="text-xs font-bold text-gray-500 uppercase">Teléfono</p><p id="infoTelefono"></p></div>
-                    </div>
-                    <div id="infoWebContenedor" class="flex items-start gap-2 hidden">
-                        <span class="text-lg">🌐</span>
-                        <div><p class="text-xs font-bold text-gray-500 uppercase">Sitio Web</p><a id="infoWeb" href="#" target="_blank" class="text-blue-600 hover:underline"></a></div>
-                    </div>
-                </div>
 
-                <div class="border-t border-gray-200 my-3"></div>
-
-                <button id="infoBtnWhatsapp" onclick="abrirWhatsappExpositor()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 rounded-xl transition flex items-center justify-center gap-2 hidden">
-                    <span>💬</span> Contactar por WhatsApp
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ================= LÓGICA DE NAVEGACIÓN Y SUPABASE ================= -->
+    <!-- ================= LÓGICA ================= -->
     <script>
-        // 1. CONFIGURACIÓN
         const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        let expositorActual = null; 
         let pabellonActual = { id: null, nombre: '', descripcion: '' };
+        let expositorActual = null;
+        let productoActual = null;
         let timerCierreMenu = null;
         let timerCierreNex = null;
-        let productoActual = null; // Guarda los datos del producto abierto en el popup
 
-        // 2. CARGA DE DATOS
+        // 1. CARGA DE DATOS
         async function cargarPabellones() {
             try {
                 const { data, error } = await supabaseClient.from('pabellones').select('*').eq('feria_id', '11111111-1111-1111-1111-111111111111');
@@ -463,11 +416,7 @@
                     boton.onclick = () => entrarAlPabellon(pab.id, pab.nombre, pab.tipo);
                     contenedor.appendChild(boton);
                 });
-                document.getElementById('textoNex').innerText = "¡Hola! Cargamos los pabellones. Seleccioná uno para empezar.";
-                document.getElementById('globoNex').classList.remove('hidden');
-            } catch (error) {
-                console.error('Error al cargar pabellones:', error);
-            }
+            } catch (error) { console.error('Error al cargar pabellones:', error); }
         }
 
         async function cargarStands(pabellonId) {
@@ -488,26 +437,26 @@
                     boton.onclick = () => entrarAlStand(stand.id, stand.numero, stand.rubro);
                     contenedor.appendChild(boton);
                 });
-            } catch (error) {
-                console.error('Error al cargar stands:', error);
-            }
+            } catch (error) { console.error('Error al cargar stands:', error); }
         }
 
         async function cargarProductos(standId) {
             const contenedor = document.getElementById('contenedorProductos');
             contenedor.innerHTML = '<div class="loader col-span-5"></div>';
             try {
-                const { data: expositores, error: errorExp } = await supabaseClient.from('standargentina').select('id, empresa_stand, logo').eq('stand_id', standId);
-                if (error
-                    Exp) throw errorExp;
+                // Buscamos al expositor y sus datos
+                const { data: expositores, error: errorExp } = await supabaseClient.from('standargentina').select('*').eq('stand_id', standId);
+                if (errorExp) throw errorExp;
                 if (expositores.length === 0) {
                     contenedor.innerHTML = '<p class="text-slate-500 text-xs col-span-5 text-center">Stand sin expositor.</p>';
                     return;
                 }
                 const expositor = expositores[0];
-                expositorActual = expositor; // Guardamos los datos del expositor
+                expositorActual = expositor; 
                 document.getElementById('txtNombreExpositor').innerText = expositor.empresa_stand;
                 if(expositor.logo) document.getElementById('imgLogoExpositor').src = expositor.logo;
+                document.getElementById('txtSectorStand').innerText = `(${expositor.rubro || 'General'})`;
+
                 const { data: productos, error: errorProd } = await supabaseClient.from('standproductos').select('*').eq('expositor_id', expositor.id);
                 if (errorProd) throw errorProd;
                 contenedor.innerHTML = '';
@@ -522,9 +471,131 @@
                     boton.onclick = () => abrirPopupEtiqueta(prod);
                     contenedor.appendChild(boton);
                 });
-            } catch (error) {
-                console.error('Error al cargar productos:', error);
-            }
+            } catch (error) { console.error('Error al cargar productos:', error); }
+        }
+
+        // 2. LÓGICA POPUPS
+        function abrirPopupEtiqueta(prod) {
+            productoActual = prod;
+            document.getElementById('popupCodigo').innerText = prod.codigo || '---';
+            document.getElementById('popupNombre').innerText = prod.nombre || 'Producto';
+            document.getElementById('popupDescripcion').innerText = prod.descripcion || '';
+            
+            if (prod.disponibilidad) {
+                document.getElementById('popupDisponibilidadTexto').innerText = prod.disponibilidad;
+                document.getElementById('popupDisponibilidad').classList.remove('hidden');
+            } else { document.getElementById('popupDisponibilidad').classList.add('hidden'); }
+
+            if (prod.precio && prod.precio !== "0" && prod.precio !== "") {
+                document.getElementById('popupPrecio').innerText = '$' + Number(prod.precio).toLocaleString('es-AR');
+                document.getElementById('popupPrecioContenedor').classList.remove('hidden');
+            } else { document.getElementById('popupPrecioContenedor').classList.add('hidden'); }
+
+            if (prod.promocion) {
+                document.getElementById('popupPromocionTexto').innerText = prod.promocion;
+                document.getElementById('popupPromocion').classList.remove('hidden');
+            } else { document.getElementById('popupPromocion').classList.add('hidden'); }
+
+            if (prod.financiacion) { document.getElementById('popupFinanciacion').classList.remove('hidden'); } else { document.getElementById('popupFinanciacion').classList.add('hidden'); }
+
+            document.getElementById('btnFotos').classList.toggle('hidden', !(prod.foto_1_url || prod.foto_2_url || prod.foto_3_url));
+            document.getElementById('btnVideo').classList.toggle('hidden', !prod.video_url);
+            document.getElementById('btnBrochure').classList.toggle('hidden', !prod.brochure_url);
+            document.getElementById('btnAplicaciones').classList.toggle('hidden', !prod.aplicaciones);
+
+            document.getElementById('popupEtiqueta').classList.add('activo');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function cerrarPopupEtiqueta() {
+            document.getElementById('popupEtiqueta').classList.remove('activo');
+            document.body.style.overflow = '';
+            productoActual = null;
+        }
+
+        function abrirPopupInfoEmpresa() {
+            if (!expositorActual) return;
+            document.getElementById('infoNombre').innerText = expositorActual.empresa_stand || 'Empresa';
+            document.getElementById('infoLogo').src = expositorActual.logo || 'https://cdn-icons-png.flaticon.com/512/869/869636.png';
+            
+            if (expositorActual.rubro) {
+                document.getElementById('infoRubro').innerText = expositorActual.rubro;
+                document.getElementById('infoRubro').classList.remove('hidden');
+            } else { document.getElementById('infoRubro').classList.add('hidden'); }
+
+            if (expositorActual.direccion) {
+                document.getElementById('infoDireccion').innerText = expositorActual.direccion;
+                document.getElementById('infoDirContenedor').classList.remove('hidden');
+            } else { document.getElementById('infoDirContenedor').classList.add('hidden'); }
+
+            if (expositorActual.telefono) {
+                document.getElementById('infoTelefono').innerText = expositorActual.telefono;
+                document.getElementById('infoTelContenedor').classList.remove('hidden');
+            } else { document.getElementById('infoTelContenedor').classList.add('hidden'); }
+
+            if (expositorActual.web) {
+                let webUrl = expositorActual.web;
+                if (!webUrl.startsWith('http')) webUrl = 'https://' + webUrl;
+                document.getElementById('infoWeb').href = webUrl;
+                document.getElementById('infoWeb').innerText = expositorActual.web;
+                document.getElementById('infoWebContenedor').classList.remove('hidden');
+            } else { document.getElementById('infoWebContenedor').classList.add('hidden'); }
+
+            if (expositorActual.whatsapp) { document.getElementById('infoBtnWhatsapp').classList.remove('hidden'); } 
+            else { document.getElementById('infoBtnWhatsapp').classList.add('hidden'); }
+
+            document.getElementById('popupInfoEmpresa').classList.add('activo');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function cerrarPopupInfoEmpresa() {
+            document.getElementById('popupInfoEmpresa').classList.remove('activo');
+            document.body.style.overflow = '';
+        }
+
+        function abrirWhatsappExpositor() {
+            if (!expositorActual || !expositorActual.whatsapp) return;
+            const numLimpio = expositorActual.whatsapp.replace(/\D/g, '');
+            window.open(`https://wa.me/${numLimpio}`, '_blank');
+        }
+
+        function abrirPopupEspecificaciones() {
+            const body = document.getElementById('tablaEspecificacionesBody');
+            body.innerHTML = '';
+            if (productoActual && productoActual.especificaciones) {
+                body.innerHTML = `<tr><td>Especificaciones</td><td>${productoActual.especificaciones}</td></tr>`;
+            } else { body.innerHTML = `<tr><td>Info</td><td>Sin especificaciones.</td></tr>`; }
+            document.getElementById('popupEspecificaciones').classList.add('activo');
+        }
+        function cerrarPopupEspecificaciones() { document.getElementById('popupEspecificaciones').classList.remove('activo'); }
+
+        function abrirPopupContacto() {
+            document.getElementById('contactoProducto').value = productoActual.codigo;
+            document.getElementById('popupContacto').classList.add('activo');
+        }
+        function cerrarPopupContacto() { document.getElementById('popupContacto').classList.remove('activo'); }
+
+        function enviarContactoWhatsApp(e) {
+            e.preventDefault();
+            const nombre = document.getElementById('contactoNombre').value;
+            const org = document.getElementById('contactoOrganizacion').value;
+            const ciudad = document.getElementById('contactoCiudad').value;
+            const tel = document.getElementById('contactoTelefono').value;
+            const mail = document.getElementById('contactoEmail').value;
+            const msg = document.getElementById('contactoMensaje').value;
+            const cod = document.getElementById('contactoProducto').value;
+            const texto = `*Consulta de Producto (${cod})*%0A%0A*Nombre:* ${nombre}%0A*Organización:* ${org}%0A*Ciudad:* ${ciudad}%0A*Teléfono:* ${tel}%0A*Email:* ${mail}%0A*Mensaje:* ${msg}`;
+            
+            const telefonoExpositor = expositorActual.whatsapp ? expositorActual.whatsapp.replace(/\D/g, '') : "5491112345678"; 
+            
+            window.open(`https://wa.me/${telefonoExpositor}?text=${texto}`, '_blank');
+            cerrarPopupContacto();
+        }
+
+        function llamarAsesorIaDesdeEtiqueta() {
+            cerrarPopupEtiqueta();
+            document.getElementById('textoNex').innerText = `Veo que te interesa el producto ${productoActual.codigo}. ¿Qué querés saber?`;
+            document.getElementById('globoNex').classList.remove('hidden');
         }
 
         // 3. NAVEGACIÓN
@@ -560,9 +631,8 @@
             document.getElementById('contenedorExpositor').classList.add('flex');
             
             document.getElementById('txtCodigoStand').innerText = codigoStand; 
-            document.getElementById('txtSectorStand').innerText = `(${sector || 'General'})`; 
             
-            document.getElementById('textoNex').innerText = `¡Bienvenido al stand ${codigoStand}! Hacé clic en un código para ver los detalles. Cualquier cosa estoy aquí por cualquier consulta.`;
+            document.getElementById('textoNex').innerText = `¡Bienvenido al stand ${codigoStand}! Hacé clic en un código para ver los detalles.`;
             document.getElementById('globoNex').classList.remove('hidden');
             document.getElementById('btnNexVolver').classList.remove('hidden');
             
@@ -601,109 +671,7 @@
             clearTimeout(timerCierreNex);
         }
 
-        // 4. LÓGICA DEL POPUP DE ETIQUETA
-        function abrirPopupEtiqueta(prod) {
-            productoActual = prod;
-            
-            document.getElementById('popupCodigo').innerText = prod.codigo || '---';
-            document.getElementById('popupNombre').innerText = prod.nombre || 'Producto';
-            document.getElementById('popupDescripcion').innerText = prod.descripcion || '';
-            
-            // Disponibilidad
-            if (prod.disponibilidad) {
-                document.getElementById('popupDisponibilidadTexto').innerText = prod.disponibilidad;
-                document.getElementById('popupDisponibilidad').classList.remove('hidden');
-            } else {
-                document.getElementById('popupDisponibilidad').classList.add('hidden');
-            }
-
-            // Precio (Opcional)
-            if (prod.precio && prod.precio !== "0" && prod.precio !== "") {
-                document.getElementById('popupPrecio').innerText = '$' + Number(prod.precio).toLocaleString('es-AR');
-                document.getElementById('popupPrecioContenedor').classList.remove('hidden');
-            } else {
-                document.getElementById('popupPrecioContenedor').classList.add('hidden');
-            }
-
-            // Promoción
-            if (prod.promocion) {
-                document.getElementById('popupPromocionTexto').innerText = prod.promocion;
-                document.getElementById('popupPromocion').classList.remove('hidden');
-            } else {
-                document.getElementById('popupPromocion').classList.add('hidden');
-            }
-
-            // Financiación (Opcional - Asumimos que si hay texto en un campo 'financiacion' o usamos un check)
-            if (prod.financiacion) {
-                document.getElementById('popupFinanciacion').classList.remove('hidden');
-            } else {
-                document.getElementById('popupFinanciacion').classList.add('hidden');
-            }
-
-            // Botones opcionales (se muestran si hay URL o datos)
-            document.getElementById('btnFotos').classList.toggle('hidden', !(prod.foto_1_url || prod.foto_2_url || prod.foto_3_url));
-            document.getElementById('btnVideo').classList.toggle('hidden', !prod.video_url);
-            document.getElementById('btnBrochure').classList.toggle('hidden', !prod.brochure_url);
-            document.getElementById('btnAplicaciones').classList.toggle('hidden', !prod.aplicaciones);
-
-            document.getElementById('popupEtiqueta').classList.add('activo');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function cerrarPopupEtiqueta() {
-            document.getElementById('popupEtiqueta').classList.remove('activo');
-            document.body.style.overflow = '';
-            productoActual = null;
-        }
-
-        // Sub-popups de la Etiqueta
-        function abrirPopupEspecificaciones() {
-            const body = document.getElementById('tablaEspecificacionesBody');
-            body.innerHTML = '';
-            // Simulamos que prod.especificaciones es un JSON o texto separado por comas
-            if (productoActual && productoActual.especificaciones) {
-                // Acá podrías parsear el JSON real. Por ahora, lo mostramos como texto.
-                body.innerHTML = `<tr><td>Especificaciones</td><td>${productoActual.especificaciones}</td></tr>`;
-            } else {
-                body.innerHTML = `<tr><td>Info</td><td>Sin especificaciones cargadas.</td></tr>`;
-            }
-            document.getElementById('popupEspecificaciones').classList.add('activo');
-        }
-        function cerrarPopupEspecificaciones() { document.getElementById('popupEspecificaciones').classList.remove('activo'); }
-
-        function abrirPopupContacto() {
-            document.getElementById('contactoProducto').value = productoActual.codigo;
-            document.getElementById('popupContacto').classList.add('activo');
-        }
-        function cerrarPopupContacto() { document.getElementById('popupContacto').classList.remove('activo'); }
-
-        function enviarContactoWhatsApp(e) {
-            e.preventDefault();
-            const nombre = document.getElementById('contactoNombre').value;
-            const org = document.getElementById('contactoOrganizacion').value;
-            const ciudad = document.getElementById('contactoCiudad').value;
-            const tel = document.getElementById('contactoTelefono').value;
-            const mail = document.getElementById('contactoEmail').value;
-            const msg = document.getElementById('contactoMensaje').value;
-            const cod = document.getElementById('contactoProducto').value;
-            
-            const texto = `*Consulta de Producto (${cod})*%0A%0A*Nombre:* ${nombre}%0A*Organización:* ${org}%0A*Ciudad:* ${ciudad}%0A*Teléfono:* ${tel}%0A*Email:* ${mail}%0A*Mensaje:* ${msg}`;
-            
-            // Acá deberías traer el número de WhatsApp del expositor desde la tabla standargentina
-            const telefonoExpositor = "5491112345678"; // Reemplazar con el real
-            
-            window.open(`https://wa.me/${telefonoExpositor}?text=${texto}`, '_blank');
-            cerrarPopupContacto();
-        }
-
-        function llamarAsesorIaDesdeEtiqueta() {
-            // Abre NEX y le pasa el contexto del producto
-            cerrarPopupEtiqueta();
-            document.getElementById('textoNex').innerText = `Veo que te interesa el producto ${productoActual.codigo}. ¿Qué querés saber?`;
-            document.getElementById('globoNex').classList.remove('hidden');
-        }
-
-        // 5. UI Y MENÚS
+        // 4. UI
         function toggleMenu(e) {
             if(e) e.stopPropagation();
             const menu = document.getElementById('menuDesplegable');
@@ -743,72 +711,7 @@
             if(e) e.stopPropagation();
             document.getElementById('globoNex').classList.toggle('hidden');
         }
-        // 6. LÓGICA DEL POPUP INFO EMPRESA
-        function abrirPopupInfoEmpresa() {
-            if (!expositorActual) {
-                alert('Cargando datos de la empresa...');
-                return;
-            }
 
-            document.getElementById('infoNombre').innerText = expositorActual.empresa_stand || 'Empresa';
-            document.getElementById('infoLogo').src = expositorActual.logo || 'https://cdn-icons-png.flaticon.com/512/869/869636.png';
-            
-            // Rubro (Sector)
-            if (expositorActual.rubro) {
-                document.getElementById('infoRubro').innerText = expositorActual.rubro;
-                document.getElementById('infoRubro').classList.remove('hidden');
-            } else {
-                document.getElementById('infoRubro').classList.add('hidden');
-            }
-
-            // Dirección
-            if (expositorActual.direccion) {
-                document.getElementById('infoDireccion').innerText = expositorActual.direccion;
-                document.getElementById('infoDirContenedor').classList.remove('hidden');
-            } else {
-                document.getElementById('infoDirContenedor').classList.add('hidden');
-            }
-
-            // Teléfono
-            if (expositorActual.telefono) {
-                document.getElementById('infoTelefono').innerText = expositorActual.telefono;
-                document.getElementById('infoTelContenedor').classList.remove('hidden');
-            } else {
-                document.getElementById('infoTelContenedor').classList.add('hidden');
-            }
-
-            // Web
-            if (expositorActual.web) {
-                let webUrl = expositorActual.web;
-                if (!webUrl.startsWith('http')) webUrl = 'https://' + webUrl;
-                document.getElementById('infoWeb').href = webUrl;
-                document.getElementById('infoWeb').innerText = expositorActual.web;
-                document.getElementById('infoWebContenedor').classList.remove('hidden');
-            } else {
-                document.getElementById('infoWebContenedor').classList.add('hidden');
-            }
-
-            // WhatsApp
-            if (expositorActual.whatsapp) {
-                document.getElementById('infoBtnWhatsapp').classList.remove('hidden');
-            } else {
-                document.getElementById('infoBtnWhatsapp').classList.add('hidden');
-            }
-
-            document.getElementById('popupInfoEmpresa').classList.add('activo');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function cerrarPopupInfoEmpresa() {
-            document.getElementById('popupInfoEmpresa').classList.remove('activo');
-            document.body.style.overflow = '';
-        }
-
-        function abrirWhatsappExpositor() {
-            if (!expositorActual || !expositorActual.whatsapp) return;
-            const numLimpio = expositorActual.whatsapp.replace(/\D/g, '');
-            window.open(`https://wa.me/${numLimpio}`, '_blank');
-        }
         window.onload = () => { cargarPabellones(); };
     </script>
 </body>
