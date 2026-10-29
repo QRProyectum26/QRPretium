@@ -396,7 +396,20 @@
             </div>
         </div>
     </div>
-    <div id="popupAgenda" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupAgenda')"><div class="popup-caja"><button class="popup-cerrar" onclick="cerrarPopup('popupAgenda')">✕</button><div class="p-6"><h2 class="text-xl font-extrabold mb-4">Mi Agenda</h2><p class="text-sm text-gray-500">Próximamente.</p></div></div></div>
+     <!-- POPUP: MI AGENDA (Unificada) -->
+    <div id="popupAgenda" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupAgenda')">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupAgenda')">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-2">🗓️ Mi Agenda</h2>
+                <p class="text-xs text-gray-500 mb-4">Resumen cronológico de tus presentaciones y reuniones.</p>
+                
+                <div id="listaAgenda" class="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+                    <div class="text-center py-4"><div class="loader"></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="popupDocumentacion" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupDocumentacion')"><div class="popup-caja"><button class="popup-cerrar" onclick="cerrarPopup('popupDocumentacion')">✕</button><div class="p-6"><h2 class="text-xl font-extrabold mb-4">Mi Documentación</h2><p class="text-sm text-gray-500">Próximamente.</p></div></div></div>
     <div id="popupImprimir" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupImprimir')"><div class="popup-caja"><button class="popup-cerrar" onclick="cerrarPopup('popupImprimir')">✕</button><div class="p-6"><h2 class="text-xl font-extrabold mb-4">Imprimir Códigos</h2><p class="text-sm text-gray-500">Próximamente.</p></div></div></div>
 
@@ -774,12 +787,94 @@
                 alert('Error al eliminar: ' + err.message);
             }
         }
-                        function abrirPopup(id) { 
+                // 10. LÓGICA DE MI AGENDA (Unificada)
+        async function cargarAgenda() {
+            const contenedor = document.getElementById('listaAgenda');
+            contenedor.innerHTML = '<div class="text-center py-4"><div class="loader"></div></div>';
+
+            try {
+                // 1. Traemos presentaciones
+                const { data: presentaciones, error: errorPres } = await supabaseClient
+                    .from('presentaciones_stand')
+                    .select('*')
+                    .eq('expositor_id', expositorActual.id);
+                if (errorPres) throw errorPres;
+
+                // 2. Traemos reuniones
+                const { data: reuniones, error: errorReu } = await supabaseClient
+                    .from('reuniones_stand')
+                    .select('*')
+                    .eq('expositor_id', expositorActual.id);
+                if (errorReu) throw errorReu;
+
+                // 3. Unificamos y ordenamos
+                let eventos = [];
+                
+                presentaciones.forEach(p => {
+                    eventos.push({ ...p, categoria: 'Presentación', icono: p.tipo === 'Sorteo' ? '🎁' : p.tipo === 'Remate' ? '⚖️' : '🎓' });
+                });
+                
+                reuniones.forEach(r => {
+                    eventos.push({ ...r, categoria: 'Reunión', icono: '💼' });
+                });
+
+                // Ordenamos por fecha y hora (las más próximas primero)
+                eventos.sort((a, b) => {
+                    const fechaA = new Date(a.fecha + 'T' + a.hora);
+                    const fechaB = new Date(b.fecha + 'T' + b.hora);
+                    return fechaA - fechaB;
+                });
+
+                contenedor.innerHTML = '';
+
+                if (eventos.length === 0) {
+                    contenedor.innerHTML = '<p class="text-sm text-gray-500 text-center py-4">No tenés eventos agendados para esta feria.</p>';
+                    return;
+                }
+
+                // Agrupamos por fecha
+                let fechaActual = '';
+                eventos.forEach(evento => {
+                    const fechaFormateada = new Date(evento.fecha + 'T00:00:00').toLocaleDateString('es-AR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                    
+                    if (fechaActual !== fechaFormateada) {
+                        fechaActual = fechaFormateada;
+                        contenedor.innerHTML += `<h3 class="text-xs font-bold text-slate-500 uppercase mt-4 mb-2 border-b border-slate-200 pb-1">${fechaActual}</h3>`;
+                    }
+
+                    const badgeColor = evento.categoria === 'Reunión' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700';
+
+                    contenedor.innerHTML += `
+                        <div class="flex items-center gap-3 bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
+                            <div class="text-2xl">${evento.icono}</div>
+                            <div class="flex-1">
+                                <div class="flex justify-between items-start">
+                                    <p class="font-bold text-slate-800 text-sm">${evento.titulo}</p>
+                                    <span class="text-[10px] font-black text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded">${evento.hora.substring(0,5)} hs</span>
+                                </div>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${badgeColor}">${evento.categoria}</span>
+                                    ${evento.lugar ? `<span class="text-[10px] text-slate-500">📍 ${evento.lugar}</span>` : ''}
+                                    ${evento.contraparte ? `<span class="text-[10px] text-slate-500">👤 ${evento.contraparte}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+            } catch (err) {
+                console.error('Error al cargar agenda:', err);
+                contenedor.innerHTML = '<p class="text-red-500 text-xs text-center">Error al cargar la agenda.</p>';
+            }
+        }
+                               function abrirPopup(id) { 
             document.getElementById(id).classList.add('activo'); 
             if (id === 'popupPresentaciones') {
                 cargarPresentaciones();
             } else if (id === 'popupReuniones') {
                 cargarReuniones();
+            } else if (id === 'popupAgenda') {
+                cargarAgenda();
             }
         }
         function cerrarPopup(id) { document.getElementById(id).classList.remove('activo'); }
