@@ -137,7 +137,7 @@
                     </div>
                     <div class="flex flex-col leading-tight w-full">
                         <span id="txtNombreExpositor" class="font-black text-sm uppercase text-white truncate">Cargando...</span>
-                        <button onclick="alert('Abre modal con info de la empresa')" class="text-[9px] text-slate-400 font-bold hover:text-white transition mt-0.5 text-left">+ Info Empresa</button>
+                        <button onclick="abrirPopupInfoEmpresa()" class="text-[9px] text-slate-400 font-bold hover:text-white transition mt-0.5 text-left">+ Info Empresa</button>
                         <span id="txtSectorStand" class="text-[10px] text-verdeQR font-bold mt-0.5">(Sector)</span>
                     </div>
                 </div>
@@ -399,6 +399,42 @@
             </div>
         </div>
     </div>
+      <!-- POPUP: INFO EMPRESA (Datos del Expositor) -->
+    <div id="popupInfoEmpresa" class="popup-overlay" onclick="if(event.target===this) cerrarPopupInfoEmpresa()">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopupInfoEmpresa()">✕</button>
+            <div class="p-5">
+                <div class="text-center mb-4">
+                    <img id="infoLogo" src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Logo" class="w-16 h-16 rounded-xl mx-auto bg-white p-1 shadow-sm border border-gray-200 mb-2">
+                    <h2 id="infoNombre" class="text-lg font-extrabold text-gray-900 uppercase">Empresa</h2>
+                    <p id="infoRubro" class="text-xs text-verdeQR font-bold uppercase mt-1">Rubro</p>
+                </div>
+                
+                <div class="border-t border-gray-200 my-3"></div>
+                
+                <div class="space-y-3 text-sm text-gray-700">
+                    <div id="infoDirContenedor" class="flex items-start gap-2 hidden">
+                        <span class="text-lg">📍</span>
+                        <div><p class="text-xs font-bold text-gray-500 uppercase">Dirección</p><p id="infoDireccion"></p></div>
+                    </div>
+                    <div id="infoTelContenedor" class="flex items-start gap-2 hidden">
+                        <span class="text-lg">📞</span>
+                        <div><p class="text-xs font-bold text-gray-500 uppercase">Teléfono</p><p id="infoTelefono"></p></div>
+                    </div>
+                    <div id="infoWebContenedor" class="flex items-start gap-2 hidden">
+                        <span class="text-lg">🌐</span>
+                        <div><p class="text-xs font-bold text-gray-500 uppercase">Sitio Web</p><a id="infoWeb" href="#" target="_blank" class="text-blue-600 hover:underline"></a></div>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-200 my-3"></div>
+
+                <button id="infoBtnWhatsapp" onclick="abrirWhatsappExpositor()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 rounded-xl transition flex items-center justify-center gap-2 hidden">
+                    <span>💬</span> Contactar por WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- ================= LÓGICA DE NAVEGACIÓN Y SUPABASE ================= -->
     <script>
@@ -407,6 +443,7 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        let expositorActual = null; 
         let pabellonActual = { id: null, nombre: '', descripcion: '' };
         let timerCierreMenu = null;
         let timerCierreNex = null;
@@ -461,15 +498,16 @@
             contenedor.innerHTML = '<div class="loader col-span-5"></div>';
             try {
                 const { data: expositores, error: errorExp } = await supabaseClient.from('standargentina').select('id, empresa_stand, logo').eq('stand_id', standId);
-                if (errorExp) throw errorExp;
+                if (error
+                    Exp) throw errorExp;
                 if (expositores.length === 0) {
                     contenedor.innerHTML = '<p class="text-slate-500 text-xs col-span-5 text-center">Stand sin expositor.</p>';
                     return;
                 }
                 const expositor = expositores[0];
+                expositorActual = expositor; // Guardamos los datos del expositor
                 document.getElementById('txtNombreExpositor').innerText = expositor.empresa_stand;
                 if(expositor.logo) document.getElementById('imgLogoExpositor').src = expositor.logo;
-
                 const { data: productos, error: errorProd } = await supabaseClient.from('standproductos').select('*').eq('expositor_id', expositor.id);
                 if (errorProd) throw errorProd;
                 contenedor.innerHTML = '';
@@ -705,7 +743,72 @@
             if(e) e.stopPropagation();
             document.getElementById('globoNex').classList.toggle('hidden');
         }
+        // 6. LÓGICA DEL POPUP INFO EMPRESA
+        function abrirPopupInfoEmpresa() {
+            if (!expositorActual) {
+                alert('Cargando datos de la empresa...');
+                return;
+            }
 
+            document.getElementById('infoNombre').innerText = expositorActual.empresa_stand || 'Empresa';
+            document.getElementById('infoLogo').src = expositorActual.logo || 'https://cdn-icons-png.flaticon.com/512/869/869636.png';
+            
+            // Rubro (Sector)
+            if (expositorActual.rubro) {
+                document.getElementById('infoRubro').innerText = expositorActual.rubro;
+                document.getElementById('infoRubro').classList.remove('hidden');
+            } else {
+                document.getElementById('infoRubro').classList.add('hidden');
+            }
+
+            // Dirección
+            if (expositorActual.direccion) {
+                document.getElementById('infoDireccion').innerText = expositorActual.direccion;
+                document.getElementById('infoDirContenedor').classList.remove('hidden');
+            } else {
+                document.getElementById('infoDirContenedor').classList.add('hidden');
+            }
+
+            // Teléfono
+            if (expositorActual.telefono) {
+                document.getElementById('infoTelefono').innerText = expositorActual.telefono;
+                document.getElementById('infoTelContenedor').classList.remove('hidden');
+            } else {
+                document.getElementById('infoTelContenedor').classList.add('hidden');
+            }
+
+            // Web
+            if (expositorActual.web) {
+                let webUrl = expositorActual.web;
+                if (!webUrl.startsWith('http')) webUrl = 'https://' + webUrl;
+                document.getElementById('infoWeb').href = webUrl;
+                document.getElementById('infoWeb').innerText = expositorActual.web;
+                document.getElementById('infoWebContenedor').classList.remove('hidden');
+            } else {
+                document.getElementById('infoWebContenedor').classList.add('hidden');
+            }
+
+            // WhatsApp
+            if (expositorActual.whatsapp) {
+                document.getElementById('infoBtnWhatsapp').classList.remove('hidden');
+            } else {
+                document.getElementById('infoBtnWhatsapp').classList.add('hidden');
+            }
+
+            document.getElementById('popupInfoEmpresa').classList.add('activo');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function cerrarPopupInfoEmpresa() {
+            document.getElementById('popupInfoEmpresa').classList.remove('activo');
+            document.body.style.overflow = '';
+        }
+
+        function abrirWhatsappExpositor() {
+            if (!expositorActual || !expositorActual.whatsapp) return;
+            const numLimpio = expositorActual.whatsapp.replace(/\D/g, '');
+            window.open(`https://wa.me/${numLimpio}`, '_blank');
+        }
         window.onload = () => { cargarPabellones(); };
     </script>
 </body>
