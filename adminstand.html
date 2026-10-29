@@ -100,7 +100,8 @@
                         </div>
                     </div>
                     <div class="flex items-center justify-center gap-2 flex-wrap bg-slate-600/40 backdrop-blur-md p-1.5 rounded-xl border border-white/20">
-                        <button onclick="alert('Próximamente: Guía del Panel')" class="text-xs bg-black/20 hover:bg-black/40 text-emerald-400 font-bold px-2 py-1 rounded-lg">PANEL ADMIN ?</button>
+                        <!-- ACÁ ESTÁ EL BOTÓN CORREGIDO -->
+                        <button onclick="abrirPopup('popupAyuda')" class="text-xs bg-black/20 hover:bg-black/40 text-emerald-400 font-bold px-2 py-1 rounded-lg">PANEL ADMIN ?</button>
                         <button onclick="cerrarSesion()" class="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-2 py-1 rounded-lg">Salir</button>
                         <div class="flex items-center gap-1 bg-black/20 p-1 rounded-lg">
                             <input type="color" id="inputColor" value="#334155" class="h-6 w-8 rounded cursor-pointer border-0 bg-transparent">
@@ -490,17 +491,87 @@
         </div>
     </div>
 
-    <!-- POPUP: IMPRIMIR (Placeholder) -->
+    <!-- POPUP: IMPRIMIR CÓDIGOS -->
     <div id="popupImprimir" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupImprimir')">
         <div class="popup-caja">
             <button class="popup-cerrar" onclick="cerrarPopup('popupImprimir')">✕</button>
             <div class="p-6">
-                <h2 class="text-xl font-extrabold mb-4">🖨️ Imprimir Códigos</h2>
-                <p class="text-sm text-gray-500">Próximamente: Generador de PDF de etiquetas.</p>
+                <h2 class="text-xl font-extrabold text-slate-800 mb-2">🖨️ Imprimir Códigos</h2>
+                <p class="text-xs text-gray-500 mb-4">Generá un PDF con las etiquetas de tus productos para pegar en tu stand.</p>
+                
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-4">
+                    <h3 class="text-sm font-bold text-slate-800 mb-3">📏 Tamaño de etiqueta</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-white cursor-pointer">
+                            <input type="radio" name="tamanoEtiqueta" value="chica" checked class="w-4 h-4 accent-orange-500">
+                            <span class="text-sm text-slate-700">Chica (5 etiquetas por fila)</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-2 rounded-lg hover:bg-white cursor-pointer">
+                            <input type="radio" name="tamanoEtiqueta" value="grande" class="w-4 h-4 accent-orange-500">
+                            <span class="text-sm text-slate-700">Grande (3 etiquetas por fila)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 mb-4 text-xs text-blue-800">
+                    💡 <strong>Tip:</strong> Imprimí en papel A4. Si no tenés A4, podés usar papel de etiquetas autoadhesivas.
+                </div>
+
+                <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="cerrarPopup('popupImprimir')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
+                    <button type="button" onclick="generarPDFEtiquetas()" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm flex items-center gap-2">
+                        📥 Descargar PDF
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-
+        <!-- POPUP: GUÍA DEL PANEL ADMIN -->
+    <div id="popupAyuda" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupAyuda')">
+        <div class="popup-caja popup-caja-grande">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupAyuda')">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-4">Guía del Panel Expositor</h2>
+                <div class="space-y-4 text-sm text-slate-700 max-h-[60vh] overflow-y-auto pr-2">
+                    <section>
+                        <h3 class="font-bold text-slate-800 mb-1">🏢 Mi Organización</h3>
+                        <p>Cargá los datos de tu empresa (Logo, Descripción, Mail, Teléfono, Web). Esta información aparecerá cuando el visitante haga clic en "+ Info Empresa" en el catálogo.</p>
+                    </section>
+                    <section>
+                        <h3 class="font-bold text-slate-800 mb-1">📁 Mis Categorías</h3>
+                        <p>Configurá el layout de tu stand (filas y columnas) y el estilo visual de tus etiquetas (colores, tipografía, bordes). Además, asigná una letra a cada categoría de producto (Ej: H = Herramientas).</p>
+                    </section>
+                    <section>
+                        <h3 class="font-bold text-slate-800 mb-1">📦 Productos en Exhibición</h3>
+                        <p>Desde el botón "Agregar Producto" cargá tus artículos. El código debe coincidir con la letra de la categoría (Ej: H03 para Herramientas).</p>
+                    </section>
+                    <section>
+                        <h3 class="font-bold text-slate-800 mb-1">📅 Mis Presentaciones</h3>
+                        <p>Cargá tus charlas, capacitaciones, sorteos o remates. Los visitantes podrán verlos en la agenda de la feria y anotarse con su DNI.</p>
+                    </section>
+                    <section>
+                        <h3 class="font-bold text-slate-800 mb-1">🤝 Mis Reuniones</h3>
+                        <p>Agendá reuniones de trabajo, institucionales o de negocios con otros expositores o compradores.</p>
+                    </section>
+                    <section>
+                        <h3 class="font-bold text-slate-800 mb-1">🗓️ Mi Agenda</h3>
+                        <p>Un resumen unificado de todas tus presentaciones y reuniones, ordenadas cronológicamente.</p>
+                    </section>
+                    <section>
+                        <h3 class="font-bold text-slate-800 mb-1">📄 Mi Documentación</h3>
+                        <p>Subí los enlaces a tus manuales o fichas técnicas en PDF (Google Drive, Dropbox).</p>
+                    </section>
+                    <section>
+                        <h3 class="font-bold text-slate-800 mb-1">🖨️ Imprimir Códigos</h3>
+                        <p>Generá un PDF con las etiquetas de tus productos para imprimir y pegar en tu stand físico.</p>
+                    </section>
+                </div>
+                <div class="flex justify-end mt-6 pt-4 border-t border-slate-100">
+                    <button onclick="cerrarPopup('popupAyuda')" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Entendido</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- ================= SCRIPT ================= -->
     <script>
         const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
@@ -1076,6 +1147,90 @@
                 await supabaseClient.from('standargentina').update({ color: color }).eq('id', expositorActual.id);
                 expositorActual.color = color;
             } catch (err) { console.error('Error al guardar color:', err); }
+        }
+                // 12. GENERAR PDF DE ETIQUETAS
+        function generarPDFEtiquetas() {
+            if (!window.jspdf) {
+                alert('❌ La librería PDF no está cargada. Recargá la página.');
+                return;
+            }
+            if (!productosLista || productosLista.length === 0) {
+                alert('⚠️ No tenés productos cargados. Agregá al menos uno para generar las etiquetas.');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+            const tamano = document.querySelector('input[name="tamanoEtiqueta"]:checked').value;
+            let anchoEtiqueta, altoEtiqueta, porFila;
+
+            if (tamano === 'chica') {
+                anchoEtiqueta = 35; altoEtiqueta = 25; porFila = 5;
+            } else {
+                anchoEtiqueta = 60; altoEtiqueta = 30; porFila = 3;
+            }
+
+            const margenX = 10;
+            const margenY = 20;
+            const espacioX = 3;
+            const espacioY = 3;
+
+            let x = margenX;
+            let y = margenY;
+            let columna = 0;
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(16);
+            doc.setTextColor(30, 41, 59);
+            doc.text('ETIQUETAS DE PRODUCTOS', 105, 10, { align: 'center' });
+            
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`${expositorActual.empresa_stand} - Stand ${expositorActual.stands ? expositorActual.stands.numero : 'Sin asignar'}`, 105, 16, { align: 'center' });
+
+            productosLista.forEach((prod, index) => {
+                if (y + altoEtiqueta > 280) {
+                    doc.addPage();
+                    x = margenX;
+                    y = margenY;
+                    columna = 0;
+                }
+
+                // Fondo de la etiqueta
+                doc.setFillColor(30, 41, 59);
+                doc.roundedRect(x, y, anchoEtiqueta, altoEtiqueta, 3, 3, 'F');
+
+                // Borde naranja
+                doc.setDrawColor(249, 115, 22);
+                doc.setLineWidth(0.8);
+                doc.roundedRect(x, y, anchoEtiqueta, altoEtiqueta, 3, 3, 'S');
+
+                // Código Grande
+                doc.setTextColor(16, 185, 129);
+                doc.setFont('courier', 'bold');
+                doc.setFontSize(tamano === 'chica' ? 20 : 26);
+                doc.text(prod.codigo || '---', x + anchoEtiqueta/2, y + altoEtiqueta/2 + 2, { align: 'center' });
+
+                // Nombre de la empresa
+                doc.setTextColor(255, 255, 255);
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(tamano === 'chica' ? 5 : 7);
+                const nombreCorto = expositorActual.empresa_stand.substring(0, tamano === 'chica' ? 15 : 25);
+                doc.text(nombreCorto, x + anchoEtiqueta/2, y + altoEtiqueta - 3, { align: 'center' });
+
+                columna++;
+                if (columna >= porFila) {
+                    columna = 0;
+                    x = margenX;
+                    y += altoEtiqueta + espacioY;
+                } else {
+                    x += anchoEtiqueta + espacioX;
+                }
+            });
+
+            doc.save(`Etiquetas-${expositorActual.empresa_stand.replace(/\s+/g, '-')}.pdf`);
+            cerrarPopup('popupImprimir');
         }
     </script>
 </body>
