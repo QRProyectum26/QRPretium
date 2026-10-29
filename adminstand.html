@@ -74,8 +74,8 @@
             <p class="text-xs text-gray-500 mt-1">Ingresá tu CUIT para gestionar tu Stand</p>
         </div>
         <form onsubmit="iniciarSesion(event)" class="space-y-4">
-            <div>
-                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">CUIT del Expositor</label>
+             <div>
+                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">CUIT / CUIL / NIT del Expositor</label>
                 <input type="text" id="loginCuit" required placeholder="Ej: 20000000001" 
                     class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-verdeQR text-sm">
             </div>
@@ -94,7 +94,7 @@
                     <div class="text-center md:text-left">
                         <h1 id="adminNombreEmpresa" class="text-2xl font-extrabold uppercase tracking-wide">Cargando...</h1>
                         <div class="flex items-center justify-center md:justify-start gap-2 mt-1 text-xs">
-                            <span class="text-slate-300 font-medium">CUIT: <span id="adminCuit"></span></span>
+                            <span class="text-slate-300 font-medium">CUIT/CUIL/NIT: <span id="adminCuit"></span></span>
                             <span class="text-slate-400">|</span>
                             <span class="text-naranja font-black text-sm" id="adminStandInfo">Stand</span>
                         </div>
