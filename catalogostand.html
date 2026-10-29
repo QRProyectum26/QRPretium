@@ -272,6 +272,10 @@
                     <img id="infoLogo" src="https://cdn-icons-png.flaticon.com/512/869/869636.png" alt="Logo" class="w-16 h-16 rounded-xl mx-auto bg-white p-1 shadow-sm border border-gray-200 mb-2">
                     <h2 id="infoNombre" class="text-lg font-extrabold text-gray-900 uppercase">Empresa</h2>
                     <p id="infoRubro" class="text-xs text-verdeQR font-bold uppercase mt-1 hidden">Rubro</p>
+                      <!-- NUEVA DESCRIPCIÓN -->
+                    <div id="infoDescripcionContenedor" class="mt-3 bg-slate-50 p-3 rounded-xl border border-slate-200 hidden">
+                        <p id="infoDescripcion" class="text-xs text-slate-700 leading-relaxed text-center italic"></p>
+                    </div>
                 </div>
                 <div class="border-t border-gray-200 my-3"></div>
                 <div class="space-y-3 text-sm text-gray-700">
@@ -538,7 +542,13 @@
                 document.getElementById('infoDireccion').innerText = expositorActual.direccion;
                 document.getElementById('infoDirContenedor').classList.remove('hidden');
             } else { document.getElementById('infoDirContenedor').classList.add('hidden'); }
-
+      // Descripción
+            if (expositorActual.descripcion) {
+                document.getElementById('infoDescripcion').innerText = expositorActual.descripcion;
+                document.getElementById('infoDescripcionContenedor').classList.remove('hidden');
+            } else {
+                document.getElementById('infoDescripcionContenedor').classList.add('hidden');
+            }
             if (expositorActual.telefono) {
                 document.getElementById('infoTelefono').innerText = expositorActual.telefono;
                 document.getElementById('infoTelContenedor').classList.remove('hidden');
