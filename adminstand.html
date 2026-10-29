@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <title>Panel Expositor - QRPretium</title>
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pizarra: '#1E293B',
+                        pizarraOscura: '#0F172A',
+                        naranja: '#F97316',
+                        verdeQR: '#0D9488',
+                        verdeVivo: '#10B981'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        .popup-overlay {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+            z-index: 100; display: flex; align-items: center; justify-content: center;
+            padding: 16px; opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+        }
+        .popup-overlay.activo { opacity: 1; pointer-events: auto; }
+        .popup-caja {
+            background: #ffffff; border-radius: 20px; max-width: 600px; width: 100%;
+            max-height: 90vh; overflow-y: auto; transform: scale(0.9); opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5); position: relative;
+        }
+        .popup-overlay.activo .popup-caja { transform: scale(1); opacity: 1; }
+        .popup-cerrar {
+            position: absolute; top: 12px; right: 12px; background: rgba(15, 23, 42, 0.1);
+            border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 18px;
+            font-weight: 700; color: #334155; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; transition: all 0.2s ease; z-index: 10;
+        }
+        .popup-cerrar:hover { background: rgba(15, 23, 42, 0.2); transform: rotate(90deg); }
+        .btn-accion {
+            background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 10px;
+            padding: 8px 12px; font-size: 13px; font-weight: 700; color: #334155;
+            cursor: pointer; transition: all 0.2s ease;
+        }
+        .btn-accion:hover { border-color: #f97316; background: #fff7ed; transform: translateY(-1px); }
+        .tabla-articulos { width: 100%; border-collapse: collapse; }
+        .tabla-articulos th { background: #f8fafc; padding: 10px; font-size: 11px; text-transform: uppercase; color: #64748b; border-bottom: 1px solid #e2e8f0; }
+        .tabla-articulos td { padding: 10px; font-size: 13px; border-bottom: 1px solid #f1f5f9; }
+        .tabla-articulos tr:hover td { background: #f8fafc; }
+        .codigo-badge { background: #0f172a; color: white; font-family: 'Courier New', monospace; font-weight: 900; font-size: 14px; padding: 4px 10px; border-radius: 8px; border: 2px solid #f97316; display: inline-block; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 min-h-screen pb-12">
+
+    <!-- SECCIÓN 1: LOGIN -->
+    <div id="seccionLogin" class="max-w-md mx-auto mt-16 p-6 bg-white rounded-2xl shadow-xl border border-gray-200">
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-black text-slate-800 tracking-tight">QRPretium <span class="text-verdeQR">Expo</span></h1>
+            <p class="text-xs text-gray-500 mt-1">Ingresá tu CUIT para gestionar tu Stand</p>
+        </div>
+        <form onsubmit="iniciarSesion(event)" class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-gray-700 uppercase mb-1">CUIT del Expositor</label>
+                <input type="text" id="loginCuit" required placeholder="Ej: 20000000001" 
+                    class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-verdeQR text-sm">
+            </div>
+            <div id="errorLogin" class="text-red-600 text-xs text-center font-bold hidden p-3 bg-red-50 rounded-lg border border-red-200 leading-relaxed"></div>
+            <button type="submit" class="w-full bg-verdeQR hover:bg-teal-700 text-white font-bold py-3 rounded-xl shadow-md transition duration-200 text-sm">
+                Ingresar a mi Stand
+            </button>
+        </form>
+    </div>
+
+    <!-- SECCIÓN 2: PANEL -->
+    <div id="seccionPanel" class="hidden">
+        <!-- HEADER -->
+        <header id="headerAdmin" class="text-white shadow-lg rounded-b-2xl transition-colors duration-300" style="background-color: #334155;">
+            <div class="max-w-5xl mx-auto p-4">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+                    <div class="text-center md:text-left">
+                        <h1 id="adminNombreEmpresa" class="text-2xl font-extrabold uppercase tracking-wide">Cargando...</h1>
+                        <div class="flex items-center justify-center md:justify-start gap-2 mt-1 text-xs">
+                            <span class="text-slate-300 font-medium">CUIT: <span id="adminCuit"></span></span>
+                            <span class="text-slate-400">|</span>
+                            <span class="text-naranja font-black text-sm" id="adminStandInfo">Stand B3-021</span>
+                        </div>
+                    </div>
+                    <!-- Botones de Control del Header -->
+                    <div class="flex items-center justify-center gap-2 flex-wrap bg-slate-600/40 backdrop-blur-md p-1.5 rounded-xl border border-white/20">
+                        <button onclick="abrirPopupAyuda()" class="text-xs bg-black/20 hover:bg-black/40 text-emerald-400 font-bold px-2 py-1 rounded-lg">PANEL ADMIN ?</button>
+                        <button onclick="cerrarSesion()" class="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-2 py-1 rounded-lg">Salir</button>
+                        <div class="flex items-center gap-1 bg-black/20 p-1 rounded-lg">
+                            <input type="color" id="inputColor" value="#334155" class="h-6 w-8 rounded cursor-pointer border-0 bg-transparent">
+                            <button onclick="guardarColor(document.getElementById('inputColor').value)" class="text-[10px] bg-white text-slate-800 font-bold px-2 py-0.5 rounded">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BARRA DE BOTONES DE ACCIÓN (POPUPS) -->
+                <div class="bg-zinc-100/90 backdrop-blur-sm rounded-xl p-2 border border-white/20 flex flex-wrap gap-2 justify-center">
+                    <button onclick="abrirPopup('popupOrganizacion')" class="btn-accion flex items-center gap-1">🏢 Mi Organización</button>
+                    <button onclick="abrirPopup('popupCategorias')" class="btn-accion flex items-center gap-1">📁 Mis Categorías (Layout)</button>
+                    <button onclick="abrirPopup('popupPresentaciones')" class="btn-accion flex items-center gap-1">📅 Mis Presentaciones</button>
+                    <button onclick="abrirPopup('popupReuniones')" class="btn-accion flex items-center gap-1">🤝 Mis Reuniones</button>
+                    <button onclick="abrirPopup('popupAgenda')" class="btn-accion flex items-center gap-1">🗓️ Mi Agenda</button>
+                    <button onclick="abrirPopup('popupDocumentacion')" class="btn-accion flex items-center gap-1">📄 Mi Documentación</button>
+                    <button onclick="abrirPopup('popupImprimir')" class="btn-accion flex items-center gap-1">🖨️ Imprimir Códigos</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-5xl mx-auto px-4 mt-6">
+            <!-- TABLA DE PRODUCTOS EN EXHIBICIÓN -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-6">
+                <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+                    <h3 class="font-bold text-slate-800 text-sm">Productos en Exhibición</h3>
+                    <button onclick="abrirPopupNuevoProducto()" class="bg-verdeQR hover:bg-teal-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2">
+                        <span style="font-size: 18px;">＋</span> Agregar Producto
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="tabla-articulos">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Producto</th>
+                                <th>Precio</th>
+                                <th>Disponibilidad</th>
+                                <th class="text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyProductos">
+                            <!-- Se llena por JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ================= POPUPS (MODALES) ================= -->
+
+    <!-- POPUP: MI ORGANIZACIÓN (Info Empresa) -->
+    <div id="popupOrganizacion" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupOrganizacion')">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupOrganizacion')">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-2">🏢 Mi Organización</h2>
+                <p class="text-xs text-gray-500 mb-4">Estos datos aparecerán en el botón "+ Info Empresa" del catálogo.</p>
+                <form onsubmit="guardarOrganizacion(event)" class="space-y-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Nombre de la Empresa</label>
+                        <input type="text" id="orgNombre" class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Rubro / Sector</label>
+                        <input type="text" id="orgRubro" class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Teléfono</label>
+                            <input type="text" id="orgTelefono" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">WhatsApp</label>
+                            <input type="text" id="orgWhatsapp" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Sitio Web</label>
+                        <input type="text" id="orgWeb" class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Dirección / Sede Central</label>
+                        <input type="text" id="orgDireccion" class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+                    <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                        <button type="button" onclick="cerrarPopup('popupOrganizacion')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
+                        <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Guardar Datos</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP: NUEVO / EDITAR PRODUCTO -->
+    <div id="popupProducto" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupProducto')">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupProducto')">✕</button>
+            <div class="p-6">
+                <h2 id="tituloFormProducto" class="text-xl font-extrabold text-slate-800 mb-4">➕ Nuevo Producto</h2>
+                <form onsubmit="guardarProducto(event)" class="space-y-3">
+                    <input type="hidden" id="prodId">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Código (Ej: H03)</label>
+                            <input type="text" id="prodCodigo" required class="w-full px-3 py-2 border rounded-xl text-sm font-mono font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Precio (Opcional)</label>
+                            <input type="number" id="prodPrecio" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Nombre del Producto</label>
+                        <input type="text" id="prodNombre" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Descripción</label>
+                        <textarea id="prodDescripcion" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm"></textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Disponibilidad</label>
+                            <input type="text" id="prodDisponibilidad" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Promoción</label>
+                            <input type="text" id="prodPromocion" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">URL del Video (YouTube)</label>
+                        <input type="text" id="prodVideo" class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">URL del Brochure (PDF)</label>
+                        <input type="text" id="prodBrochure" class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Aplicaciones</label>
+                        <textarea id="prodAplicaciones" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm"></textarea>
+                    </div>
+                    <!-- Los campos de fotos los dejamos para la próxima iteración (Supabase Storage) -->
+                    <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                        <button type="button" onclick="cerrarPopup('popupProducto')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
+                        <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Guardar Producto</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUPS SECUNDARIOS (Placeholder) -->
+    <div id="popupCategorias" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupCategorias')">
+        <div class="popup-caja"><button class="popup-cerrar" onclick="cerrarPopup('popupCategorias')">✕</button><div class="p-6"><h2 class="text-xl font-extrabold mb-4">Mis Categorías (Layout)</h2><p class="text-sm text-gray-500">Próximamente: Configuración de la grilla de productos.</p></div></div>
+    </div>
+    <div id="popupPresentaciones" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupPresentaciones')">
+        <div class="popup-caja"><button class="popup-cerrar" onclick="cerrarPopup('popupPresentaciones')">✕</button><div class="p-6"><h2 class="text-xl font-extrabold mb-4">Mis Presentaciones</h2><p class="text-sm text-gray-500">Próximamente: Capacitaciones, Sorteos, Remates.</p></div></div>
+    </div>
+    <div id="popupReuniones" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupReuniones')">
+        <div class="popup-caja"><button class="popup-cerrar" onclick="cerrarPopup('popupReuniones')">✕</button><div class="p-6"><h2 class="text-xl font-extrabold mb-4">Mis Reuniones</h2><p class="text-sm text-gray-500">Próximamente: Reuniones de Trabajo, Institucionales, Negocios.</p></div></div>
+    </div>
+    <div id="popupAgenda" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupAgenda')">
+        <div class="popup-caja"><button class="popup-cerrar" onclick="cerrarPopup('popupAgenda')">✕</button><div class="p-6"><h2 class="text-xl font-extrabold mb-4">Mi Agenda</h2><p class="text-sm text-gray-500">Próximamente: Calendario de eventos.</p></div></div>
+    </div>
+    <div id="popupDocumentacion" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupDocumentacion')">
+        <div class="popup-caja"><button class="popup-cerrar" onclick="cerrarPopup('popupDocumentacion')">✕</button><div class="p-6"><h2 class="text-xl font-extrabold mb-4">Mi Documentación</h2><p class="text-sm text-gray-500">Próximamente: Manuales y PDFs.</p></div></div>
+    </div>
+    <div id="popupImprimir" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupImprimir')">
+        <div class="popup-caja"><button class="popup-cerrar" onclick="cerrarPopup('popupImprimir')">✕</button><div class="p-6"><h2 class="text-xl font-extrabold mb-4">Imprimir Códigos</h2><p class="text-sm text-gray-500">Próximamente: Generador de PDFs de etiquetas.</p></div></div>
+    </div>
+
+    <!-- SCRIPT -->
+    <script>
+        // Configuración Supabase
+        const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let expositorActual = null;
+        let cuitActual = '';
+        let productosLista = [];
+
+        // 1. INICIAR SESIÓN
+        async function iniciarSesion(e) {
+            e.preventDefault();
+            const cuit = document.getElementById('loginCuit').value.trim();
+            const errorDiv = document.getElementById('errorLogin');
+            errorDiv.classList.add('hidden');
+
+            try {
+                // Buscamos al expositor por su CUIT
+                const { data, error } = await supabaseClient
+                    .from('standargentina')
+                    .select('*, stands(numero, pabellon_id)')
+                    .eq('cuit', cuit)
+                    .maybeSingle();
+
+                if (error) throw error;
+                
+                if (!data) {
+                    errorDiv.innerText = 'CUIT no encontrado. Verificá tus datos.';
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+
+                expositorActual = data;
+                cuitActual = cuit;
+                await cargarPanel();
+            } catch (err) {
+                console.error(err);
+                errorDiv.innerText = 'Error de conexión: ' + err.message;
+                errorDiv.classList.remove('hidden');
+            }
+        }
+
+        // 2. CARGAR PANEL
+        async function cargarPanel() {
+            document.getElementById('seccionLogin').classList.add('hidden');
+            document.getElementById('seccionPanel').classList.remove('hidden');
+
+            document.getElementById('adminNombreEmpresa').innerText = expositorActual.empresa_stand || 'Mi Empresa';
+            document.getElementById('adminCuit').innerText = cuitActual;
+            
+            // Si tiene stand asignado, mostrarlo
+            if (expositorActual.stands) {
+                document.getElementById('adminStandInfo').innerText = `Stand ${expositorActual.stands.numero}`;
+            } else {
+                document.getElementById('adminStandInfo').innerText = 'Stand no asignado aún';
+            }
+
+            // Cargar productos
+            await cargarProductos();
+        }
+
+        // 3. CARGAR PRODUCTOS
+        async function cargarProductos() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('standproductos')
+                    .select('*')
+                    .eq('expositor_id', expositorActual.id)
+                    .order('codigo');
+
+                if (error) throw error;
+                productosLista = data || [];
+                renderizarTablaProductos();
+            } catch (err) {
+                console.error('Error al cargar productos:', err);
+            }
+        }
+
+        function renderizarTablaProductos() {
+            const tbody = document.getElementById('tbodyProductos');
+            tbody.innerHTML = '';
+
+            if (productosLista.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-500 py-4 text-xs">No hay productos cargados aún.</td></tr>';
+                return;
+            }
+
+            productosLista.forEach(prod => {
+                const precio = prod.precio ? `$${Number(prod.precio).toLocaleString('es-AR')}` : '---';
+                tbody.innerHTML += `
+                    <tr>
+                        <td><span class="codigo-badge">${prod.codigo}</span></td>
+                        <td class="font-semibold text-slate-800">${prod.nombre}</td>
+                        <td>${precio}</td>
+                        <td class="text-xs text-emerald-600">${prod.disponibilidad || '---'}</td>
+                        <td class="text-right space-x-1">
+                            <button onclick="editarProducto(${prod.id})" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-bold text-xs">✏️ Editar</button>
+                            <button onclick="eliminarProducto(${prod.id})" class="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded font-bold text-xs">🗑️ Borrar</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // 4. ABRIR POPUP NUEVO PRODUCTO
+        function abrirPopupNuevoProducto() {
+            document.getElementById('prodId').value = '';
+            document.getElementById('prodCodigo').value = '';
+            document.getElementById('prodPrecio').value = '';
+            document.getElementById('prodNombre').value = '';
+            document.getElementById('prodDescripcion').value = '';
+            document.getElementById('prodDisponibilidad').value = '';
+            document.getElementById('prodPromocion').value = '';
+            document.getElementById('prodVideo').value = '';
+            document.getElementById('prodBrochure').value = '';
+            document.getElementById('prodAplicaciones').value = '';
+            
+            document.getElementById('tituloFormProducto').innerText = '➕ Nuevo Producto';
+            abrirPopup('popupProducto');
+        }
+
+        // 5. EDITAR PRODUCTO
+        function editarProducto(id) {
+            const prod = productosLista.find(p => p.id === id);
+            if (!prod) return;
+
+            document.getElementById('prodId').value = prod.id;
+            document.getElementById('prodCodigo').value = prod.codigo || '';
+            document.getElementById('prodPrecio').value = prod.precio || '';
+            document.getElementById('prodNombre').value = prod.nombre || '';
+            document.getElementById('prodDescripcion').value = prod.descripcion || '';
+            document.getElementById('prodDisponibilidad').value = prod.disponibilidad || '';
+            document.getElementById('prodPromocion').value = prod.promocion || '';
+            document.getElementById('prodVideo').value = prod.video_url || '';
+            document.getElementById('prodBrochure').value = prod.brochure_url || '';
+            document.getElementById('prodAplicaciones').value = prod.aplicaciones || '';
+
+            document.getElementById('tituloFormProducto').innerText = '✏️ Editar Producto';
+            abrirPopup('popupProducto');
+        }
+
+        // 6. GUARDAR PRODUCTO (Crear o Actualizar)
+        async function guardarProducto(e) {
+            e.preventDefault();
+            const id = document.getElementById('prodId').value;
+            
+            const payload = {
+                expositor_id: expositorActual.id,
+                codigo: document.getElementById('prodCodigo').value.trim(),
+                nombre: document.getElementById('prodNombre').value.trim(),
+                precio: document.getElementById('prodPrecio').value || null,
+                descripcion: document.getElementById('prodDescripcion').value.trim(),
+                disponibilidad: document.getElementById('prodDisponibilidad').value.trim(),
+                promocion: document.getElementById('prodPromocion').value.trim(),
+                video_url: document.getElementById('prodVideo').value.trim(),
+                brochure_url: document.getElementById('prodBrochure').value.trim(),
+                aplicaciones: document.getElementById('prodAplicaciones').value.trim()
+            };
+
+            try {
+                if (id) {
+                    // Actualizar
+                    const { error } = await supabaseClient.from('standproductos').update(payload).eq('id', id);
+                    if (error) throw error;
+                } else {
+                    // Crear
+                    const { error } = await supabaseClient.from('standproductos').insert([payload]);
+                    if (error) throw error;
+                }
+                
+                cerrarPopup('popupProducto');
+                await cargarProductos(); // Recargar tabla
+                alert('Producto guardado con éxito');
+            } catch (err) {
+                console.error(err);
+                alert('Error al guardar: ' + err.message);
+            }
+        }
+
+        // 7. ELIMINAR PRODUCTO
+        async function eliminarProducto(id) {
+            if (!confirm('¿Seguro que querés eliminar este producto?')) return;
+            try {
+                const { error } = await supabaseClient.from('standproductos').delete().eq('id', id);
+                if (error) throw error;
+                await cargarProductos();
+            } catch (err) {
+                alert('Error al eliminar: ' + err.message);
+            }
+        }
+
+        // 8. FUNCIONES DE UI
+        function abrirPopup(id) { document.getElementById(id).classList.add('activo'); }
+        function cerrarPopup(id) { document.getElementById(id).classList.remove('activo'); }
+        function cerrarSesion() { location.reload(); } // Recarga simple para salir
+        function guardarColor(color) { 
+            document.getElementById('headerAdmin').style.backgroundColor = color; 
+        }
+    </script>
+</body>
+</html>
