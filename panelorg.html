@@ -76,7 +76,7 @@
                     <button onclick="toggleSubmenu('submenuFerias')" class="sidebar-item w-full flex items-center justify-between px-4 py-2 text-sm font-bold text-emerald-400">
                         <span>🏢 Mis Ferias</span><span class="text-xs">▼</span>
                     </button>
-                    <div id="submenuFerias" class="submenu bg-slate-800/50">
+                    <div id="submenuFerias" class="submenu activo bg-slate-800/50">
                         <div id="listaFeriasSidebar" class="py-1 text-xs"></div>
                         <button onclick="abrirPopupNuevaFeria()" class="w-full text-left px-6 py-2 text-[11px] text-naranja hover:bg-slate-700 font-bold">+ Nueva Feria</button>
                     </div>
@@ -223,7 +223,7 @@
     </div>
 
     <!-- ================= SCRIPT ================= -->
-    <script>
+   <script>
         const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -282,7 +282,7 @@
             document.getElementById('feriaSlug').value = slug;
         }
 
-        // 3. CARGAR FERIAS
+        // 3. CARGAR FERIAS (ÚNICA VERSIÓN)
         async function cargarFerias() {
             try {
                 const { data, error } = await supabaseClient
@@ -293,7 +293,12 @@
 
                 if (error) throw error;
                 feriasLista = data || [];
+                
                 renderizarFeriasSidebar();
+                
+                // Forzar apertura del menú
+                const submenu = document.getElementById('submenuFerias');
+                if (submenu) submenu.classList.add('activo');
             } catch (err) { console.error('Error al cargar ferias:', err); }
         }
 
