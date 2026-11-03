@@ -136,6 +136,15 @@
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Nombre de la Feria</label>
                         <input type="text" id="feriaNombre" required oninput="generarSlugAutomatico()" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Expo ConstruTech 2026">
                     </div>
+                     <!-- NUEVOS CAMPOS -->
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Descripción Corta</label>
+                        <input type="text" id="feriaDescripcion" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Feria de materiales y construcción">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Sector</label>
+                        <input type="text" id="feriaSector" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Metalurgia, Alimentos, Tecnología...">
+                    </div>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Tipo</label>
@@ -287,18 +296,21 @@
             } catch (err) { console.error('Error al cargar ferias:', err); }
         }
 
-        function renderizarFeriasSidebar() {
+        unction renderizarFeriasSidebar() {
             const contenedor = document.getElementById('listaFeriasSidebar');
             contenedor.innerHTML = '';
+            
             if (feriasLista.length === 0) {
                 contenedor.innerHTML = '<p class="px-6 py-2 text-[10px] text-slate-500 italic">No hay ferias creadas.</p>';
                 return;
             }
+
             feriasLista.forEach(feria => {
                 const activa = feriaSeleccionada && feriaSeleccionada.id === feria.id;
                 contenedor.innerHTML += `
-                    <button onclick="seleccionarFeria('${feria.id}')" class="w-full text-left px-6 py-2 text-[11px] hover:bg-slate-700 transition ${activa ? 'text-naranja font-bold' : 'text-slate-300'}">
-                        > ${feria.nombre}
+                    <button onclick="seleccionarFeria('${feria.id}')" class="w-full text-left px-6 py-2 text-[11px] hover:bg-slate-700 transition border-l-2 ${activa ? 'border-naranja text-naranja font-bold bg-slate-800' : 'border-transparent text-slate-300'}">
+                        <div class="font-bold">> ${feria.nombre}</div>
+                        ${feria.descripcion ? `<div class="text-[9px] text-slate-500 italic mt-0.5">${feria.descripcion}</div>` : ''}
                     </button>
                 `;
             });
@@ -424,11 +436,13 @@
             abrirPopup('popupNuevaFeria');
         }
 
-        async function guardarNuevaFeria(e) {
+          async function guardarNuevaFeria(e) {
             e.preventDefault();
             const payload = {
                 organizador_id: organizadorActual.id,
                 nombre: document.getElementById('feriaNombre').value.trim(),
+                descripcion: document.getElementById('feriaDescripcion').value.trim(),
+                sector: document.getElementById('feriaSector').value.trim(),
                 tipo: document.getElementById('feriaTipo').value,
                 slug_url: document.getElementById('feriaSlug').value.trim().toLowerCase().replace(/\s+/g, '-'),
                 fecha_inicio: document.getElementById('feriaFechaInicio').value,
@@ -437,11 +451,13 @@
                 idioma: document.getElementById('feriaIdioma').value,
                 estado: 'borrador'
             };
+
             try {
                 const { error } = await supabaseClient.from('ferias').insert([payload]);
                 if (error) throw error;
+                
                 cerrarPopup('popupNuevaFeria');
-                await cargarFerias();
+                await cargarFerias(); // <-- ESTO REFRESCA EL MENÚ LATERAL
                 alert('Feria creada con éxito');
             } catch (err) { alert('Error al crear la feria: ' + err.message); }
         }
