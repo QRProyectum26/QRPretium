@@ -332,6 +332,29 @@
             </div>
         </div>
     </div>
+     <!-- POPUP: VER STANDS DEL PABELLÓN -->
+    <div id="popupVerStands" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupVerStands')">
+        <div class="popup-caja popup-caja-grande">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupVerStands')">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-2">🔢 Stands del Pabellón</h2>
+                <p class="text-sm text-slate-600 mb-4 font-bold" id="verStandsPabNombre">Cargando...</p>
+                
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 text-xs text-blue-800">
+                    💡 Hacé clic en un stand para asignarle un expositor o configurar sus detalles.
+                </div>
+
+                <!-- Grilla de Stands -->
+                <div id="grillaStands" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 max-h-96 overflow-y-auto pr-2">
+                    <div class="text-center col-span-full"><div class="loader"></div></div>
+                </div>
+
+                <div class="flex justify-end gap-2 mt-5 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="cerrarPopup('popupVerStands')" class="px-6 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- ================= SCRIPT ================= -->
    <script>
         const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
@@ -497,7 +520,7 @@
             }
         }
 
-        // 7. MÓDULO FERIA FÍSICA (CON MAPA INTERACTIVO)
+       // 7. MÓDULO FERIA FÍSICA (CON MAPA INTERACTIVO Y VER STANDS)
         async function cargarFeriaFisica(area) {
             area.innerHTML = '<div class="text-center mt-10"><div class="loader"></div></div>';
 
@@ -550,7 +573,7 @@
                     `;
                 }
 
-                // Grilla de Pabellones
+                // Grilla de Pabellones (CON BOTÓN "VER STANDS")
                 html += `<h3 class="text-lg font-bold text-slate-800 mb-3">Pabellones Creados</h3>`;
                 if (!data || data.length === 0) {
                     html += `<div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 text-center text-slate-500">No hay pabellones creados para esta feria.</div>`;
@@ -570,9 +593,12 @@
                                         <p>📐 Grid: ${pab.cant_filas || 0} filas x ${pab.cant_columnas || 0} columnas</p>
                                     </div>
                                 </div>
-                                <div class="mt-3 pt-3 border-t border-slate-100">
-                                    <button onclick="abrirConfiguracionPabellon('${pab.id}')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-1.5 rounded-lg text-xs transition">
-                                        ⚙️ Configurar Pabellón
+                                <div class="mt-3 pt-3 border-t border-slate-100 flex gap-2">
+                                    <button onclick="abrirConfiguracionPabellon('${pab.id}')" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-1.5 rounded-lg text-xs transition">
+                                        ⚙️ Configurar
+                                    </button>
+                                    <button onclick="verStandsPabellon('${pab.id}', '${pab.nombre}')" class="flex-1 bg-naranja hover:bg-orange-600 text-white font-bold py-1.5 rounded-lg text-xs transition">
+                                        👁️ Ver Stands
                                     </button>
                                 </div>
                             </div>
@@ -598,11 +624,9 @@
             const imagen = document.getElementById('imagenPlano');
             if (!contenedor || !imagen) return;
 
-            // Mostrar botón de "Marcar Pabellón"
             const btnMarcar = document.getElementById('btnMarcarPabellon');
             if (btnMarcar) btnMarcar.classList.remove('hidden');
 
-            // Dibujar pines existentes
             contenedor.innerHTML = '';
             pabellones.forEach(pab => {
                 if (pab.mapa_x && pab.mapa_y) {
@@ -620,7 +644,6 @@
                 }
             });
 
-            // Escuchar clics en el plano (solo si está en modo marcar)
             imagen.parentElement.onclick = function(e) {
                 if (!window.modoMarcarPabellon) return;
 
@@ -683,7 +706,7 @@
             } catch (err) { alert('Error al guardar plano: ' + err.message); }
         }
 
-        // 12. CONFIGURACIÓN DEL PABELLÓN (ÚNICA VERSIÓN)
+        // 12. CONFIGURACIÓN DEL PABELLÓN
         async function abrirConfiguracionPabellon(pabellonId) {
             try {
                 const { data, error } = await supabaseClient.from('pabellones').select('*').eq('id', pabellonId).single();
@@ -786,6 +809,83 @@
                 mostrarModulo('feriaFisica');
             } catch (err) {
                 alert('Error al guardar: ' + err.message);
+            }
+        }
+
+        // 13. VER STANDS DEL PABELLÓN
+        async function verStandsPabellon(pabellonId, nombrePabellon) {
+            document.getElementById('verStandsPabNombre').innerText = nombrePabellon;
+            document.getElementById('grillaStands').innerHTML = '<div class="text-center col-span-full"><div class="loader"></div></div>';
+            abrirPopup('popupVerStands');
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('stands')
+                    .select('*')
+                    .eq('pabellon_id', pabellonId)
+                    .order('numero', { ascending: true });
+
+                if (error) throw error;
+
+                const contenedor = document.getElementById('grillaStands');
+                contenedor.innerHTML = '';
+
+                if (!data || data.length === 0) {
+                    contenedor.innerHTML = '<p class="text-slate-500 text-xs col-span-full text-center">No hay stands generados para este pabellón.</p>';
+                    return;
+                }
+
+                data.forEach(stand => {
+                    const boton = document.createElement('button');
+                    boton.className = "bg-slate-800 hover:bg-naranja text-white rounded-lg p-2 flex flex-col items-center justify-center shadow-sm transition border-2 border-slate-600 hover:border-orange-500";
+                    boton.innerHTML = `
+                        <span class="text-[9px] text-slate-400 uppercase font-bold">Stand</span>
+                        <span class="text-xs font-black text-white">${stand.codigo_etiqueta || stand.numero}</span>
+                    `;
+                    boton.onclick = () => alert(`Stand ${stand.codigo_etiqueta || stand.numero}\nFila: ${stand.fila}\nColumna: ${stand.columna}\n\nPróximamente: Asignar expositor.`);
+                    contenedor.appendChild(boton);
+                });
+
+            } catch (err) {
+                document.getElementById('grillaStands').innerHTML = `<p class="text-red-500 text-xs col-span-full text-center">Error al cargar: ${err.message}</p>`;
+            }
+        }
+          // 13. VER STANDS DEL PABELLÓN
+        async function verStandsPabellon(pabellonId, nombrePabellon) {
+            document.getElementById('verStandsPabNombre').innerText = nombrePabellon;
+            document.getElementById('grillaStands').innerHTML = '<div class="text-center col-span-full"><div class="loader"></div></div>';
+            abrirPopup('popupVerStands');
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('stands')
+                    .select('*')
+                    .eq('pabellon_id', pabellonId)
+                    .order('numero', { ascending: true });
+
+                if (error) throw error;
+
+                const contenedor = document.getElementById('grillaStands');
+                contenedor.innerHTML = '';
+
+                if (!data || data.length === 0) {
+                    contenedor.innerHTML = '<p class="text-slate-500 text-xs col-span-full text-center">No hay stands generados para este pabellón.</p>';
+                    return;
+                }
+
+                data.forEach(stand => {
+                    const boton = document.createElement('button');
+                    boton.className = "bg-slate-800 hover:bg-naranja text-white rounded-lg p-2 flex flex-col items-center justify-center shadow-sm transition border-2 border-slate-600 hover:border-orange-500";
+                    boton.innerHTML = `
+                        <span class="text-[9px] text-slate-400 uppercase font-bold">Stand</span>
+                        <span class="text-xs font-black text-white">${stand.codigo_etiqueta || stand.numero}</span>
+                    `;
+                    boton.onclick = () => alert(`Stand ${stand.codigo_etiqueta || stand.numero}\nFila: ${stand.fila}\nColumna: ${stand.columna}\n\nPróximamente: Asignar expositor.`);
+                    contenedor.appendChild(boton);
+                });
+
+            } catch (err) {
+                document.getElementById('grillaStands').innerHTML = `<p class="text-red-500 text-xs col-span-full text-center">Error al cargar: ${err.message}</p>`;
             }
         }
     </script>
