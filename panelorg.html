@@ -66,25 +66,33 @@
 
     <!-- PANEL -->
     <div id="seccionPanel" class="hidden h-screen flex">
-        <aside id="sidebar" class="sidebar bg-pizarraOscura text-white h-full overflow-y-auto flex-shrink-0 flex flex-col">
+<aside id="sidebar" class="sidebar bg-pizarraOscura text-white h-full overflow-y-auto flex-shrink-0 flex flex-col">
             <div class="p-4 border-b border-slate-700 flex items-center gap-2">
                 <img src="img/logoqrpretium1.jpg" alt="Logo" class="w-8 h-8 rounded-lg object-cover">
                 <span class="font-black text-lg tracking-tight">QR<span class="text-naranja">Pretium</span></span>
             </div>
             <nav class="flex-1 py-4 space-y-1">
+                <!-- MIS FERIAS CON SUBMENÚ -->
                 <div>
                     <button onclick="toggleSubmenu('submenuFerias')" class="sidebar-item w-full flex items-center justify-between px-4 py-2 text-sm font-bold text-emerald-400">
-                        <span>🏢 Mis Ferias</span><span class="text-xs">▼</span>
+                        <span>🏢 Mis Ferias</span>
+                        <span class="text-xs">▼</span>
                     </button>
+                    <!-- CONTENEDOR DE FERIAS -->
                     <div id="submenuFerias" class="submenu activo bg-slate-800/50">
-                        <div id="listaFeriasSidebar" class="py-1 text-xs"></div>
+                        <div id="listaFeriasSidebar" class="py-1 text-xs">
+                            <!-- Las ferias se inyectan acá por JS -->
+                        </div>
                         <button onclick="abrirPopupNuevaFeria()" class="w-full text-left px-6 py-2 text-[11px] text-naranja hover:bg-slate-700 font-bold">+ Nueva Feria</button>
                     </div>
                 </div>
+                
                 <button onclick="mostrarModulo('miOrganizacion')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🏛️ Mi Organización</button>
                 <button onclick="mostrarModulo('calendarios')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">📅 Mis Calendarios</button>
                 <button onclick="mostrarModulo('agenda')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🗓️ Mi Agenda</button>
+                
                 <div class="px-4 py-2 text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-4">Configuración de Feria</div>
+                
                 <button onclick="mostrarModulo('feriaFisica')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🗺️ Mi Feria Física</button>
                 <button onclick="mostrarModulo('expositores')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">👥 Expositores</button>
                 <button onclick="mostrarModulo('operaciones')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🚨 Operaciones (Tickets)</button>
@@ -231,7 +239,6 @@
         let organizadorActual = null;
         let feriasLista = [];
         let feriaSeleccionada = null;
-        let pabellonSeleccionado = null;
 
         // 1. LOGIN
         async function iniciarSesion(e) {
@@ -296,7 +303,6 @@
                 
                 renderizarFeriasSidebar();
                 
-                // Forzar apertura del menú
                 const submenu = document.getElementById('submenuFerias');
                 if (submenu) submenu.classList.add('activo');
             } catch (err) { console.error('Error al cargar ferias:', err); }
@@ -304,6 +310,8 @@
 
         function renderizarFeriasSidebar() {
             const contenedor = document.getElementById('listaFeriasSidebar');
+            if (!contenedor) return;
+            
             contenedor.innerHTML = '';
             if (feriasLista.length === 0) {
                 contenedor.innerHTML = '<p class="px-6 py-2 text-[10px] text-slate-500 italic">No hay ferias creadas.</p>';
@@ -330,7 +338,10 @@
         }
 
         // 5. NAVEGACIÓN
-        function toggleSubmenu(id) { document.getElementById(id).classList.toggle('activo'); }
+        function toggleSubmenu(id) { 
+            const submenu = document.getElementById(id);
+            if (submenu) submenu.classList.toggle('activo'); 
+        }
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('cerrado'); }
         function abrirPopup(id) { document.getElementById(id).classList.add('activo'); }
         function cerrarPopup(id) { document.getElementById(id).classList.remove('activo'); }
