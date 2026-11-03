@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <title>Panel Organizador - QRPretium</title>
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pizarra: '#1E293B',
+                        pizarraOscura: '#0F172A',
+                        naranja: '#F97316',
+                        verdeQR: '#0D9488',
+                        verdeVivo: '#10B981',
+                        azulOrg: '#1E40AF'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        .popup-overlay {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+            z-index: 100; display: flex; align-items: center; justify-content: center;
+            padding: 16px; opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+        }
+        .popup-overlay.activo { opacity: 1; pointer-events: auto; }
+        .popup-caja {
+            background: #ffffff; border-radius: 20px; max-width: 600px; width: 100%;
+            max-height: 90vh; overflow-y: auto; transform: scale(0.9); opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5); position: relative;
+        }
+        .popup-overlay.activo .popup-caja { transform: scale(1); opacity: 1; }
+        .popup-cerrar {
+            position: absolute; top: 12px; right: 12px; background: rgba(15, 23, 42, 0.1);
+            border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 18px;
+            font-weight: 700; color: #334155; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; transition: all 0.2s ease; z-index: 10;
+        }
+        .popup-cerrar:hover { background: rgba(15, 23, 42, 0.2); transform: rotate(90deg); }
+        
+        /* Sidebar */
+        .sidebar { width: 280px; transition: width 0.3s ease; }
+        .sidebar.cerrado { width: 0; overflow: hidden; }
+        .sidebar-item { cursor: pointer; transition: all 0.2s; }
+        .sidebar-item:hover { background-color: rgba(255,255,255,0.1); }
+        .submenu { display: none; }
+        .submenu.activo { display: block; }
+        
+        /* Scrollbar personalizado */
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 h-screen overflow-hidden">
+
+    <!-- SECCIÓN 1: LOGIN -->
+    <div id="seccionLogin" class="h-screen flex items-center justify-center bg-pizarraOscura p-4">
+        <div class="max-w-md w-full p-8 bg-white rounded-2xl shadow-2xl border border-gray-200">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-black text-slate-800 tracking-tight">QRPretium <span class="text-verdeQR">Org</span></h1>
+                <p class="text-xs text-gray-500 mt-2">Panel de Gestión para Organizadores de Ferias y Buros</p>
+            </div>
+            <form onsubmit="iniciarSesion(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Email</label>
+                    <input type="email" id="loginEmail" required placeholder="admin@qrpretium.com" 
+                        class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-verdeQR text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Contraseña</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••" 
+                        class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-verdeQR text-sm">
+                </div>
+                <div id="errorLogin" class="text-red-600 text-xs text-center font-bold hidden p-3 bg-red-50 rounded-lg border border-red-200"></div>
+                <button type="submit" class="w-full bg-verdeQR hover:bg-teal-700 text-white font-bold py-3 rounded-xl shadow-md transition text-sm">
+                    Ingresar al Panel
+                </button>
+            </form>
+            <p class="text-[10px] text-gray-400 text-center mt-4">Usa admin@qrpretium.com / 123456 para probar.</p>
+        </div>
+    </div>
+
+    <!-- SECCIÓN 2: PANEL (LAYOUT) -->
+    <div id="seccionPanel" class="hidden h-screen flex">
+        
+        <!-- SIDEBAR (MENÚ LATERAL) -->
+        <aside id="sidebar" class="sidebar bg-pizarraOscura text-white h-full overflow-y-auto flex-shrink-0 flex flex-col">
+            <!-- Logo -->
+            <div class="p-4 border-b border-slate-700 flex items-center gap-2">
+                <img src="img/logoqrpretium1.jpg" alt="Logo" class="w-8 h-8 rounded-lg object-cover">
+                <span class="font-black text-lg tracking-tight">QR<span class="text-naranja">Pretium</span></span>
+            </div>
+
+            <!-- Menú Principal -->
+            <nav class="flex-1 py-4 space-y-1">
+                <!-- Mis Ferias (Raíz) -->
+                <div>
+                    <button onclick="toggleSubmenu('submenuFerias')" class="sidebar-item w-full flex items-center justify-between px-4 py-2 text-sm font-bold text-emerald-400">
+                        <span>🏢 Mis Ferias</span>
+                        <span class="text-xs">▼</span>
+                    </button>
+                    <div id="submenuFerias" class="submenu bg-slate-800/50">
+                        <div id="listaFeriasSidebar" class="py-1 text-xs">
+                            <!-- Se llena por JS (FERIA 001, 002, etc.) -->
+                        </div>
+                        <button onclick="abrirPopupNuevaFeria()" class="w-full text-left px-6 py-2 text-[11px] text-naranja hover:bg-slate-700 font-bold">+ Nueva Feria</button>
+                    </div>
+                </div>
+
+                <!-- Mi Organización -->
+                <button onclick="mostrarModulo('miOrganizacion')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300 flex items-center gap-2">
+                    🏛️ Mi Organización
+                </button>
+                
+                <!-- Mis Calendarios -->
+                <button onclick="mostrarModulo('calendarios')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300 flex items-center gap-2">
+                    📅 Mis Calendarios
+                </button>
+                
+                <!-- Mi Agenda -->
+                <button onclick="mostrarModulo('agenda')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300 flex items-center gap-2">
+                    🗓️ Mi Agenda
+                </button>
+
+                <!-- Separador -->
+                <div class="px-4 py-2 text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-4">Configuración de Feria</div>
+
+                <!-- Otros módulos (se activan al elegir una feria) -->
+                <button onclick="mostrarModulo('feriaFisica')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300 flex items-center gap-2">
+                    🗺️ Mi Feria Física
+                </button>
+                <button onclick="mostrarModulo('expositores')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300 flex items-center gap-2">
+                    👥 Expositores
+                </button>
+                <button onclick="mostrarModulo('operaciones')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300 flex items-center gap-2">
+                    🚨 Operaciones (Tickets)
+                </button>
+                <button onclick="mostrarModulo('notificaciones')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300 flex items-center gap-2">
+                    📢 Notificaciones
+                </button>
+                <button onclick="mostrarModulo('servicios')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300 flex items-center gap-2">
+                    🛠️ Servicios y Mantenimiento
+                </button>
+                <button onclick="mostrarModulo('actividades')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300 flex items-center gap-2">
+                    🎉 Actividades y Eventos
+                </button>
+                <button onclick="mostrarModulo('seguridad')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300 flex items-center gap-2">
+                    🛡️ Seguridad y Emergencias
+                </button>
+                <button onclick="mostrarModulo('documentacion')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300 flex items-center gap-2">
+                    📄 Documentaciones y Legales
+                </button>
+                <button onclick="mostrarModulo('proveedores')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300 flex items-center gap-2">
+                    🤝 Proveedores
+                </button>
+                <button onclick="mostrarModulo('sponsors')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300 flex items-center gap-2">
+                    🏷️ Sponsors
+                </button>
+                <button onclick="mostrarModulo('estadisticas')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300 flex items-center gap-2">
+                    📊 Estadísticas
+                </button>
+                <button onclick="mostrarModulo('informeEstado')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300 flex items-center gap-2">
+                    📋 Informe de Estado
+                </button>
+            </nav>
+
+            <!-- Footer Sidebar -->
+            <div class="p-4 border-t border-slate-700">
+                <button onclick="cerrarSesion()" class="w-full text-xs text-red-400 hover:text-red-300 font-bold text-left">Cerrar Sesión</button>
+            </div>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL (VISOR) -->
+        <main class="flex-1 flex flex-col h-full overflow-hidden">
+            <!-- Header Superior -->
+            <header class="bg-white border-b border-gray-200 p-4 flex justify-between items-center shadow-sm z-10">
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleSidebar()" class="text-slate-500 hover:text-slate-800">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    </button>
+                    <h2 id="tituloModulo" class="text-lg font-bold text-slate-800">Seleccioná una Feria</h2>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span id="nombreOrganizador" class="text-xs font-bold text-slate-600">Cargando...</span>
+                    <div class="w-8 h-8 bg-verdeQR rounded-full flex items-center justify-center text-white font-bold text-sm">O</div>
+                </div>
+            </header>
+
+            <!-- Área de Trabajo (Aquí se cargan los módulos) -->
+            <div id="areaTrabajo" class="flex-1 overflow-y-auto p-6 bg-gray-50">
+                <!-- Por defecto muestra un mensaje de bienvenida -->
+                <div class="text-center mt-20">
+                    <span class="text-6xl">👋</span>
+                    <h2 class="text-2xl font-bold text-slate-800 mt-4">Bienvenido al PanelOrg</h2>
+                    <p class="text-slate-500 mt-2">Seleccioná una feria del menú lateral para empezar a trabajar.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ================= POPUPS ================= -->
+
+    <!-- POPUP: NUEVA FERIA -->
+    <div id="popupNuevaFeria" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupNuevaFeria')">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupNuevaFeria')">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-4">🏢 Crear Nueva Feria / Buro</h2>
+                <form onsubmit="guardarNuevaFeria(event)" class="space-y-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Nombre de la Feria</label>
+                        <input type="text" id="feriaNombre" required class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Expo ConstruTech 2026">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Tipo</label>
+                            <select id="feriaTipo" class="w-full px-3 py-2 border rounded-xl text-sm">
+                                <option value="Feria">Feria / Expo</option>
+                                <option value="Buro">Buro / Congreso</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Slug (URL)</label>
+                            <input type="text" id="feriaSlug" required class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="expoconstru-tech">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Fecha Inicio</label>
+                            <input type="date" id="feriaFechaInicio" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Fecha Fin</label>
+                            <input type="date" id="feriaFechaFin" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Moneda</label>
+                            <select id="feriaMoneda" class="w-full px-3 py-2 border rounded-xl text-sm">
+                                <option value="ARS">ARS ($)</option>
+                                <option value="BOB">BOB (Bs)</option>
+                                <option value="BRL">BRL (R$)</option>
+                                <option value="CLP">CLP ($)</option>
+                                <option value="PEN">PEN (S/)</option>
+                                <option value="USD">USD (U$S)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Idioma</label>
+                            <select id="feriaIdioma" class="w-full px-3 py-2 border rounded-xl text-sm">
+                                <option value="es">Español</option>
+                                <option value="pt">Portugués</option>
+                                <option value="en">Inglés</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                        <button type="button" onclick="cerrarPopup('popupNuevaFeria')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
+                        <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Crear Feria</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= SCRIPT ================= -->
+    <script>
+        const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let organizadorActual = null;
+        let feriasLista = [];
+        let feriaSeleccionada = null;
+
+        // 1. LOGIN
+        async function iniciarSesion(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            const errorDiv = document.getElementById('errorLogin');
+            errorDiv.classList.add('hidden');
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('organizadores')
+                    .select('*')
+                    .eq('email', email)
+                    .eq('password_hash', password)
+                    .maybeSingle();
+
+                if (error) throw error;
+                if (!data) {
+                    errorDiv.innerText = 'Email o contraseña incorrectos.';
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+
+                organizadorActual = data;
+                document.getElementById('nombreOrganizador').innerText = data.nombre_empresa;
+                await cargarFerias();
+                
+                document.getElementById('seccionLogin').classList.add('hidden');
+                document.getElementById('seccionPanel').classList.remove('hidden');
+            } catch (err) {
+                errorDiv.innerText = 'Error de conexión: ' + err.message;
+                errorDiv.classList.remove('hidden');
+            }
+        }
+
+        // 2. CARGAR FERIAS EN EL SIDEBAR
+        async function cargarFerias() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('ferias')
+                    .select('*')
+                    .eq('organizador_id', organizadorActual.id)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                feriasLista = data || [];
+                renderizarFeriasSidebar();
+            } catch (err) { console.error('Error al cargar ferias:', err); }
+        }
+
+        function renderizarFeriasSidebar() {
+            const contenedor = document.getElementById('listaFeriasSidebar');
+            contenedor.innerHTML = '';
+            
+            if (feriasLista.length === 0) {
+                contenedor.innerHTML = '<p class="px-6 py-2 text-[10px] text-slate-500 italic">No hay ferias creadas.</p>';
+                return;
+            }
+
+            feriasLista.forEach(feria => {
+                const activa = feriaSeleccionada && feriaSeleccionada.id === feria.id;
+                contenedor.innerHTML += `
+                    <button onclick="seleccionarFeria('${feria.id}')" class="w-full text-left px-6 py-2 text-[11px] hover:bg-slate-700 transition ${activa ? 'text-naranja font-bold' : 'text-slate-300'}">
+                        > ${feria.nombre}
+                    </button>
+                `;
+            });
+        }
+
+        // 3. SELECCIONAR FERIA
+        function seleccionarFeria(id) {
+            feriaSeleccionada = feriasLista.find(f => f.id === id);
+            if (!feriaSeleccionada) return;
+            
+            document.getElementById('tituloModulo').innerText = feriaSeleccionada.nombre;
+            renderizarFeriasSidebar();
+            mostrarModulo('feriaFisica'); // Por defecto abrimos la Feria Física
+        }
+
+        // 4. NAVEGACIÓN DEL SIDEBAR
+        function toggleSubmenu(id) {
+            const submenu = document.getElementById(id);
+            submenu.classList.toggle('activo');
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('cerrado');
+        }
+
+        function mostrarModulo(modulo) {
+            if (!feriaSeleccionada && modulo !== 'miOrganizacion' && modulo !== 'calendarios' && modulo !== 'agenda') {
+                alert('Primero seleccioná una feria del menú lateral.');
+                return;
+            }
+
+            const area = document.getElementById('areaTrabajo');
+            const titulo = document.getElementById('tituloModulo');
+
+            // Acá iría el switch para cargar el HTML de cada módulo
+            switch(modulo) {
+                case 'miOrganizacion':
+                    titulo.innerText = 'Mi Organización';
+                    area.innerHTML = '<p class="text-slate-500">Módulo de Organización (Próximamente)</p>';
+                    break;
+                case 'calendarios':
+                    titulo.innerText = 'Mis Calendarios';
+                    area.innerHTML = '<p class="text-slate-500">Módulo de Calendarios (Próximamente)</p>';
+                    break;
+                case 'agenda':
+                    titulo.innerText = 'Mi Agenda';
+                    area.innerHTML = '<p class="text-slate-500">Módulo de Agenda (Próximamente)</p>';
+                    break;
+                case 'feriaFisica':
+                    titulo.innerText = 'Mi Feria Física - ' + (feriaSeleccionada ? feriaSeleccionada.nombre : '');
+                    area.innerHTML = '<p class="text-slate-500">Acá va el módulo de Pabellones y Stands (Próximamente)</p>';
+                    break;
+                case 'expositores':
+                    titulo.innerText = 'Expositores';
+                    area.innerHTML = '<p class="text-slate-500">Acá va la tabla de Expositores (Próximamente)</p>';
+                    break;
+                case 'operaciones':
+                    titulo.innerText = 'Operaciones y Tickets';
+                    area.innerHTML = '<p class="text-slate-500">Acá va el tablero de Incidencias (Próximamente)</p>';
+                    break;
+                case 'notificaciones':
+                    titulo.innerText = 'Notificaciones y Comunicaciones';
+                    area.innerHTML = '<p class="text-slate-500">Acá va el módulo de Comunicaciones (Próximamente)</p>';
+                    break;
+                case 'servicios':
+                    titulo.innerText = 'Servicios y Mantenimiento';
+                    area.innerHTML = '<p class="text-slate-500">Acá va el módulo de Servicios (Próximamente)</p>';
+                    break;
+                case 'actividades':
+                    titulo.innerText = 'Actividades y Eventos';
+                    area.innerHTML = '<p class="text-slate-500">Acá va el módulo de Actividades (Próximamente)</p>';
+                    break;
+                case 'seguridad':
+                    titulo.innerText = 'Seguridad y Emergencias';
+                    area.innerHTML = '<p class="text-slate-500">Acá va el módulo de Seguridad (Próximamente)</p>';
+                    break;
+                case 'documentacion':
+                    titulo.innerText = 'Documentaciones y Legales';
+                    area.innerHTML = '<p class="text-slate-500">Acá va el módulo de Documentación (Próximamente)</p>';
+                    break;
+                case 'proveedores':
+                    titulo.innerText = 'Proveedores';
+                    area.innerHTML = '<p class="text-slate-500">Acá va la tabla de Proveedores (Próximamente)</p>';
+                    break;
+                case 'sponsors':
+                    titulo.innerText = 'Sponsors';
+                    area.innerHTML = '<p class="text-slate-500">Acá va la tabla de Sponsors (Próximamente)</p>';
+                    break;
+                case 'estadisticas':
+                    titulo.innerText = 'Estadísticas';
+                    area.innerHTML = '<p class="text-slate-500">Acá va el dashboard de Estadísticas (Próximamente)</p>';
+                    break;
+                case 'informeEstado':
+                    titulo.innerText = 'Informe de Estado';
+                    area.innerHTML = '<p class="text-slate-500">Acá va el semáforo de gestión (Próximamente)</p>';
+                    break;
+            }
+        }
+
+        // 5. POPUPS
+        function abrirPopupNuevaFeria() {
+            document.getElementById('feriaNombre').value = '';
+            document.getElementById('feriaSlug').value = '';
+            document.getElementById('feriaFechaInicio').value = '';
+            document.getElementById('feriaFechaFin').value = '';
+            abrirPopup('popupNuevaFeria');
+        }
+
+        function abrirPopup(id) { document.getElementById(id).classList.add('activo'); }
+        function cerrarPopup(id) { document.getElementById(id).classList.remove('activo'); }
+        function cerrarSesion() { location.reload(); }
+
+        // 6. GUARDAR NUEVA FERIA
+        async function guardarNuevaFeria(e) {
+            e.preventDefault();
+            const payload = {
+                organizador_id: organizadorActual.id,
+                nombre: document.getElementById('feriaNombre').value.trim(),
+                tipo: document.getElementById('feriaTipo').value,
+                slug_url: document.getElementById('feriaSlug').value.trim().toLowerCase().replace(/\s+/g, '-'),
+                fecha_inicio: document.getElementById('feriaFechaInicio').value,
+                fecha_fin: document.getElementById('feriaFechaFin').value,
+                moneda: document.getElementById('feriaMoneda').value,
+                idioma: document.getElementById('feriaIdioma').value,
+                estado: 'borrador'
+            };
+
+            try {
+                const { error } = await supabaseClient.from('ferias').insert([payload]);
+                if (error) throw error;
+                
+                cerrarPopup('popupNuevaFeria');
+                await cargarFerias();
+                alert('Feria creada con éxito');
+            } catch (err) {
+                alert('Error al crear la feria: ' + err.message);
+            }
+        }
+    </script>
+</body>
+</html>
