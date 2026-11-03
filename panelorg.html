@@ -150,6 +150,10 @@
                         <input type="text" id="feriaDescripcion" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Feria de materiales y construcción">
                     </div>
                     <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Ubicación Física (Predio/Dirección)</label>
+                        <input type="text" id="feriaUbicacion" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Predio Ferial Costanera, Bs As">
+                    </div>
+                    <div>
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Sector</label>
                         <input type="text" id="feriaSector" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Metalurgia, Alimentos, Tecnología...">
                     </div>
@@ -308,21 +312,47 @@
             } catch (err) { console.error('Error al cargar ferias:', err); }
         }
 
-        function renderizarFeriasSidebar() {
+ function renderizarFeriasSidebar() {
             const contenedor = document.getElementById('listaFeriasSidebar');
             if (!contenedor) return;
-            
             contenedor.innerHTML = '';
+            
             if (feriasLista.length === 0) {
                 contenedor.innerHTML = '<p class="px-6 py-2 text-[10px] text-slate-500 italic">No hay ferias creadas.</p>';
                 return;
             }
+
             feriasLista.forEach(feria => {
                 const activa = feriaSeleccionada && feriaSeleccionada.id === feria.id;
+                
+                // Formatear fechas (Ej: 05/11 - 15/11)
+                let fechasStr = '';
+                if (feria.fecha_inicio && feria.fecha_fin) {
+                    const fInicio = new Date(feria.fecha_inicio + 'T00:00:00');
+                    const fFin = new Date(feria.fecha_fin + 'T00:00:00');
+                    const diaInicio = String(fInicio.getDate()).padStart(2, '0');
+                    const mesInicio = String(fInicio.getMonth() + 1).padStart(2, '0');
+                    const diaFin = String(fFin.getDate()).padStart(2, '0');
+                    const mesFin = String(fFin.getMonth() + 1).padStart(2, '0');
+                    fechasStr = `${diaInicio}/${mesInicio} - ${diaFin}/${mesFin}`;
+                }
+
+                // Tooltip (Descripción + Sector + Ubicación)
+                const tooltipTexto = `
+                    ${feria.descripcion || 'Sin descripción'}\n
+                    Sector: ${feria.sector || 'General'}\n
+                    Ubicación: ${feria.ubicacion_fisica || 'No definida'}
+                `;
+
                 contenedor.innerHTML += `
-                    <button onclick="seleccionarFeria('${feria.id}')" class="w-full text-left px-6 py-2 text-[11px] hover:bg-slate-700 transition border-l-2 ${activa ? 'border-naranja text-naranja font-bold bg-slate-800' : 'border-transparent text-slate-300'}">
-                        <div class="font-bold">> ${feria.nombre}</div>
-                        ${feria.descripcion ? `<div class="text-[9px] text-slate-500 italic mt-0.5">${feria.descripcion}</div>` : ''}
+                    <button onclick="seleccionarFeria('${feria.id}')" 
+                            title="${tooltipTexto}"
+                            class="w-full text-left px-6 py-2 text-[11px] hover:bg-slate-700 transition border-l-2 ${activa ? 'border-naranja text-naranja font-bold bg-slate-800' : 'border-transparent text-slate-300'}">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold truncate">> ${feria.nombre}</span>
+                            <span class="text-[9px] text-slate-400 font-mono ml-1">${fechasStr}</span>
+                        </div>
+                        <div class="text-[9px] text-slate-500 italic mt-0.5 truncate">${feria.descripcion || ''}</div>
                     </button>
                 `;
             });
@@ -445,6 +475,7 @@
                 nombre: document.getElementById('feriaNombre').value.trim(),
                 descripcion: document.getElementById('feriaDescripcion').value.trim(),
                 sector: document.getElementById('feriaSector').value.trim(),
+                ubicacion_fisica: document.getElementById('feriaUbicacion').value.trim(), 
                 tipo: document.getElementById('feriaTipo').value,
                 slug_url: document.getElementById('feriaSlug').value.trim().toLowerCase().replace(/\s+/g, '-'),
                 fecha_inicio: document.getElementById('feriaFechaInicio').value,
