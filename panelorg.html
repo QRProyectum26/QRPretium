@@ -497,7 +497,7 @@
             }
         }
 
-        // 7. MÓDULO FERIA FÍSICA
+        // 7. MÓDULO FERIA FÍSICA (CON MAPA INTERACTIVO)
         async function cargarFeriaFisica(area) {
             area.innerHTML = '<div class="text-center mt-10"><div class="loader"></div></div>';
 
@@ -512,13 +512,46 @@
 
                 let html = `
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-bold text-slate-800">Pabellones de la Feria</h3>
-                        <button onclick="abrirPopup('popupNuevoPabellon')" class="bg-verdeQR hover:bg-teal-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2">
-                            <span style="font-size: 18px;">＋</span> Nuevo Pabellón
-                        </button>
+                        <h3 class="text-lg font-bold text-slate-800">Planos y Pabellones</h3>
+                        <div class="flex gap-2">
+                            <button onclick="abrirPopup('popupSubirPlano')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2">
+                                📤 Subir Plano
+                            </button>
+                            <button onclick="abrirPopup('popupNuevoPabellon')" class="bg-verdeQR hover:bg-teal-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2">
+                                <span style="font-size: 18px;">＋</span> Nuevo Pabellón
+                            </button>
+                        </div>
                     </div>
                 `;
 
+                // Contenedor del Mapa
+                if (feriaSeleccionada.plano_url) {
+                    html += `
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 mb-6 relative">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="text-sm font-bold text-slate-700">Mapa del Predio</h4>
+                                <button id="btnMarcarPabellon" onclick="activarModoMarcar()" class="bg-naranja hover:bg-orange-600 text-white font-bold px-2 py-1 rounded-lg text-xs transition">
+                                    📍 Marcar Pabellón
+                                </button>
+                            </div>
+                            <div id="mapaPredio" class="relative w-full h-[500px] bg-slate-100 rounded-xl overflow-hidden">
+                                <img src="${feriaSeleccionada.plano_url}" class="w-full h-full object-contain" id="imagenPlano">
+                                <div id="pinesPabellones" class="absolute inset-0 pointer-events-none"></div>
+                            </div>
+                            <p class="text-[10px] text-slate-500 mt-2 italic text-center">💡 Hacé clic en "Marcar Pabellón" y luego tocá sobre el plano para ubicarlo.</p>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 text-center text-slate-500 mb-6">
+                            <p>No hay un plano del predio subido aún.</p>
+                            <button onclick="abrirPopup('popupSubirPlano')" class="mt-2 text-blue-600 font-bold text-sm hover:underline">Subir el primer plano</button>
+                        </div>
+                    `;
+                }
+
+                // Grilla de Pabellones
+                html += `<h3 class="text-lg font-bold text-slate-800 mb-3">Pabellones Creados</h3>`;
                 if (!data || data.length === 0) {
                     html += `<div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 text-center text-slate-500">No hay pabellones creados para esta feria.</div>`;
                 } else {
@@ -547,77 +580,110 @@
                     });
                     html += `</div>`;
                 }
-
                 area.innerHTML = html;
 
+                // Inicializar el mapa si hay plano
+                if (feriaSeleccionada.plano_url) {
+                    inicializarMapaConPines(data);
+                }
+
             } catch (err) {
-                area.innerHTML = `<p class="text-red-500">Error al cargar pabellones: ${err.message}</p>`;
+                area.innerHTML = `<p class="text-red-500">Error al cargar: ${err.message}</p>`;
             }
         }
 
-        // 8. POPUP NUEVA FERIA
-        function abrirPopupNuevaFeria() {
-            document.getElementById('feriaNombre').value = '';
-            document.getElementById('feriaDescripcion').value = '';
-            document.getElementById('feriaSector').value = '';
-            document.getElementById('feriaSlug').value = '';
-            document.getElementById('feriaFechaInicio').value = '';
-            document.getElementById('feriaFechaFin').value = '';
-            abrirPopup('popupNuevaFeria');
+        // 8. INICIALIZAR MAPA Y PINES
+        function inicializarMapaConPines(pabellones) {
+            const contenedor = document.getElementById('pinesPabellones');
+            const imagen = document.getElementById('imagenPlano');
+            if (!contenedor || !imagen) return;
+
+            // Mostrar botón de "Marcar Pabellón"
+            const btnMarcar = document.getElementById('btnMarcarPabellon');
+            if (btnMarcar) btnMarcar.classList.remove('hidden');
+
+            // Dibujar pines existentes
+            contenedor.innerHTML = '';
+            pabellones.forEach(pab => {
+                if (pab.mapa_x && pab.mapa_y) {
+                    const pin = document.createElement('div');
+                    pin.className = 'absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer pointer-events-auto';
+                    pin.style.left = pab.mapa_x + '%';
+                    pin.style.top = pab.mapa_y + '%';
+                    pin.innerHTML = `
+                        <div class="bg-naranja text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg border-2 border-white flex items-center gap-1 hover:scale-110 transition">
+                            <span>📍</span> ${pab.codigo}
+                        </div>
+                    `;
+                    pin.onclick = () => abrirConfiguracionPabellon(pab.id);
+                    contenedor.appendChild(pin);
+                }
+            });
+
+            // Escuchar clics en el plano (solo si está en modo marcar)
+            imagen.parentElement.onclick = function(e) {
+                if (!window.modoMarcarPabellon) return;
+
+                const rect = this.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+                const codigo = prompt('Ingresá el código del pabellón (ej: PAB-04):');
+                if (!codigo) return;
+                const nombre = prompt('Ingresá el nombre del pabellón (ej: Pabellón 4 - Integración Bolivia):');
+                if (!nombre) return;
+
+                guardarPabellonConCoordenadas(codigo, nombre, x, y);
+            };
         }
 
-        async function guardarNuevaFeria(e) {
-            e.preventDefault();
-            const payload = {
-                organizador_id: organizadorActual.id,
-                nombre: document.getElementById('feriaNombre').value.trim(),
-                descripcion: document.getElementById('feriaDescripcion').value.trim(),
-                sector: document.getElementById('feriaSector').value.trim(),
-                ubicacion_fisica: document.getElementById('feriaUbicacion').value.trim(), 
-                tipo: document.getElementById('feriaTipo').value,
-                slug_url: document.getElementById('feriaSlug').value.trim().toLowerCase().replace(/\s+/g, '-'),
-                fecha_inicio: document.getElementById('feriaFechaInicio').value,
-                fecha_fin: document.getElementById('feriaFechaFin').value,
-                moneda: document.getElementById('feriaMoneda').value,
-                idioma: document.getElementById('feriaIdioma').value,
-                estado: 'borrador'
-            };
-
-            try {
-                const { error } = await supabaseClient.from('ferias').insert([payload]);
-                if (error) throw error;
-                
-                cerrarPopup('popupNuevaFeria');
-                await cargarFerias();
-                alert('Feria creada con éxito');
-            } catch (err) { alert('Error al crear la feria: ' + err.message); }
+        // 9. ACTIVAR MODO MARCAR
+        function activarModoMarcar() {
+            window.modoMarcarPabellon = true;
+            alert('Modo marcado activado. Hacé clic sobre el plano para ubicar el pabellón.');
         }
 
-        // 9. POPUP NUEVO PABELLÓN
-        async function guardarNuevoPabellon(e) {
-            e.preventDefault();
-            const payload = {
-                feria_id: feriaSeleccionada.id,
-                codigo: document.getElementById('pabCodigo').value.trim(),
-                nombre: document.getElementById('pabNombre').value.trim(),
-                tipo: 'pabellon',
-                cant_filas: 1,
-                cant_columnas: 1
-            };
+        // 10. GUARDAR PABELLÓN CON COORDENADAS
+        async function guardarPabellonConCoordenadas(codigo, nombre, x, y) {
             try {
+                const payload = {
+                    feria_id: feriaSeleccionada.id,
+                    codigo: codigo,
+                    nombre: nombre,
+                    tipo: 'pabellon',
+                    cant_filas: 1,
+                    cant_columnas: 1,
+                    mapa_x: x,
+                    mapa_y: y
+                };
                 const { error } = await supabaseClient.from('pabellones').insert([payload]);
                 if (error) throw error;
-                cerrarPopup('popupNuevoPabellon');
+                
+                window.modoMarcarPabellon = false;
                 mostrarModulo('feriaFisica');
-                alert('Pabellón creado con éxito');
-            } catch (err) { alert('Error al crear el pabellón: ' + err.message); }
+                alert('Pabellón marcado y guardado con éxito');
+            } catch (err) { alert('Error al guardar: ' + err.message); }
         }
 
-        // 10. CONFIGURACIÓN DEL PABELLÓN
-        async function abrirConfiguracionPabellon(pabellonId) {
-            alert('Próximamente: Configuración de medidas y generación de códigos B3-021.');
+        // 11. SUBIR PLANO
+        async function subirPlano(e) {
+            e.preventDefault();
+            const url = document.getElementById('planoUrl').value.trim();
+            try {
+                const { error } = await supabaseClient
+                    .from('ferias')
+                    .update({ plano_url: url })
+                    .eq('id', feriaSeleccionada.id);
+                if (error) throw error;
+                
+                feriaSeleccionada.plano_url = url;
+                cerrarPopup('popupSubirPlano');
+                mostrarModulo('feriaFisica');
+                alert('Plano subido con éxito');
+            } catch (err) { alert('Error al guardar plano: ' + err.message); }
         }
-         // 12. CONFIGURACIÓN DEL PABELLÓN
+
+        // 12. CONFIGURACIÓN DEL PABELLÓN (ÚNICA VERSIÓN)
         async function abrirConfiguracionPabellon(pabellonId) {
             try {
                 const { data, error } = await supabaseClient.from('pabellones').select('*').eq('id', pabellonId).single();
@@ -654,7 +720,6 @@
                 alert('Primero cargá el largo y el ancho del pabellón.');
                 return;
             }
-            // Área por stand: 9m2 (3x3) + 6m2 (pasillos estimados) = 15m2
             const capacidad = Math.floor(superficie / 15);
             const filasSugeridas = Math.max(1, Math.floor(Math.sqrt(capacidad)));
             const columnasSugeridas = Math.max(1, Math.ceil(capacidad / filasSugeridas));
@@ -676,7 +741,6 @@
             }
 
             try {
-                // 1. Actualizamos las medidas del pabellón
                 const payloadPab = {
                     largo_metros: document.getElementById('configPabLargo').value || null,
                     ancho_metros: document.getElementById('configPabAncho').value || null,
@@ -691,10 +755,8 @@
                 const { error: errorPab } = await supabaseClient.from('pabellones').update(payloadPab).eq('id', pabellonId);
                 if (errorPab) throw errorPab;
 
-                // 2. Borramos los stands anteriores (para no duplicar)
                 await supabaseClient.from('stands').delete().eq('pabellon_id', pabellonId);
 
-                // 3. Generamos los nuevos stands
                 const letrasColumnas = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
                 let standsGenerados = [];
                 let contador = 1;
