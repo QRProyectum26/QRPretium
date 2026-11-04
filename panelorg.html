@@ -104,6 +104,7 @@
                 <button onclick="mostrarModulo('sponsors')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🏷️ Sponsors</button>
                 <button onclick="mostrarModulo('estadisticas')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">📊 Estadísticas</button>
                 <button onclick="mostrarModulo('informeEstado')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">📋 Informe de Estado</button>
+                <button onclick="mostrarModulo('actores')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🎭 Actores</button>
             </nav>
             <div class="p-4 border-t border-slate-700">
                 <button onclick="cerrarSesion()" class="w-full text-xs text-red-400 hover:text-red-300 font-bold text-left">Cerrar Sesión</button>
@@ -584,6 +585,7 @@
                 case 'feriaFisica': titulo.innerText = 'Mi Feria Física - ' + feriaSeleccionada.nombre; cargarFeriaFisica(area); break;
                 case 'expositores': titulo.innerText = 'Expositores'; cargarModuloExpositores(area); break;
                 case 'operaciones': titulo.innerText = 'Operaciones y Tickets'; area.innerHTML = '<p class="text-slate-500">Módulo de Incidencias (Próximamente)</p>'; break;
+                case 'actores': titulo.innerText = 'Actores'; cargarModuloActores(area); break;
                 case 'notificaciones': titulo.innerText = 'Notificaciones y Comunicaciones'; area.innerHTML = '<p class="text-slate-500">Módulo de Comunicaciones (Próximamente)</p>'; break;
                 default: titulo.innerText = modulo; area.innerHTML = '<p class="text-slate-500">Módulo en construcción.</p>';
             }
