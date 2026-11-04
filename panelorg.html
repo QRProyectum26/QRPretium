@@ -19,6 +19,7 @@
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
         .popup-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
@@ -39,7 +40,6 @@
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid #0D9488; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; margin: 0 auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script> 
 </head>
 <body class="bg-gray-100 text-gray-800 h-screen overflow-hidden">
 
@@ -73,16 +73,13 @@
                 <span class="font-black text-lg tracking-tight">QR<span class="text-naranja">Pretium</span></span>
             </div>
             <nav class="flex-1 py-4 space-y-1">
-                <!-- MIS FERIAS CON SUBMENÚ -->
                 <div>
                     <button onclick="toggleSubmenu('submenuFerias')" class="sidebar-item w-full flex items-center justify-between px-4 py-2 text-sm font-bold text-emerald-400">
                         <span>🏢 Mis Ferias</span>
                         <span class="text-xs">▼</span>
                     </button>
                     <div id="submenuFerias" class="submenu activo bg-slate-800/50">
-                        <div id="listaFeriasSidebar" class="py-1 text-xs">
-                            <!-- Las ferias se inyectan acá por JS -->
-                        </div>
+                        <div id="listaFeriasSidebar" class="py-1 text-xs"></div>
                         <button onclick="abrirPopupNuevaFeria()" class="w-full text-left px-6 py-2 text-[11px] text-naranja hover:bg-slate-700 font-bold">+ Nueva Feria</button>
                     </div>
                 </div>
@@ -95,6 +92,7 @@
                 
                 <button onclick="mostrarModulo('feriaFisica')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🗺️ Mi Feria Física</button>
                 <button onclick="mostrarModulo('expositores')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">👥 Expositores</button>
+                <button onclick="mostrarModulo('actores')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🎭 Actores</button>
                 <button onclick="mostrarModulo('operaciones')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🚨 Operaciones (Tickets)</button>
                 <button onclick="mostrarModulo('notificaciones')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">📢 Notificaciones</button>
                 <button onclick="mostrarModulo('servicios')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🛠️ Servicios y Mantenimiento</button>
@@ -105,7 +103,6 @@
                 <button onclick="mostrarModulo('sponsors')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🏷️ Sponsors</button>
                 <button onclick="mostrarModulo('estadisticas')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">📊 Estadísticas</button>
                 <button onclick="mostrarModulo('informeEstado')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">📋 Informe de Estado</button>
-                <button onclick="mostrarModulo('actores')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🎭 Actores</button>
             </nav>
             <div class="p-4 border-t border-slate-700">
                 <button onclick="cerrarSesion()" class="w-full text-xs text-red-400 hover:text-red-300 font-bold text-left">Cerrar Sesión</button>
@@ -327,7 +324,7 @@
                             <input type="number" id="configPabColumnas" min="1" max="26" value="5" class="w-full px-2 py-1.5 border rounded-lg text-xs">
                         </div>
                     </div>
-                    <p class="text-[10px] text-slate-500 italic mt-2">El sistema generará los códigos como <strong>B3-021</strong> (Columna B, Fila 3, Stand 021).</p>
+                    <p class="text-[10px] text-slate-500 italic mt-2">El sistema generará los códigos como <strong>B3-021</strong>.</p>
                 </div>
 
                 <div class="flex justify-end gap-2 mt-5 pt-4 border-t border-slate-100">
@@ -344,7 +341,7 @@
             <div class="p-6">
                 <h2 class="text-xl font-extrabold text-slate-800 mb-2">🔢 Stands del Pabellón</h2>
                 <p class="text-sm text-slate-600 mb-4 font-bold" id="verStandsPabNombre">Cargando...</p>
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 text-xs text-blue-800">💡 Hacé clic en un stand para asignarle un expositor o configurar sus detalles.</div>
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 text-xs text-blue-800">💡 Hacé clic en un stand para asignarle un expositor.</div>
                 <div id="grillaStands" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 max-h-96 overflow-y-auto pr-2">
                     <div class="text-center col-span-full"><div class="loader"></div></div>
                 </div>
@@ -355,7 +352,6 @@
         </div>
     </div>
 
-   <!-- POPUP: ASIGNAR STANDS EN EL PLANO INTERNO (MODO AUTOMÁTICO) -->
     <div id="popupAsignarStands" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupAsignarStands')">
         <div class="popup-caja popup-caja-grande">
             <button class="popup-cerrar" onclick="cerrarPopup('popupAsignarStands')">✕</button>
@@ -363,38 +359,32 @@
                 <h2 class="text-xl font-extrabold text-slate-800 mb-2">📍 Asignar Stands en el Plano</h2>
                 <p class="text-sm text-slate-600 mb-4 font-bold" id="asignarPabNombre">Cargando...</p>
                 <input type="hidden" id="asignarPabId">
-
-                <!-- Barra de control -->
                 <div class="bg-slate-100 border border-slate-300 rounded-xl p-3 mb-4 flex justify-between items-center">
                     <div>
                         <span class="text-sm font-bold text-slate-700">Columna actual: </span>
                         <span id="columnaActualLabel" class="text-lg font-black text-naranja">A</span>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="siguienteColumna()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition">➡️ Pasar a Siguiente Columna</button>
+                        <button onclick="siguienteColumna()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition">➡️ Siguiente Columna</button>
                         <button onclick="reiniciarAsignacion()" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold px-3 py-1.5 rounded-lg text-xs transition">🔄 Reiniciar</button>
                     </div>
                 </div>
-
-                <!-- Leyenda de colores -->
                 <div class="flex gap-4 mb-4 text-xs">
                     <div class="flex items-center gap-1"><span class="w-4 h-4 rounded" style="background-color: #86efac;"></span> Libre</div>
                     <div class="flex items-center gap-1"><span class="w-4 h-4 rounded" style="background-color: #fde047;"></span> Reservado</div>
                     <div class="flex items-center gap-1"><span class="w-4 h-4 rounded" style="background-color: #b91c1c;"></span> Pagado</div>
                 </div>
-
-                <!-- Plano -->
                 <div id="mapaAsignar" class="relative w-full h-[500px] bg-slate-100 rounded-xl overflow-hidden mb-4">
                     <img src="" class="w-full h-full object-contain" id="imagenPlanoInterno">
                     <div id="pinesStands" class="absolute inset-0 pointer-events-none"></div>
                 </div>
-
                 <div class="flex justify-end gap-2 mt-5 pt-4 border-t border-slate-100">
                     <button type="button" onclick="cerrarPopup('popupAsignarStands')" class="px-6 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cerrar</button>
                 </div>
             </div>
         </div>
     </div>
+
     <div id="popupNuevoExpositor" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupNuevoExpositor')">
         <div class="popup-caja">
             <button class="popup-cerrar" onclick="cerrarPopup('popupNuevoExpositor')">✕</button>
@@ -435,7 +425,7 @@
             </div>
         </div>
     </div>
-    <!-- POPUP: INVITAR ACTORES AL PABELLÓN -->
+
     <div id="popupInvitarActores" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupInvitarActores')">
         <div class="popup-caja popup-caja-grande">
             <button class="popup-cerrar" onclick="cerrarPopup('popupInvitarActores')">✕</button>
@@ -445,7 +435,6 @@
                 <input type="hidden" id="invitarPabId">
                 <input type="hidden" id="invitarLink">
 
-                <!-- Filtro por Sector -->
                 <div class="bg-slate-100 border border-slate-300 rounded-xl p-3 mb-4">
                     <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Filtrar por Sector (para seleccionar rápido)</label>
                     <select id="filtroSectorInvitar" onchange="filtrarActoresParaInvitar()" class="w-full px-3 py-2 border rounded-xl text-sm">
@@ -453,7 +442,6 @@
                     </select>
                 </div>
 
-                <!-- Lista de Actores con Checkboxes -->
                 <div class="bg-white border border-slate-200 rounded-xl max-h-80 overflow-y-auto mb-4">
                     <table class="w-full text-left">
                         <thead class="bg-slate-50 border-b border-slate-200 sticky top-0">
@@ -486,7 +474,7 @@
             </div>
         </div>
     </div>
-    <!-- POPUP: IMPORTAR ACTORES DESDE CSV -->
+
     <div id="popupImportarActores" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupImportarActores')">
         <div class="popup-caja popup-caja-grande">
             <button class="popup-cerrar" onclick="cerrarPopup('popupImportarActores')">✕</button>
@@ -504,7 +492,6 @@
                         <input type="file" id="archivoCsv" accept=".csv" required class="w-full px-3 py-2 border rounded-xl text-sm">
                     </div>
 
-                    <!-- Previsualización -->
                     <div id="previsualizacionCsv" class="hidden bg-slate-50 border border-slate-200 rounded-xl p-3 max-h-48 overflow-y-auto mb-3">
                         <h3 class="text-sm font-bold text-slate-800 mb-2">Previsualización (primeros 5 registros):</h3>
                         <table class="w-full text-xs text-left">
@@ -516,6 +503,52 @@
                     <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
                         <button type="button" onclick="cerrarPopup('popupImportarActores')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
                         <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Importar Actores</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="popupNuevoActor" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupNuevoActor')">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupNuevoActor')">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-4">🎭 Nuevo Actor</h2>
+                <form onsubmit="guardarNuevoActor(event)" class="space-y-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Nombre del Actor</label>
+                        <input type="text" id="actorNombre" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Tipo</label>
+                            <select id="actorTipo" class="w-full px-3 py-2 border rounded-xl text-sm">
+                                <option value="Empresa">Empresa</option>
+                                <option value="Artesano">Artesano</option>
+                                <option value="Servicio">Servicio</option>
+                                <option value="Artista">Artista</option>
+                                <option value="ONG">ONG</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Sector</label>
+                            <input type="text" id="actorSector" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Metalurgia">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Mail</label>
+                            <input type="email" id="actorMail" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">WhatsApp</label>
+                            <input type="tel" id="actorWhatsapp" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                        <button type="button" onclick="cerrarPopup('popupNuevoActor')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
+                        <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Guardar Actor</button>
                     </div>
                 </form>
             </div>
@@ -609,6 +642,7 @@
         function abrirPopup(id) { document.getElementById(id).classList.add('activo'); }
         function cerrarPopup(id) { document.getElementById(id).classList.remove('activo'); }
         function cerrarSesion() { location.reload(); }
+
         function mostrarModulo(modulo) {
             if (!feriaSeleccionada && modulo !== 'miOrganizacion' && modulo !== 'calendarios' && modulo !== 'agenda' && modulo !== 'actores') { 
                 alert('Primero seleccioná una feria del menú lateral.'); 
@@ -622,14 +656,14 @@
                 case 'agenda': titulo.innerText = 'Mi Agenda'; area.innerHTML = '<p class="text-slate-500">Módulo de Agenda (Próximamente)</p>'; break;
                 case 'feriaFisica': titulo.innerText = 'Mi Feria Física - ' + feriaSeleccionada.nombre; cargarFeriaFisica(area); break;
                 case 'expositores': titulo.innerText = 'Expositores'; cargarModuloExpositores(area); break;
-                case 'actores': titulo.innerText = 'Actores'; cargarModuloActores(area); break; // <-- AGREGAR ESTA LÍNEA
+                case 'actores': titulo.innerText = 'Actores'; cargarModuloActores(area); break;
                 case 'operaciones': titulo.innerText = 'Operaciones y Tickets'; area.innerHTML = '<p class="text-slate-500">Módulo de Incidencias (Próximamente)</p>'; break;
                 case 'notificaciones': titulo.innerText = 'Notificaciones y Comunicaciones'; area.innerHTML = '<p class="text-slate-500">Módulo de Comunicaciones (Próximamente)</p>'; break;
                 default: titulo.innerText = modulo; area.innerHTML = '<p class="text-slate-500">Módulo en construcción.</p>';
             }
         }
 
- async function cargarFeriaFisica(area) {
+        async function cargarFeriaFisica(area) {
             area.innerHTML = '<div class="text-center mt-10"><div class="loader"></div></div>';
             try {
                 const { data, error } = await supabaseClient.from('pabellones').select('*').eq('feria_id', feriaSeleccionada.id).order('codigo', { ascending: true });
@@ -650,8 +684,6 @@
                     html += `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">`;
                     data.forEach(pab => {
                         const tienePlanoInterno = pab.plano_interno_url ? true : false;
-                        
-                        // Tarjeta con 4 botones (2 filas x 2 columnas)
                         html += `
                             <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 hover:shadow-md transition flex flex-col justify-between">
                                 <div>
@@ -666,18 +698,10 @@
                                     </div>
                                 </div>
                                 <div class="mt-3 pt-3 border-t border-slate-100 grid grid-cols-2 gap-1.5">
-                                    <button onclick="abrirConfiguracionPabellon('${pab.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-1.5 rounded-lg text-[10px] transition">
-                                        ⚙️ Configurar
-                                    </button>
-                                    <button onclick="verStandsPabellon('${pab.id}', '${pab.nombre}')" class="bg-naranja hover:bg-orange-600 text-white font-bold py-1.5 rounded-lg text-[10px] transition">
-                                        👁️ Ver Stands
-                                    </button>
-                                    <button onclick="abrirAsignarStandsEnPlano('${pab.id}', '${pab.plano_interno_url || ''}')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 rounded-lg text-[10px] transition ${tienePlanoInterno ? '' : 'opacity-50 cursor-not-allowed'}" ${tienePlanoInterno ? '' : 'disabled'}>
-                                        📍 Asignar
-                                    </button>
-                                    <button onclick="copiarLinkReserva('${feriaSeleccionada.slug_url}', '${pab.id}')" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-700 font-bold py-1.5 rounded-lg text-[10px] transition">
-                                        🔗 Link Reserva
-                                    </button>
+                                    <button onclick="abrirConfiguracionPabellon('${pab.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-1.5 rounded-lg text-[10px] transition">⚙️ Configurar</button>
+                                    <button onclick="verStandsPabellon('${pab.id}', '${pab.nombre}')" class="bg-naranja hover:bg-orange-600 text-white font-bold py-1.5 rounded-lg text-[10px] transition">👁️ Ver Stands</button>
+                                    <button onclick="abrirAsignarStandsEnPlano('${pab.id}', '${pab.plano_interno_url || ''}')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 rounded-lg text-[10px] transition ${tienePlanoInterno ? '' : 'opacity-50 cursor-not-allowed'}" ${tienePlanoInterno ? '' : 'disabled'}>📍 Asignar</button>
+                                    <button onclick="copiarLinkReserva('${feriaSeleccionada.slug_url}', '${pab.id}')" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-700 font-bold py-1.5 rounded-lg text-[10px] transition">🔗 Link Reserva</button>
                                 </div>
                             </div>
                         `;
@@ -689,6 +713,7 @@
                 if (feriaSeleccionada.plano_url) inicializarMapaConPines(data);
             } catch (err) { area.innerHTML = `<p class="text-red-500">Error al cargar: ${err.message}</p>`; }
         }
+
         function inicializarMapaConPines(pabellones) {
             const contenedor = document.getElementById('pinesPabellones');
             const imagen = document.getElementById('imagenPlano');
@@ -843,42 +868,28 @@
             } catch (err) { alert('Error: ' + err.message); }
         }
 
-        // 21. ABRIR ASIGNACIÓN DE STANDS EN PLANO (MODO AUTOMÁTICO)
         async function abrirAsignarStandsEnPlano(pabellonId, planoUrl) {
-            if (!planoUrl) {
-                alert('Primero subí un plano interno en la configuración del pabellón.');
-                return;
-            }
-
+            if (!planoUrl) { alert('Primero subí un plano interno en la configuración del pabellón.'); return; }
             document.getElementById('asignarPabId').value = pabellonId;
             document.getElementById('imagenPlanoInterno').src = planoUrl;
-            
-            // Inicializar la columna en A
-            window.columnaAsignacionActual = 0; // 0 = A, 1 = B, etc.
+            window.columnaAsignacionActual = 0;
             actualizarColumnaLabel();
-
             abrirPopup('popupAsignarStands');
             inicializarMapaAsignacion(pabellonId);
         }
 
-        // 22. ACTUALIZAR LA ETIQUETA DE LA COLUMNA ACTUAL
         function actualizarColumnaLabel() {
             const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
             const letra = letras[window.columnaAsignacionActual] || 'Z';
             document.getElementById('columnaActualLabel').innerText = letra;
         }
 
-        // 23. PASAR A LA SIGUIENTE COLUMNA
         function siguienteColumna() {
-            if (window.columnaAsignacionActual >= 25) {
-                alert('Ya llegaste a la columna Z. No hay más columnas.');
-                return;
-            }
+            if (window.columnaAsignacionActual >= 25) { alert('Ya llegaste a la columna Z. No hay más columnas.'); return; }
             window.columnaAsignacionActual++;
             actualizarColumnaLabel();
         }
 
-        // 24. REINICIAR ASIGNACIÓN
         async function reiniciarAsignacion() {
             if (!confirm('¿Seguro que querés reiniciar? Se borrarán todas las posiciones asignadas.')) return;
             const pabellonId = document.getElementById('asignarPabId').value;
@@ -892,89 +903,52 @@
             } catch (err) { alert('Error: ' + err.message); }
         }
 
-        // 25. INICIALIZAR MAPA DE ASIGNACIÓN (CON COLORES)
         function inicializarMapaAsignacion(pabellonId) {
             const contenedor = document.getElementById('pinesStands');
             const imagen = document.getElementById('imagenPlanoInterno');
             if (!contenedor || !imagen) return;
-
             contenedor.innerHTML = '';
-            
-            // Cargar pines de stands ya asignados (con colores según estado)
             supabaseClient.from('stands').select('*').eq('pabellon_id', pabellonId).not('mapa_x', 'is', null).then(({ data }) => {
                 if (data) {
                     data.forEach(stand => {
-                        let color = '#86efac'; // Verde pastel (libre)
-                        if (stand.estado === 'reservado') color = '#fde047'; // Amarillo
-                        else if (stand.estado === 'pagado') color = '#b91c1c'; // Bordo
-
+                        let color = '#86efac';
+                        if (stand.estado === 'reservado') color = '#fde047';
+                        else if (stand.estado === 'pagado') color = '#b91c1c';
                         const pin = document.createElement('div');
                         pin.className = 'absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer pointer-events-auto';
                         pin.style.left = stand.mapa_x + '%';
                         pin.style.top = stand.mapa_y + '%';
-                        pin.innerHTML = `
-                            <div style="background-color: ${color};" class="text-slate-800 text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-lg border border-white">
-                                ${stand.codigo_etiqueta || stand.numero}
-                            </div>
-                        `;
+                        pin.innerHTML = `<div style="background-color: ${color};" class="text-slate-800 text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-lg border border-white">${stand.codigo_etiqueta || stand.numero}</div>`;
                         pin.onclick = (e) => { e.stopPropagation(); abrirFormularioExpositor(stand.id); };
                         contenedor.appendChild(pin);
                     });
                 }
             });
-
-            // Escuchar clics en el plano (asignación automática)
             imagen.parentElement.onclick = function(e) {
                 const rect = this.getBoundingClientRect();
                 const x = ((e.clientX - rect.left) / rect.width) * 100;
                 const y = ((e.clientY - rect.top) / rect.height) * 100;
-
                 asignarStandAutomatico(pabellonId, x, y);
             };
         }
 
-        // 26. ASIGNAR STAND AUTOMÁTICO (POR COLUMNA)
         async function asignarStandAutomatico(pabellonId, x, y) {
             const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
             const letraCol = letras[window.columnaAsignacionActual];
-
             try {
-                // 1. Buscamos el primer stand disponible de esa columna (sin mapa_x)
-                const { data, error } = await supabaseClient
-                    .from('stands')
-                    .select('*')
-                    .eq('pabellon_id', pabellonId)
-                    .eq('columna', letraCol)
-                    .is('mapa_x', null)
-                    .order('numero', { ascending: true })
-                    .limit(1)
-                    .maybeSingle();
-
+                const { data, error } = await supabaseClient.from('stands').select('*').eq('pabellon_id', pabellonId).eq('columna', letraCol).is('mapa_x', null).order('numero', { ascending: true }).limit(1).maybeSingle();
                 if (error) throw error;
-                if (!data) {
-                    alert(`Ya no hay stands libres en la columna ${letraCol}. Pasá a la siguiente columna.`);
-                    return;
-                }
-
-                // 2. Actualizamos las coordenadas del stand
-                const { error: errorUpdate } = await supabaseClient
-                    .from('stands')
-                    .update({ mapa_x: x, mapa_y: y })
-                    .eq('id', data.id);
-
+                if (!data) { alert(`Ya no hay stands libres en la columna ${letraCol}. Pasá a la siguiente columna.`); return; }
+                const { error: errorUpdate } = await supabaseClient.from('stands').update({ mapa_x: x, mapa_y: y }).eq('id', data.id);
                 if (errorUpdate) throw errorUpdate;
-
-                // 3. Recargamos los pines
                 inicializarMapaAsignacion(pabellonId);
-
             } catch (err) { alert('Error al asignar: ' + err.message); }
         }
 
-        // 27. ABRIR FORMULARIO DE EXPOSITOR (Al hacer clic en un stand del plano)
         function abrirFormularioExpositor(standId) {
             alert(`Próximamente: Formulario de expositor para el stand ID: ${standId}`);
         }
-        // --- EXPOSITORES ---
+
         async function cargarModuloExpositores(area) {
             area.innerHTML = '<div class="text-center mt-10"><div class="loader"></div></div>';
             try {
@@ -1032,7 +1006,7 @@
             } catch (err) { alert('Error: ' + err.message); }
         }
 
-                function copiarLinkMagico(token) {
+        function copiarLinkMagico(token) {
             const slug = feriaSeleccionada ? feriaSeleccionada.slug_url : '';
             const url = `https://qrpretium.com.ar/reserva-stand.html?token=${token}&feria=${slug}`;
             navigator.clipboard.writeText(url).then(() => { alert(`✅ Link copiado:\n${url}`); }).catch(() => { prompt('Copiá este link manualmente:', url); });
@@ -1046,53 +1020,32 @@
                 cargarModuloExpositores(document.getElementById('areaTrabajo'));
             } catch (err) { alert('Error: ' + err.message); }
         }
-                 // 28. ABRIR MODAL DE INVITACIÓN
+
         async function copiarLinkReserva(slugFeria, pabellonId) {
             const url = `https://qrpretium.com.ar/seleccionar-stand.html?feria=${slugFeria}&pabellon=${pabellonId}`;
-            
             document.getElementById('invitarPabId').value = pabellonId;
             document.getElementById('invitarLink').value = url;
-            
-            // Buscar nombre del pabellón
             const { data: pab } = await supabaseClient.from('pabellones').select('nombre').eq('id', pabellonId).single();
             document.getElementById('invitarPabNombre').innerText = pab ? `Pabellón: ${pab.nombre}` : 'Pabellón';
-
-            // Cargar Actores
             await cargarActoresParaInvitar();
-            
             abrirPopup('popupInvitarActores');
         }
 
-       // ==================== MÓDULO ACTORES: INVITAR AL PABELLÓN ====================
-
-        // 29. CARGAR ACTORES EN EL MODAL DE INVITACIÓN
         async function cargarActoresParaInvitar() {
             const tbody = document.getElementById('tbodyActoresInvitar');
             tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-slate-500 text-xs">Cargando...</td></tr>';
-
             try {
-                const { data, error } = await supabaseClient
-                    .from('actores')
-                    .select('*')
-                    .eq('organizador_id', organizadorActual.id)
-                    .order('nombre_actor', { ascending: true });
-
+                const { data, error } = await supabaseClient.from('actores').select('*').eq('organizador_id', organizadorActual.id).order('nombre_actor', { ascending: true });
                 if (error) throw error;
-
                 tbody.innerHTML = '';
-                
                 if (!data || data.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-slate-500 text-xs">No hay actores cargados. Cargá uno en el módulo "Actores".</td></tr>';
                     return;
                 }
-
-                // Cargar filtro de sectores
                 const sectores = [...new Set(data.map(a => a.rubro_sector).filter(Boolean))].sort();
                 const selectFiltro = document.getElementById('filtroSectorInvitar');
                 selectFiltro.innerHTML = '<option value="">Todos los sectores</option>';
                 sectores.forEach(s => { selectFiltro.innerHTML += `<option value="${s}">${s}</option>`; });
-
-                // Renderizar filas
                 data.forEach(actor => {
                     tbody.innerHTML += `
                         <tr class="border-b border-slate-100 hover:bg-slate-50 transition" data-sector="${actor.rubro_sector || ''}">
@@ -1100,28 +1053,20 @@
                             <td class="px-3 py-2 font-bold text-slate-800 text-xs">${actor.nombre_actor}</td>
                             <td class="px-3 py-2 text-slate-600 text-xs">${actor.rubro_sector || '---'}</td>
                             <td class="px-3 py-2 text-slate-600 text-xs">${actor.mail || '---'}</td>
-                        </tr>
-                    `;
+                        </tr>`;
                 });
-            } catch (err) {
-                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-red-500 text-xs">Error: ${err.message}</td></tr>`;
-            }
+            } catch (err) { tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-red-500 text-xs">Error: ${err.message}</td></tr>`; }
         }
 
-        // 30. FILTRAR ACTORES POR SECTOR
         function filtrarActoresParaInvitar() {
             const sector = document.getElementById('filtroSectorInvitar').value;
             const filas = document.querySelectorAll('#tbodyActoresInvitar tr');
             filas.forEach(fila => {
-                if (!sector || fila.dataset.sector === sector) {
-                    fila.style.display = '';
-                } else {
-                    fila.style.display = 'none';
-                }
+                if (!sector || fila.dataset.sector === sector) { fila.style.display = ''; }
+                else { fila.style.display = 'none'; }
             });
         }
 
-        // 31. SELECCIONAR TODOS LOS ACTORES VISIBLES
         function seleccionarTodosActores(checkbox) {
             const filas = document.querySelectorAll('#tbodyActoresInvitar tr');
             filas.forEach(fila => {
@@ -1133,57 +1078,29 @@
             actualizarCantidadSeleccionados();
         }
 
-        // 32. ACTUALIZAR CONTADOR
         function actualizarCantidadSeleccionados() {
             const seleccionados = document.querySelectorAll('.check-actor:checked').length;
             document.getElementById('cantidadSeleccionados').innerText = seleccionados;
         }
 
-        // 33. ENVIAR INVITACIONES
         async function enviarInvitaciones() {
             const seleccionados = document.querySelectorAll('.check-actor:checked');
-            if (seleccionados.length === 0) {
-                alert('Seleccioná al menos un actor.');
-                return;
-            }
-
+            if (seleccionados.length === 0) { alert('Seleccioná al menos un actor.'); return; }
             const mails = [];
-            seleccionados.forEach(check => {
-                if (check.dataset.mail) mails.push(check.dataset.mail);
-            });
-
-            if (mails.length === 0) {
-                alert('Los actores seleccionados no tienen mail cargado.');
-                return;
-            }
-
+            seleccionados.forEach(check => { if (check.dataset.mail) mails.push(check.dataset.mail); });
+            if (mails.length === 0) { alert('Los actores seleccionados no tienen mail cargado.'); return; }
             const link = document.getElementById('invitarLink').value;
-            const pabellonId = document.getElementById('invitarPabId').value;
             const nombrePab = document.getElementById('invitarPabNombre').innerText;
-
             if (!confirm(`¿Enviar invitación a ${mails.length} actores?`)) return;
-
             try {
                 const { data, error } = await supabaseClient.functions.invoke('enviar-invitacion', {
-                    body: {
-                        mails: mails,
-                        link: link,
-                        pabellon: nombrePab,
-                        feria: feriaSeleccionada.nombre
-                    }
+                    body: { mails: mails, link: link, pabellon: nombrePab, feria: feriaSeleccionada.nombre }
                 });
-
                 if (error) throw error;
-
                 alert(`✅ Invitaciones enviadas a ${mails.length} actores.`);
                 cerrarPopup('popupInvitarActores');
-
-            } catch (err) {
-                alert('Error al enviar: ' + err.message + '\n\n(La función de envío de mails se implementará próximamente).');
-            }
+            } catch (err) { alert('Error al enviar: ' + err.message + '\n\n(La función de envío de mails se implementará próximamente).'); }
         }
-
-        // ==================== MÓDULO ACTORES: IMPORTAR CSV ====================
 
         function abrirPopupImportarActores() {
             document.getElementById('archivoCsv').value = '';
@@ -1195,30 +1112,18 @@
             e.preventDefault();
             const archivo = document.getElementById('archivoCsv').files[0];
             if (!archivo) return;
-
             Papa.parse(archivo, {
-                header: true,
-                skipEmptyLines: true,
+                header: true, skipEmptyLines: true,
                 complete: async function(results) {
                     const filas = results.data;
-
-                    if (filas.length === 0) {
-                        alert('El archivo está vacío o no tiene el formato correcto.');
-                        return;
-                    }
-
-                    // Mostrar previsualización (primeros 5)
+                    if (filas.length === 0) { alert('El archivo está vacío o no tiene el formato correcto.'); return; }
                     const thead = document.getElementById('theadPreview');
                     const tbody = document.getElementById('tbodyPreview');
                     const columnas = Object.keys(filas[0]);
                     thead.innerHTML = columnas.map(c => `<th class="pb-1 pr-2">${c}</th>`).join('');
-                    tbody.innerHTML = filas.slice(0, 5).map(fila => 
-                        `<tr>${columnas.map(c => `<td class="py-0.5 pr-2 text-slate-600">${fila[c] || ''}</td>`).join('')}</tr>`
-                    ).join('');
+                    tbody.innerHTML = filas.slice(0, 5).map(fila => `<tr>${columnas.map(c => `<td class="py-0.5 pr-2 text-slate-600">${fila[c] || ''}</td>`).join('')}</tr>`).join('');
                     document.getElementById('previsualizacionCsv').classList.remove('hidden');
-
                     if (!confirm(`¿Importar ${filas.length} actores a tu base de datos?`)) return;
-
                     try {
                         const payload = filas.map(fila => ({
                             organizador_id: organizadorActual.id,
@@ -1232,25 +1137,16 @@
                             whatsapp: fila.WhatsApp || fila.whatsapp || '',
                             descripcion: fila.Descripcion || fila.descripcion || ''
                         })).filter(a => a.nombre_actor);
-
                         const { error } = await supabaseClient.from('actores').insert(payload);
                         if (error) throw error;
-
                         alert(`✅ ${payload.length} actores importados con éxito.`);
                         cerrarPopup('popupImportarActores');
                         mostrarModulo('actores');
-
-                    } catch (err) {
-                        alert('Error al importar: ' + err.message);
-                    }
+                    } catch (err) { alert('Error al importar: ' + err.message); }
                 },
-                error: function(err) {
-                    alert('Error al leer el archivo: ' + err.message);
-                }
+                error: function(err) { alert('Error al leer el archivo: ' + err.message); }
             });
         }
-
-        // ==================== MÓDULO ACTORES: NUEVO ACTOR ====================
 
         function abrirPopupNuevoActor() {
             document.getElementById('actorNombre').value = '';
@@ -1279,6 +1175,103 @@
             } catch (err) { alert('Error: ' + err.message); }
         }
 
+        // ==================== MÓDULO ACTORES ====================
+
+        async function cargarModuloActores(area) {
+            area.innerHTML = '<div class="text-center mt-10"><div class="loader"></div></div>';
+            try {
+                const { data, error } = await supabaseClient.from('actores').select('*').eq('organizador_id', organizadorActual.id).order('nombre_actor', { ascending: true });
+                if (error) throw error;
+                let html = `
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-slate-800">🎭 Actores de la Economía y la Cultura</h3>
+                        <div class="flex gap-2">
+                            <button onclick="abrirPopupImportarActores()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2">📤 Importar Excel/CSV</button>
+                            <button onclick="abrirPopupNuevoActor()" class="bg-verdeQR hover:bg-teal-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2"><span style="font-size: 18px;">＋</span> Nuevo Actor</button>
+                        </div>
+                    </div>
+                    <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-200 mb-4">
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Filtrar por Sector</label>
+                        <select id="filtroSectorActores" onchange="filtrarActoresPorSector()" class="w-full px-3 py-2 border rounded-xl text-sm">
+                            <option value="">Todos los sectores</option>
+                        </select>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-50 border-b border-slate-200">
+                                    <tr>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Nombre</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Tipo</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Sector</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Mail</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">WhatsApp</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase text-right">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodyActores">
+                                    <tr><td colspan="6" class="text-center py-4 text-slate-500 text-xs">Cargando...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                area.innerHTML = html;
+                renderizarTablaActores(data);
+                cargarFiltroSectores(data);
+            } catch (err) { area.innerHTML = `<p class="text-red-500">Error al cargar actores: ${err.message}</p>`; }
+        }
+
+        function renderizarTablaActores(actores) {
+            const tbody = document.getElementById('tbodyActores');
+            tbody.innerHTML = '';
+            if (!actores || actores.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-slate-500 text-xs">No hay actores registrados.</td></tr>';
+                return;
+            }
+            actores.forEach(actor => {
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                        <td class="px-4 py-3 font-bold text-slate-800 text-sm">${actor.nombre_actor}</td>
+                        <td class="px-4 py-3 text-slate-600 text-xs">${actor.tipo_actor || '---'}</td>
+                        <td class="px-4 py-3 text-slate-600 text-xs">${actor.rubro_sector || '---'}</td>
+                        <td class="px-4 py-3 text-slate-600 text-xs">${actor.mail || '---'}</td>
+                        <td class="px-4 py-3 text-slate-600 text-xs">${actor.whatsapp || '---'}</td>
+                        <td class="px-4 py-3 text-right space-x-1">
+                            <button onclick="eliminarActor('${actor.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold py-1 px-2 rounded text-[10px]">Borrar</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function cargarFiltroSectores(actores) {
+            const select = document.getElementById('filtroSectorActores');
+            const sectores = [...new Set(actores.map(a => a.rubro_sector).filter(Boolean))].sort();
+            select.innerHTML = '<option value="">Todos los sectores</option>';
+            sectores.forEach(sector => { select.innerHTML += `<option value="${sector}">${sector}</option>`; });
+        }
+
+        function filtrarActoresPorSector() {
+            const sector = document.getElementById('filtroSectorActores').value;
+            const filas = document.querySelectorAll('#tbodyActores tr');
+            filas.forEach(fila => {
+                if (!sector) { fila.style.display = ''; }
+                else {
+                    const sectorFila = fila.children[2]?.innerText || '';
+                    fila.style.display = sectorFila === sector ? '' : 'none';
+                }
+            });
+        }
+
+        async function eliminarActor(actorId) {
+            if (!confirm('¿Seguro que querés eliminar este actor?')) return;
+            try {
+                const { error } = await supabaseClient.from('actores').delete().eq('id', actorId);
+                if (error) throw error;
+                mostrarModulo('actores');
+            } catch (err) { alert('Error: ' + err.message); }
+        }
     </script>
 </body>
 </html>
