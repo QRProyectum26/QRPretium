@@ -538,33 +538,66 @@
             }
         }
 
-        async function cargarFeriaFisica(area) {
+ async function cargarFeriaFisica(area) {
             area.innerHTML = '<div class="text-center mt-10"><div class="loader"></div></div>';
             try {
                 const { data, error } = await supabaseClient.from('pabellones').select('*').eq('feria_id', feriaSeleccionada.id).order('codigo', { ascending: true });
                 if (error) throw error;
                 let html = `<div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-slate-800">Planos y Pabellones</h3><div class="flex gap-2"><button onclick="abrirPopup('popupSubirPlano')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2">📤 Subir Plano</button><button onclick="abrirPopup('popupNuevoPabellon')" class="bg-verdeQR hover:bg-teal-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2"><span style="font-size: 18px;">＋</span> Nuevo Pabellón</button></div></div>`;
+                
                 if (feriaSeleccionada.plano_url) {
                     html += `<div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 mb-6 relative"><div class="flex justify-between items-center mb-2"><h4 class="text-sm font-bold text-slate-700">Mapa del Predio</h4><button id="btnMarcarPabellon" onclick="activarModoMarcar()" class="bg-naranja hover:bg-orange-600 text-white font-bold px-2 py-1 rounded-lg text-xs transition">📍 Marcar Pabellón</button></div><div id="mapaPredio" class="relative w-full h-[500px] bg-slate-100 rounded-xl overflow-hidden"><img src="${feriaSeleccionada.plano_url}" class="w-full h-full object-contain" id="imagenPlano"><div id="pinesPabellones" class="absolute inset-0 pointer-events-none"></div></div><p class="text-[10px] text-slate-500 mt-2 italic text-center">💡 Hacé clic en "Marcar Pabellón" y luego tocá sobre el plano para ubicarlo.</p></div>`;
                 } else {
                     html += `<div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 text-center text-slate-500 mb-6"><p>No hay un plano del predio subido aún.</p><button onclick="abrirPopup('popupSubirPlano')" class="mt-2 text-blue-600 font-bold text-sm hover:underline">Subir el primer plano</button></div>`;
                 }
+                
                 html += `<h3 class="text-lg font-bold text-slate-800 mb-3">Pabellones Creados</h3>`;
+                
                 if (!data || data.length === 0) {
                     html += `<div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 text-center text-slate-500">No hay pabellones creados para esta feria.</div>`;
                 } else {
                     html += `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">`;
                     data.forEach(pab => {
                         const tienePlanoInterno = pab.plano_interno_url ? true : false;
-                        html += `<div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 hover:shadow-md transition flex flex-col justify-between"><div><div class="flex justify-between items-start mb-2"><span class="bg-slate-800 text-white font-mono font-bold text-xs px-2 py-1 rounded">${pab.codigo || 'PAB'}</span><span class="text-[10px] text-slate-500">${pab.tipo || 'Pabellón'}</span></div><h4 class="font-bold text-slate-800 text-base">${pab.nombre}</h4><div class="mt-2 text-xs text-slate-500 space-y-1"><p>📏 Superficie: ${pab.superficie_m2 ? pab.superficie_m2 + ' m²' : 'No definida'}</p><p>📐 Grid: ${pab.cant_filas || 0} filas x ${pab.cant_columnas || 0} columnas</p></div></div><div class="mt-3 pt-3 border-t border-slate-100 grid grid-cols-3 gap-1.5"><button onclick="abrirConfiguracionPabellon('${pab.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-1.5 rounded-lg text-[10px] transition">⚙️ Configurar</button><button onclick="verStandsPabellon('${pab.id}', '${pab.nombre}')" class="bg-naranja hover:bg-orange-600 text-white font-bold py-1.5 rounded-lg text-[10px] transition">👁️ Ver Stands</button><button onclick="abrirAsignarStandsEnPlano('${pab.id}', '${pab.plano_interno_url || ''}')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 rounded-lg text-[10px] transition ${tienePlanoInterno ? '' : 'opacity-50 cursor-not-allowed'}" ${tienePlanoInterno ? '' : 'disabled'}>📍 Asignar</button></div></div>`;
+                        
+                        // Tarjeta con 4 botones (2 filas x 2 columnas)
+                        html += `
+                            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 hover:shadow-md transition flex flex-col justify-between">
+                                <div>
+                                    <div class="flex justify-between items-start mb-2">
+                                        <span class="bg-slate-800 text-white font-mono font-bold text-xs px-2 py-1 rounded">${pab.codigo || 'PAB'}</span>
+                                        <span class="text-[10px] text-slate-500">${pab.tipo || 'Pabellón'}</span>
+                                    </div>
+                                    <h4 class="font-bold text-slate-800 text-base">${pab.nombre}</h4>
+                                    <div class="mt-2 text-xs text-slate-500 space-y-1">
+                                        <p>📏 Superficie: ${pab.superficie_m2 ? pab.superficie_m2 + ' m²' : 'No definida'}</p>
+                                        <p>📐 Grid: ${pab.cant_filas || 0} filas x ${pab.cant_columnas || 0} columnas</p>
+                                    </div>
+                                </div>
+                                <div class="mt-3 pt-3 border-t border-slate-100 grid grid-cols-2 gap-1.5">
+                                    <button onclick="abrirConfiguracionPabellon('${pab.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-1.5 rounded-lg text-[10px] transition">
+                                        ⚙️ Configurar
+                                    </button>
+                                    <button onclick="verStandsPabellon('${pab.id}', '${pab.nombre}')" class="bg-naranja hover:bg-orange-600 text-white font-bold py-1.5 rounded-lg text-[10px] transition">
+                                        👁️ Ver Stands
+                                    </button>
+                                    <button onclick="abrirAsignarStandsEnPlano('${pab.id}', '${pab.plano_interno_url || ''}')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 rounded-lg text-[10px] transition ${tienePlanoInterno ? '' : 'opacity-50 cursor-not-allowed'}" ${tienePlanoInterno ? '' : 'disabled'}>
+                                        📍 Asignar
+                                    </button>
+                                    <button onclick="copiarLinkReserva('${feriaSeleccionada.slug_url}', '${pab.id}')" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-700 font-bold py-1.5 rounded-lg text-[10px] transition">
+                                        🔗 Link Reserva
+                                    </button>
+                                </div>
+                            </div>
+                        `;
                     });
                     html += `</div>`;
                 }
+                
                 area.innerHTML = html;
                 if (feriaSeleccionada.plano_url) inicializarMapaConPines(data);
             } catch (err) { area.innerHTML = `<p class="text-red-500">Error al cargar: ${err.message}</p>`; }
         }
-
         function inicializarMapaConPines(pabellones) {
             const contenedor = document.getElementById('pinesPabellones');
             const imagen = document.getElementById('imagenPlano');
@@ -921,6 +954,14 @@
                 if (error) throw error;
                 cargarModuloExpositores(document.getElementById('areaTrabajo'));
             } catch (err) { alert('Error: ' + err.message); }
+        }
+                function copiarLinkReserva(slugFeria, pabellonId) {
+            const url = `https://qrpretium.com.ar/seleccionar-stand.html?feria=${slugFeria}&pabellon=${pabellonId}`;
+            navigator.clipboard.writeText(url).then(() => {
+                alert(`✅ Link de reserva copiado:\n${url}\n\nCompartilo con los expositores interesados.`);
+            }).catch(() => {
+                prompt('Copiá este link manualmente:', url);
+            });
         }
     </script>
 </body>
