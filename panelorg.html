@@ -353,6 +353,7 @@
         </div>
     </div>
 
+   <!-- POPUP: ASIGNAR STANDS EN EL PLANO INTERNO (MODO AUTOMÁTICO) -->
     <div id="popupAsignarStands" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupAsignarStands')">
         <div class="popup-caja popup-caja-grande">
             <button class="popup-cerrar" onclick="cerrarPopup('popupAsignarStands')">✕</button>
@@ -360,24 +361,38 @@
                 <h2 class="text-xl font-extrabold text-slate-800 mb-2">📍 Asignar Stands en el Plano</h2>
                 <p class="text-sm text-slate-600 mb-4 font-bold" id="asignarPabNombre">Cargando...</p>
                 <input type="hidden" id="asignarPabId">
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 text-xs text-blue-800">💡 Hacé clic sobre un espacio del plano para asignarle un stand. Seleccioná el código del stand de la lista.</div>
+
+                <!-- Barra de control -->
+                <div class="bg-slate-100 border border-slate-300 rounded-xl p-3 mb-4 flex justify-between items-center">
+                    <div>
+                        <span class="text-sm font-bold text-slate-700">Columna actual: </span>
+                        <span id="columnaActualLabel" class="text-lg font-black text-naranja">A</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="siguienteColumna()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition">➡️ Pasar a Siguiente Columna</button>
+                        <button onclick="reiniciarAsignacion()" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold px-3 py-1.5 rounded-lg text-xs transition">🔄 Reiniciar</button>
+                    </div>
+                </div>
+
+                <!-- Leyenda de colores -->
+                <div class="flex gap-4 mb-4 text-xs">
+                    <div class="flex items-center gap-1"><span class="w-4 h-4 rounded" style="background-color: #86efac;"></span> Libre</div>
+                    <div class="flex items-center gap-1"><span class="w-4 h-4 rounded" style="background-color: #fde047;"></span> Reservado</div>
+                    <div class="flex items-center gap-1"><span class="w-4 h-4 rounded" style="background-color: #b91c1c;"></span> Pagado</div>
+                </div>
+
+                <!-- Plano -->
                 <div id="mapaAsignar" class="relative w-full h-[500px] bg-slate-100 rounded-xl overflow-hidden mb-4">
                     <img src="" class="w-full h-full object-contain" id="imagenPlanoInterno">
                     <div id="pinesStands" class="absolute inset-0 pointer-events-none"></div>
                 </div>
-                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 mb-4">
-                    <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Stands sin asignar</label>
-                    <select id="selectStandAsignar" class="w-full px-3 py-2 border rounded-xl text-sm">
-                        <option value="">Seleccioná un stand...</option>
-                    </select>
-                </div>
+
                 <div class="flex justify-end gap-2 mt-5 pt-4 border-t border-slate-100">
                     <button type="button" onclick="cerrarPopup('popupAsignarStands')" class="px-6 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cerrar</button>
                 </div>
             </div>
         </div>
     </div>
-
     <div id="popupNuevoExpositor" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupNuevoExpositor')">
         <div class="popup-caja">
             <button class="popup-cerrar" onclick="cerrarPopup('popupNuevoExpositor')">✕</button>
@@ -704,61 +719,137 @@
             } catch (err) { alert('Error: ' + err.message); }
         }
 
+        // 21. ABRIR ASIGNACIÓN DE STANDS EN PLANO (MODO AUTOMÁTICO)
         async function abrirAsignarStandsEnPlano(pabellonId, planoUrl) {
-            if (!planoUrl) { alert('Primero subí un plano interno.'); return; }
+            if (!planoUrl) {
+                alert('Primero subí un plano interno en la configuración del pabellón.');
+                return;
+            }
+
             document.getElementById('asignarPabId').value = pabellonId;
             document.getElementById('imagenPlanoInterno').src = planoUrl;
-            const select = document.getElementById('selectStandAsignar');
-            select.innerHTML = '<option value="">Cargando...</option>';
-            try {
-                const { data, error } = await supabaseClient.from('stands').select('id, codigo_etiqueta, numero').eq('pabellon_id', pabellonId).is('mapa_x', null).order('numero', { ascending: true });
-                if (error) throw error;
-                select.innerHTML = '<option value="">Seleccioná un stand...</option>';
-                if (data && data.length > 0) { data.forEach(stand => { select.innerHTML += `<option value="${stand.id}">${stand.codigo_etiqueta || stand.numero}</option>`; }); }
-                else { select.innerHTML = '<option value="">Todos asignados</option>'; }
-            } catch (err) { console.error(err); }
+            
+            // Inicializar la columna en A
+            window.columnaAsignacionActual = 0; // 0 = A, 1 = B, etc.
+            actualizarColumnaLabel();
+
             abrirPopup('popupAsignarStands');
             inicializarMapaAsignacion(pabellonId);
         }
 
+        // 22. ACTUALIZAR LA ETIQUETA DE LA COLUMNA ACTUAL
+        function actualizarColumnaLabel() {
+            const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const letra = letras[window.columnaAsignacionActual] || 'Z';
+            document.getElementById('columnaActualLabel').innerText = letra;
+        }
+
+        // 23. PASAR A LA SIGUIENTE COLUMNA
+        function siguienteColumna() {
+            if (window.columnaAsignacionActual >= 25) {
+                alert('Ya llegaste a la columna Z. No hay más columnas.');
+                return;
+            }
+            window.columnaAsignacionActual++;
+            actualizarColumnaLabel();
+        }
+
+        // 24. REINICIAR ASIGNACIÓN
+        async function reiniciarAsignacion() {
+            if (!confirm('¿Seguro que querés reiniciar? Se borrarán todas las posiciones asignadas.')) return;
+            const pabellonId = document.getElementById('asignarPabId').value;
+            try {
+                const { error } = await supabaseClient.from('stands').update({ mapa_x: null, mapa_y: null }).eq('pabellon_id', pabellonId);
+                if (error) throw error;
+                window.columnaAsignacionActual = 0;
+                actualizarColumnaLabel();
+                inicializarMapaAsignacion(pabellonId);
+                alert('Asignación reiniciada.');
+            } catch (err) { alert('Error: ' + err.message); }
+        }
+
+        // 25. INICIALIZAR MAPA DE ASIGNACIÓN (CON COLORES)
         function inicializarMapaAsignacion(pabellonId) {
             const contenedor = document.getElementById('pinesStands');
             const imagen = document.getElementById('imagenPlanoInterno');
             if (!contenedor || !imagen) return;
+
             contenedor.innerHTML = '';
+            
+            // Cargar pines de stands ya asignados (con colores según estado)
             supabaseClient.from('stands').select('*').eq('pabellon_id', pabellonId).not('mapa_x', 'is', null).then(({ data }) => {
-                if (data) { data.forEach(stand => {
-                    const pin = document.createElement('div');
-                    pin.className = 'absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer pointer-events-auto';
-                    pin.style.left = stand.mapa_x + '%'; pin.style.top = stand.mapa_y + '%';
-                    pin.innerHTML = `<div class="bg-naranja text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-lg border border-white">${stand.codigo_etiqueta || stand.numero}</div>`;
-                    contenedor.appendChild(pin);
-                }); }
+                if (data) {
+                    data.forEach(stand => {
+                        let color = '#86efac'; // Verde pastel (libre)
+                        if (stand.estado === 'reservado') color = '#fde047'; // Amarillo
+                        else if (stand.estado === 'pagado') color = '#b91c1c'; // Bordo
+
+                        const pin = document.createElement('div');
+                        pin.className = 'absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer pointer-events-auto';
+                        pin.style.left = stand.mapa_x + '%';
+                        pin.style.top = stand.mapa_y + '%';
+                        pin.innerHTML = `
+                            <div style="background-color: ${color};" class="text-slate-800 text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-lg border border-white">
+                                ${stand.codigo_etiqueta || stand.numero}
+                            </div>
+                        `;
+                        pin.onclick = (e) => { e.stopPropagation(); abrirFormularioExpositor(stand.id); };
+                        contenedor.appendChild(pin);
+                    });
+                }
             });
+
+            // Escuchar clics en el plano (asignación automática)
             imagen.parentElement.onclick = function(e) {
-                const standId = document.getElementById('selectStandAsignar').value;
-                if (!standId) { alert('Primero seleccioná un stand.'); return; }
                 const rect = this.getBoundingClientRect();
                 const x = ((e.clientX - rect.left) / rect.width) * 100;
                 const y = ((e.clientY - rect.top) / rect.height) * 100;
-                asignarStandEnMapa(standId, x, y);
+
+                asignarStandAutomatico(pabellonId, x, y);
             };
         }
 
-        async function asignarStandEnMapa(standId, x, y) {
+        // 26. ASIGNAR STAND AUTOMÁTICO (POR COLUMNA)
+        async function asignarStandAutomatico(pabellonId, x, y) {
+            const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const letraCol = letras[window.columnaAsignacionActual];
+
             try {
-                const { error } = await supabaseClient.from('stands').update({ mapa_x: x, mapa_y: y }).eq('id', standId);
+                // 1. Buscamos el primer stand disponible de esa columna (sin mapa_x)
+                const { data, error } = await supabaseClient
+                    .from('stands')
+                    .select('*')
+                    .eq('pabellon_id', pabellonId)
+                    .eq('columna', letraCol)
+                    .is('mapa_x', null)
+                    .order('numero', { ascending: true })
+                    .limit(1)
+                    .maybeSingle();
+
                 if (error) throw error;
-                const pabellonId = document.getElementById('asignarPabId').value;
-                const select = document.getElementById('selectStandAsignar');
-                const { data } = await supabaseClient.from('stands').select('id, codigo_etiqueta, numero').eq('pabellon_id', pabellonId).is('mapa_x', null);
-                select.innerHTML = '<option value="">Seleccioná un stand...</option>';
-                if (data) data.forEach(stand => { select.innerHTML += `<option value="${stand.id}">${stand.codigo_etiqueta || stand.numero}</option>`; });
+                if (!data) {
+                    alert(`Ya no hay stands libres en la columna ${letraCol}. Pasá a la siguiente columna.`);
+                    return;
+                }
+
+                // 2. Actualizamos las coordenadas del stand
+                const { error: errorUpdate } = await supabaseClient
+                    .from('stands')
+                    .update({ mapa_x: x, mapa_y: y })
+                    .eq('id', data.id);
+
+                if (errorUpdate) throw errorUpdate;
+
+                // 3. Recargamos los pines
                 inicializarMapaAsignacion(pabellonId);
-                alert('Stand asignado en el plano con éxito');
-            } catch (err) { alert('Error: ' + err.message); }
+
+            } catch (err) { alert('Error al asignar: ' + err.message); }
         }
 
+        // 27. ABRIR FORMULARIO DE EXPOSITOR (Al hacer clic en un stand del plano)
+        function abrirFormularioExpositor(standId) {
+            alert(`Próximamente: Formulario de expositor para el stand ID: ${standId}`);
+        }
         // --- EXPOSITORES ---
         async function cargarModuloExpositores(area) {
             area.innerHTML = '<div class="text-center mt-10"><div class="loader"></div></div>';
