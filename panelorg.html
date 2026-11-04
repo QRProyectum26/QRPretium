@@ -908,8 +908,9 @@
             } catch (err) { alert('Error: ' + err.message); }
         }
 
-        function copiarLinkMagico(token) {
-            const url = `https://qrpretium.com.ar/adminstand.html?token=${token}`;
+                function copiarLinkMagico(token) {
+            const slug = feriaSeleccionada ? feriaSeleccionada.slug_url : '';
+            const url = `https://qrpretium.com.ar/reserva-stand.html?token=${token}&feria=${slug}`;
             navigator.clipboard.writeText(url).then(() => { alert(`✅ Link copiado:\n${url}`); }).catch(() => { prompt('Copiá este link manualmente:', url); });
         }
 
