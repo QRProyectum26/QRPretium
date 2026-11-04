@@ -39,6 +39,7 @@
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid #0D9488; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; margin: 0 auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script> 
 </head>
 <body class="bg-gray-100 text-gray-800 h-screen overflow-hidden">
 
@@ -482,6 +483,41 @@
                         </button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+    <!-- POPUP: IMPORTAR ACTORES DESDE CSV -->
+    <div id="popupImportarActores" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupImportarActores')">
+        <div class="popup-caja popup-caja-grande">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupImportarActores')">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-2">📤 Importar Actores desde Excel/CSV</h2>
+                <p class="text-xs text-gray-500 mb-4">Subí un archivo CSV con las columnas: <strong>Nombre, Tipo, Sector, CUIT, Dirección, Teléfono, Mail, WhatsApp, Descripción</strong>.</p>
+                
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 text-xs text-blue-800">
+                    💡 <strong>Tip:</strong> Si tenés un Excel (.xlsx), guardalo como "CSV (delimitado por comas)" antes de subirlo.
+                </div>
+
+                <form onsubmit="procesarImportacion(event)" class="space-y-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Archivo CSV</label>
+                        <input type="file" id="archivoCsv" accept=".csv" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+
+                    <!-- Previsualización -->
+                    <div id="previsualizacionCsv" class="hidden bg-slate-50 border border-slate-200 rounded-xl p-3 max-h-48 overflow-y-auto mb-3">
+                        <h3 class="text-sm font-bold text-slate-800 mb-2">Previsualización (primeros 5 registros):</h3>
+                        <table class="w-full text-xs text-left">
+                            <thead><tr class="text-slate-500 border-b" id="theadPreview"></tr></thead>
+                            <tbody id="tbodyPreview"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                        <button type="button" onclick="cerrarPopup('popupImportarActores')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
+                        <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Importar Actores</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -1025,7 +1061,9 @@
             abrirPopup('popupInvitarActores');
         }
 
-        // 29. CARGAR ACTORES EN EL MODAL
+       // ==================== MÓDULO ACTORES: INVITAR AL PABELLÓN ====================
+
+        // 29. CARGAR ACTORES EN EL MODAL DE INVITACIÓN
         async function cargarActoresParaInvitar() {
             const tbody = document.getElementById('tbodyActoresInvitar');
             tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-slate-500 text-xs">Cargando...</td></tr>';
@@ -1124,7 +1162,6 @@
             if (!confirm(`¿Enviar invitación a ${mails.length} actores?`)) return;
 
             try {
-                // Acá llamamos a la Edge Function de Supabase
                 const { data, error } = await supabaseClient.functions.invoke('enviar-invitacion', {
                     body: {
                         mails: mails,
@@ -1143,6 +1180,103 @@
                 alert('Error al enviar: ' + err.message + '\n\n(La función de envío de mails se implementará próximamente).');
             }
         }
+
+        // ==================== MÓDULO ACTORES: IMPORTAR CSV ====================
+
+        function abrirPopupImportarActores() {
+            document.getElementById('archivoCsv').value = '';
+            document.getElementById('previsualizacionCsv').classList.add('hidden');
+            abrirPopup('popupImportarActores');
+        }
+
+        async function procesarImportacion(e) {
+            e.preventDefault();
+            const archivo = document.getElementById('archivoCsv').files[0];
+            if (!archivo) return;
+
+            Papa.parse(archivo, {
+                header: true,
+                skipEmptyLines: true,
+                complete: async function(results) {
+                    const filas = results.data;
+
+                    if (filas.length === 0) {
+                        alert('El archivo está vacío o no tiene el formato correcto.');
+                        return;
+                    }
+
+                    // Mostrar previsualización (primeros 5)
+                    const thead = document.getElementById('theadPreview');
+                    const tbody = document.getElementById('tbodyPreview');
+                    const columnas = Object.keys(filas[0]);
+                    thead.innerHTML = columnas.map(c => `<th class="pb-1 pr-2">${c}</th>`).join('');
+                    tbody.innerHTML = filas.slice(0, 5).map(fila => 
+                        `<tr>${columnas.map(c => `<td class="py-0.5 pr-2 text-slate-600">${fila[c] || ''}</td>`).join('')}</tr>`
+                    ).join('');
+                    document.getElementById('previsualizacionCsv').classList.remove('hidden');
+
+                    if (!confirm(`¿Importar ${filas.length} actores a tu base de datos?`)) return;
+
+                    try {
+                        const payload = filas.map(fila => ({
+                            organizador_id: organizadorActual.id,
+                            nombre_actor: fila.Nombre || fila.nombre || fila.Nombre_Empresa || '',
+                            tipo_actor: fila.Tipo || fila.tipo || 'Empresa',
+                            rubro_sector: fila.Sector || fila.sector || fila.Rubro || '',
+                            cuit: fila.CUIT || fila.cuit || '',
+                            direccion: fila.Direccion || fila.direccion || '',
+                            telefono: fila.Telefono || fila.telefono || '',
+                            mail: fila.Mail || fila.mail || fila.Email || '',
+                            whatsapp: fila.WhatsApp || fila.whatsapp || '',
+                            descripcion: fila.Descripcion || fila.descripcion || ''
+                        })).filter(a => a.nombre_actor);
+
+                        const { error } = await supabaseClient.from('actores').insert(payload);
+                        if (error) throw error;
+
+                        alert(`✅ ${payload.length} actores importados con éxito.`);
+                        cerrarPopup('popupImportarActores');
+                        mostrarModulo('actores');
+
+                    } catch (err) {
+                        alert('Error al importar: ' + err.message);
+                    }
+                },
+                error: function(err) {
+                    alert('Error al leer el archivo: ' + err.message);
+                }
+            });
+        }
+
+        // ==================== MÓDULO ACTORES: NUEVO ACTOR ====================
+
+        function abrirPopupNuevoActor() {
+            document.getElementById('actorNombre').value = '';
+            document.getElementById('actorSector').value = '';
+            document.getElementById('actorMail').value = '';
+            document.getElementById('actorWhatsapp').value = '';
+            abrirPopup('popupNuevoActor');
+        }
+
+        async function guardarNuevoActor(e) {
+            e.preventDefault();
+            const payload = {
+                organizador_id: organizadorActual.id,
+                nombre_actor: document.getElementById('actorNombre').value.trim(),
+                tipo_actor: document.getElementById('actorTipo').value,
+                rubro_sector: document.getElementById('actorSector').value.trim(),
+                mail: document.getElementById('actorMail').value.trim(),
+                whatsapp: document.getElementById('actorWhatsapp').value.trim()
+            };
+            try {
+                const { error } = await supabaseClient.from('actores').insert([payload]);
+                if (error) throw error;
+                cerrarPopup('popupNuevoActor');
+                mostrarModulo('actores');
+                alert('Actor creado con éxito');
+            } catch (err) { alert('Error: ' + err.message); }
+        }
+
     </script>
 </body>
 </html>
