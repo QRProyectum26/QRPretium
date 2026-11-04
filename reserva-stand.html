@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reserva de Stand - QRPretium</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        .popup-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
+        .popup-overlay.activo { opacity: 1; pointer-events: auto; }
+        .popup-caja { background: #ffffff; border-radius: 20px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; transform: scale(0.9); opacity: 0; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5); position: relative; }
+        .popup-overlay.activo .popup-caja { transform: scale(1); opacity: 1; }
+        .popup-cerrar { position: absolute; top: 12px; right: 12px; background: rgba(15, 23, 42, 0.1); border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 18px; font-weight: 700; color: #334155; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; z-index: 10; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #0D9488; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; margin: 0 auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-slate-900 text-white p-4 shadow-md">
+        <div class="max-w-4xl mx-auto flex items-center gap-3">
+            <img src="img/logoqrpretium1.jpg" alt="Logo" class="w-10 h-10 rounded-lg object-cover">
+            <div>
+                <h1 class="text-lg font-black tracking-tight">QR<span class="text-orange-500">Pretium</span></h1>
+                <p class="text-xs text-slate-400">Reserva de Stand</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Cargando -->
+    <div id="estadoCargando" class="max-w-4xl mx-auto p-6 text-center mt-20">
+        <div class="loader"></div>
+        <p class="text-slate-500 mt-4">Verificando tu link de reserva...</p>
+    </div>
+
+    <!-- Error -->
+    <div id="estadoError" class="max-w-4xl mx-auto p-6 hidden mt-20">
+        <div class="bg-red-50 border border-red-200 rounded-2xl p-8 text-center">
+            <span class="text-5xl">⚠️</span>
+            <h2 class="text-xl font-bold text-red-600 mt-4" id="errorTitulo">Link inválido</h2>
+            <p class="text-slate-600 mt-2" id="errorMensaje">El link no es válido o ya expiró.</p>
+        </div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <div id="estadoContenido" class="max-w-4xl mx-auto p-4 hidden">
+
+        <!-- Info de la Feria -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 mb-4">
+            <h2 id="feriaNombre" class="text-xl font-extrabold text-slate-800">Cargando feria...</h2>
+            <p id="feriaUbicacion" class="text-xs text-slate-500 mt-1"></p>
+            <p id="feriaFechas" class="text-xs text-slate-500 mt-1"></p>
+        </div>
+
+        <!-- Plano del Pabellón (si existe) -->
+        <div id="contenedorPlano" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 mb-4 hidden">
+            <h3 class="text-sm font-bold text-slate-800 mb-2">🗺️ Plano del Pabellón</h3>
+            <div id="mapaReserva" class="relative w-full h-[400px] bg-slate-100 rounded-xl overflow-hidden">
+                <img src="" class="w-full h-full object-contain" id="imagenPlanoReserva">
+                <div id="pinesReserva" class="absolute inset-0 pointer-events-none"></div>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-2 italic text-center">💡 Tu stand está destacado en el plano.</p>
+        </div>
+
+        <!-- Formulario -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+            <h2 class="text-xl font-extrabold text-slate-800 mb-2">📝 Completar Reserva</h2>
+            <p class="text-sm text-slate-600 mb-4">Stand asignado: <strong id="standAsignado" class="text-naranja font-mono"></strong></p>
+            
+            <form onsubmit="guardarReserva(event)" class="space-y-3">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Nombre de la Organización *</label>
+                        <input type="text" id="resNombre" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">CUIT / CUIL / NIT / RUT *</label>
+                        <input type="text" id="resCuit" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Responsable *</label>
+                        <input type="text" id="resResponsable" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Rubro / Sector *</label>
+                        <input type="text" id="resRubro" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Teléfono *</label>
+                        <input type="tel" id="resTelefono" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Email *</label>
+                        <input type="email" id="resMail" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Plan Contratado</label>
+                    <select id="resPlan" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        <option value="Standard">Standard</option>
+                        <option value="Power">Power</option>
+                        <option value="Premium">Premium</option>
+                        <option value="A definir">A definir</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Descripción de la Organización</label>
+                    <textarea id="resDescripcion" rows="3" class="w-full px-3 py-2 border rounded-xl text-sm"></textarea>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Requerimientos Especiales</label>
+                    <textarea id="resRequerimientos" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Necesito conexión eléctrica trifásica..."></textarea>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Tipo de Trámite *</label>
+                    <select id="resTipoTramite" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                        <option value="reserva">Reserva</option>
+                        <option value="pago">Pago</option>
+                        <option value="consulta">Consulta</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Comprobante de Pago (URL)</label>
+                    <input type="url" id="resComprobante" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="https://... (Google Drive, Dropbox, etc.)">
+                </div>
+                <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                    <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">✅ Enviar Reserva</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_TbHxIMFoRE6_Nu8MEUmtvA_ubsi9qFB';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let feriaActual = null;
+        let expositorActual = null;
+        let standActual = null;
+
+        // 1. Leer parámetros de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        const slugFeria = urlParams.get('feria');
+
+        // 2. Validar token y cargar datos
+        async function cargarReserva() {
+            if (!token || !slugFeria) {
+                mostrarError('Link inválido', 'El link no contiene los parámetros necesarios (token y feria).');
+                return;
+            }
+
+            try {
+                // Buscar la feria por slug
+                const { data: feria, error: errorFeria } = await supabaseClient
+                    .from('ferias')
+                    .select('*')
+                    .eq('slug_url', slugFeria)
+                    .maybeSingle();
+
+                if (errorFeria) throw errorFeria;
+                if (!feria) {
+                    mostrarError('Feria no encontrada', 'La feria asociada a este link no existe.');
+                    return;
+                }
+                feriaActual = feria;
+
+                // Buscar al expositor por token
+                const { data: expositor, error: errorExp } = await supabaseClient
+                    .from('standargentina')
+                    .select('*, stands(id, numero, codigo_etiqueta, mapa_x, mapa_y, pabellon_id)')
+                    .eq('token_acceso', token)
+                    .maybeSingle();
+
+                if (errorExp) throw errorExp;
+                if (!expositor) {
+                    mostrarError('Token inválido', 'El token de expositor no es válido o ya expiró.');
+                    return;
+                }
+                expositorActual = expositor;
+                standActual = expositor.stands;
+
+                // Mostrar datos
+                document.getElementById('feriaNombre').innerText = feria.nombre;
+                document.getElementById('feriaUbicacion').innerText = '📍 ' + (feria.ubicacion_fisica || 'Ubicación no definida');
+                document.getElementById('feriaFechas').innerText = '📅 ' + (feria.fecha_inicio || '') + ' al ' + (feria.fecha_fin || '');
+                document.getElementById('standAsignado').innerText = standActual.codigo_etiqueta || standActual.numero;
+
+                // Cargar plano del pabellón si existe
+                if (standActual.pabellon_id) {
+                    const { data: pabellon } = await supabaseClient
+                        .from('pabellones')
+                        .select('plano_interno_url')
+                        .eq('id', standActual.pabellon_id)
+                        .maybeSingle();
+
+                    if (pabellon && pabellon.plano_interno_url) {
+                        document.getElementById('contenedorPlano').classList.remove('hidden');
+                        document.getElementById('imagenPlanoReserva').src = pabellon.plano_interno_url;
+                        dibujarPinStand(pabellon.plano_interno_url);
+                    }
+                }
+
+                document.getElementById('estadoCargando').classList.add('hidden');
+                document.getElementById('estadoContenido').classList.remove('hidden');
+
+            } catch (err) {
+                mostrarError('Error de conexión', err.message);
+            }
+        }
+
+        // 3. Dibujar el pin del stand en el plano
+        function dibujarPinStand(planoUrl) {
+            const contenedor = document.getElementById('pinesReserva');
+            contenedor.innerHTML = '';
+
+            if (standActual && standActual.mapa_x && standActual.mapa_y) {
+                const pin = document.createElement('div');
+                pin.className = 'absolute transform -translate-x-1/2 -translate-y-1/2';
+                pin.style.left = standActual.mapa_x + '%';
+                pin.style.top = standActual.mapa_y + '%';
+                pin.innerHTML = `
+                    <div class="bg-naranja text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg border-2 border-white animate-pulse">
+                        📍 ${standActual.codigo_etiqueta || standActual.numero}
+                    </div>
+                `;
+                contenedor.appendChild(pin);
+            }
+        }
+
+        // 4. Mostrar error
+        function mostrarError(titulo, mensaje) {
+            document.getElementById('estadoCargando').classList.add('hidden');
+            document.getElementById('estadoContenido').classList.add('hidden');
+            document.getElementById('errorTitulo').innerText = titulo;
+            document.getElementById('errorMensaje').innerText = mensaje;
+            document.getElementById('estadoError').classList.remove('hidden');
+        }
+
+        // 5. Guardar la reserva
+        async function guardarReserva(e) {
+            e.preventDefault();
+
+            const payload = {
+                empresa_stand: document.getElementById('resNombre').value.trim(),
+                cuit: document.getElementById('resCuit').value.trim(),
+                responsable: document.getElementById('resResponsable').value.trim(),
+                rubro: document.getElementById('resRubro').value.trim(),
+                telefono: document.getElementById('resTelefono').value.trim(),
+                mail: document.getElementById('resMail').value.trim(),
+                plan_contratado: document.getElementById('resPlan').value,
+                descripcion_org: document.getElementById('resDescripcion').value.trim(),
+                requerimientos: document.getElementById('resRequerimientos').value.trim(),
+                tipo_tramite: document.getElementById('resTipoTramite').value,
+                comprobante_url: document.getElementById('resComprobante').value.trim(),
+                estado_registro: 'pendiente'
+            };
+
+            // Determinar el estado del stand según el tipo de trámite
+            let estadoStand = 'reservado';
+            if (payload.tipo_tramite === 'pago') estadoStand = 'pagado';
+
+            try {
+                // 1. Actualizar el expositor
+                const { error: errorExp } = await supabaseClient
+                    .from('standargentina')
+                    .update(payload)
+                    .eq('id', expositorActual.id);
+
+                if (errorExp) throw errorExp;
+
+                // 2. Actualizar el estado del stand
+                if (standActual && standActual.id) {
+                    const { error: errorStand } = await supabaseClient
+                        .from('stands')
+                        .update({ estado: estadoStand })
+                        .eq('id', standActual.id);
+
+                    if (errorStand) throw errorStand;
+                }
+
+                // 3. Mostrar mensaje de éxito
+                alert('✅ Reserva enviada con éxito. Recibirás un email con tus credenciales de acceso.');
+
+                // 4. Opcional: redirigir al adminstand
+                window.location.href = `adminstand.html?token=${token}`;
+
+            } catch (err) {
+                alert('Error al guardar: ' + err.message);
+            }
+        }
+
+        window.onload = cargarReserva;
+    </script>
+</body>
+</html>
