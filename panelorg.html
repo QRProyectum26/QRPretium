@@ -609,9 +609,11 @@
         function abrirPopup(id) { document.getElementById(id).classList.add('activo'); }
         function cerrarPopup(id) { document.getElementById(id).classList.remove('activo'); }
         function cerrarSesion() { location.reload(); }
-
         function mostrarModulo(modulo) {
-            if (!feriaSeleccionada && modulo !== 'miOrganizacion' && modulo !== 'calendarios' && modulo !== 'agenda') { alert('Primero seleccioná una feria del menú lateral.'); return; }
+            if (!feriaSeleccionada && modulo !== 'miOrganizacion' && modulo !== 'calendarios' && modulo !== 'agenda' && modulo !== 'actores') { 
+                alert('Primero seleccioná una feria del menú lateral.'); 
+                return; 
+            }
             const area = document.getElementById('areaTrabajo');
             const titulo = document.getElementById('tituloModulo');
             switch(modulo) {
@@ -620,8 +622,8 @@
                 case 'agenda': titulo.innerText = 'Mi Agenda'; area.innerHTML = '<p class="text-slate-500">Módulo de Agenda (Próximamente)</p>'; break;
                 case 'feriaFisica': titulo.innerText = 'Mi Feria Física - ' + feriaSeleccionada.nombre; cargarFeriaFisica(area); break;
                 case 'expositores': titulo.innerText = 'Expositores'; cargarModuloExpositores(area); break;
+                case 'actores': titulo.innerText = 'Actores'; cargarModuloActores(area); break; // <-- AGREGAR ESTA LÍNEA
                 case 'operaciones': titulo.innerText = 'Operaciones y Tickets'; area.innerHTML = '<p class="text-slate-500">Módulo de Incidencias (Próximamente)</p>'; break;
-                case 'actores': titulo.innerText = 'Actores'; cargarModuloActores(area); break;
                 case 'notificaciones': titulo.innerText = 'Notificaciones y Comunicaciones'; area.innerHTML = '<p class="text-slate-500">Módulo de Comunicaciones (Próximamente)</p>'; break;
                 default: titulo.innerText = modulo; area.innerHTML = '<p class="text-slate-500">Módulo en construcción.</p>';
             }
