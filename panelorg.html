@@ -433,6 +433,57 @@
             </div>
         </div>
     </div>
+    <!-- POPUP: INVITAR ACTORES AL PABELLÓN -->
+    <div id="popupInvitarActores" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupInvitarActores')">
+        <div class="popup-caja popup-caja-grande">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupInvitarActores')">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-2">📧 Invitar Actores al Pabellón</h2>
+                <p class="text-sm text-slate-600 mb-4 font-bold" id="invitarPabNombre">Cargando...</p>
+                <input type="hidden" id="invitarPabId">
+                <input type="hidden" id="invitarLink">
+
+                <!-- Filtro por Sector -->
+                <div class="bg-slate-100 border border-slate-300 rounded-xl p-3 mb-4">
+                    <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Filtrar por Sector (para seleccionar rápido)</label>
+                    <select id="filtroSectorInvitar" onchange="filtrarActoresParaInvitar()" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        <option value="">Todos los sectores</option>
+                    </select>
+                </div>
+
+                <!-- Lista de Actores con Checkboxes -->
+                <div class="bg-white border border-slate-200 rounded-xl max-h-80 overflow-y-auto mb-4">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 border-b border-slate-200 sticky top-0">
+                            <tr>
+                                <th class="px-3 py-2 w-8"><input type="checkbox" id="checkTodosActores" onchange="seleccionarTodosActores(this)"></th>
+                                <th class="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase">Nombre</th>
+                                <th class="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase">Sector</th>
+                                <th class="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase">Mail</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyActoresInvitar">
+                            <tr><td colspan="4" class="text-center py-4 text-slate-500 text-xs">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 text-xs text-blue-800">
+                    💡 Seleccioná los actores que querés invitar. Se les enviará un mail con el link al plano del pabellón.
+                </div>
+
+                <div class="flex justify-between items-center mt-5 pt-4 border-t border-slate-100">
+                    <span class="text-sm font-bold text-slate-700">Seleccionados: <span id="cantidadSeleccionados" class="text-naranja">0</span></span>
+                    <div class="flex gap-2">
+                        <button type="button" onclick="cerrarPopup('popupInvitarActores')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
+                        <button type="button" onclick="enviarInvitaciones()" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm flex items-center gap-2">
+                            📧 Enviar Invitación
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- ================= SCRIPT ================= -->
     <script>
@@ -955,13 +1006,140 @@
                 cargarModuloExpositores(document.getElementById('areaTrabajo'));
             } catch (err) { alert('Error: ' + err.message); }
         }
-                function copiarLinkReserva(slugFeria, pabellonId) {
+                 // 28. ABRIR MODAL DE INVITACIÓN
+        async function copiarLinkReserva(slugFeria, pabellonId) {
             const url = `https://qrpretium.com.ar/seleccionar-stand.html?feria=${slugFeria}&pabellon=${pabellonId}`;
-            navigator.clipboard.writeText(url).then(() => {
-                alert(`✅ Link de reserva copiado:\n${url}\n\nCompartilo con los expositores interesados.`);
-            }).catch(() => {
-                prompt('Copiá este link manualmente:', url);
+            
+            document.getElementById('invitarPabId').value = pabellonId;
+            document.getElementById('invitarLink').value = url;
+            
+            // Buscar nombre del pabellón
+            const { data: pab } = await supabaseClient.from('pabellones').select('nombre').eq('id', pabellonId).single();
+            document.getElementById('invitarPabNombre').innerText = pab ? `Pabellón: ${pab.nombre}` : 'Pabellón';
+
+            // Cargar Actores
+            await cargarActoresParaInvitar();
+            
+            abrirPopup('popupInvitarActores');
+        }
+
+        // 29. CARGAR ACTORES EN EL MODAL
+        async function cargarActoresParaInvitar() {
+            const tbody = document.getElementById('tbodyActoresInvitar');
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-slate-500 text-xs">Cargando...</td></tr>';
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('actores')
+                    .select('*')
+                    .eq('organizador_id', organizadorActual.id)
+                    .order('nombre_actor', { ascending: true });
+
+                if (error) throw error;
+
+                tbody.innerHTML = '';
+                
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-slate-500 text-xs">No hay actores cargados. Cargá uno en el módulo "Actores".</td></tr>';
+                    return;
+                }
+
+                // Cargar filtro de sectores
+                const sectores = [...new Set(data.map(a => a.rubro_sector).filter(Boolean))].sort();
+                const selectFiltro = document.getElementById('filtroSectorInvitar');
+                selectFiltro.innerHTML = '<option value="">Todos los sectores</option>';
+                sectores.forEach(s => { selectFiltro.innerHTML += `<option value="${s}">${s}</option>`; });
+
+                // Renderizar filas
+                data.forEach(actor => {
+                    tbody.innerHTML += `
+                        <tr class="border-b border-slate-100 hover:bg-slate-50 transition" data-sector="${actor.rubro_sector || ''}">
+                            <td class="px-3 py-2"><input type="checkbox" class="check-actor" value="${actor.id}" data-mail="${actor.mail || ''}" onchange="actualizarCantidadSeleccionados()"></td>
+                            <td class="px-3 py-2 font-bold text-slate-800 text-xs">${actor.nombre_actor}</td>
+                            <td class="px-3 py-2 text-slate-600 text-xs">${actor.rubro_sector || '---'}</td>
+                            <td class="px-3 py-2 text-slate-600 text-xs">${actor.mail || '---'}</td>
+                        </tr>
+                    `;
+                });
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-red-500 text-xs">Error: ${err.message}</td></tr>`;
+            }
+        }
+
+        // 30. FILTRAR ACTORES POR SECTOR
+        function filtrarActoresParaInvitar() {
+            const sector = document.getElementById('filtroSectorInvitar').value;
+            const filas = document.querySelectorAll('#tbodyActoresInvitar tr');
+            filas.forEach(fila => {
+                if (!sector || fila.dataset.sector === sector) {
+                    fila.style.display = '';
+                } else {
+                    fila.style.display = 'none';
+                }
             });
+        }
+
+        // 31. SELECCIONAR TODOS LOS ACTORES VISIBLES
+        function seleccionarTodosActores(checkbox) {
+            const filas = document.querySelectorAll('#tbodyActoresInvitar tr');
+            filas.forEach(fila => {
+                if (fila.style.display !== 'none') {
+                    const check = fila.querySelector('.check-actor');
+                    if (check) check.checked = checkbox.checked;
+                }
+            });
+            actualizarCantidadSeleccionados();
+        }
+
+        // 32. ACTUALIZAR CONTADOR
+        function actualizarCantidadSeleccionados() {
+            const seleccionados = document.querySelectorAll('.check-actor:checked').length;
+            document.getElementById('cantidadSeleccionados').innerText = seleccionados;
+        }
+
+        // 33. ENVIAR INVITACIONES
+        async function enviarInvitaciones() {
+            const seleccionados = document.querySelectorAll('.check-actor:checked');
+            if (seleccionados.length === 0) {
+                alert('Seleccioná al menos un actor.');
+                return;
+            }
+
+            const mails = [];
+            seleccionados.forEach(check => {
+                if (check.dataset.mail) mails.push(check.dataset.mail);
+            });
+
+            if (mails.length === 0) {
+                alert('Los actores seleccionados no tienen mail cargado.');
+                return;
+            }
+
+            const link = document.getElementById('invitarLink').value;
+            const pabellonId = document.getElementById('invitarPabId').value;
+            const nombrePab = document.getElementById('invitarPabNombre').innerText;
+
+            if (!confirm(`¿Enviar invitación a ${mails.length} actores?`)) return;
+
+            try {
+                // Acá llamamos a la Edge Function de Supabase
+                const { data, error } = await supabaseClient.functions.invoke('enviar-invitacion', {
+                    body: {
+                        mails: mails,
+                        link: link,
+                        pabellon: nombrePab,
+                        feria: feriaSeleccionada.nombre
+                    }
+                });
+
+                if (error) throw error;
+
+                alert(`✅ Invitaciones enviadas a ${mails.length} actores.`);
+                cerrarPopup('popupInvitarActores');
+
+            } catch (err) {
+                alert('Error al enviar: ' + err.message + '\n\n(La función de envío de mails se implementará próximamente).');
+            }
         }
     </script>
 </body>
