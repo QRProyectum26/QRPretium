@@ -623,6 +623,8 @@
 
         // 2. CARGAR PANEL
         async function cargarPanel() {
+        // 2. CARGAR PANEL
+        async function cargarPanel() {
             document.getElementById('seccionLogin').classList.add('hidden');
             document.getElementById('seccionPanel').classList.remove('hidden');
 
@@ -1232,6 +1234,20 @@
             doc.save(`Etiquetas-${expositorActual.empresa_stand.replace(/\s+/g, '-')}.pdf`);
             cerrarPopup('popupImprimir');
         }
+          // 👇 PEGÁ EL BLOQUE NUEVO ACÁ 👇
+
+        // Auto-login si viene el CUIT por la URL
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const cuitUrl = urlParams.get('cuit');
+            if (cuitUrl) {
+                document.getElementById('loginCuit').value = cuitUrl;
+                // Simulamos el submit para que entre directo
+                const fakeEvent = { preventDefault: () => {} };
+                iniciarSesion(fakeEvent);
+            }
+        });
+
     </script>
 </body>
 </html>
