@@ -702,6 +702,7 @@
                                     <button onclick="verStandsPabellon('${pab.id}', '${pab.nombre}')" class="bg-naranja hover:bg-orange-600 text-white font-bold py-1.5 rounded-lg text-[10px] transition">👁️ Ver Stands</button>
                                     <button onclick="abrirAsignarStandsEnPlano('${pab.id}', '${pab.plano_interno_url || ''}')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 rounded-lg text-[10px] transition ${tienePlanoInterno ? '' : 'opacity-50 cursor-not-allowed'}" ${tienePlanoInterno ? '' : 'disabled'}>📍 Asignar</button>
                                     <button onclick="copiarLinkReserva('${feriaSeleccionada.slug_url}', '${pab.id}')" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-700 font-bold py-1.5 rounded-lg text-[10px] transition">🔗 Link Reserva</button>
+<button onclick="abrirCatalogoPublico()" class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold py-1.5 rounded-lg text-[10px] transition col-span-2">🌐 Ver Catálogo de esta Feria</button>
                                 </div>
                             </div>
                         `;
@@ -1030,6 +1031,12 @@
             await cargarActoresParaInvitar();
             abrirPopup('popupInvitarActores');
         }
+        function abrirCatalogoPublico() {
+    if (!feriaSeleccionada) return;
+    // Abre el catálogo pasando el UUID de la feria actual por la URL
+    const url = `https://qrpretium.com.ar/catalogostand.html?feria=${feriaSeleccionada.id}`;
+    window.open(url, '_blank');
+}
 
         async function cargarActoresParaInvitar() {
             const tbody = document.getElementById('tbodyActoresInvitar');
