@@ -418,22 +418,43 @@
         let timerCierreNex = null;
 
         // 1. CARGA DE DATOS
-        async function cargarPabellones() {
-            try {
-                const { data, error } = await supabaseClient.from('pabellones').select('*').eq('feria_id', '11111111-1111-1111-1111-111111111111');
-                if (error) throw error;
-                const contenedor = document.getElementById('contenedorPabellones');
-                contenedor.innerHTML = '';
-                data.forEach(pab => {
-                    const boton = document.createElement('button');
-                    boton.className = "bg-slate-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-slate-700 transition";
-                    boton.innerText = pab.nombre;
-                    boton.onclick = () => entrarAlPabellon(pab.id, pab.nombre, pab.tipo);
-                    contenedor.appendChild(boton);
-                });
-            } catch (error) { console.error('Error al cargar pabellones:', error); }
+      async function cargarPabellones() {
+    try {
+        // 1. Leemos si viene un ID de feria por la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const feriaIdUrl = urlParams.get('feria');
+        
+        // 2. Si no viene por URL, usamos el ID de tu feria real (temporal para probar)
+        // Reemplaza 'TU-ID-DE-FERIA-REAL-AQUI' por el UUID que ves en tu tabla 'ferias' en Supabase.
+        const feriaId = feriaIdUrl || 'c9e0df54-daa5-4a05-9c14-ceeb8248cab5'; 
+
+        const { data, error } = await supabaseClient
+            .from('pabellones')
+            .select('*')
+            .eq('feria_id', feriaId); // <--- Ahora usa la variable dinámica
+
+        if (error) throw error;
+        
+        const contenedor = document.getElementById('contenedorPabellones');
+        contenedor.innerHTML = '';
+        
+        if (!data || data.length === 0) {
+            contenedor.innerHTML = '<p class="text-xs text-slate-500 font-bold">No hay pabellones creados para esta feria.</p>';
+            return;
         }
 
+        data.forEach(pab => {
+            const boton = document.createElement('button');
+            boton.className = "bg-slate-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-slate-700 transition";
+            boton.innerText = pab.nombre;
+            boton.onclick = () => entrarAlPabellon(pab.id, pab.nombre, pab.tipo);
+            contenedor.appendChild(boton);
+        });
+    } catch (error) { 
+        console.error('Error al cargar pabellones:', error); 
+        document.getElementById('contenedorPabellones').innerHTML = '<p class="text-xs text-red-500 font-bold">Error al cargar el catálogo.</p>';
+    }
+}
         async function cargarStands(pabellonId) {
             const contenedor = document.getElementById('contenedorStands');
             contenedor.innerHTML = '<div class="loader col-span-4"></div>';
