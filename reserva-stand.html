@@ -258,11 +258,15 @@
                 telefono: document.getElementById('resTelefono').value.trim(),
                 mail: document.getElementById('resMail').value.trim(),
                 plan_contratado: document.getElementById('resPlan').value,
-                descripcion_org: document.getElementById('resDescripcion').value.trim(),
+                descripcion: document.getElementById('resDescripcion').value.trim(), // <-- Ajustado al nombre del input
                 requerimientos: document.getElementById('resRequerimientos').value.trim(),
                 tipo_tramite: document.getElementById('resTipoTramite').value,
                 comprobante_url: document.getElementById('resComprobante').value.trim(),
-                estado_registro: 'pendiente'
+                estado_registro: 'pendiente',
+                
+                // 🔥 ESTOS DOS CAMPOS SON LOS QUE FALTABAN:
+                feria_id: feriaActual.id, 
+                stand_id: standActual ? standActual.id : null
             };
 
             // Determinar el estado del stand según el tipo de trámite
@@ -289,16 +293,17 @@
                 }
 
                 // 3. Mostrar mensaje de éxito
-                alert('✅ Reserva enviada con éxito. Recibirás un email con tus credenciales de acceso.');
+                alert('✅ Reserva enviada con éxito. Ahora podés ingresar a tu panel con tu CUIT.');
 
-                // 4. Opcional: redirigir al adminstand
-                window.location.href = `adminstand.html?token=${token}`;
+                // 4. Redirigir a adminstand usando el CUIT
+                const cuitLimpio = payload.cuit; 
+                window.location.href = `adminstand.html?cuit=${cuitLimpio}`;
 
             } catch (err) {
                 alert('Error al guardar: ' + err.message);
             }
         }
-
+        
         window.onload = cargarReserva;
     </script>
 </body>
