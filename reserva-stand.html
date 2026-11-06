@@ -74,11 +74,18 @@
             </div>
         </div>
 
-        <!-- Plano del Pabellón (Ahora para ELEGIR el stand) -->
+        <!-- Plano para Elegir Stand -->
         <div id="contenedorPlano" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 mb-4 hidden">
             <h3 class="text-sm font-bold text-slate-800 mb-2">🗺️ Elegí tu Stand en el Plano</h3>
-            <p class="text-xs text-slate-500 mb-2">Hacé clic sobre un código de stand libre para seleccionarlo.</p>
-            <div id="mapaReserva" class="relative w-full h-[400px] bg-slate-100 rounded-xl overflow-hidden">
+            <p class="text-xs text-slate-500 mb-2">Hacé clic sobre un código de stand <strong>verde (libre)</strong> para seleccionarlo.</p>
+            
+            <div class="flex gap-4 mb-3 text-xs">
+                <div class="flex items-center gap-1"><span class="w-4 h-4 rounded bg-emerald-400"></span> Libre</div>
+                <div class="flex items-center gap-1"><span class="w-4 h-4 rounded bg-yellow-400"></span> Reservado</div>
+                <div class="flex items-center gap-1"><span class="w-4 h-4 rounded bg-red-600"></span> Pagado</div>
+            </div>
+
+            <div id="mapaReserva" class="relative w-full h-[450px] bg-slate-100 rounded-xl overflow-hidden">
                 <img src="" class="w-full h-full object-contain" id="imagenPlanoReserva">
                 <div id="pinesReserva" class="absolute inset-0 pointer-events-auto"></div>
             </div>
@@ -198,10 +205,10 @@
 
                 // 2. Cargar Expositor por Token
                 const { data: expositor, error: errorExp } = await supabaseClient
-    .from('standargentina')
-    .select('*')
-    .eq('token_acceso', token)
-    .maybeSingle();
+                    .from('standargentina').select('*').eq('token_acceso', token).maybeSingle();
+                if (errorExp) throw errorExp;
+                if (!expositor) { mostrarError('Token inválido', 'El token no es válido.'); return; }
+                expositorActual = expositor;
 
                 // 3. Mostrar datos básicos
                 document.getElementById('feriaNombre').innerText = feria.nombre;
@@ -227,14 +234,13 @@
                 document.getElementById('textoFormasPago').innerText = 'Formas de Pago: ' + (feria.formas_pago || '');
                 if (feria.contrato_url) document.getElementById('btnContrato').href = feria.contrato_url;
 
-                // 5. Cargar plano y los stands libres
+                // 5. Cargar plano y los stands
                 const { data: pabellon } = await supabaseClient.from('pabellones').select('plano_interno_url').eq('id', pabellonIdUrl).maybeSingle();
                 
                 if (pabellon && pabellon.plano_interno_url) {
                     document.getElementById('contenedorPlano').classList.remove('hidden');
                     document.getElementById('imagenPlanoReserva').src = pabellon.plano_interno_url;
                     
-                    // Buscar stands del pabellón
                     const { data: stands } = await supabaseClient.from('stands').select('*').eq('pabellon_id', pabellonIdUrl);
                     dibujarStands(stands);
                 }
@@ -247,7 +253,7 @@
             }
         }
 
-        // 6. Dibujar los stands en el plano (solo los que tienen coordenadas)
+        // Dibujar los stands en el plano
         function dibujarStands(stands) {
             const contenedor = document.getElementById('pinesReserva');
             contenedor.innerHTML = '';
@@ -259,18 +265,21 @@
                     pin.style.left = stand.mapa_x + '%';
                     pin.style.top = stand.mapa_y + '%';
                     
-                    // Si está ocupado (pagado/reservado), no se puede elegir
                     const ocupado = stand.estado === 'pagado' || stand.estado === 'reservado';
-                    const color = ocupado ? 'bg-red-500' : 'bg-emerald-500 hover:bg-emerald-600';
+                    let color = 'bg-emerald-500 hover:bg-emerald-600';
+                    if (stand.estado === 'reservado') color = 'bg-yellow-400';
+                    if (stand.estado === 'pagado') color = 'bg-red-600';
                     
                     pin.innerHTML = `
-                        <div class="${color} text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg border-2 border-white transition transform hover:scale-110">
+                        <div class="${color} text-slate-800 text-[10px] font-bold px-2 py-1 rounded-full shadow-lg border-2 border-white transition transform hover:scale-110">
                             ${stand.codigo_etiqueta || stand.numero}
                         </div>
                     `;
 
                     if (!ocupado) {
                         pin.onclick = () => seleccionarStand(stand, pin);
+                    } else {
+                        pin.style.cursor = 'not-allowed';
                     }
                     
                     contenedor.appendChild(pin);
@@ -278,33 +287,31 @@
             });
         }
 
-        // 7. Seleccionar un stand
+        // Seleccionar un stand
         function seleccionarStand(stand, elementoPin) {
             standSeleccionado = stand;
             
-            // Quitar selección anterior
+            // Resetear estilos de todos los pines
             document.querySelectorAll('#pinesReserva > div > div').forEach(el => {
-                if (!el.classList.contains('bg-red-500')) {
-                    el.className = el.className.replace('bg-blue-500', 'bg-emerald-500');
+                if (!el.classList.contains('bg-yellow-400') && !el.classList.contains('bg-red-600')) {
+                    el.className = 'bg-emerald-500 hover:bg-emerald-600 text-slate-800 text-[10px] font-bold px-2 py-1 rounded-full shadow-lg border-2 border-white transition transform hover:scale-110';
                 }
             });
 
             // Marcar el nuevo
-            elementoPin.querySelector('div').classList.remove('bg-emerald-500');
-            elementoPin.querySelector('div').classList.add('bg-blue-500', 'ring-4', 'ring-blue-300');
+            elementoPin.querySelector('div').className = 'bg-blue-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg border-2 border-blue-800 scale-125';
 
             // Mostrar el formulario
             document.getElementById('contenedorFormulario').classList.remove('hidden');
             document.getElementById('standAsignado').innerText = stand.codigo_etiqueta || stand.numero;
             
-            // Prellenar el CUIT y nombre si ya estaban cargados
+            // Prellenar datos del expositor fantasma
             if (expositorActual) {
                 if (expositorActual.cuit) document.getElementById('resCuit').value = expositorActual.cuit;
                 if (expositorActual.empresa_stand) document.getElementById('resNombre').value = expositorActual.empresa_stand;
                 if (expositorActual.mail) document.getElementById('resMail').value = expositorActual.mail;
             }
             
-            // Scroll al formulario
             document.getElementById('contenedorFormulario').scrollIntoView({ behavior: 'smooth' });
         }
 
@@ -371,17 +378,18 @@
                 estado_registro: 'pendiente',
                 feria_id: feriaActual.id,
                 stand_id: standSeleccionado.id,
-                pabellon_id: pabellonActualId // Opcional, pero útil para el organizador
+                pabellon_id: pabellonActualId
             };
 
             let estadoStand = 'reservado';
             if (payload.tipo_tramite === 'pago') estadoStand = 'pagado';
 
             try {
+                // ACTUALIZAMOS el registro fantasma en standargentina
                 const { error: errorExp } = await supabaseClient.from('standargentina').update(payload).eq('id', expositorActual.id);
                 if (errorExp) throw errorExp;
 
-                // Bloquear el stand temporalmente mientras el organizador aprueba
+                // Actualizamos el estado del stand seleccionado
                 const { error: errorStand } = await supabaseClient.from('stands').update({ estado: estadoStand }).eq('id', standSeleccionado.id);
                 if (errorStand) throw errorStand;
 
