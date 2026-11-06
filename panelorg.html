@@ -132,7 +132,7 @@
         </main>
     </div>
 
-    <!-- POPUPS -->
+<!-- POPUPS -->
     <div id="popupNuevaFeria" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupNuevaFeria')">
         <div class="popup-caja">
             <button class="popup-cerrar" onclick="cerrarPopup('popupNuevaFeria')">✕</button>
@@ -147,6 +147,30 @@
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Descripción Corta</label>
                         <input type="text" id="feriaDescripcion" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Feria de materiales y construcción">
                     </div>
+                    
+                    <!-- 👇 CAMPOS NUEVOS AGREGADOS 👇 -->
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Descripción Larga (Para el expositor)</label>
+                        <textarea id="feriaDescripcionLarga" rows="3" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Explicale al expositor de qué se trata la feria, objetivos..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Servicios Incluidos (Separados por coma)</label>
+                        <input type="text" id="feriaServicios" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Seguridad 24hs, Wifi, Limpieza, Estacionamiento">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Planes (Separados por coma)</label>
+                        <input type="text" id="feriaPlanes" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Standard, Power, Premium">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Formas de Pago</label>
+                        <input type="text" id="feriaFormasPago" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Transferencia, Tarjeta hasta 6 cuotas">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">URL del Modelo de Contrato (PDF)</label>
+                        <input type="url" id="feriaContratoUrl" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="https://drive.google.com/...">
+                    </div>
+                    <!-- 👆 FIN DE LOS CAMPOS NUEVOS 👆 -->
+
                     <div>
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Ubicación Física (Predio/Dirección)</label>
                         <input type="text" id="feriaUbicacion" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Predio Ferial Costanera, Bs As">
