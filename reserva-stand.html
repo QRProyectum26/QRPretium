@@ -198,10 +198,10 @@
 
                 // 2. Cargar Expositor por Token
                 const { data: expositor, error: errorExp } = await supabaseClient
-                    .from('standargentina').select('*').eq('token_acceso', token).maybeSingle();
-                if (errorExp) throw errorExp;
-                if (!expositor) { mostrarError('Token inválido', 'El token no es válido.'); return; }
-                expositorActual = expositor;
+    .from('standargentina')
+    .select('*')
+    .eq('token_acceso', token)
+    .maybeSingle();
 
                 // 3. Mostrar datos básicos
                 document.getElementById('feriaNombre').innerText = feria.nombre;
