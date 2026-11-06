@@ -55,7 +55,35 @@
             <p id="feriaFechas" class="text-xs text-slate-500 mt-1"></p>
         </div>
 
-        <!-- Plano del Pabellón (si existe) -->
+        <!-- Info Comercial (Servicios y Planes) -->
+        <div id="contenedorInfoComercial" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-4">
+            <h3 class="text-lg font-extrabold text-slate-800 mb-2">📋 Detalles de la Feria y Servicios</h3>
+            <div class="text-sm text-slate-600 mb-4 space-y-2">
+                <p id="infoDescripcionFeria" class="leading-relaxed"></p>
+                <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 mt-3">
+                    <h4 class="font-bold text-slate-800 text-xs uppercase mb-2">Servicios Incluidos para el Expositor:</h4>
+                    <ul id="listaServicios" class="list-disc pl-5 text-xs text-slate-600 space-y-1"></ul>
+                </div>
+            </div>
+            
+            <button type="button" onclick="document.getElementById('panelPlanes').classList.toggle('hidden')" class="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 font-bold py-2 rounded-xl text-sm transition mb-4">
+                💳 Ver Planes de Participación y Formas de Pago
+            </button>
+
+            <div id="panelPlanes" class="hidden bg-slate-50 border border-slate-200 rounded-xl p-4 mb-4 text-xs">
+                <h4 class="font-bold text-slate-800 mb-2 uppercase">Planes Disponibles:</h4>
+                <ul id="listaPlanes" class="list-disc pl-5 space-y-1 text-slate-600 mb-3"></ul>
+                <p id="textoFormasPago" class="text-slate-600"></p>
+            </div>
+
+            <div class="border-t border-gray-200 pt-4" id="contenedorContrato">
+                <a id="btnContrato" href="#" target="_blank" class="text-blue-600 font-bold text-xs hover:underline flex items-center gap-1">
+                    📄 Descargar Modelo de Contrato
+                </a>
+            </div>
+        </div>
+
+        <!-- Plano del Pabellón -->
         <div id="contenedorPlano" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 mb-4 hidden">
             <h3 class="text-sm font-bold text-slate-800 mb-2">🗺️ Plano del Pabellón</h3>
             <div id="mapaReserva" class="relative w-full h-[400px] bg-slate-100 rounded-xl overflow-hidden">
@@ -68,7 +96,7 @@
         <!-- Formulario -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
             <h2 class="text-xl font-extrabold text-slate-800 mb-2">📝 Completar Reserva</h2>
-            <p class="text-sm text-slate-600 mb-4">Stand asignado: <strong id="standAsignado" class="text-naranja font-mono"></strong></p>
+            <p class="text-sm text-slate-600 mb-4">Stand asignado: <strong id="standAsignado" class="text-orange-500 font-mono"></strong></p>
             
             <form onsubmit="guardarReserva(event)" class="space-y-3">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -104,9 +132,6 @@
                 <div>
                     <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Plan Contratado</label>
                     <select id="resPlan" class="w-full px-3 py-2 border rounded-xl text-sm">
-                        <option value="Standard">Standard</option>
-                        <option value="Power">Power</option>
-                        <option value="Premium">Premium</option>
                         <option value="A definir">A definir</option>
                     </select>
                 </div>
@@ -127,12 +152,23 @@
                         <option value="otro">Otro</option>
                     </select>
                 </div>
+                
+                <!-- BOTÓN DE ADJUNTAR COMPROBANTE -->
                 <div>
-                    <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Comprobante de Pago (URL)</label>
-                    <input type="url" id="resComprobante" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="https://... (Google Drive, Dropbox, etc.)">
+                    <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Comprobante de Pago (si ya abonaste)</label>
+                    <div class="flex items-center gap-2 mt-1">
+                        <input type="file" id="resComprobanteFile" class="hidden" accept="image/*,.pdf" onchange="subirComprobante()">
+                        <button type="button" onclick="document.getElementById('resComprobanteFile').click()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-4 py-2 rounded-xl text-sm transition flex items-center gap-2 border border-slate-300">
+                            📎 Adjuntar Ticket o Transferencia
+                        </button>
+                        <span id="txtNombreComprobante" class="text-xs text-slate-500 italic hidden">Ningún archivo seleccionado</span>
+                    </div>
                 </div>
+
                 <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
-                    <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">✅ Enviar Reserva</button>
+                    <button type="submit" class="px-6 py-3 bg-verdeQR hover:bg-teal-700 text-white font-bold rounded-xl text-sm w-full md:w-auto transition">
+                        ✅ Enviar Reserva
+                    </button>
                 </div>
             </form>
         </div>
@@ -146,6 +182,7 @@
         let feriaActual = null;
         let expositorActual = null;
         let standActual = null;
+        let archivoComprobanteSeleccionado = null;
 
         // 1. Leer parámetros de la URL
         const urlParams = new URLSearchParams(window.location.search);
@@ -189,14 +226,52 @@
                 expositorActual = expositor;
                 standActual = expositor.stands;
 
-                // Mostrar datos
+                // Mostrar datos de la feria
                 document.getElementById('feriaNombre').innerText = feria.nombre;
                 document.getElementById('feriaUbicacion').innerText = '📍 ' + (feria.ubicacion_fisica || 'Ubicación no definida');
                 document.getElementById('feriaFechas').innerText = '📅 ' + (feria.fecha_inicio || '') + ' al ' + (feria.fecha_fin || '');
-                document.getElementById('standAsignado').innerText = standActual.codigo_etiqueta || standActual.numero;
+                
+                if (standActual) {
+                    document.getElementById('standAsignado').innerText = standActual.codigo_etiqueta || standActual.numero;
+                }
+
+                // Cargar Info Comercial Dinámica
+                document.getElementById('infoDescripcionFeria').innerText = feria.descripcion_larga || feria.descripcion || 'Sin descripción disponible.';
+                
+                const listaServicios = document.getElementById('listaServicios');
+                listaServicios.innerHTML = '';
+                if (feria.servicios && Array.isArray(feria.servicios) && feria.servicios.length > 0) {
+                    feria.servicios.forEach(serv => {
+                        listaServicios.innerHTML += `<li>${serv}</li>`;
+                    });
+                } else {
+                    listaServicios.innerHTML = '<li>Información de servicios no disponible.</li>';
+                }
+
+                const listaPlanes = document.getElementById('listaPlanes');
+                listaPlanes.innerHTML = '';
+                const selectPlan = document.getElementById('resPlan');
+                selectPlan.innerHTML = '<option value="A definir">A definir</option>';
+                
+                if (feria.planes && Array.isArray(feria.planes) && feria.planes.length > 0) {
+                    feria.planes.forEach(plan => {
+                        listaPlanes.innerHTML += `<li><strong>${plan}</strong></li>`;
+                        selectPlan.innerHTML += `<option value="${plan}">${plan}</option>`;
+                    });
+                } else {
+                    listaPlanes.innerHTML = '<li>Consultar planes con el organizador.</li>';
+                }
+
+                document.getElementById('textoFormasPago').innerHTML = `<strong>Formas de Pago:</strong> ${feria.formas_pago || 'Consultar con el organizador.'}`;
+
+                if (feria.contrato_url) {
+                    document.getElementById('btnContrato').href = feria.contrato_url;
+                } else {
+                    document.getElementById('contenedorContrato').style.display = 'none';
+                }
 
                 // Cargar plano del pabellón si existe
-                if (standActual.pabellon_id) {
+                if (standActual && standActual.pabellon_id) {
                     const { data: pabellon } = await supabaseClient
                         .from('pabellones')
                         .select('plano_interno_url')
@@ -206,7 +281,7 @@
                     if (pabellon && pabellon.plano_interno_url) {
                         document.getElementById('contenedorPlano').classList.remove('hidden');
                         document.getElementById('imagenPlanoReserva').src = pabellon.plano_interno_url;
-                        dibujarPinStand(pabellon.plano_interno_url);
+                        dibujarPinStand();
                     }
                 }
 
@@ -219,7 +294,7 @@
         }
 
         // 3. Dibujar el pin del stand en el plano
-        function dibujarPinStand(planoUrl) {
+        function dibujarPinStand() {
             const contenedor = document.getElementById('pinesReserva');
             contenedor.innerHTML = '';
 
@@ -229,7 +304,7 @@
                 pin.style.left = standActual.mapa_x + '%';
                 pin.style.top = standActual.mapa_y + '%';
                 pin.innerHTML = `
-                    <div class="bg-naranja text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg border-2 border-white animate-pulse">
+                    <div class="bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg border-2 border-white animate-pulse">
                         📍 ${standActual.codigo_etiqueta || standActual.numero}
                     </div>
                 `;
@@ -246,7 +321,50 @@
             document.getElementById('estadoError').classList.remove('hidden');
         }
 
-        // 5. Guardar la reserva
+        // 5. Subir comprobante a Supabase Storage
+        async function subirComprobante() {
+            const fileInput = document.getElementById('resComprobanteFile');
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const txtNombre = document.getElementById('txtNombreComprobante');
+            const btn = event.target.closest('button');
+            const textoOriginal = btn.innerHTML;
+            
+            btn.innerHTML = 'Subiendo...';
+            btn.disabled = true;
+            txtNombre.classList.remove('hidden');
+            txtNombre.innerText = file.name;
+
+            try {
+                const extension = file.name.split('.').pop();
+                const nombreArchivo = `comprobante-${expositorActual.cuit}-${Date.now()}.${extension}`;
+                
+                const { data, error } = await supabaseClient.storage
+                    .from('comprobantes')
+                    .upload(nombreArchivo, file);
+
+                if (error) throw error;
+
+                const { data: urlData } = supabaseClient.storage
+                    .from('comprobantes')
+                    .getPublicUrl(nombreArchivo);
+
+                archivoComprobanteSeleccionado = urlData.publicUrl;
+                txtNombre.innerText = '✅ Archivo adjuntado correctamente';
+                txtNombre.className = 'text-xs text-emerald-600 font-bold';
+
+            } catch (error) {
+                alert('Error al subir el comprobante: ' + error.message);
+                txtNombre.innerText = 'Error al subir';
+                archivoComprobanteSeleccionado = null;
+            } finally {
+                btn.innerHTML = textoOriginal;
+                btn.disabled = false;
+            }
+        }
+
+        // 6. Guardar la reserva
         async function guardarReserva(e) {
             e.preventDefault();
 
@@ -258,18 +376,15 @@
                 telefono: document.getElementById('resTelefono').value.trim(),
                 mail: document.getElementById('resMail').value.trim(),
                 plan_contratado: document.getElementById('resPlan').value,
-                descripcion: document.getElementById('resDescripcion').value.trim(), // <-- Ajustado al nombre del input
+                descripcion: document.getElementById('resDescripcion').value.trim(),
                 requerimientos: document.getElementById('resRequerimientos').value.trim(),
                 tipo_tramite: document.getElementById('resTipoTramite').value,
-                comprobante_url: document.getElementById('resComprobante').value.trim(),
+                comprobante_url: archivoComprobanteSeleccionado || null,
                 estado_registro: 'pendiente',
-                
-                // 🔥 ESTOS DOS CAMPOS SON LOS QUE FALTABAN:
-                feria_id: feriaActual.id, 
+                feria_id: feriaActual.id,
                 stand_id: standActual ? standActual.id : null
             };
 
-            // Determinar el estado del stand según el tipo de trámite
             let estadoStand = 'reservado';
             if (payload.tipo_tramite === 'pago') estadoStand = 'pagado';
 
@@ -292,18 +407,23 @@
                     if (errorStand) throw errorStand;
                 }
 
-                // 3. Mostrar mensaje de éxito
-                alert('✅ Reserva enviada con éxito. Ahora podés ingresar a tu panel con tu CUIT.');
+                // 3. Mostrar mensaje de éxito y bloquear formulario
+                alert('✅ Solicitud de reserva enviada con éxito.\n\nEl organizador revisará tu comprobante y contrato. Una vez aprobado, recibirás un correo con tus credenciales de acceso.');
 
-                // 4. Redirigir a adminstand usando el CUIT
-                const cuitLimpio = payload.cuit; 
-                window.location.href = `adminstand.html?cuit=${cuitLimpio}`;
+                document.getElementById('estadoContenido').innerHTML = `
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-10 text-center mt-10">
+                        <span class="text-6xl">⏳</span>
+                        <h2 class="text-2xl font-extrabold text-slate-800 mt-4">Solicitud en Revisión</h2>
+                        <p class="text-slate-600 mt-2 max-w-md mx-auto">Tu solicitud de reserva y comprobante han sido recibidos. El organizador de la feria los revisará a la brevedad. Recibirás un mail con tu acceso una vez aprobado.</p>
+                        <img src="img/logoqrpretium1.jpg" class="w-16 h-16 rounded-lg mx-auto mt-6 opacity-50">
+                    </div>
+                `;
 
             } catch (err) {
                 alert('Error al guardar: ' + err.message);
             }
         }
-        
+
         window.onload = cargarReserva;
     </script>
 </body>
