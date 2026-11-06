@@ -740,7 +740,39 @@
                 default: titulo.innerText = modulo; area.innerHTML = '<p class="text-slate-500">Módulo en construcción.</p>';
             }
         }
+  async function guardarNuevoPabellon(e) {
+            e.preventDefault();
+            
+            // Validar que haya una feria seleccionada
+            if (!feriaSeleccionada) {
+                alert("Por favor, seleccioná una feria primero.");
+                return;
+            }
 
+            // Armamos el objeto con los datos del formulario
+            const payload = {
+                feria_id: feriaSeleccionada.id, 
+                codigo: document.getElementById('pabCodigo').value.trim(),
+                nombre: document.getElementById('pabNombre').value.trim(),
+                tipo: 'pabellon',
+                cant_filas: 1, 
+                cant_columnas: 1
+            };
+
+            try {
+                // Insertamos en la tabla 'pabellones'
+                const { error } = await supabaseClient.from('pabellones').insert([payload]);
+                if (error) throw error;
+                
+                // Si todo sale bien, cerramos el popup y recargamos la vista
+                cerrarPopup('popupNuevoPabellon');
+                alert('✅ Pabellón creado con éxito');
+                mostrarModulo('feriaFisica'); 
+                
+            } catch (err) { 
+                alert('Error al guardar el pabellón: ' + err.message); 
+            }
+        }
         async function cargarFeriaFisica(area) {
             area.innerHTML = '<div class="text-center mt-10"><div class="loader"></div></div>';
             try {
