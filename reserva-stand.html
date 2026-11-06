@@ -8,18 +8,12 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-        .popup-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
-        .popup-overlay.activo { opacity: 1; pointer-events: auto; }
-        .popup-caja { background: #ffffff; border-radius: 20px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; transform: scale(0.9); opacity: 0; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5); position: relative; }
-        .popup-overlay.activo .popup-caja { transform: scale(1); opacity: 1; }
-        .popup-cerrar { position: absolute; top: 12px; right: 12px; background: rgba(15, 23, 42, 0.1); border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 18px; font-weight: 700; color: #334155; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; z-index: 10; }
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid #0D9488; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; margin: 0 auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen">
 
-    <!-- Header -->
     <header class="bg-slate-900 text-white p-4 shadow-md">
         <div class="max-w-4xl mx-auto flex items-center gap-3">
             <img src="img/logoqrpretium1.jpg" alt="Logo" class="w-10 h-10 rounded-lg object-cover">
@@ -30,13 +24,11 @@
         </div>
     </header>
 
-    <!-- Cargando -->
     <div id="estadoCargando" class="max-w-4xl mx-auto p-6 text-center mt-20">
         <div class="loader"></div>
         <p class="text-slate-500 mt-4">Verificando tu link de reserva...</p>
     </div>
 
-    <!-- Error -->
     <div id="estadoError" class="max-w-4xl mx-auto p-6 hidden mt-20">
         <div class="bg-red-50 border border-red-200 rounded-2xl p-8 text-center">
             <span class="text-5xl">⚠️</span>
@@ -45,7 +37,6 @@
         </div>
     </div>
 
-    <!-- Contenido Principal -->
     <div id="estadoContenido" class="max-w-4xl mx-auto p-4 hidden">
 
         <!-- Info de la Feria -->
@@ -55,7 +46,7 @@
             <p id="feriaFechas" class="text-xs text-slate-500 mt-1"></p>
         </div>
 
-        <!-- Info Comercial (Servicios y Planes) -->
+        <!-- Info Comercial -->
         <div id="contenedorInfoComercial" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-4">
             <h3 class="text-lg font-extrabold text-slate-800 mb-2">📋 Detalles de la Feria y Servicios</h3>
             <div class="text-sm text-slate-600 mb-4 space-y-2">
@@ -83,20 +74,20 @@
             </div>
         </div>
 
-        <!-- Plano del Pabellón -->
+        <!-- Plano del Pabellón (Ahora para ELEGIR el stand) -->
         <div id="contenedorPlano" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 mb-4 hidden">
-            <h3 class="text-sm font-bold text-slate-800 mb-2">🗺️ Plano del Pabellón</h3>
+            <h3 class="text-sm font-bold text-slate-800 mb-2">🗺️ Elegí tu Stand en el Plano</h3>
+            <p class="text-xs text-slate-500 mb-2">Hacé clic sobre un código de stand libre para seleccionarlo.</p>
             <div id="mapaReserva" class="relative w-full h-[400px] bg-slate-100 rounded-xl overflow-hidden">
                 <img src="" class="w-full h-full object-contain" id="imagenPlanoReserva">
-                <div id="pinesReserva" class="absolute inset-0 pointer-events-none"></div>
+                <div id="pinesReserva" class="absolute inset-0 pointer-events-auto"></div>
             </div>
-            <p class="text-[10px] text-slate-500 mt-2 italic text-center">💡 Tu stand está destacado en el plano.</p>
         </div>
 
         <!-- Formulario -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+        <div id="contenedorFormulario" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hidden">
             <h2 class="text-xl font-extrabold text-slate-800 mb-2">📝 Completar Reserva</h2>
-            <p class="text-sm text-slate-600 mb-4">Stand asignado: <strong id="standAsignado" class="text-orange-500 font-mono"></strong></p>
+            <p class="text-sm text-slate-600 mb-4">Stand seleccionado: <strong id="standAsignado" class="text-orange-500 font-mono"></strong></p>
             
             <form onsubmit="guardarReserva(event)" class="space-y-3">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -153,7 +144,6 @@
                     </select>
                 </div>
                 
-                <!-- BOTÓN DE ADJUNTAR COMPROBANTE -->
                 <div>
                     <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Comprobante de Pago (si ya abonaste)</label>
                     <div class="flex items-center gap-2 mt-1">
@@ -181,138 +171,143 @@
 
         let feriaActual = null;
         let expositorActual = null;
-        let standActual = null;
+        let pabellonActualId = null;
+        let standSeleccionado = null;
         let archivoComprobanteSeleccionado = null;
 
-        // 1. Leer parámetros de la URL
         const urlParams = new URLSearchParams(window.location.search);
         const token = urlParams.get('token');
         const slugFeria = urlParams.get('feria');
+        const pabellonIdUrl = urlParams.get('pabellon');
 
-        // 2. Validar token y cargar datos
         async function cargarReserva() {
-            if (!token || !slugFeria) {
-                mostrarError('Link inválido', 'El link no contiene los parámetros necesarios (token y feria).');
+            if (!token || !slugFeria || !pabellonIdUrl) {
+                mostrarError('Link inválido', 'Faltan parámetros en el link.');
                 return;
             }
 
-            try {
-                // Buscar la feria por slug
-                const { data: feria, error: errorFeria } = await supabaseClient
-                    .from('ferias')
-                    .select('*')
-                    .eq('slug_url', slugFeria)
-                    .maybeSingle();
+            pabellonActualId = pabellonIdUrl;
 
+            try {
+                // 1. Cargar Feria
+                const { data: feria, error: errorFeria } = await supabaseClient
+                    .from('ferias').select('*').eq('slug_url', slugFeria).maybeSingle();
                 if (errorFeria) throw errorFeria;
-                if (!feria) {
-                    mostrarError('Feria no encontrada', 'La feria asociada a este link no existe.');
-                    return;
-                }
+                if (!feria) { mostrarError('Feria no encontrada', 'La feria no existe.'); return; }
                 feriaActual = feria;
 
-                // Buscar al expositor por token
+                // 2. Cargar Expositor por Token
                 const { data: expositor, error: errorExp } = await supabaseClient
-                    .from('standargentina')
-                    .select('*, stands(id, numero, codigo_etiqueta, mapa_x, mapa_y, pabellon_id)')
-                    .eq('token_acceso', token)
-                    .maybeSingle();
-
+                    .from('standargentina').select('*').eq('token_acceso', token).maybeSingle();
                 if (errorExp) throw errorExp;
-                if (!expositor) {
-                    mostrarError('Token inválido', 'El token de expositor no es válido o ya expiró.');
-                    return;
-                }
+                if (!expositor) { mostrarError('Token inválido', 'El token no es válido.'); return; }
                 expositorActual = expositor;
-                standActual = expositor.stands;
 
-                // Mostrar datos de la feria
+                // 3. Mostrar datos básicos
                 document.getElementById('feriaNombre').innerText = feria.nombre;
-                document.getElementById('feriaUbicacion').innerText = '📍 ' + (feria.ubicacion_fisica || 'Ubicación no definida');
+                document.getElementById('feriaUbicacion').innerText = '📍 ' + (feria.ubicacion_fisica || '');
                 document.getElementById('feriaFechas').innerText = '📅 ' + (feria.fecha_inicio || '') + ' al ' + (feria.fecha_fin || '');
-                
-                if (standActual) {
-                    document.getElementById('standAsignado').innerText = standActual.codigo_etiqueta || standActual.numero;
-                }
 
-                // Cargar Info Comercial Dinámica
-                document.getElementById('infoDescripcionFeria').innerText = feria.descripcion_larga || feria.descripcion || 'Sin descripción disponible.';
+                // 4. Cargar info comercial
+                document.getElementById('infoDescripcionFeria').innerText = feria.descripcion_larga || feria.descripcion || '';
                 
                 const listaServicios = document.getElementById('listaServicios');
                 listaServicios.innerHTML = '';
-                if (feria.servicios && Array.isArray(feria.servicios) && feria.servicios.length > 0) {
-                    feria.servicios.forEach(serv => {
-                        listaServicios.innerHTML += `<li>${serv}</li>`;
-                    });
-                } else {
-                    listaServicios.innerHTML = '<li>Información de servicios no disponible.</li>';
+                if (feria.servicios && Array.isArray(feria.servicios)) {
+                    feria.servicios.forEach(s => listaServicios.innerHTML += `<li>${s}</li>`);
                 }
 
-                const listaPlanes = document.getElementById('listaPlanes');
-                listaPlanes.innerHTML = '';
                 const selectPlan = document.getElementById('resPlan');
-                selectPlan.innerHTML = '<option value="A definir">A definir</option>';
-                
-                if (feria.planes && Array.isArray(feria.planes) && feria.planes.length > 0) {
-                    feria.planes.forEach(plan => {
-                        listaPlanes.innerHTML += `<li><strong>${plan}</strong></li>`;
-                        selectPlan.innerHTML += `<option value="${plan}">${plan}</option>`;
+                if (feria.planes && Array.isArray(feria.planes)) {
+                    feria.planes.forEach(p => {
+                        document.getElementById('listaPlanes').innerHTML += `<li>${p}</li>`;
+                        selectPlan.innerHTML += `<option value="${p}">${p}</option>`;
                     });
-                } else {
-                    listaPlanes.innerHTML = '<li>Consultar planes con el organizador.</li>';
                 }
+                document.getElementById('textoFormasPago').innerText = 'Formas de Pago: ' + (feria.formas_pago || '');
+                if (feria.contrato_url) document.getElementById('btnContrato').href = feria.contrato_url;
 
-                document.getElementById('textoFormasPago').innerHTML = `<strong>Formas de Pago:</strong> ${feria.formas_pago || 'Consultar con el organizador.'}`;
-
-                if (feria.contrato_url) {
-                    document.getElementById('btnContrato').href = feria.contrato_url;
-                } else {
-                    document.getElementById('contenedorContrato').style.display = 'none';
-                }
-
-                // Cargar plano del pabellón si existe
-                if (standActual && standActual.pabellon_id) {
-                    const { data: pabellon } = await supabaseClient
-                        .from('pabellones')
-                        .select('plano_interno_url')
-                        .eq('id', standActual.pabellon_id)
-                        .maybeSingle();
-
-                    if (pabellon && pabellon.plano_interno_url) {
-                        document.getElementById('contenedorPlano').classList.remove('hidden');
-                        document.getElementById('imagenPlanoReserva').src = pabellon.plano_interno_url;
-                        dibujarPinStand();
-                    }
+                // 5. Cargar plano y los stands libres
+                const { data: pabellon } = await supabaseClient.from('pabellones').select('plano_interno_url').eq('id', pabellonIdUrl).maybeSingle();
+                
+                if (pabellon && pabellon.plano_interno_url) {
+                    document.getElementById('contenedorPlano').classList.remove('hidden');
+                    document.getElementById('imagenPlanoReserva').src = pabellon.plano_interno_url;
+                    
+                    // Buscar stands del pabellón
+                    const { data: stands } = await supabaseClient.from('stands').select('*').eq('pabellon_id', pabellonIdUrl);
+                    dibujarStands(stands);
                 }
 
                 document.getElementById('estadoCargando').classList.add('hidden');
                 document.getElementById('estadoContenido').classList.remove('hidden');
 
             } catch (err) {
-                mostrarError('Error de conexión', err.message);
+                mostrarError('Error', err.message);
             }
         }
 
-        // 3. Dibujar el pin del stand en el plano
-        function dibujarPinStand() {
+        // 6. Dibujar los stands en el plano (solo los que tienen coordenadas)
+        function dibujarStands(stands) {
             const contenedor = document.getElementById('pinesReserva');
             contenedor.innerHTML = '';
 
-            if (standActual && standActual.mapa_x && standActual.mapa_y) {
-                const pin = document.createElement('div');
-                pin.className = 'absolute transform -translate-x-1/2 -translate-y-1/2';
-                pin.style.left = standActual.mapa_x + '%';
-                pin.style.top = standActual.mapa_y + '%';
-                pin.innerHTML = `
-                    <div class="bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg border-2 border-white animate-pulse">
-                        📍 ${standActual.codigo_etiqueta || standActual.numero}
-                    </div>
-                `;
-                contenedor.appendChild(pin);
-            }
+            stands.forEach(stand => {
+                if (stand.mapa_x && stand.mapa_y) {
+                    const pin = document.createElement('div');
+                    pin.className = 'absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer pointer-events-auto z-10';
+                    pin.style.left = stand.mapa_x + '%';
+                    pin.style.top = stand.mapa_y + '%';
+                    
+                    // Si está ocupado (pagado/reservado), no se puede elegir
+                    const ocupado = stand.estado === 'pagado' || stand.estado === 'reservado';
+                    const color = ocupado ? 'bg-red-500' : 'bg-emerald-500 hover:bg-emerald-600';
+                    
+                    pin.innerHTML = `
+                        <div class="${color} text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg border-2 border-white transition transform hover:scale-110">
+                            ${stand.codigo_etiqueta || stand.numero}
+                        </div>
+                    `;
+
+                    if (!ocupado) {
+                        pin.onclick = () => seleccionarStand(stand, pin);
+                    }
+                    
+                    contenedor.appendChild(pin);
+                }
+            });
         }
 
-        // 4. Mostrar error
+        // 7. Seleccionar un stand
+        function seleccionarStand(stand, elementoPin) {
+            standSeleccionado = stand;
+            
+            // Quitar selección anterior
+            document.querySelectorAll('#pinesReserva > div > div').forEach(el => {
+                if (!el.classList.contains('bg-red-500')) {
+                    el.className = el.className.replace('bg-blue-500', 'bg-emerald-500');
+                }
+            });
+
+            // Marcar el nuevo
+            elementoPin.querySelector('div').classList.remove('bg-emerald-500');
+            elementoPin.querySelector('div').classList.add('bg-blue-500', 'ring-4', 'ring-blue-300');
+
+            // Mostrar el formulario
+            document.getElementById('contenedorFormulario').classList.remove('hidden');
+            document.getElementById('standAsignado').innerText = stand.codigo_etiqueta || stand.numero;
+            
+            // Prellenar el CUIT y nombre si ya estaban cargados
+            if (expositorActual) {
+                if (expositorActual.cuit) document.getElementById('resCuit').value = expositorActual.cuit;
+                if (expositorActual.empresa_stand) document.getElementById('resNombre').value = expositorActual.empresa_stand;
+                if (expositorActual.mail) document.getElementById('resMail').value = expositorActual.mail;
+            }
+            
+            // Scroll al formulario
+            document.getElementById('contenedorFormulario').scrollIntoView({ behavior: 'smooth' });
+        }
+
         function mostrarError(titulo, mensaje) {
             document.getElementById('estadoCargando').classList.add('hidden');
             document.getElementById('estadoContenido').classList.add('hidden');
@@ -321,62 +316,45 @@
             document.getElementById('estadoError').classList.remove('hidden');
         }
 
-        // 5. Subir comprobante a Supabase Storage
         async function subirComprobante() {
             const fileInput = document.getElementById('resComprobanteFile');
             const file = fileInput.files[0];
             if (!file) return;
 
-            // 👇 VALIDACIÓN DE PESO (2 MB = 1024 * 1024 bytes) 👇
-            const maxSize = 2 * 1024 * 1024; 
+            const maxSize = 2 * 1024 * 1024;
             if (file.size > maxSize) {
-                alert('⚠️ El archivo es demasiado grande. El límite es de 2 MB.\n\nPor favor, comprima la imagen o guarde el PDF en menor calidad y volvé a intentarlo.');
-                fileInput.value = ''; // Limpiamos el input para que pueda elegir otro
-                document.getElementById('txtNombreComprobante').classList.add('hidden');
+                alert('El archivo supera los 2 MB.');
+                fileInput.value = '';
                 return;
             }
-            // 👆 FIN DE LA VALIDACIÓN 👆
 
             const txtNombre = document.getElementById('txtNombreComprobante');
-            const btn = event.target.closest('button');
-            const textoOriginal = btn.innerHTML;
-            
-            btn.innerHTML = 'Subiendo...';
-            btn.disabled = true;
             txtNombre.classList.remove('hidden');
-            txtNombre.innerText = file.name;
+            txtNombre.innerText = 'Subiendo...';
 
             try {
                 const extension = file.name.split('.').pop();
                 const nombreArchivo = `comprobante-${expositorActual.cuit}-${Date.now()}.${extension}`;
-                
-                const { data, error } = await supabaseClient.storage
-                    .from('comprobantes')
-                    .upload(nombreArchivo, file);
-
+                const { error } = await supabaseClient.storage.from('comprobantes').upload(nombreArchivo, file);
                 if (error) throw error;
 
-                const { data: urlData } = supabaseClient.storage
-                    .from('comprobantes')
-                    .getPublicUrl(nombreArchivo);
-
+                const { data: urlData } = supabaseClient.storage.from('comprobantes').getPublicUrl(nombreArchivo);
                 archivoComprobanteSeleccionado = urlData.publicUrl;
-                txtNombre.innerText = '✅ Archivo adjuntado correctamente';
+                txtNombre.innerText = '✅ Archivo adjuntado';
                 txtNombre.className = 'text-xs text-emerald-600 font-bold';
-
             } catch (error) {
-                alert('Error al subir el comprobante: ' + error.message);
+                alert('Error al subir: ' + error.message);
                 txtNombre.innerText = 'Error al subir';
                 archivoComprobanteSeleccionado = null;
-            } finally {
-                btn.innerHTML = textoOriginal;
-                btn.disabled = false;
             }
         }
 
-        // 6. Guardar la reserva
         async function guardarReserva(e) {
             e.preventDefault();
+            if (!standSeleccionado) {
+                alert('Por favor, seleccioná un stand del plano primero.');
+                return;
+            }
 
             const payload = {
                 empresa_stand: document.getElementById('resNombre').value.trim(),
@@ -392,40 +370,27 @@
                 comprobante_url: archivoComprobanteSeleccionado || null,
                 estado_registro: 'pendiente',
                 feria_id: feriaActual.id,
-                stand_id: standActual ? standActual.id : null
+                stand_id: standSeleccionado.id,
+                pabellon_id: pabellonActualId // Opcional, pero útil para el organizador
             };
 
             let estadoStand = 'reservado';
             if (payload.tipo_tramite === 'pago') estadoStand = 'pagado';
 
             try {
-                // 1. Actualizar el expositor
-                const { error: errorExp } = await supabaseClient
-                    .from('standargentina')
-                    .update(payload)
-                    .eq('id', expositorActual.id);
-
+                const { error: errorExp } = await supabaseClient.from('standargentina').update(payload).eq('id', expositorActual.id);
                 if (errorExp) throw errorExp;
 
-                // 2. Actualizar el estado del stand
-                if (standActual && standActual.id) {
-                    const { error: errorStand } = await supabaseClient
-                        .from('stands')
-                        .update({ estado: estadoStand })
-                        .eq('id', standActual.id);
+                // Bloquear el stand temporalmente mientras el organizador aprueba
+                const { error: errorStand } = await supabaseClient.from('stands').update({ estado: estadoStand }).eq('id', standSeleccionado.id);
+                if (errorStand) throw errorStand;
 
-                    if (errorStand) throw errorStand;
-                }
-
-                // 3. Mostrar mensaje de éxito y bloquear formulario
-                alert('✅ Solicitud de reserva enviada con éxito.\n\nEl organizador revisará tu comprobante y contrato. Una vez aprobado, recibirás un correo con tus credenciales de acceso.');
-
+                alert('✅ Solicitud enviada. El organizador revisará tu comprobante.');
                 document.getElementById('estadoContenido').innerHTML = `
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-10 text-center mt-10">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-10 text-center mt-10 max-w-xl mx-auto">
                         <span class="text-6xl">⏳</span>
                         <h2 class="text-2xl font-extrabold text-slate-800 mt-4">Solicitud en Revisión</h2>
-                        <p class="text-slate-600 mt-2 max-w-md mx-auto">Tu solicitud de reserva y comprobante han sido recibidos. El organizador de la feria los revisará a la brevedad. Recibirás un mail con tu acceso una vez aprobado.</p>
-                        <img src="img/logoqrpretium1.jpg" class="w-16 h-16 rounded-lg mx-auto mt-6 opacity-50">
+                        <p class="text-slate-600 mt-2">Tu solicitud ha sido recibida. El organizador revisará tu comprobante y contrato. Recibirás un mail con tu acceso una vez aprobado.</p>
                     </div>
                 `;
 
