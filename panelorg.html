@@ -1177,10 +1177,13 @@
             } catch (err) { alert('Error: ' + err.message); }
         }
 
-        async function copiarLinkReserva(slugFeria, pabellonId) {
-            const url = `https://qrpretium.com.ar/seleccionar-stand.html?feria=${slugFeria}&pabellon=${pabellonId}`;
+             async function copiarLinkReserva(slugFeria, pabellonId) {
+            // El link que se abre para invitar a los actores
+            const url = `https://qrpretium.com.ar/reserva-stand.html?feria=${slugFeria}&pabellon=${pabellonId}`;
+            
             document.getElementById('invitarPabId').value = pabellonId;
-            document.getElementById('invitarLink').value = url;
+            document.getElementById('invitarLink').value = url; // Este es el link base
+            
             const { data: pab } = await supabaseClient.from('pabellones').select('nombre').eq('id', pabellonId).single();
             document.getElementById('invitarPabNombre').innerText = pab ? `Pabellón: ${pab.nombre}` : 'Pabellón';
             await cargarActoresParaInvitar();
