@@ -327,10 +327,10 @@
             const file = fileInput.files[0];
             if (!file) return;
 
-            // 👇 VALIDACIÓN DE PESO (1 MB = 1024 * 1024 bytes) 👇
-            const maxSize = 1 * 1024 * 1024; 
+            // 👇 VALIDACIÓN DE PESO (2 MB = 1024 * 1024 bytes) 👇
+            const maxSize = 2 * 1024 * 1024; 
             if (file.size > maxSize) {
-                alert('⚠️ El archivo es demasiado grande. El límite es de 1 MB.\n\nPor favor, comprimí la imagen o guardá el PDF en menor calidad y volvé a intentarlo.');
+                alert('⚠️ El archivo es demasiado grande. El límite es de 2 MB.\n\nPor favor, comprima la imagen o guarde el PDF en menor calidad y volvé a intentarlo.');
                 fileInput.value = ''; // Limpiamos el input para que pueda elegir otro
                 document.getElementById('txtNombreComprobante').classList.add('hidden');
                 return;
