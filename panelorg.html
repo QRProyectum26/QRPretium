@@ -80,7 +80,7 @@
                     </button>
                     <div id="submenuFerias" class="submenu activo bg-slate-800/50">
                         <div id="listaFeriasSidebar" class="py-1 text-xs"></div>
-                        <button onclick="abrirPopupNuevaFeria()" class="w-full text-left px-6 py-2 text-[11px] text-naranja hover:bg-slate-700 font-bold">+ Nueva Feria</button>
+                      <button onclick="abrirPopupNuevaFeria()" class="w-full text-left px-6 py-2 text-[11px] text-naranja hover:bg-slate-700 font-bold">+ Nueva Feria</button>
                     </div>
                 </div>
                 
@@ -588,7 +588,61 @@
             const slug = nombre.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-');
             document.getElementById('feriaSlug').value = slug;
         }
+  function abrirPopupNuevaFeria() {
+            // Limpiamos todos los campos antes de abrir
+            document.getElementById('feriaNombre').value = '';
+            document.getElementById('feriaDescripcion').value = '';
+            document.getElementById('feriaUbicacion').value = '';
+            document.getElementById('feriaSector').value = '';
+            document.getElementById('feriaSlug').value = '';
+            document.getElementById('feriaFechaInicio').value = '';
+            document.getElementById('feriaFechaFin').value = '';
+            
+            // Limpiamos los campos nuevos que agregamos
+            document.getElementById('feriaDescripcionLarga').value = '';
+            document.getElementById('feriaServicios').value = '';
+            document.getElementById('feriaPlanes').value = '';
+            document.getElementById('feriaFormasPago').value = '';
+            document.getElementById('feriaContratoUrl').value = '';
+            
+            abrirPopup('popupNuevaFeria');
+        }
+         async function guardarNuevaFeria(e) {
+            e.preventDefault();
+            
+            const payload = {
+                organizador_id: organizadorActual.id,
+                nombre: document.getElementById('feriaNombre').value.trim(),
+                descripcion: document.getElementById('feriaDescripcion').value.trim(),
+                ubicacion_fisica: document.getElementById('feriaUbicacion').value.trim(),
+                sector: document.getElementById('feriaSector').value.trim(),
+                slug_url: document.getElementById('feriaSlug').value.trim(),
+                fecha_inicio: document.getElementById('feriaFechaInicio').value,
+                fecha_fin: document.getElementById('feriaFechaFin').value,
+                tipo: document.getElementById('feriaTipo').value,
+                moneda: document.getElementById('feriaMoneda').value,
+                idioma: document.getElementById('feriaIdioma').value,
+                
+                // 👇 NUEVOS CAMPOS 👇
+                descripcion_larga: document.getElementById('feriaDescripcionLarga').value.trim(),
+                servicios: document.getElementById('feriaServicios').value.split(',').map(s => s.trim()).filter(s => s),
+                planes: document.getElementById('feriaPlanes').value.split(',').map(p => p.trim()).filter(p => p),
+                formas_pago: document.getElementById('feriaFormasPago').value.trim(),
+                contrato_url: document.getElementById('feriaContratoUrl').value.trim()
+            };
 
+            try {
+                const { error } = await supabaseClient.from('ferias').insert([payload]);
+                if (error) throw error;
+                
+                cerrarPopup('popupNuevaFeria');
+                alert('✅ Feria creada con éxito');
+                await cargarFerias(); // Recargamos la lista lateral
+                
+            } catch (err) { 
+                alert('Error al guardar la feria: ' + err.message); 
+            }
+        }
         async function cargarFerias() {
             try {
                 const { data, error } = await supabaseClient.from('ferias').select('*').eq('organizador_id', organizadorActual.id).order('created_at', { ascending: false });
