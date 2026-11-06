@@ -1248,35 +1248,64 @@
             document.getElementById('cantidadSeleccionados').innerText = seleccionados;
         }
 
-    async function enviarInvitaciones() {
+     async function enviarInvitaciones() {
             const seleccionados = document.querySelectorAll('.check-actor:checked');
             if (seleccionados.length === 0) { alert('Seleccioná al menos un actor.'); return; }
             
             const linkBase = document.getElementById('invitarLink').value; 
             const pabellonNombre = document.getElementById('invitarPabNombre').innerText;
             const feriaNombre = feriaSeleccionada.nombre;
+            const pabellonId = document.getElementById('invitarPabId').value; // Obtenemos el ID del pabellón
 
-            // Armamos un array con el mail y el token de cada actor
             const actoresAEnviar = [];
-            seleccionados.forEach(check => {
-                const mail = check.dataset.mail;
-                const token = check.dataset.token; 
-                if (mail && token) {
-                    actoresAEnviar.push({ mail: mail, token: token });
-                }
-            });
 
-            if (actoresAEnviar.length === 0) { alert('Los actores seleccionados no tienen mail o token válido.'); return; }
+            // 1. Creamos los registros en standargentina con sus tokens
+            for (const check of seleccionados) {
+                const mail = check.dataset.mail;
+                const actorNombre = check.closest('tr').querySelector('td:nth-child(2)').innerText; // Sacamos el nombre del actor de la tabla
+                const actorCuit = check.dataset.cuit || null; // Si tenés el cuit en el checkbox
+                
+                if (!mail) continue;
+
+                // Generamos un token único
+                const tokenUnico = 'RES-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+
+                // Creamos el registro "fantasma" en standargentina
+                const { data: nuevoExpositor, error: insertError } = await supabaseClient
+                    .from('standargentina')
+                    .insert([{
+                        empresa_stand: actorNombre,
+                        mail: mail,
+                        cuit: actorCuit, 
+                        feria_id: feriaSeleccionada.id,
+                        pabellon_id: pabellonId, // Guardamos el pabellón
+                        token_acceso: tokenUnico,
+                        estado_registro: 'pendiente_invitacion'
+                    }])
+                    .select()
+                    .single();
+
+                if (insertError) {
+                    console.error('Error creando expositor fantasma:', insertError);
+                    alert('Error al generar la invitación para ' + actorNombre);
+                    continue;
+                }
+
+                actoresAEnviar.push({ mail: mail, token: tokenUnico });
+            }
+
+            if (actoresAEnviar.length === 0) { alert('No se pudo generar ninguna invitación válida.'); return; }
 
             if (!confirm(`¿Enviar invitación a ${actoresAEnviar.length} actores?`)) return;
 
             try {
+                // 2. Mandamos los mails
                 const { data, error } = await supabaseClient.functions.invoke('enviar-invitacion', {
                     body: { 
-                        actores: actoresAEnviar, // 👈 Mandamos el array con mail y token
+                        actores: actoresAEnviar,
                         linkBase: linkBase, 
                         pabellon: pabellonNombre, 
-                        feria: feriaNombre 
+                        feria: feriaNombre
                     }
                 });
                 if (error) throw error;
@@ -1284,52 +1313,6 @@
                 cerrarPopup('popupInvitarActores');
             } catch (err) { alert('Error al enviar: ' + err.message); }
         }
-        function abrirPopupImportarActores() {
-            document.getElementById('archivoCsv').value = '';
-            document.getElementById('previsualizacionCsv').classList.add('hidden');
-            abrirPopup('popupImportarActores');
-        }
-
-        async function procesarImportacion(e) {
-            e.preventDefault();
-            const archivo = document.getElementById('archivoCsv').files[0];
-            if (!archivo) return;
-            Papa.parse(archivo, {
-                header: true, skipEmptyLines: true,
-                complete: async function(results) {
-                    const filas = results.data;
-                    if (filas.length === 0) { alert('El archivo está vacío o no tiene el formato correcto.'); return; }
-                    const thead = document.getElementById('theadPreview');
-                    const tbody = document.getElementById('tbodyPreview');
-                    const columnas = Object.keys(filas[0]);
-                    thead.innerHTML = columnas.map(c => `<th class="pb-1 pr-2">${c}</th>`).join('');
-                    tbody.innerHTML = filas.slice(0, 5).map(fila => `<tr>${columnas.map(c => `<td class="py-0.5 pr-2 text-slate-600">${fila[c] || ''}</td>`).join('')}</tr>`).join('');
-                    document.getElementById('previsualizacionCsv').classList.remove('hidden');
-                    if (!confirm(`¿Importar ${filas.length} actores a tu base de datos?`)) return;
-                    try {
-                        const payload = filas.map(fila => ({
-                            organizador_id: organizadorActual.id,
-                            nombre_actor: fila.Nombre || fila.nombre || fila.Nombre_Empresa || '',
-                            tipo_actor: fila.Tipo || fila.tipo || 'Empresa',
-                            rubro_sector: fila.Sector || fila.sector || fila.Rubro || '',
-                            cuit: fila.CUIT || fila.cuit || '',
-                            direccion: fila.Direccion || fila.direccion || '',
-                            telefono: fila.Telefono || fila.telefono || '',
-                            mail: fila.Mail || fila.mail || fila.Email || '',
-                            whatsapp: fila.WhatsApp || fila.whatsapp || '',
-                            descripcion: fila.Descripcion || fila.descripcion || ''
-                        })).filter(a => a.nombre_actor);
-                        const { error } = await supabaseClient.from('actores').insert(payload);
-                        if (error) throw error;
-                        alert(`✅ ${payload.length} actores importados con éxito.`);
-                        cerrarPopup('popupImportarActores');
-                        mostrarModulo('actores');
-                    } catch (err) { alert('Error al importar: ' + err.message); }
-                },
-                error: function(err) { alert('Error al leer el archivo: ' + err.message); }
-            });
-        }
-
         function abrirPopupNuevoActor() {
             document.getElementById('actorNombre').value = '';
             document.getElementById('actorSector').value = '';
