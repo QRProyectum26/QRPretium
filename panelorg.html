@@ -1108,25 +1108,37 @@
                 `;
             });
         }
-           async function aprobarExpositor(expositorId) {
+               async function aprobarExpositor(expositorId) {
             if (!confirm('¿Confirmás que revisaste el comprobante y el contrato? Se activará el acceso del expositor.')) return;
             try {
                 // 1. Actualizamos el estado a activo
-                const { data: exp, error } = await supabaseClient.from('standargentina').update({ estado_registro: 'activo' }).eq('id', expositorId).select('*, ferias(nombre)').single();
+                const { data: exp, error } = await supabaseClient
+                    .from('standargentina')
+                    .update({ estado_registro: 'activo' })
+                    .eq('id', expositorId)
+                    .select('*')
+                    .single();
+                    
                 if (error) throw error;
 
-                // 2. (Futuro) Acá llamarías a la Edge Function para enviar el mail de aprobación
-                // await supabaseClient.functions.invoke('enviar-acceso-expositor', { 
-                //    body: { email: exp.mail, empresa: exp.empresa_stand, cuit: exp.cuit } 
-                // });
+                // 2. Llamamos a la Edge Function para mandar el mail de acceso
+                supabaseClient.functions.invoke('enviar-acceso-expositor', { 
+                    body: { 
+                        email: exp.mail, 
+                        empresa: exp.empresa_stand, 
+                        cuit: exp.cuit 
+                    } 
+                }).then(({ data, error }) => {
+                    if (error) console.error('Error enviando mail:', error);
+                    else console.log('Mail enviado:', data);
+                });
 
-                alert('✅ Expositor aprobado con éxito. Ya puede ingresar a su panel con su CUIT.');
+                alert('✅ Expositor aprobado con éxito. Se le ha enviado el mail de acceso.');
                 cargarModuloExpositores(document.getElementById('areaTrabajo'));
             } catch (err) { 
                 alert('Error al aprobar: ' + err.message); 
             }
         }
-
         async function abrirPopupNuevoExpositor() {
             document.getElementById('expNombre').value = ''; document.getElementById('expCuit').value = ''; document.getElementById('expMail').value = ''; document.getElementById('expRubro').value = '';
             const select = document.getElementById('expStandId'); select.innerHTML = '<option value="">Cargando...</option>';
