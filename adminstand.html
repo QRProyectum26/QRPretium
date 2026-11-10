@@ -1234,11 +1234,11 @@
                 }
             });
 
-            doc.save(`Etiquetas-${expositorActual.empresa_stand.replace(/\s+/g, '-')}.pdf`);
+          doc.save(`Etiquetas-${expositorActual.empresa_stand.replace(/\s+/g, '-')}.pdf`);
             cerrarPopup('popupImprimir');
-        }
-          // 👇 PEGÁ EL BLOQUE NUEVO ACÁ 👇
-       // Auto-login si viene el CUIT por la URL
+        } // <-- ESTA ES LA LLAVE QUE CIERRA generarPDFEtiquetas
+
+        // Auto-login si viene el CUIT por la URL
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const cuitUrl = urlParams.get('cuit');
@@ -1255,3 +1255,4 @@
     </script>
 </body>
 </html>
+
