@@ -592,10 +592,14 @@
             '#06b6d4', '#2563eb', '#1e40af', '#4f46e5', '#7c3aed', '#ec4899'
         ];
 
-        // 1. INICIAR SESIÓN
+      // 1. INICIAR SESIÓN
         async function iniciarSesion(e) {
             e.preventDefault();
-            const cuit = document.getElementById('loginCuit').value.trim();
+            
+            // Limpiamos el CUIT de espacios, guiones, puntos y comillas
+            const cuitInput = document.getElementById('loginCuit').value.trim();
+            const cuitLimpio = cuitInput.replace(/['"]/g, '').replace(/[-.\s]/g, '');
+            
             const errorDiv = document.getElementById('errorLogin');
             errorDiv.classList.add('hidden');
 
@@ -603,7 +607,7 @@
                 const { data, error } = await supabaseClient
                     .from('standargentina')
                     .select('*, stands(numero, pabellon_id)')
-                    .eq('cuit', cuit)
+                    .eq('cuit', cuitLimpio) // Usamos el CUIT limpio
                     .maybeSingle();
 
                 if (error) throw error;
@@ -613,14 +617,13 @@
                     return;
                 }
                 expositorActual = data;
-                cuitActual = cuit;
+                cuitActual = cuitLimpio; // Guardamos el CUIT limpio
                 await cargarPanel();
             } catch (err) {
                 errorDiv.innerText = 'Error de conexión: ' + err.message;
                 errorDiv.classList.remove('hidden');
             }
         }
-
         // 2. CARGAR PANEL
         async function cargarPanel() {
         // 2. CARGAR PANEL
@@ -1235,19 +1238,20 @@
             cerrarPopup('popupImprimir');
         }
           // 👇 PEGÁ EL BLOQUE NUEVO ACÁ 👇
-
-        // Auto-login si viene el CUIT por la URL
+       // Auto-login si viene el CUIT por la URL
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const cuitUrl = urlParams.get('cuit');
             if (cuitUrl) {
-                document.getElementById('loginCuit').value = cuitUrl;
-                // Simulamos el submit para que entre directo
+                // Limpiamos el CUIT que viene de la URL
+                const cuitLimpio = cuitUrl.trim().replace(/['"]/g, '').replace(/[-.\s]/g, '');
+                document.getElementById('loginCuit').value = cuitLimpio;
+                
+                // Simulamos el submit del formulario
                 const fakeEvent = { preventDefault: () => {} };
                 iniciarSesion(fakeEvent);
             }
         });
-
     </script>
 </body>
 </html>
