@@ -232,11 +232,56 @@
         </div>
     </div>
 
+    <!-- POPUP: GESTOR DE PLANOS -->
+    <div id="popupGestorPlanos" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupGestorPlanos')">
+        <div class="popup-caja popup-caja-grande">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupGestorPlanos')">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-2">📂 Gestor de Planos de la Feria</h2>
+                <p class="text-xs text-gray-500 mb-4">Subí tus planos a GitHub (Raw) o Drive y pegalos acá para tenerlos todos centralizados.</p>
+
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 text-xs text-blue-800">
+                    💡 <strong>Tip:</strong> Para GitHub, subí la imagen al repo, hacé clic derecho > "Copy Raw file" y pegá ese link acá.
+                </div>
+
+                <!-- Formulario para agregar un plano -->
+                <form onsubmit="guardarPlanoFeria(event)" class="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-6 space-y-3">
+                    <h3 class="text-sm font-bold text-slate-700 uppercase">Agregar Nuevo Plano</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Nombre del Plano (Ej: Pabellón A)</label>
+                            <input type="text" id="gpNombre" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Tipo</label>
+                            <select id="gpTipo" class="w-full px-3 py-2 border rounded-xl text-sm">
+                                <option value="predio">Plano del Predio</option>
+                                <option value="pabellon">Plano de Pabellón</option>
+                                <option value="instalacion">Instalación / Servicio</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">URL del Plano (GitHub Raw / Drive)</label>
+                        <input type="url" id="gpUrl" required class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="https://raw.githubusercontent.com/...">
+                    </div>
+                    <button type="submit" class="w-full bg-verdeQR hover:bg-teal-700 text-white font-bold py-2 rounded-xl text-sm transition">➕ Agregar al Repositorio</button>
+                </form>
+
+                <h3 class="text-sm font-bold text-slate-800 mb-2">Planos Cargados</h3>
+                <div id="listaPlanosFeria" class="space-y-2 max-h-60 overflow-y-auto pr-2">
+                    <!-- Acá se cargarán los planos -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="popupNuevoPabellon" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupNuevoPabellon')">
         <div class="popup-caja">
             <button class="popup-cerrar" onclick="cerrarPopup('popupNuevoPabellon')">✕</button>
             <div class="p-6">
-                <h2 class="text-xl font-extrabold text-slate-800 mb-4">🏗️ Crear Nuevo Pabellón</h2>
+                <h2 class="text-xl font-extrabold text-slate-800 mb-4">🏗️ Definir Pabellón / Salón</h2>
                 <form onsubmit="guardarNuevoPabellon(event)" class="space-y-3">
                     <div>
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Código (Ej: PAB-01)</label>
@@ -246,29 +291,16 @@
                         <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Nombre del Pabellón</label>
                         <input type="text" id="pabNombre" required class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Pabellón 4">
                     </div>
+
+                    <!-- CAMPO NUEVO PARA EL PLANO -->
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">URL del Plano (GitHub Raw o Drive)</label>
+                        <input type="url" id="pabPlanoUrl" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="https://raw.githubusercontent.com/...">
+                    </div>
+
                     <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
                         <button type="button" onclick="cerrarPopup('popupNuevoPabellon')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
                         <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Crear Pabellón</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div id="popupSubirPlano" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupSubirPlano')">
-        <div class="popup-caja">
-            <button class="popup-cerrar" onclick="cerrarPopup('popupSubirPlano')">✕</button>
-            <div class="p-6">
-                <h2 class="text-xl font-extrabold text-slate-800 mb-4">📤 Subir Plano del Predio</h2>
-                <p class="text-xs text-gray-500 mb-4">Subí una imagen del plano (JPG/PNG) o un archivo SVG. Después podrás marcar los pabellones.</p>
-                <form onsubmit="subirPlano(event)" class="space-y-3">
-                    <div>
-                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">URL del Plano</label>
-                        <input type="url" id="planoUrl" required class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="https://...">
-                    </div>
-                    <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
-                        <button type="button" onclick="cerrarPopup('popupSubirPlano')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
-                        <button type="submit" class="px-6 py-2 bg-blue-600 text-white font-bold rounded-xl text-sm">Guardar Plano</button>
                     </div>
                 </form>
             </div>
@@ -327,8 +359,11 @@
                     <h3 class="text-sm font-bold text-slate-800 mb-3">🗺️ Plano Interno del Pabellón</h3>
                     <p class="text-[10px] text-gray-500 mb-2">Subí una imagen con el layout de los stands (pasillos, baños, salidas). Después podrás asignar cada stand a su lugar exacto.</p>
                     <div class="flex gap-2">
-                        <input type="url" id="configPabPlanoInterno" class="flex-1 px-3 py-2 border rounded-xl text-xs" placeholder="https://...">
-                        <button type="button" onclick="guardarPlanoInterno()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-2 rounded-xl text-xs transition">Guardar Plano</button>
+                        <select id="configPabPlanoInternoSelect" class="flex-1 px-3 py-2 border rounded-xl text-xs mb-2" onchange="document.getElementById('configPabPlanoInterno').value = this.value">
+                            <option value="">Cargando planos...</option>
+                        </select>
+                        <input type="url" id="configPabPlanoInterno" class="w-full px-3 py-2 border rounded-xl text-xs bg-gray-100 hidden" readonly>
+                        <button type="button" onclick="guardarPlanoInterno()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-2 rounded-xl text-xs transition h-9">Guardar Plano</button>
                     </div>
                 </div>
 
@@ -756,7 +791,9 @@
                 nombre: document.getElementById('pabNombre').value.trim(),
                 tipo: 'pabellon',
                 cant_filas: 1, 
-                cant_columnas: 1
+                cant_columnas: 1,
+                // 👇 AGREGAMOS ESTA LÍNEA 👇
+                plano_interno_url: document.getElementById('pabPlanoUrl').value.trim() || null
             };
 
             try {
@@ -778,12 +815,12 @@
             try {
                 const { data, error } = await supabaseClient.from('pabellones').select('*').eq('feria_id', feriaSeleccionada.id).order('codigo', { ascending: true });
                 if (error) throw error;
-                let html = `<div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-slate-800">Planos y Pabellones</h3><div class="flex gap-2"><button onclick="abrirPopup('popupSubirPlano')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2">📤 Subir Plano</button><button onclick="abrirPopup('popupNuevoPabellon')" class="bg-verdeQR hover:bg-teal-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2"><span style="font-size: 18px;">＋</span> Definir Pabellón/Salón </button></div></div>`;
+                let html = `<div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-slate-800">Planos y Pabellones</h3><div class="flex gap-2"><button onclick="abrirPopup('popupGestorPlanos')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2">📂 Gestor de Planos</button><button onclick="abrirPopup('popupNuevoPabellon')" class="bg-verdeQR hover:bg-teal-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2"><span style="font-size: 18px;">＋</span> Definir Pabellón/Salón </button></div></div>`;
                 
                 if (feriaSeleccionada.plano_url) {
                     html += `<div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 mb-6 relative"><div class="flex justify-between items-center mb-2"><h4 class="text-sm font-bold text-slate-700">Mapa del Predio</h4><button id="btnMarcarPabellon" onclick="activarModoMarcar()" class="bg-naranja hover:bg-orange-600 text-white font-bold px-2 py-1 rounded-lg text-xs transition">📍 Marcar Pabellón</button></div><div id="mapaPredio" class="relative w-full h-[500px] bg-slate-100 rounded-xl overflow-hidden"><img src="${feriaSeleccionada.plano_url}" class="w-full h-full object-contain" id="imagenPlano"><div id="pinesPabellones" class="absolute inset-0 pointer-events-none"></div></div><p class="text-[10px] text-slate-500 mt-2 italic text-center">💡 Hacé clic en "Marcar Pabellón" y luego tocá sobre el plano para ubicarlo.</p></div>`;
                 } else {
-                    html += `<div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 text-center text-slate-500 mb-6"><p>No hay un plano del predio subido aún.</p><button onclick="abrirPopup('popupSubirPlano')" class="mt-2 text-blue-600 font-bold text-sm hover:underline">Subir el primer plano</button></div>`;
+                    html += `<div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 text-center text-slate-500 mb-6"><p>No hay un plano del predio subido aún.</p><button onclick="abrirPopup('popupGestorPlanos')" class="mt-2 text-blue-600 font-bold text-sm hover:underline">Subir el primer plano</button></div>`;
                 }
                 
                 html += `<h3 class="text-lg font-bold text-slate-800 mb-3">Pabellones Creados</h3>`;
@@ -913,6 +950,21 @@ async function eliminarPabellon(pabellonId) {
                 document.getElementById('configPabFilas').value = data.cant_filas || 5;
                 document.getElementById('configPabColumnas').value = data.cant_columnas || 5;
                 document.getElementById('configPabPlanoInterno').value = data.plano_interno_url || '';
+
+                // Llenar el select de planos
+                const { data: planos } = await supabaseClient.from('planos_feria').select('*').eq('feria_id', feriaSeleccionada.id).eq('tipo', 'pabellon');
+                const selectPlanos = document.getElementById('configPabPlanoInternoSelect');
+                selectPlanos.innerHTML = '<option value="">Seleccioná un plano del repositorio...</option>';
+                if (planos) {
+                    planos.forEach(p => {
+                        selectPlanos.innerHTML += `<option value="${p.url}">${p.nombre}</option>`;
+                    });
+                }
+                // Si ya tiene un plano asignado, lo seleccionamos en el combobox
+                if (data.plano_interno_url) {
+                    selectPlanos.value = data.plano_interno_url;
+                }
+
                 abrirPopup('popupConfigPabellon');
             } catch (err) { alert('Error al cargar configuración: ' + err.message); }
         }
@@ -998,7 +1050,7 @@ async function eliminarPabellon(pabellonId) {
         async function guardarPlanoInterno() {
             const pabellonId = document.getElementById('configPabId').value;
             const url = document.getElementById('configPabPlanoInterno').value.trim();
-            if (!url) { alert('Pegá una URL válida'); return; }
+            if (!url) { alert('Seleccioná un plano válido'); return; }
             try {
                 const { error } = await supabaseClient.from('pabellones').update({ plano_interno_url: url }).eq('id', pabellonId);
                 if (error) throw error;
