@@ -366,7 +366,7 @@
                 <h2 class="text-xl font-extrabold text-slate-800 mb-2">🔢 Stands del Pabellón</h2>
                 <p class="text-sm text-slate-600 mb-4 font-bold" id="verStandsPabNombre">Cargando...</p>
                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 text-xs text-blue-800">💡 Hacé clic en un stand para asignarle un expositor.</div>
-                <div id="grillaStands" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 max-h-96 overflow-y-auto pr-2">
+                <div id="grillaStands" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 max-h-96 overflow-y-auto overflow-x-auto pr-2 pb-2">
                     <div class="text-center col-span-full"><div class="loader"></div></div>
                 </div>
                 <div class="flex justify-end gap-2 mt-5 pt-4 border-t border-slate-100">
@@ -986,7 +986,8 @@ async function eliminarPabellon(pabellonId) {
                 if (!data || data.length === 0) { contenedor.innerHTML = '<p class="text-slate-500 text-xs col-span-full text-center">No hay stands generados.</p>'; return; }
                 data.forEach(stand => {
                     const boton = document.createElement('button');
-                    boton.className = "bg-slate-800 hover:bg-naranja text-white rounded-lg p-2 flex flex-col items-center justify-center shadow-sm transition border-2 border-slate-600 hover:border-orange-500";
+                    // Le agregamos min-w y flex-shrink-0 para que mantenga su tamaño
+                    boton.className = "min-w-[70px] bg-slate-800 hover:bg-naranja text-white rounded-lg p-2 flex flex-col items-center justify-center shadow-sm transition border-2 border-slate-600 hover:border-orange-500 flex-shrink-0";
                     boton.innerHTML = `<span class="text-[9px] text-slate-400 uppercase font-bold">Stand</span><span class="text-xs font-black text-white">${stand.codigo_etiqueta || stand.numero}</span>`;
                     boton.onclick = () => alert(`Stand ${stand.codigo_etiqueta}\nFila: ${stand.fila}\nColumna: ${stand.columna}`);
                     contenedor.appendChild(boton);
