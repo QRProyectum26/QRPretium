@@ -60,6 +60,9 @@
             <button type="button" onclick="document.getElementById('panelPlanes').classList.toggle('hidden')" class="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 font-bold py-2 rounded-xl text-sm transition mb-4">
                 💳 Ver Planes de Participación y Formas de Pago
             </button>
+            <button type="button" onclick="irAlPlano()" class="w-full mt-4 bg-verdeQR hover:bg-teal-700 text-white font-bold py-2 rounded-xl text-sm transition">
+                🗺️ Ir a Elegir mi Stand
+            </button>
 
             <div id="panelPlanes" class="hidden bg-slate-50 border border-slate-200 rounded-xl p-4 mb-4 text-xs">
                 <h4 class="font-bold text-slate-800 mb-2 uppercase">Planes Disponibles:</h4>
@@ -74,102 +77,105 @@
             </div>
         </div>
 
-        <!-- Plano para Elegir Stand -->
-        <div id="contenedorPlano" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 mb-4 hidden">
-            <h3 class="text-sm font-bold text-slate-800 mb-2">🗺️ Elegí tu Stand en el Plano</h3>
-            <p class="text-xs text-slate-500 mb-2">Hacé clic sobre un código de stand <strong>verde (libre)</strong> para seleccionarlo.</p>
+               <!-- Plano para Elegir Stand y Formulario (Envuelto para controlar visibilidad) -->
+        <div id="contenedorPlanoYFormulario" class="hidden">
             
-            <div class="flex gap-4 mb-3 text-xs">
-                <div class="flex items-center gap-1"><span class="w-4 h-4 rounded bg-emerald-400"></span> Libre</div>
-                <div class="flex items-center gap-1"><span class="w-4 h-4 rounded bg-yellow-400"></span> Reservado</div>
-                <div class="flex items-center gap-1"><span class="w-4 h-4 rounded bg-red-600"></span> Pagado</div>
-            </div>
-
-            <div id="mapaReserva" class="relative w-full h-[450px] bg-slate-100 rounded-xl overflow-hidden">
-                <img src="" class="w-full h-full object-contain" id="imagenPlanoReserva">
-                <div id="pinesReserva" class="absolute inset-0 pointer-events-auto"></div>
-            </div>
-        </div>
-
-        <!-- Formulario -->
-        <div id="contenedorFormulario" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hidden">
-            <h2 class="text-xl font-extrabold text-slate-800 mb-2">📝 Completar Reserva</h2>
-            <p class="text-sm text-slate-600 mb-4">Stand seleccionado: <strong id="standAsignado" class="text-orange-500 font-mono"></strong></p>
-            
-            <form onsubmit="guardarReserva(event)" class="space-y-3">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Nombre de la Organización *</label>
-                        <input type="text" id="resNombre" required class="w-full px-3 py-2 border rounded-xl text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">CUIT / CUIL / NIT / RUT *</label>
-                        <input type="text" id="resCuit" required class="w-full px-3 py-2 border rounded-xl text-sm">
-                    </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Responsable *</label>
-                        <input type="text" id="resResponsable" required class="w-full px-3 py-2 border rounded-xl text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Rubro / Sector *</label>
-                        <input type="text" id="resRubro" required class="w-full px-3 py-2 border rounded-xl text-sm">
-                    </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Teléfono *</label>
-                        <input type="tel" id="resTelefono" required class="w-full px-3 py-2 border rounded-xl text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Email *</label>
-                        <input type="email" id="resMail" required class="w-full px-3 py-2 border rounded-xl text-sm">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Plan Contratado</label>
-                    <select id="resPlan" class="w-full px-3 py-2 border rounded-xl text-sm">
-                        <option value="A definir">A definir</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Descripción de la Organización</label>
-                    <textarea id="resDescripcion" rows="3" class="w-full px-3 py-2 border rounded-xl text-sm"></textarea>
-                </div>
-                <div>
-                    <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Requerimientos Especiales</label>
-                    <textarea id="resRequerimientos" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Necesito conexión eléctrica trifásica..."></textarea>
-                </div>
-                <div>
-                    <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Tipo de Trámite *</label>
-                    <select id="resTipoTramite" required class="w-full px-3 py-2 border rounded-xl text-sm">
-                        <option value="reserva">Reserva</option>
-                        <option value="pago">Pago</option>
-                        <option value="consulta">Consulta</option>
-                        <option value="otro">Otro</option>
-                    </select>
-                </div>
+            <!-- Plano para Elegir Stand -->
+            <div id="contenedorPlano" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 mb-4">
+                <h3 class="text-sm font-bold text-slate-800 mb-2">🗺️ Elegí tu Stand en el Plano</h3>
+                <p class="text-xs text-slate-500 mb-2">Hacé clic sobre un código de stand <strong>verde (libre)</strong> para seleccionarlo.</p>
                 
-                <div>
-                    <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Comprobante de Pago (si ya abonaste)</label>
-                    <div class="flex items-center gap-2 mt-1">
-                        <input type="file" id="resComprobanteFile" class="hidden" accept="image/*,.pdf" onchange="subirComprobante()">
-                        <button type="button" onclick="document.getElementById('resComprobanteFile').click()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-4 py-2 rounded-xl text-sm transition flex items-center gap-2 border border-slate-300">
-                            📎 Adjuntar Ticket o Transferencia
-                        </button>
-                        <span id="txtNombreComprobante" class="text-xs text-slate-500 italic hidden">Ningún archivo seleccionado</span>
-                    </div>
+                <div class="flex gap-4 mb-3 text-xs">
+                    <div class="flex items-center gap-1"><span class="w-4 h-4 rounded bg-emerald-400"></span> Libre</div>
+                    <div class="flex items-center gap-1"><span class="w-4 h-4 rounded bg-yellow-400"></span> Reservado</div>
+                    <div class="flex items-center gap-1"><span class="w-4 h-4 rounded bg-red-600"></span> Pagado</div>
                 </div>
 
-                <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
-                    <button type="submit" class="px-6 py-3 bg-verdeQR hover:bg-teal-700 text-white font-bold rounded-xl text-sm w-full md:w-auto transition">
-                        ✅ Enviar Reserva
-                    </button>
+                <div id="mapaReserva" class="relative w-full h-[450px] bg-slate-100 rounded-xl overflow-hidden">
+                    <img src="" class="w-full h-full object-contain" id="imagenPlanoReserva">
+                    <div id="pinesReserva" class="absolute inset-0 pointer-events-auto"></div>
                 </div>
-            </form>
-        </div>
-    </div>
+            </div>
+
+            <!-- Formulario -->
+            <div id="contenedorFormulario" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hidden">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-2">📝 Completar Reserva</h2>
+                <p class="text-sm text-slate-600 mb-4">Stand seleccionado: <strong id="standAsignado" class="text-orange-500 font-mono"></strong></p>
+                
+                <form onsubmit="guardarReserva(event)" class="space-y-3">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Nombre de la Organización *</label>
+                            <input type="text" id="resNombre" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">CUIT / CUIL / NIT / RUT *</label>
+                            <input type="text" id="resCuit" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Responsable *</label>
+                            <input type="text" id="resResponsable" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Rubro / Sector *</label>
+                            <input type="text" id="resRubro" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Teléfono *</label>
+                            <input type="tel" id="resTelefono" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Email *</label>
+                            <input type="email" id="resMail" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Plan Contratado</label>
+                        <select id="resPlan" class="w-full px-3 py-2 border rounded-xl text-sm">
+                            <option value="A definir">A definir</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Descripción de la Organización</label>
+                        <textarea id="resDescripcion" rows="3" class="w-full px-3 py-2 border rounded-xl text-sm"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Requerimientos Especiales</label>
+                        <textarea id="resRequerimientos" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Necesito conexión eléctrica trifásica..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Tipo de Trámite *</label>
+                        <select id="resTipoTramite" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                            <option value="reserva">Reserva</option>
+                            <option value="pago">Pago</option>
+                            <option value="consulta">Consulta</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Comprobante de Pago (si ya abonaste)</label>
+                        <div class="flex items-center gap-2 mt-1">
+                            <input type="file" id="resComprobanteFile" class="hidden" accept="image/*,.pdf" onchange="subirComprobante()">
+                            <button type="button" onclick="document.getElementById('resComprobanteFile').click()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-4 py-2 rounded-xl text-sm transition flex items-center gap-2 border border-slate-300">
+                                📎 Adjuntar Ticket o Transferencia
+                            </button>
+                            <span id="txtNombreComprobante" class="text-xs text-slate-500 italic hidden">Ningún archivo seleccionado</span>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                        <button type="submit" class="px-6 py-3 bg-verdeQR hover:bg-teal-700 text-white font-bold rounded-xl text-sm w-full md:w-auto transition">
+                            ✅ Enviar Reserva
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div> <!-- Fin del contenedorPlanoYFormulario -->
 
     <script>
         const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
@@ -244,7 +250,38 @@
                     const { data: stands } = await supabaseClient.from('stands').select('*').eq('pabellon_id', pabellonIdUrl);
                     dibujarStands(stands);
                 }
+                // 5. Cargar plano y los stands
+                const { data: pabellon } = await supabaseClient.from('pabellones').select('plano_interno_url').eq('id', pabellonIdUrl).maybeSingle();
+                
+                if (pabellon && pabellon.plano_interno_url) {
+                    document.getElementById('imagenPlanoReserva').src = pabellon.plano_interno_url;
+                    
+                    const { data: stands } = await supabaseClient.from('stands').select('*').eq('pabellon_id', pabellonIdUrl);
+                    dibujarStands(stands);
+                }
 
+                // 👇 VERIFICAMOS SI VIENE EL PARÁMETRO verInfo 👇
+                const verInfo = urlParams.get('verInfo');
+                
+                if (verInfo === 'true') {
+                    // MODO INFORMACIÓN: Mostramos la info comercial y ocultamos el plano
+                    document.getElementById('contenedorInfoComercial').classList.remove('hidden');
+                    document.getElementById('contenedorPlanoYFormulario').classList.add('hidden');
+                } else {
+                    // MODO RESERVA: Mostramos el plano y el formulario, y la info comercial arriba por si quiere leer
+                    document.getElementById('contenedorInfoComercial').classList.remove('hidden');
+                    document.getElementById('contenedorPlanoYFormulario').classList.remove('hidden');
+                }
+                // 👆 FIN DEL BLOQUE NUEVO 👆
+
+                // Mostramos la página
+                document.getElementById('estadoCargando').classList.add('hidden');
+                document.getElementById('estadoContenido').classList.remove('hidden');
+
+            } catch (err) {
+                mostrarError('Error', err.message);
+            }
+        }
                 document.getElementById('estadoCargando').classList.add('hidden');
                 document.getElementById('estadoContenido').classList.remove('hidden');
 
@@ -405,6 +442,10 @@
             } catch (err) {
                 alert('Error al guardar: ' + err.message);
             }
+                    function irAlPlano() {
+            document.getElementById('contenedorPlanoYFormulario').classList.remove('hidden');
+            document.getElementById('contenedorPlano').scrollIntoView({ behavior: 'smooth' });
+        }
         }
 
         window.onload = cargarReserva;
