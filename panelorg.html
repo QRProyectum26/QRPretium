@@ -798,9 +798,15 @@
                             <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 hover:shadow-md transition flex flex-col justify-between">
                                 <div>
                                     <div class="flex justify-between items-start mb-2">
-                                        <span class="bg-slate-800 text-white font-mono font-bold text-xs px-2 py-1 rounded">${pab.codigo || 'PAB'}</span>
-                                        <span class="text-[10px] text-slate-500">${pab.tipo || 'Pabellón'}</span>
-                                    </div>
+    <span class="bg-slate-800 text-white font-mono font-bold text-xs px-2 py-1 rounded">${pab.codigo || 'PAB'}</span>
+    <div class="flex items-center gap-1">
+        <span class="text-[10px] text-slate-500 mr-2">${pab.tipo || 'Pabellón'}</span>
+        <!-- Botón Editar -->
+        <button onclick="abrirConfiguracionPabellon('${pab.id}')" class="text-blue-500 hover:text-blue-700 text-xs font-bold" title="Editar">✏️</button>
+        <!-- Botón Eliminar -->
+        <button onclick="eliminarPabellon('${pab.id}')" class="text-red-500 hover:text-red-700 text-xs font-bold ml-1" title="Eliminar">❌</button>
+    </div>
+</div>
                                     <h4 class="font-bold text-slate-800 text-base">${pab.nombre}</h4>
                                     <div class="mt-2 text-xs text-slate-500 space-y-1">
                                         <p>📏 Superficie: ${pab.superficie_m2 ? pab.superficie_m2 + ' m²' : 'No definida'}</p>
@@ -824,7 +830,18 @@
                 if (feriaSeleccionada.plano_url) inicializarMapaConPines(data);
             } catch (err) { area.innerHTML = `<p class="text-red-500">Error al cargar: ${err.message}</p>`; }
         }
-
+async function eliminarPabellon(pabellonId) {
+    if (!confirm('¿Seguro que querés eliminar este pabellón? Se borrarán también sus stands.')) return;
+    try {
+        // Primero borramos los stands asociados
+        await supabaseClient.from('stands').delete().eq('pabellon_id', pabellonId);
+        // Luego borramos el pabellón
+        const { error } = await supabaseClient.from('pabellones').delete().eq('id', pabellonId);
+        if (error) throw error;
+        alert('Pabellón eliminado con éxito.');
+        mostrarModulo('feriaFisica');
+    } catch (err) { alert('Error al eliminar: ' + err.message); }
+}
         function inicializarMapaConPines(pabellones) {
             const contenedor = document.getElementById('pinesPabellones');
             const imagen = document.getElementById('imagenPlano');
