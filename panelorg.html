@@ -613,7 +613,40 @@
             </div>
         </div>
     </div>
-
+    <!-- POPUP: NUEVO INVENTARIO SEGURIDAD -->
+    <div id="popupNuevoInventarioSeguridad" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupNuevoInventarioSeguridad')">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupNuevoInventarioSeguridad')">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-4">🛡️ Nuevo Elemento de Seguridad</h2>
+                <form onsubmit="guardarInventarioSeguridad(event)" class="space-y-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Tipo de Elemento</label>
+                        <select id="invTipo" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                            <option value="Matafuegos">Matafuegos</option>
+                            <option value="Cámaras de Seguridad">Cámaras de Seguridad</option>
+                            <option value="Personal de Seguridad">Personal de Seguridad</option>
+                            <option value="Punto de Encuentro">Punto de Encuentro</option>
+                            <option value="Botiquín">Botiquín</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Descripción (Opcional)</label>
+                        <input type="text" id="invDescripcion" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Matafuego ABC 5kg">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Cantidad Total en la Feria</label>
+                        <input type="number" id="invCantidad" required class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: 10">
+                    </div>
+                    <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                        <button type="button" onclick="cerrarPopup('popupNuevoInventarioSeguridad')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
+                        <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Guardar Elemento</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <!-- ================= SCRIPT ================= -->
     <script>
         const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
@@ -772,6 +805,7 @@
                 case 'actores': titulo.innerText = 'Actores'; cargarModuloActores(area); break;
                 case 'operaciones': titulo.innerText = 'Operaciones y Tickets'; area.innerHTML = '<p class="text-slate-500">Módulo de Incidencias (Próximamente)</p>'; break;
                 case 'notificaciones': titulo.innerText = 'Notificaciones y Comunicaciones'; area.innerHTML = '<p class="text-slate-500">Módulo de Comunicaciones (Próximamente)</p>'; break;
+                case 'seguridad': titulo.innerText = 'Seguridad y Emergencias'; cargarModuloSeguridad(area); break;
                 default: titulo.innerText = modulo; area.innerHTML = '<p class="text-slate-500">Módulo en construcción.</p>';
             }
         }
@@ -1527,6 +1561,101 @@ async function eliminarPabellon(pabellonId) {
                 const { error } = await supabaseClient.from('actores').delete().eq('id', actorId);
                 if (error) throw error;
                 mostrarModulo('actores');
+            } catch (err) { alert('Error: ' + err.message); }
+        }
+                // ==================== MÓDULO SEGURIDAD ====================
+        async function cargarModuloSeguridad(area) {
+            area.innerHTML = '<div class="text-center mt-10"><div class="loader"></div></div>';
+            try {
+                // Buscamos el inventario de seguridad de ESTA feria
+                const { data, error } = await supabaseClient
+                    .from('inventario_feria')
+                    .select('*')
+                    .eq('feria_id', feriaSeleccionada.id)
+                    .eq('categoria', 'seguridad')
+                    .order('tipo', { ascending: true });
+
+                if (error) throw error;
+
+                let html = `
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-slate-800">🛡️ Inventario de Seguridad de la Feria</h3>
+                        <button onclick="abrirPopupNuevoInventarioSeguridad()" class="bg-verdeQR hover:bg-teal-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2">
+                            <span style="font-size: 18px;">＋</span> Nuevo Elemento
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-50 border-b border-slate-200">
+                                    <tr>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Tipo</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Descripción</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Cantidad Total</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase text-right">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodyInventarioSeguridad">
+                                    <tr><td colspan="4" class="text-center py-4 text-slate-500 text-xs">Cargando...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                area.innerHTML = html;
+                renderizarTablaInventarioSeguridad(data);
+            } catch (err) { area.innerHTML = `<p class="text-red-500">Error: ${err.message}</p>`; }
+        }
+
+        function renderizarTablaInventarioSeguridad(inventario) {
+            const tbody = document.getElementById('tbodyInventarioSeguridad');
+            tbody.innerHTML = '';
+            if (!inventario || inventario.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-slate-500 text-xs">No hay elementos cargados. Hacé clic en "Nuevo Elemento".</td></tr>';
+                return;
+            }
+            inventario.forEach(item => {
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                        <td class="px-4 py-3 font-bold text-slate-800 text-sm">${item.tipo}</td>
+                        <td class="px-4 py-3 text-slate-600 text-xs">${item.descripcion || '---'}</td>
+                        <td class="px-4 py-3 font-mono font-bold text-orange-500 text-sm">${item.cantidad_total}</td>
+                        <td class="px-4 py-3 text-right space-x-1">
+                            <button onclick="eliminarInventarioSeguridad('${item.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold py-1 px-2 rounded text-[10px]">Borrar</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+                function abrirPopupNuevoInventarioSeguridad() {
+            document.getElementById('invTipo').value = 'Matafuegos';
+            document.getElementById('invDescripcion').value = '';
+            document.getElementById('invCantidad').value = '';
+            abrirPopup('popupNuevoInventarioSeguridad');
+        }
+
+        async function guardarInventarioSeguridad(e) {
+            e.preventDefault();
+            const payload = {
+                feria_id: feriaSeleccionada.id,
+                categoria: 'seguridad',
+                tipo: document.getElementById('invTipo').value,
+                descripcion: document.getElementById('invDescripcion').value.trim(),
+                cantidad_total: parseInt(document.getElementById('invCantidad').value)
+            };
+            try {
+                const { error } = await supabaseClient.from('inventario_feria').insert([payload]);
+                if (error) throw error;
+                cerrarPopup('popupNuevoInventarioSeguridad');
+                mostrarModulo('seguridad'); // Recarga la tabla
+            } catch (err) { alert('Error al guardar: ' + err.message); }
+        }
+
+        async function eliminarInventarioSeguridad(id) {
+            if (!confirm('¿Eliminar este elemento del inventario?')) return;
+            try {
+                await supabaseClient.from('inventario_feria').delete().eq('id', id);
+                mostrarModulo('seguridad');
             } catch (err) { alert('Error: ' + err.message); }
         }
     </script>
