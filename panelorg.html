@@ -962,60 +962,72 @@ async function eliminarPabellon(pabellonId) {
         mostrarModulo('feriaFisica');
     } catch (err) { alert('Error al eliminar: ' + err.message); }
 }
-        function inicializarMapaConPines(pabellones) {
+               function inicializarMapaConPines(pabellones) {
             const contenedor = document.getElementById('pinesPabellones');
             const imagen = document.getElementById('imagenPlano');
             if (!contenedor || !imagen) return;
             const btnMarcar = document.getElementById('btnMarcarPabellon');
             if (btnMarcar) btnMarcar.classList.remove('hidden');
             contenedor.innerHTML = '';
+            
+            // Dibujamos los pines de los pabellones que ya tienen coordenadas
             pabellones.forEach(pab => {
                 if (pab.mapa_x && pab.mapa_y) {
                     const pin = document.createElement('div');
                     pin.className = 'absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer pointer-events-auto';
                     pin.style.left = pab.mapa_x + '%'; pin.style.top = pab.mapa_y + '%';
                     pin.innerHTML = `<div class="bg-naranja text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg border-2 border-white flex items-center gap-1 hover:scale-110 transition"><span>📍</span> ${pab.codigo}</div>`;
-                    pin.onclick = () => abrirConfiguracionPabellon(pab.id);
+                    // Al hacer clic en el pin, abrimos la configuración
+                    pin.onclick = (e) => { 
+                        e.stopPropagation();
+                        abrirConfiguracionPabellon(pab.id); 
+                    };
                     contenedor.appendChild(pin);
                 }
             });
+
+            // Al hacer clic en el plano, si está el modo marcar activo
             imagen.parentElement.onclick = function(e) {
                 if (!window.modoMarcarPabellon) return;
+                
+                // Buscamos el último pabellón creado (el que está al final del array)
+                // Como la consulta ordena por 'codigo', el último no siempre es el más nuevo, 
+                // así que buscaremos el que no tenga coordenadas asignadas aún.
+                const pabellonSinUbicar = pabellones.slice().reverse().find(p => !p.mapa_x || !p.mapa_y);
+                
+                if (!pabellonSinUbicar) {
+                    alert('Todos los pabellones ya están ubicados en el mapa o no hay pabellones creados.');
+                    window.modoMarcarPabellon = false;
+                    return;
+                }
+
                 const rect = this.getBoundingClientRect();
                 const x = ((e.clientX - rect.left) / rect.width) * 100;
                 const y = ((e.clientY - rect.top) / rect.height) * 100;
-                const codigo = prompt('Ingresá el código del pabellón (ej: PAB-04):'); if (!codigo) return;
-                const nombre = prompt('Ingresá el nombre del pabellón (ej: Pabellón 4):'); if (!nombre) return;
-                guardarPabellonConCoordenadas(codigo, nombre, x, y);
+                
+                // Llamamos a la función para actualizar ese pabellón con las coordenadas
+                actualizarCoordenadasPabellon(pabellonSinUbicar.id, pabellonSinUbicar.codigo, x, y);
             };
         }
 
         function activarModoMarcar() { window.modoMarcarPabellon = true; alert('Modo marcado activado. Hacé clic sobre el plano para ubicar el pabellón.'); }
 
-        async function guardarPabellonConCoordenadas(codigo, nombre, x, y) {
+              async function actualizarCoordenadasPabellon(pabellonId, pabellonCodigo, x, y) {
             try {
-                const payload = { feria_id: feriaSeleccionada.id, codigo, nombre, tipo: 'pabellon', cant_filas: 1, cant_columnas: 1, mapa_x: x, mapa_y: y };
-                const { error } = await supabaseClient.from('pabellones').insert([payload]);
+                const { error } = await supabaseClient
+                    .from('pabellones')
+                    .update({ mapa_x: x, mapa_y: y })
+                    .eq('id', pabellonId);
+
                 if (error) throw error;
+
                 window.modoMarcarPabellon = false;
-                mostrarModulo('feriaFisica');
-                alert('Pabellón marcado y guardado con éxito');
-            } catch (err) { alert('Error al guardar: ' + err.message); }
+                alert(`📍 Pabellón ${pabellonCodigo} ubicado en el mapa con éxito.`);
+                mostrarModulo('feriaFisica'); // Recargamos la vista para ver el pin
+            } catch (err) { 
+                alert('Error al ubicar el pabellón: ' + err.message); 
+            }
         }
-
-        async function subirPlano(e) {
-            e.preventDefault();
-            const url = document.getElementById('planoUrl').value.trim();
-            try {
-                const { error } = await supabaseClient.from('ferias').update({ plano_url: url }).eq('id', feriaSeleccionada.id);
-                if (error) throw error;
-                feriaSeleccionada.plano_url = url;
-                cerrarPopup('popupSubirPlano');
-                mostrarModulo('feriaFisica');
-                alert('Plano subido con éxito');
-            } catch (err) { alert('Error al guardar plano: ' + err.message); }
-        }
-
         async function abrirConfiguracionPabellon(pabellonId) {
             try {
                 const { data, error } = await supabaseClient.from('pabellones').select('*').eq('id', pabellonId).single();
