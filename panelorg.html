@@ -2445,11 +2445,10 @@ async function eliminarPabellon(pabellonId) {
             `;
             await cargarCategoriasMantenimiento();
         }
-
         async function cargarCategoriasMantenimiento() {
             const contenedor = document.getElementById('listaCategoriasMantenimiento');
             try {
-                const { data, error } = await supabaseClient
+                let { data, error } = await supabaseClient
                     .from('categorias_mantenimiento')
                     .select('*')
                     .eq('feria_id', feriaSeleccionada.id)
@@ -2457,12 +2456,39 @@ async function eliminarPabellon(pabellonId) {
 
                 if (error) throw error;
 
-                contenedor.innerHTML = '';
+                // 🚀 SI NO HAY CATEGORÍAS, LAS PRECARGAMOS AUTOMÁTICAMENTE
                 if (!data || data.length === 0) {
-                    contenedor.innerHTML = '<p class="text-xs text-slate-500 italic p-2">No hay categorías. Hacé clic en el "+".</p>';
-                    return;
+                    const categoriasEstandar = [
+                        { nombre: 'Electricidad e Iluminación', icono: '⚡' },
+                        { nombre: 'Infraestructura e Instalaciones', icono: '🏗️' },
+                        { nombre: 'Stands', icono: '🛖' },
+                        { nombre: 'Máquinas y Herramientas', icono: '⚙️' },
+                        { nombre: 'Audiovisual', icono: '📺' },
+                        { nombre: 'Parquización', icono: '🌳' },
+                        { nombre: 'Sanitarios', icono: '🚻' },
+                        { nombre: 'Servicios Conexos (Agua/Cajeros)', icono: '🔌' },
+                        { nombre: 'Predio General', icono: '🏟️' }
+                    ];
+
+                    const payload = categoriasEstandar.map(cat => ({
+                        feria_id: feriaSeleccionada.id,
+                        nombre: cat.nombre,
+                        icono: cat.icono
+                    }));
+
+                    const { error: insertError } = await supabaseClient.from('categorias_mantenimiento').insert(payload);
+                    if (insertError) throw insertError;
+
+                    // Volvemos a consultar para traer las que acabamos de crear
+                    const { data: newData } = await supabaseClient
+                        .from('categorias_mantenimiento')
+                        .select('*')
+                        .eq('feria_id', feriaSeleccionada.id)
+                        .order('nombre');
+                    data = newData;
                 }
 
+                contenedor.innerHTML = '';
                 data.forEach(cat => {
                     const activa = categoriaMantenimientoSeleccionada && categoriaMantenimientoSeleccionada.id === cat.id;
                     contenedor.innerHTML += `
