@@ -95,7 +95,8 @@
                 <button onclick="mostrarModulo('actores')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🎭 Actores</button>
                 <button onclick="mostrarModulo('operaciones')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🚨 Operaciones (Tickets)</button>
                 <button onclick="mostrarModulo('notificaciones')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">📢 Notificaciones</button>
-                <button onclick="mostrarModulo('servicios')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🛠️ Servicios y Mantenimiento</button>
+                <button onclick="mostrarModulo('servicios')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🛠️ Mis Servicios </button>
+                <button onclick="mostrarModulo('mantenimiento')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">⚙️ Mantenimiento e Instalaciones</button>
                 <button onclick="mostrarModulo('actividades')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🎉 Actividades y Eventos</button>
                 <button onclick="mostrarModulo('seguridad')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🛡️ Seguridad y Emergencias</button>
                 <button onclick="mostrarModulo('documentacion')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">📄 Documentaciones</button>
@@ -863,6 +864,29 @@
             </div>
         </div>
     </div>
+        <!-- POPUP: NUEVA CATEGORÍA MANTENIMIENTO -->
+    <div id="popupNuevaCategoriaMantenimiento" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupNuevaCategoriaMantenimiento')">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupNuevaCategoriaMantenimiento')">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-4">📁 Nueva Categoría de Mantenimiento</h2>
+                <form onsubmit="guardarCategoriaMantenimiento(event)" class="space-y-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Nombre de la Categoría</label>
+                        <input type="text" id="catMantNombre" required class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Electricidad e Iluminación">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Icono (Opcional)</label>
+                        <input type="text" id="catMantIcono" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: ⚡">
+                    </div>
+                    <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                        <button type="button" onclick="cerrarPopup('popupNuevaCategoriaMantenimiento')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
+                        <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Crear Categoría</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     
     <!-- ================= SCRIPT ================= -->
     <script>
@@ -1024,7 +1048,9 @@
                 case 'notificaciones': titulo.innerText = 'Notificaciones y Comunicaciones'; area.innerHTML = '<p class="text-slate-500">Módulo de Comunicaciones (Próximamente)</p>'; break;
                 case 'seguridad': titulo.innerText = 'Seguridad y Emergencias'; cargarModuloSeguridad(area); break;
                 case 'servicios': titulo.innerText = 'Mis Servicios'; cargarModuloServicios(area); break;
+                case 'mantenimiento': titulo.innerText = 'Mantenimiento e Instalaciones'; cargarModuloMantenimiento(area); break;
                 case 'actividades': titulo.innerText = 'Actividades y Eventos'; cargarModuloActividades(area); break;
+                
                 default: titulo.innerText = modulo; area.innerHTML = '<p class="text-slate-500">Módulo en construcción.</p>';
             }
         }
@@ -2387,6 +2413,85 @@ async function eliminarPabellon(pabellonId) {
             try {
                 await supabaseClient.from('actividades_feria').delete().eq('id', id);
                 mostrarModulo('actividades');
+            } catch (err) { alert('Error: ' + err.message); }
+        }
+                // ==================== MÓDULO MANTENIMIENTO E INSTALACIONES ====================
+        let categoriaMantenimientoSeleccionada = null;
+
+        async function cargarModuloMantenimiento(area) {
+            area.innerHTML = `
+                <div class="flex h-full gap-4">
+                    <!-- Menú Lateral de Categorías -->
+                    <div class="w-1/4 bg-white rounded-2xl shadow-sm border border-gray-200 p-4 flex flex-col h-[calc(100vh-140px)]">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-sm font-bold text-slate-800">Categorías</h3>
+                            <button onclick="abrirPopupNuevaCategoriaMantenimiento()" class="text-verdeQR hover:text-teal-700 font-bold text-lg" title="Agregar Categoría">＋</button>
+                        </div>
+                        <div id="listaCategoriasMantenimiento" class="flex-1 overflow-y-auto space-y-1">
+                            <div class="text-center py-4"><div class="loader"></div></div>
+                        </div>
+                    </div>
+
+                    <!-- Área Central (Ítems y Planos) -->
+                    <div class="flex-1 bg-white rounded-2xl shadow-sm border border-gray-200 p-6 overflow-y-auto h-[calc(100vh-140px)]">
+                        <div id="areaMantenimientoCentral">
+                            <div class="text-center mt-20 text-slate-400">
+                                <span class="text-6xl">⚙️</span>
+                                <p class="mt-4 font-bold">Seleccioná una categoría del menú izquierdo.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            await cargarCategoriasMantenimiento();
+        }
+
+        async function cargarCategoriasMantenimiento() {
+            const contenedor = document.getElementById('listaCategoriasMantenimiento');
+            try {
+                const { data, error } = await supabaseClient
+                    .from('categorias_mantenimiento')
+                    .select('*')
+                    .eq('feria_id', feriaSeleccionada.id)
+                    .order('nombre');
+
+                if (error) throw error;
+
+                contenedor.innerHTML = '';
+                if (!data || data.length === 0) {
+                    contenedor.innerHTML = '<p class="text-xs text-slate-500 italic p-2">No hay categorías. Hacé clic en el "+".</p>';
+                    return;
+                }
+
+                data.forEach(cat => {
+                    const activa = categoriaMantenimientoSeleccionada && categoriaMantenimientoSeleccionada.id === cat.id;
+                    contenedor.innerHTML += `
+                        <button onclick="seleccionarCategoriaMantenimiento('${cat.id}', '${cat.nombre}')" 
+                            class="w-full text-left px-3 py-2 rounded-lg text-sm transition ${activa ? 'bg-verdeQR text-white font-bold' : 'hover:bg-slate-100 text-slate-700'}">
+                            ${cat.icono || '📁'} ${cat.nombre}
+                        </button>
+                    `;
+                });
+            } catch (err) { contenedor.innerHTML = `<p class="text-red-500 text-xs">Error: ${err.message}</p>`; }
+        }
+                function abrirPopupNuevaCategoriaMantenimiento() {
+            document.getElementById('catMantNombre').value = '';
+            document.getElementById('catMantIcono').value = '';
+            abrirPopup('popupNuevaCategoriaMantenimiento');
+        }
+
+        async function guardarCategoriaMantenimiento(e) {
+            e.preventDefault();
+            const payload = {
+                feria_id: feriaSeleccionada.id,
+                nombre: document.getElementById('catMantNombre').value.trim(),
+                icono: document.getElementById('catMantIcono').value.trim() || '📁'
+            };
+            try {
+                const { error } = await supabaseClient.from('categorias_mantenimiento').insert([payload]);
+                if (error) throw error;
+                cerrarPopup('popupNuevaCategoriaMantenimiento');
+                await cargarCategoriasMantenimiento();
             } catch (err) { alert('Error: ' + err.message); }
         }
     </script>
