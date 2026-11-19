@@ -795,7 +795,7 @@
             <button class="popup-cerrar" onclick="cerrarPopup('popupNuevaActividad')">✕</button>
             <div class="p-6">
                 <h2 class="text-xl font-extrabold text-slate-800 mb-4">🎉 Nueva Actividad / Evento</h2>
-                <form onsubmit="guardarActividad(event)" class="space-y-3">
+                <input type="hidden" id="actId" value=""><form onsubmit="guardarActividad(event)" class="space-y-3">
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Tipo de Actividad</label>
@@ -2243,7 +2243,6 @@ async function eliminarPabellon(pabellonId) {
                 renderizarTablaActividades(data);
             } catch (err) { area.innerHTML = `<p class="text-red-500">Error: ${err.message}</p>`; }
         }
-
         function renderizarTablaActividades(actividades) {
             const tbody = document.getElementById('tbodyActividades');
             tbody.innerHTML = '';
@@ -2271,6 +2270,7 @@ async function eliminarPabellon(pabellonId) {
                         <td class="px-4 py-3"><span class="text-[10px] font-bold px-2 py-1 rounded-full ${badgeEstado}">${act.estado}</span></td>
                         <td class="px-4 py-3 text-right space-x-1">
                             ${act.material_url ? `<a href="${act.material_url}" target="_blank" class="bg-blue-100 text-blue-700 font-bold py-1 px-2 rounded text-[10px]">📄 Material</a>` : ''}
+                            <button onclick="abrirPopupEditarActividad('${act.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1 px-2 rounded text-[10px]">✏️ Editar</button>
                             <button onclick="eliminarActividad('${act.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold py-1 px-2 rounded text-[10px]">Borrar</button>
                         </td>
                     </tr>
@@ -2278,7 +2278,8 @@ async function eliminarPabellon(pabellonId) {
             });
         }
 
-        function abrirPopupNuevaActividad() {
+               function abrirPopupNuevaActividad() {
+            document.getElementById('actId').value = ''; // Limpiamos el ID
             document.getElementById('actTipo').value = 'Jornada';
             document.getElementById('actEstado').value = 'Planificado';
             document.getElementById('actTitulo').value = '';
@@ -2289,7 +2290,73 @@ async function eliminarPabellon(pabellonId) {
             document.getElementById('actDisertante').value = '';
             document.getElementById('actMaterialUrl').value = '';
             document.getElementById('actRequiereInscripcion').checked = false;
+            
+            // Cambiamos el título del popup
+            document.querySelector('#popupNuevaActividad h2').innerText = '🎉 Nueva Actividad / Evento';
             abrirPopup('popupNuevaActividad');
+        }
+
+        async function abrirPopupEditarActividad(id) {
+            try {
+                const { data, error } = await supabaseClient.from('actividades_feria').select('*').eq('id', id).single();
+                if (error) throw error;
+
+                document.getElementById('actId').value = data.id;
+                document.getElementById('actTipo').value = data.tipo;
+                document.getElementById('actEstado').value = data.estado;
+                document.getElementById('actTitulo').value = data.titulo;
+                document.getElementById('actDescripcion').value = data.descripcion || '';
+                // Formateamos la fecha para el input datetime-local
+                if (data.fecha_inicio) {
+                    const dtInicio = new Date(data.fecha_inicio);
+                    document.getElementById('actFechaInicio').value = dtInicio.toISOString().slice(0, 16);
+                }
+                if (data.fecha_fin) {
+                    const dtFin = new Date(data.fecha_fin);
+                    document.getElementById('actFechaFin').value = dtFin.toISOString().slice(0, 16);
+                }
+                document.getElementById('actUbicacion').value = data.ubicacion || '';
+                document.getElementById('actDisertante').value = data.disertante || '';
+                document.getElementById('actMaterialUrl').value = data.material_url || '';
+                document.getElementById('actRequiereInscripcion').checked = data.requiere_inscripcion;
+
+                // Cambiamos el título del popup
+                document.querySelector('#popupNuevaActividad h2').innerText = '✏️ Editar Actividad / Evento';
+                abrirPopup('popupNuevaActividad');
+            } catch (err) { alert('Error al cargar: ' + err.message); }
+        }
+
+        async function guardarActividad(e) {
+            e.preventDefault();
+            const id = document.getElementById('actId').value; // Obtenemos el ID (si es que hay)
+            
+            const payload = {
+                feria_id: feriaSeleccionada.id,
+                tipo: document.getElementById('actTipo').value,
+                titulo: document.getElementById('actTitulo').value.trim(),
+                descripcion: document.getElementById('actDescripcion').value.trim(),
+                fecha_inicio: document.getElementById('actFechaInicio').value,
+                fecha_fin: document.getElementById('actFechaFin').value || null,
+                ubicacion: document.getElementById('actUbicacion').value.trim(),
+                disertante: document.getElementById('actDisertante').value.trim(),
+                material_url: document.getElementById('actMaterialUrl').value.trim(),
+                requiere_inscripcion: document.getElementById('actRequiereInscripcion').checked,
+                estado: document.getElementById('actEstado').value
+            };
+
+            try {
+                if (id) {
+                    // Si hay ID, actualizamos
+                    const { error } = await supabaseClient.from('actividades_feria').update(payload).eq('id', id);
+                    if (error) throw error;
+                } else {
+                    // Si no hay ID, insertamos
+                    const { error } = await supabaseClient.from('actividades_feria').insert([payload]);
+                    if (error) throw error;
+                }
+                cerrarPopup('popupNuevaActividad');
+                mostrarModulo('actividades'); // Recarga la tabla
+            } catch (err) { alert('Error al guardar: ' + err.message); }
         }
 
         async function guardarActividad(e) {
