@@ -354,10 +354,13 @@
                         <textarea id="configPabSeguridad" rows="2" class="w-full px-2 py-1.5 border rounded-lg text-xs" placeholder="Ej: Salidas de emergencia, matafuegos..."></textarea>
                     </div>
 
-                    <!-- 👇 BOTÓN NUEVO PARA ASIGNAR SEGURIDAD 👇 -->
-                    <div class="grid grid-cols-1 gap-2 mt-4">
+                                       <!-- 👇 BOTONES PARA ASIGNAR RECURSOS AL PABELLÓN 👇 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4">
                         <button type="button" onclick="abrirPopupAsignarSeguridad()" class="bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200 font-bold py-2 rounded-xl text-xs transition">
-                            🛡️ Asignar Seguridad e Instalaciones al Pabellón
+                            🛡️ Asignar Seguridad
+                        </button>
+                        <button type="button" onclick="abrirPopupAsignarServicios()" class="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 font-bold py-2 rounded-xl text-xs transition">
+                            🛠️ Asignar Servicios
                         </button>
                     </div>
                 </div>
@@ -742,6 +745,47 @@
                         <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Guardar Servicio</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+        <!-- POPUP: ASIGNAR SERVICIOS AL PABELLÓN -->
+    <div id="popupAsignarServicios" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupAsignarServicios')">
+        <div class="popup-caja popup-caja-grande">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupAsignarServicios')">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-2">🛠️ Asignar Servicios al Pabellón</h2>
+                <p class="text-sm text-slate-600 mb-4">Pabellón: <strong id="asignarSrvPabNombre" class="text-orange-500"></strong></p>
+                <input type="hidden" id="asignarSrvPabId">
+
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 text-xs text-blue-800">
+                    💡 Seleccioná un servicio del inventario global de la feria y asignale la cantidad para este pabellón.
+                </div>
+
+                <!-- Formulario para asignar un servicio -->
+                <form onsubmit="guardarAsignacionServicio(event)" class="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-6 space-y-3">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Servicio de la Feria</label>
+                            <select id="asignarSrvElementoId" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                                <option value="">Cargando inventario...</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Cantidad en este Pabellón</label>
+                            <input type="number" id="asignarSrvCantidad" required min="1" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Nota / Ubicación en el Pabellón</label>
+                        <input type="text" id="asignarSrvNota" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Baños en ala oeste...">
+                    </div>
+                    <button type="submit" class="w-full bg-verdeQR hover:bg-teal-700 text-white font-bold py-2 rounded-xl text-sm transition">➕ Asignar al Pabellón</button>
+                </form>
+
+                <h3 class="text-sm font-bold text-slate-800 mb-2">Servicios Asignados</h3>
+                <div id="listaAsignacionServicios" class="space-y-2 max-h-60 overflow-y-auto pr-2">
+                    <!-- Acá se cargarán las asignaciones -->
+                </div>
             </div>
         </div>
     </div>
@@ -1975,6 +2019,109 @@ async function eliminarPabellon(pabellonId) {
             try {
                 await supabaseClient.from('servicios_feria').delete().eq('id', id);
                 mostrarModulo('servicios');
+            } catch (err) { alert('Error: ' + err.message); }
+        }
+                // ==================== ASIGNAR SERVICIOS AL PABELLÓN ====================
+
+        async function abrirPopupAsignarServicios() {
+            const pabellonId = document.getElementById('configPabId').value;
+            const pabellonNombre = document.getElementById('configPabNombre').innerText;
+            if (!pabellonId) return;
+
+            document.getElementById('asignarSrvPabId').value = pabellonId;
+            document.getElementById('asignarSrvPabNombre').innerText = pabellonNombre;
+
+            // Cargar el inventario global de servicios en el select
+            const selectElemento = document.getElementById('asignarSrvElementoId');
+            selectElemento.innerHTML = '<option value="">Cargando inventario...</option>';
+
+            try {
+                const { data: inventario, error } = await supabaseClient
+                    .from('servicios_feria')
+                    .select('*')
+                    .eq('feria_id', feriaSeleccionada.id)
+                    .order('categoria');
+
+                if (error) throw error;
+
+                selectElemento.innerHTML = '<option value="">Seleccioná un servicio...</option>';
+                if (inventario && inventario.length > 0) {
+                    inventario.forEach(item => {
+                        selectElemento.innerHTML += `<option value="${item.id}">${item.categoria} - ${item.nombre} (Disp: ${item.cantidad})</option>`;
+                    });
+                } else {
+                    selectElemento.innerHTML = '<option value="">No hay servicios cargados en el módulo de Servicios</option>';
+                }
+            } catch (err) { console.error(err); }
+
+            cargarAsignacionesServicios(pabellonId);
+            abrirPopup('popupAsignarServicios');
+        }
+
+        async function cargarAsignacionesServicios(pabellonId) {
+            const contenedor = document.getElementById('listaAsignacionServicios');
+            contenedor.innerHTML = '<div class="text-center py-4"><div class="loader"></div></div>';
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('servicios_pabellon')
+                    .select(`*, servicios_feria(categoria, nombre)`)
+                    .eq('pabellon_id', pabellonId);
+
+                if (error) throw error;
+
+                contenedor.innerHTML = '';
+                if (data.length === 0) {
+                    contenedor.innerHTML = '<p class="text-xs text-slate-500 text-center">No hay servicios asignados a este pabellón.</p>';
+                    return;
+                }
+
+                data.forEach(asig => {
+                    contenedor.innerHTML += `
+                        <div class="flex items-center justify-between bg-white border border-slate-200 p-2 rounded-lg">
+                            <div>
+                                <p class="text-sm font-bold text-slate-800">${asig.servicios_feria.nombre}</p>
+                                <p class="text-[10px] text-slate-500">${asig.servicios_feria.categoria} - Cantidad: <strong class="text-orange-500">${asig.cantidad}</strong></p>
+                                ${asig.nota ? `<p class="text-[10px] text-slate-400 italic">Nota: ${asig.nota}</p>` : ''}
+                            </div>
+                            <button onclick="eliminarAsignacionServicio('${asig.id}')" class="text-xs text-red-600 font-bold bg-red-50 px-2 py-1 rounded">Borrar</button>
+                        </div>
+                    `;
+                });
+            } catch (err) { contenedor.innerHTML = `<p class="text-red-500 text-xs">Error: ${err.message}</p>`; }
+        }
+
+        async function guardarAsignacionServicio(e) {
+            e.preventDefault();
+            const pabellonId = document.getElementById('asignarSrvPabId').value;
+            const servicioId = document.getElementById('asignarSrvElementoId').value;
+            const cantidad = parseInt(document.getElementById('asignarSrvCantidad').value);
+            const nota = document.getElementById('asignarSrvNota').value.trim();
+
+            if (!servicioId) { alert('Seleccioná un servicio válido'); return; }
+
+            const payload = {
+                pabellon_id: pabellonId,
+                servicio_id: servicioId,
+                cantidad: cantidad,
+                nota: nota
+            };
+
+            try {
+                const { error } = await supabaseClient.from('servicios_pabellon').insert([payload]);
+                if (error) throw error;
+                
+                document.getElementById('asignarSrvCantidad').value = '';
+                document.getElementById('asignarSrvNota').value = '';
+                await cargarAsignacionesServicios(pabellonId);
+            } catch (err) { alert('Error al asignar: ' + err.message); }
+        }
+
+        async function eliminarAsignacionServicio(id) {
+            if (!confirm('¿Quitar esta asignación del pabellón?')) return;
+            try {
+                await supabaseClient.from('servicios_pabellon').delete().eq('id', id);
+                await cargarAsignacionesServicios(document.getElementById('asignarSrvPabId').value);
             } catch (err) { alert('Error: ' + err.message); }
         }
     </script>
