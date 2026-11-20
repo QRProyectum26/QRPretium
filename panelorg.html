@@ -887,6 +887,143 @@ OCTYPE html>
             </div>
         </div>
     </div>
+      <!-- POPUP: NUEVO / EDITAR ÍTEM DE MANTENIMIENTO -->
+    <div id="popupItemMantenimiento" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupItemMantenimiento')">
+        <div class="popup-caja popup-caja-grande">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupItemMantenimiento')">✕</button>
+            <div class="p-6">
+                <h2 id="tituloPopupItemMant" class="text-xl font-extrabold text-slate-800 mb-4">⚙️ Nuevo Ítem de Mantenimiento</h2>
+                <form onsubmit="guardarItemMantenimiento(event)" class="space-y-4">
+                    <input type="hidden" id="itemMantId">
+                    <input type="hidden" id="itemMantCategoriaId">
+
+                    <!-- SECCIÓN 1: DATOS BÁSICOS -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <h3 class="text-sm font-bold text-slate-800 mb-3 border-b border-slate-200 pb-1">📋 Datos Básicos</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Nombre del Ítem *</label>
+                                <input type="text" id="itemMantNombre" required class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Tablero Principal">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Tipo / Subcategoría</label>
+                                <input type="text" id="itemMantTipo" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Tablero Trifásico">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Ubicación Física</label>
+                                <input type="text" id="itemMantUbicacion" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Pabellón A, Sector 2">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Capacidad Límite</label>
+                                <input type="text" id="itemMantCapacidad" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: 100 Amperes">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Estado Operativo</label>
+                                <select id="itemMantEstado" class="w-full px-3 py-2 border rounded-xl text-sm">
+                                    <option value="Bueno">Bueno</option>
+                                    <option value="Regular">Regular</option>
+                                    <option value="Malo">Malo</option>
+                                    <option value="Fuera de Servicio">Fuera de Servicio</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Prioridad</label>
+                                <select id="itemMantPrioridad" class="w-full px-3 py-2 border rounded-xl text-sm">
+                                    <option value="Baja">Baja</option>
+                                    <option value="Media">Media</option>
+                                    <option value="Alta">Alta</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center mt-5">
+                                <input type="checkbox" id="itemMantCritico" class="w-4 h-4 mr-2">
+                                <label for="itemMantCritico" class="text-xs font-bold text-gray-700">¿Es Crítico?</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN 2: RESPONSABLES Y PROVEEDORES -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <h3 class="text-sm font-bold text-slate-800 mb-3 border-b border-slate-200 pb-1">👤 Responsables y Proveedores</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Responsable Directo</label>
+                                <input type="text" id="itemMantResponsable" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Ing. Juan Pérez">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Contacto del Responsable</label>
+                                <input type="text" id="itemMantContacto" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: +54 9 11 1234-5678">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Código Proveedor Asociado (Opcional)</label>
+                                <input type="text" id="itemMantProveedor" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: PROV-001">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN 3: DOCUMENTACIÓN Y PROCEDIMIENTOS -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <h3 class="text-sm font-bold text-slate-800 mb-3 border-b border-slate-200 pb-1">📄 Documentación y Procedimientos</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Procedimiento Mínimo (¿Qué hacer en caso de falla?)</label>
+                                <textarea id="itemMantProcedimiento" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Cortar la llave general, llamar al electricista..."></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Notas Adicionales</label>
+                                <textarea id="itemMantNotas" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN 4: DATOS TÉCNICOS Y STOCK (Simularemos la carga con campos de texto y el popup de datos vendrá después) -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <h3 class="text-sm font-bold text-slate-800 mb-3 border-b border-slate-200 pb-1">⚙️ Datos Técnicos y Stock Auxiliar</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Stock Auxiliar (Repuestos, Insumos)</label>
+                                <textarea id="itemMantStock" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: 5 focos LED, 2 llaves de paso, 10 metros de cable"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Especificaciones Técnicas (Clave: Valor)</label>
+                                <textarea id="itemMantEspecificaciones" rows="3" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Tensión: 220V&#10;Diámetro: 2 pulgadas&#10;Sección de cable: 2.5mm"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                        <button type="button" onclick="cerrarPopup('popupItemMantenimiento')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
+                        <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Guardar Ítem</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP: NUEVO PLANO PARA MANTENIMIENTO -->
+    <div id="popupNuevoPlanoMant" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupNuevoPlanoMant')">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupNuevoPlanoMant')">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-4">🗺️ Nuevo Plano</h2>
+                <form onsubmit="guardarPlanoMant(event)" class="space-y-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Nombre del Plano</label>
+                        <input type="text" id="planoMantNombre" required class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Plano Eléctrico General">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">URL del Plano (GitHub Raw / Drive)</label>
+                        <input type="url" id="planoMantUrl" required class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="https://...">
+                    </div>
+                    <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                        <button type="button" onclick="cerrarPopup('popupNuevoPlanoMant')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
+                        <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Guardar Plano</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     
     <!-- ================= SCRIPT ================= -->
     <script>
@@ -2415,7 +2552,7 @@ async function eliminarPabellon(pabellonId) {
                 mostrarModulo('actividades');
             } catch (err) { alert('Error: ' + err.message); }
         }
-                // ==================== MÓDULO MANTENIMIENTO E INSTALACIONES ====================
+                 // ==================== MÓDULO MANTENIMIENTO E INSTALACIONES ====================
         let categoriaMantenimientoSeleccionada = null;
 
         async function cargarModuloMantenimiento(area) {
@@ -2445,6 +2582,7 @@ async function eliminarPabellon(pabellonId) {
             `;
             await cargarCategoriasMantenimiento();
         }
+
         async function cargarCategoriasMantenimiento() {
             const contenedor = document.getElementById('listaCategoriasMantenimiento');
             try {
@@ -2500,24 +2638,294 @@ async function eliminarPabellon(pabellonId) {
                 });
             } catch (err) { contenedor.innerHTML = `<p class="text-red-500 text-xs">Error: ${err.message}</p>`; }
         }
-                function abrirPopupNuevaCategoriaMantenimiento() {
-            document.getElementById('catMantNombre').value = '';
-            document.getElementById('catMantIcono').value = '';
-            abrirPopup('popupNuevaCategoriaMantenimiento');
+
+        async function seleccionarCategoriaMantenimiento(id, nombre) {
+            categoriaMantenimientoSeleccionada = { id: id, nombre: nombre };
+            await cargarCategoriasMantenimiento(); // Recargar el menú para pintar la activa
+
+            const area = document.getElementById('areaMantenimientoCentral');
+            area.innerHTML = `
+                <div class="flex justify-between items-center mb-6 border-b border-slate-200 pb-2">
+                    <h2 class="text-xl font-extrabold text-slate-800">${nombre}</h2>
+                    <button onclick="abrirPopupNuevoItemMantenimiento()" class="bg-verdeQR hover:bg-teal-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2">
+                        <span style="font-size: 18px;">＋</span> Nuevo Ítem
+                    </button>
+                </div>
+
+                <!-- Pestañas (Tabs) -->
+                <div class="flex gap-2 mb-4 border-b border-slate-200">
+                    <button onclick="cambiarPestanaMant('items')" id="btnTabItems" class="px-4 py-2 font-bold text-sm text-verdeQR border-b-2 border-verdeQR">Elementos / Equipos</button>
+                    <button onclick="cambiarPestanaMant('planos')" id="btnTabPlanos" class="px-4 py-2 font-bold text-sm text-slate-500 hover:text-slate-800">Planos Asociados</button>
+                </div>
+
+                <!-- Contenido de Pestaña: Ítems -->
+                <div id="tabContenidoItems">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50 border-b border-slate-200">
+                                <tr>
+                                    <th class="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase">Nombre</th>
+                                    <th class="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase">Ubicación</th>
+                                    <th class="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase">Estado</th>
+                                    <th class="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase">Prioridad</th>
+                                    <th class="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase text-right">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyMantenimientoItems">
+                                <tr><td colspan="5" class="text-center py-4"><div class="loader"></div></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Contenido de Pestaña: Planos -->
+                <div id="tabContenidoPlanos" class="hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="grillaPlanosMant">
+                        <!-- Planos inyectados por JS -->
+                    </div>
+                </div>
+            `;
+
+            await cargarItemsMantenimiento(id);
+            await cargarPlanosMantenimiento(id);
         }
 
-        async function guardarCategoriaMantenimiento(e) {
+        function cambiarPestanaMant(pestana) {
+            const btnItems = document.getElementById('btnTabItems');
+            const btnPlanos = document.getElementById('btnTabPlanos');
+            const contItems = document.getElementById('tabContenidoItems');
+            const contPlanos = document.getElementById('tabContenidoPlanos');
+
+            if (pestana === 'items') {
+                btnItems.className = "px-4 py-2 font-bold text-sm text-verdeQR border-b-2 border-verdeQR";
+                btnPlanos.className = "px-4 py-2 font-bold text-sm text-slate-500 hover:text-slate-800";
+                contItems.classList.remove('hidden');
+                contPlanos.classList.add('hidden');
+            } else {
+                btnPlanos.className = "px-4 py-2 font-bold text-sm text-verdeQR border-b-2 border-verdeQR";
+                btnItems.className = "px-4 py-2 font-bold text-sm text-slate-500 hover:text-slate-800";
+                contPlanos.classList.remove('hidden');
+                contItems.classList.add('hidden');
+            }
+        }
+
+        async function cargarItemsMantenimiento(categoriaId) {
+            const tbody = document.getElementById('tbodyMantenimientoItems');
+            try {
+                const { data, error } = await supabaseClient
+                    .from('mantenimiento_items')
+                    .select('*')
+                    .eq('categoria_id', categoriaId)
+                    .order('nombre');
+
+                if (error) throw error;
+                tbody.innerHTML = '';
+
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-slate-500 text-xs">No hay ítems cargados en esta categoría.</td></tr>';
+                    return;
+                }
+
+                data.forEach(item => {
+                    let estadoBadge = 'bg-emerald-100 text-emerald-700';
+                    if (item.estado === 'Regular') estadoBadge = 'bg-amber-100 text-amber-700';
+                    if (item.estado === 'Malo' || item.estado === 'Fuera de Servicio') estadoBadge = 'bg-red-100 text-red-700';
+
+                    tbody.innerHTML += `
+                        <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                            <td class="px-3 py-2 font-bold text-slate-800 text-sm">${item.nombre} ${item.es_critico ? '<span class="text-red-500 text-xs ml-1" title="Crítico">⚠️</span>' : ''}</td>
+                            <td class="px-3 py-2 text-slate-600 text-xs">${item.ubicacion || '---'}</td>
+                            <td class="px-3 py-2"><span class="text-[10px] font-bold px-2 py-1 rounded-full ${estadoBadge}">${item.estado}</span></td>
+                            <td class="px-3 py-2 text-xs font-bold ${item.prioridad === 'Alta' ? 'text-red-600' : 'text-slate-600'}">${item.prioridad}</td>
+                            <td class="px-3 py-2 text-right space-x-1">
+                                <button onclick="abrirPopupEditarItemMant('${item.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1 px-2 rounded text-[10px]">✏️</button>
+                                <button onclick="eliminarItemMant('${item.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold py-1 px-2 rounded text-[10px]">🗑️</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (err) { tbody.innerHTML = `<tr><td colspan="5" class="text-red-500 text-xs">Error: ${err.message}</td></tr>`; }
+        }
+
+        async function cargarPlanosMantenimiento(categoriaId) {
+            const contenedor = document.getElementById('grillaPlanosMant');
+            try {
+                const { data, error } = await supabaseClient
+                    .from('planos_mantenimiento')
+                    .select('*')
+                    .eq('categoria_id', categoriaId);
+
+                if (error) throw error;
+
+                contenedor.innerHTML = `
+                    <div class="col-span-full mb-2">
+                        <button onclick="abrirPopupNuevoPlanoMant()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition">＋ Agregar Plano a esta Categoría</button>
+                    </div>
+                `;
+
+                if (data.length === 0) {
+                    contenedor.innerHTML += `<p class="col-span-full text-xs text-slate-500 text-center py-4">No hay planos cargados.</p>`;
+                    return;
+                }
+
+                data.forEach(plano => {
+                    contenedor.innerHTML += `
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col justify-between">
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-sm">${plano.nombre_plano}</h4>
+                                <a href="${plano.url_plano}" target="_blank" class="text-xs text-blue-600 hover:underline">Ver plano en nueva pestaña</a>
+                            </div>
+                            <button onclick="eliminarPlanoMant('${plano.id}')" class="mt-2 text-red-500 text-[10px] font-bold text-right">Eliminar</button>
+                        </div>
+                    `;
+                });
+            } catch (err) { contenedor.innerHTML = `<p class="text-red-500 text-xs">Error: ${err.message}</p>`; }
+        }
+          // --- ÍTEMS DE MANTENIMIENTO ---
+
+        function abrirPopupNuevoItemMantenimiento() {
+            if (!categoriaMantenimientoSeleccionada) { alert('Seleccioná una categoría primero.'); return; }
+            
+            document.getElementById('itemMantId').value = '';
+            document.getElementById('itemMantCategoriaId').value = categoriaMantenimientoSeleccionada.id;
+            
+            // Limpiamos los campos
+            document.getElementById('itemMantNombre').value = '';
+            document.getElementById('itemMantTipo').value = '';
+            document.getElementById('itemMantUbicacion').value = '';
+            document.getElementById('itemMantCapacidad').value = '';
+            document.getElementById('itemMantEstado').value = 'Bueno';
+            document.getElementById('itemMantPrioridad').value = 'Media';
+            document.getElementById('itemMantCritico').checked = false;
+            document.getElementById('itemMantResponsable').value = '';
+            document.getElementById('itemMantContacto').value = '';
+            document.getElementById('itemMantProveedor').value = '';
+            document.getElementById('itemMantProcedimiento').value = '';
+            document.getElementById('itemMantNotas').value = '';
+            document.getElementById('itemMantStock').value = '';
+            document.getElementById('itemMantEspecificaciones').value = '';
+
+            document.getElementById('tituloPopupItemMant').innerText = '⚙️ Nuevo Ítem de Mantenimiento';
+            abrirPopup('popupItemMantenimiento');
+        }
+
+        async function abrirPopupEditarItemMant(id) {
+            try {
+                const { data, error } = await supabaseClient.from('mantenimiento_items').select('*').eq('id', id).single();
+                if (error) throw error;
+
+                document.getElementById('itemMantId').value = data.id;
+                document.getElementById('itemMantCategoriaId').value = data.categoria_id;
+                
+                document.getElementById('itemMantNombre').value = data.nombre;
+                document.getElementById('itemMantTipo').value = data.tipo_subcategoria || '';
+                document.getElementById('itemMantUbicacion').value = data.ubicacion || '';
+                document.getElementById('itemMantCapacidad').value = data.capacidad_limite || '';
+                document.getElementById('itemMantEstado').value = data.estado;
+                document.getElementById('itemMantPrioridad').value = data.prioridad;
+                document.getElementById('itemMantCritico').checked = data.es_critico;
+                document.getElementById('itemMantResponsable').value = data.responsable || '';
+                document.getElementById('itemMantContacto').value = data.contacto_responsable || '';
+                document.getElementById('itemMantProveedor').value = data.codigo_proveedor || '';
+                document.getElementById('itemMantProcedimiento').value = data.procedimiento_minimo || '';
+                document.getElementById('itemMantNotas').value = data.notas_adicionales || '';
+                
+                // Convertimos los objetos JSON de vuelta a texto para mostrarlos en los textareas
+                document.getElementById('itemMantStock').value = data.stock_auxiliar ? JSON.stringify(data.stock_auxiliar).replace(/["{}[\]]/g, '').replace(/:/g, ': ').replace(/,/g, '\n') : '';
+                document.getElementById('itemMantEspecificaciones').value = data.especificaciones_tecnicas ? JSON.stringify(data.especificaciones_tecnicas).replace(/["{}[\]]/g, '').replace(/:/g, ': ').replace(/,/g, '\n') : '';
+
+                document.getElementById('tituloPopupItemMant').innerText = '✏️ Editar Ítem de Mantenimiento';
+                abrirPopup('popupItemMantenimiento');
+            } catch (err) { alert('Error al cargar: ' + err.message); }
+        }
+
+        async function guardarItemMantenimiento(e) {
             e.preventDefault();
+            const id = document.getElementById('itemMantId').value;
+            const categoriaId = document.getElementById('itemMantCategoriaId').value;
+
+            // Función auxiliar para convertir el texto "Clave: Valor" a un objeto JSON
+            const parsearDatos = (texto) => {
+                if (!texto) return {};
+                const obj = {};
+                texto.split('\n').forEach(linea => {
+                    const [clave, ...resto] = linea.split(':');
+                    if (clave && resto.length > 0) {
+                        obj[clave.trim()] = resto.join(':').trim();
+                    }
+                });
+                return obj;
+            };
+
             const payload = {
-                feria_id: feriaSeleccionada.id,
-                nombre: document.getElementById('catMantNombre').value.trim(),
-                icono: document.getElementById('catMantIcono').value.trim() || '📁'
+                categoria_id: categoriaId,
+                nombre: document.getElementById('itemMantNombre').value.trim(),
+                tipo_subcategoria: document.getElementById('itemMantTipo').value.trim(),
+                ubicacion: document.getElementById('itemMantUbicacion').value.trim(),
+                capacidad_limite: document.getElementById('itemMantCapacidad').value.trim(),
+                estado: document.getElementById('itemMantEstado').value,
+                prioridad: document.getElementById('itemMantPrioridad').value,
+                es_critico: document.getElementById('itemMantCritico').checked,
+                responsable: document.getElementById('itemMantResponsable').value.trim(),
+                contacto_responsable: document.getElementById('itemMantContacto').value.trim(),
+                codigo_proveedor: document.getElementById('itemMantProveedor').value.trim(),
+                procedimiento_minimo: document.getElementById('itemMantProcedimiento').value.trim(),
+                notas_adicionales: document.getElementById('itemMantNotas').value.trim(),
+                stock_auxiliar: parsearDatos(document.getElementById('itemMantStock').value), // Se guarda como JSON
+                especificaciones_tecnicas: parsearDatos(document.getElementById('itemMantEspecificaciones').value) // Se guarda como JSON
+            };
+
+            try {
+                if (id) {
+                    const { error } = await supabaseClient.from('mantenimiento_items').update(payload).eq('id', id);
+                    if (error) throw error;
+                } else {
+                    const { error } = await supabaseClient.from('mantenimiento_items').insert([payload]);
+                    if (error) throw error;
+                }
+                cerrarPopup('popupItemMantenimiento');
+                await cargarItemsMantenimiento(categoriaId); // Recargamos la tabla
+            } catch (err) { alert('Error al guardar: ' + err.message); }
+        }
+
+        async function eliminarItemMant(id) {
+            if (!confirm('¿Eliminar este ítem?')) return;
+            try {
+                await supabaseClient.from('mantenimiento_items').delete().eq('id', id);
+                await cargarItemsMantenimiento(categoriaMantenimientoSeleccionada.id);
+            } catch (err) { alert('Error: ' + err.message); }
+        }
+
+        // --- PLANOS DE MANTENIMIENTO ---
+        function abrirPopupNuevoPlanoMant() {
+            if (!categoriaMantenimientoSeleccionada) return;
+            document.getElementById('planoMantNombre').value = '';
+            document.getElementById('planoMantUrl').value = '';
+            abrirPopup('popupNuevoPlanoMant');
+        }
+
+        async function guardarPlanoMant(e) {
+            e.preventDefault();
+            if (!categoriaMantenimientoSeleccionada) return;
+            
+            const payload = {
+                categoria_id: categoriaMantenimientoSeleccionada.id,
+                nombre_plano: document.getElementById('planoMantNombre').value.trim(),
+                url_plano: document.getElementById('planoMantUrl').value.trim()
             };
             try {
-                const { error } = await supabaseClient.from('categorias_mantenimiento').insert([payload]);
+                const { error } = await supabaseClient.from('planos_mantenimiento').insert([payload]);
                 if (error) throw error;
-                cerrarPopup('popupNuevaCategoriaMantenimiento');
-                await cargarCategoriasMantenimiento();
+                cerrarPopup('popupNuevoPlanoMant');
+                await cargarPlanosMantenimiento(categoriaMantenimientoSeleccionada.id);
+            } catch (err) { alert('Error: ' + err.message); }
+        }
+
+        async function eliminarPlanoMant(id) {
+            if (!confirm('¿Eliminar este plano?')) return;
+            try {
+                await supabaseClient.from('planos_mantenimiento').delete().eq('id', id);
+                await cargarPlanosMantenimiento(categoriaMantenimientoSeleccionada.id);
             } catch (err) { alert('Error: ' + err.message); }
         }
     </script>
