@@ -977,17 +977,28 @@ OCTYPE html>
                         </div>
                     </div>
 
-                    <!-- SECCIÓN 4: DATOS TÉCNICOS Y STOCK (Simularemos la carga con campos de texto y el popup de datos vendrá después) -->
+                                       <!-- SECCIÓN 4: DATOS TÉCNICOS Y STOCK -->
                     <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
                         <h3 class="text-sm font-bold text-slate-800 mb-3 border-b border-slate-200 pb-1">⚙️ Datos Técnicos y Stock Auxiliar</h3>
-                        <div class="space-y-3">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <!-- Botón para Datos Técnicos -->
                             <div>
-                                <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Stock Auxiliar (Repuestos, Insumos)</label>
-                                <textarea id="itemMantStock" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: 5 focos LED, 2 llaves de paso, 10 metros de cable"></textarea>
+                                <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Especificaciones Técnicas</label>
+                                <button type="button" onclick="abrirSubPopupDatosTecnicos()" class="w-full bg-white border border-slate-300 hover:border-blue-500 text-slate-700 font-bold py-2 rounded-xl text-sm transition flex justify-between items-center px-4">
+                                    <span id="lblCantDatosTecnicos">0 datos cargados</span>
+                                    <span>⚙️ Editar</span>
+                                </button>
+                                <input type="hidden" id="itemMantEspecificacionesJSON" value="{}">
                             </div>
+
+                            <!-- Botón para Stock Auxiliar -->
                             <div>
-                                <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Especificaciones Técnicas (Clave: Valor)</label>
-                                <textarea id="itemMantEspecificaciones" rows="3" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Tensión: 220V&#10;Diámetro: 2 pulgadas&#10;Sección de cable: 2.5mm"></textarea>
+                                <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Stock Auxiliar / Repuestos</label>
+                                <button type="button" onclick="abrirSubPopupStockAuxiliar()" class="w-full bg-white border border-slate-300 hover:border-orange-500 text-slate-700 font-bold py-2 rounded-xl text-sm transition flex justify-between items-center px-4">
+                                    <span id="lblCantStockAuxiliar">0 repuestos cargados</span>
+                                    <span>📦 Editar</span>
+                                </button>
+                                <input type="hidden" id="itemMantStockJSON" value="{}">
                             </div>
                         </div>
                     </div>
@@ -1000,7 +1011,6 @@ OCTYPE html>
             </div>
         </div>
     </div>
-
     <!-- POPUP: NUEVO PLANO PARA MANTENIMIENTO -->
     <div id="popupNuevoPlanoMant" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupNuevoPlanoMant')">
         <div class="popup-caja">
@@ -1024,7 +1034,63 @@ OCTYPE html>
             </div>
         </div>
     </div>
-    
+        <!-- SUB-POPUP: DATOS TÉCNICOS -->
+    <div id="subPopupDatosTecnicos" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('subPopupDatosTecnicos')" style="z-index: 200;">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopup('subPopupDatosTecnicos')">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-4">⚙️ Especificaciones Técnicas</h2>
+                
+                <form onsubmit="agregarDatoTecnico(event)" class="flex gap-2 mb-4">
+                    <input type="text" id="dtClave" required class="w-1/2 px-3 py-2 border rounded-xl text-sm" placeholder="Clave (Ej: Tensión)">
+                    <input type="text" id="dtValor" required class="w-1/2 px-3 py-2 border rounded-xl text-sm" placeholder="Valor (Ej: 220V)">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-xl text-sm">＋</button>
+                </form>
+
+                <div class="max-h-60 overflow-y-auto border border-slate-200 rounded-lg">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 border-b border-slate-200">
+                            <tr><th class="p-2">Clave</th><th class="p-2">Valor</th><th class="p-2 text-right">Acción</th></tr>
+                        </thead>
+                        <tbody id="tbodyDatosTecnicos"></tbody>
+                    </table>
+                </div>
+
+                <div class="flex justify-end mt-4 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="cerrarPopup('subPopupDatosTecnicos')" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Guardar y Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUB-POPUP: STOCK AUXILIAR -->
+    <div id="subPopupStockAuxiliar" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('subPopupStockAuxiliar')" style="z-index: 200;">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopup('subPopupStockAuxiliar')">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-4">📦 Stock Auxiliar</h2>
+                
+                <form onsubmit="agregarStockAuxiliar(event)" class="flex gap-2 mb-4">
+                    <input type="text" id="saElemento" required class="w-1/2 px-3 py-2 border rounded-xl text-sm" placeholder="Elemento (Ej: Foco LED)">
+                    <input type="number" id="saCantidad" required class="w-1/4 px-3 py-2 border rounded-xl text-sm" placeholder="Cant.">
+                    <button type="submit" class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2 rounded-xl text-sm w-1/4">＋</button>
+                </form>
+
+                <div class="max-h-60 overflow-y-auto border border-slate-200 rounded-lg">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 border-b border-slate-200">
+                            <tr><th class="p-2">Elemento</th><th class="p-2">Cant.</th><th class="p-2 text-right">Acción</th></tr>
+                        </thead>
+                        <tbody id="tbodyStockAuxiliar"></tbody>
+                    </table>
+                </div>
+
+                <div class="flex justify-end mt-4 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="cerrarPopup('subPopupStockAuxiliar')" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Guardar y Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- ================= SCRIPT ================= -->
     <script>
         const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
@@ -1034,6 +1100,8 @@ OCTYPE html>
         let organizadorActual = null;
         let feriasLista = [];
         let feriaSeleccionada = null;
+        let datosTecnicosTemp = {};
+        let stockAuxiliarTemp = {};
 
         async function iniciarSesion(e) {
             e.preventDefault();
@@ -2781,7 +2849,7 @@ async function eliminarPabellon(pabellonId) {
                 });
             } catch (err) { contenedor.innerHTML = `<p class="text-red-500 text-xs">Error: ${err.message}</p>`; }
         }
-          // --- ÍTEMS DE MANTENIMIENTO ---
+                 // --- ÍTEMS DE MANTENIMIENTO ---
 
         function abrirPopupNuevoItemMantenimiento() {
             if (!categoriaMantenimientoSeleccionada) { alert('Seleccioná una categoría primero.'); return; }
@@ -2802,8 +2870,12 @@ async function eliminarPabellon(pabellonId) {
             document.getElementById('itemMantProveedor').value = '';
             document.getElementById('itemMantProcedimiento').value = '';
             document.getElementById('itemMantNotas').value = '';
-            document.getElementById('itemMantStock').value = '';
-            document.getElementById('itemMantEspecificaciones').value = '';
+
+            // Limpiamos los JSON ocultos y los contadores
+            document.getElementById('itemMantEspecificacionesJSON').value = '{}';
+            document.getElementById('itemMantStockJSON').value = '{}';
+            document.getElementById('lblCantDatosTecnicos').innerText = '0 datos cargados';
+            document.getElementById('lblCantStockAuxiliar').innerText = '0 repuestos cargados';
 
             document.getElementById('tituloPopupItemMant').innerText = '⚙️ Nuevo Ítem de Mantenimiento';
             abrirPopup('popupItemMantenimiento');
@@ -2830,9 +2902,18 @@ async function eliminarPabellon(pabellonId) {
                 document.getElementById('itemMantProcedimiento').value = data.procedimiento_minimo || '';
                 document.getElementById('itemMantNotas').value = data.notas_adicionales || '';
                 
-                // Convertimos los objetos JSON de vuelta a texto para mostrarlos en los textareas
-                document.getElementById('itemMantStock').value = data.stock_auxiliar ? JSON.stringify(data.stock_auxiliar).replace(/["{}[\]]/g, '').replace(/:/g, ': ').replace(/,/g, '\n') : '';
-                document.getElementById('itemMantEspecificaciones').value = data.especificaciones_tecnicas ? JSON.stringify(data.especificaciones_tecnicas).replace(/["{}[\]]/g, '').replace(/:/g, ': ').replace(/,/g, '\n') : '';
+                // Convertimos los objetos JSON de vuelta a texto para mostrarlos en los inputs ocultos
+                const jsonEspecificaciones = data.especificaciones_tecnicas ? JSON.stringify(data.especificaciones_tecnicas) : '{}';
+                const jsonStock = data.stock_auxiliar ? JSON.stringify(data.stock_auxiliar) : '{}';
+                
+                document.getElementById('itemMantEspecificacionesJSON').value = jsonEspecificaciones;
+                document.getElementById('itemMantStockJSON').value = jsonStock;
+                
+                // Actualizamos los contadores visuales
+                const cantDt = Object.keys(JSON.parse(jsonEspecificaciones)).length;
+                const cantSa = Object.keys(JSON.parse(jsonStock)).length;
+                document.getElementById('lblCantDatosTecnicos').innerText = cantDt === 0 ? '0 datos cargados' : `${cantDt} datos cargados`;
+                document.getElementById('lblCantStockAuxiliar').innerText = cantSa === 0 ? '0 repuestos cargados' : `${cantSa} repuestos cargados`;
 
                 document.getElementById('tituloPopupItemMant').innerText = '✏️ Editar Ítem de Mantenimiento';
                 abrirPopup('popupItemMantenimiento');
@@ -2844,18 +2925,9 @@ async function eliminarPabellon(pabellonId) {
             const id = document.getElementById('itemMantId').value;
             const categoriaId = document.getElementById('itemMantCategoriaId').value;
 
-            // Función auxiliar para convertir el texto "Clave: Valor" a un objeto JSON
-            const parsearDatos = (texto) => {
-                if (!texto) return {};
-                const obj = {};
-                texto.split('\n').forEach(linea => {
-                    const [clave, ...resto] = linea.split(':');
-                    if (clave && resto.length > 0) {
-                        obj[clave.trim()] = resto.join(':').trim();
-                    }
-                });
-                return obj;
-            };
+            // Leemos los JSON directamente de los inputs ocultos
+            const datosTecnicos = JSON.parse(document.getElementById('itemMantEspecificacionesJSON').value || '{}');
+            const stockAux = JSON.parse(document.getElementById('itemMantStockJSON').value || '{}');
 
             const payload = {
                 categoria_id: categoriaId,
@@ -2871,8 +2943,8 @@ async function eliminarPabellon(pabellonId) {
                 codigo_proveedor: document.getElementById('itemMantProveedor').value.trim(),
                 procedimiento_minimo: document.getElementById('itemMantProcedimiento').value.trim(),
                 notas_adicionales: document.getElementById('itemMantNotas').value.trim(),
-                stock_auxiliar: parsearDatos(document.getElementById('itemMantStock').value), // Se guarda como JSON
-                especificaciones_tecnicas: parsearDatos(document.getElementById('itemMantEspecificaciones').value) // Se guarda como JSON
+                stock_auxiliar: stockAux, // Se guarda como JSON
+                especificaciones_tecnicas: datosTecnicos // Se guarda como JSON
             };
 
             try {
@@ -2895,7 +2967,6 @@ async function eliminarPabellon(pabellonId) {
                 await cargarItemsMantenimiento(categoriaMantenimientoSeleccionada.id);
             } catch (err) { alert('Error: ' + err.message); }
         }
-
         // --- PLANOS DE MANTENIMIENTO ---
         function abrirPopupNuevoPlanoMant() {
             if (!categoriaMantenimientoSeleccionada) return;
@@ -2927,6 +2998,112 @@ async function eliminarPabellon(pabellonId) {
                 await supabaseClient.from('planos_mantenimiento').delete().eq('id', id);
                 await cargarPlanosMantenimiento(categoriaMantenimientoSeleccionada.id);
             } catch (err) { alert('Error: ' + err.message); }
+        }
+                // --- LÓGICA DATOS TÉCNICOS ---
+        function abrirSubPopupDatosTecnicos() {
+            // Leemos el JSON actual del input oculto
+            const jsonActual = document.getElementById('itemMantEspecificacionesJSON').value;
+            datosTecnicosTemp = jsonActual ? JSON.parse(jsonActual) : {};
+            
+            renderizarTablaDatosTecnicos();
+            abrirPopup('subPopupDatosTecnicos');
+        }
+
+        function renderizarTablaDatosTecnicos() {
+            const tbody = document.getElementById('tbodyDatosTecnicos');
+            tbody.innerHTML = '';
+            const keys = Object.keys(datosTecnicosTemp);
+            
+            if (keys.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center text-slate-500 p-2 italic">No hay datos cargados.</td></tr>';
+            } else {
+                keys.forEach(clave => {
+                    tbody.innerHTML += `
+                        <tr class="border-b border-slate-100">
+                            <td class="p-2 font-bold text-slate-700">${clave}</td>
+                            <td class="p-2 text-slate-600">${datosTecnicosTemp[clave]}</td>
+                            <td class="p-2 text-right"><button type="button" onclick="borrarDatoTecnico('${clave}')" class="text-red-500 font-bold">✕</button></td>
+                        </tr>
+                    `;
+                });
+            }
+            
+            // Actualizamos el contador en el formulario principal
+            const cant = keys.length;
+            document.getElementById('lblCantDatosTecnicos').innerText = cant === 0 ? '0 datos cargados' : `${cant} datos cargados`;
+            
+            // Sincronizamos el input oculto del formulario principal
+            document.getElementById('itemMantEspecificacionesJSON').value = JSON.stringify(datosTecnicosTemp);
+        }
+
+        function agregarDatoTecnico(e) {
+            e.preventDefault();
+            const clave = document.getElementById('dtClave').value.trim();
+            const valor = document.getElementById('dtValor').value.trim();
+            if (!clave || !valor) return;
+
+            datosTecnicosTemp[clave] = valor;
+            document.getElementById('dtClave').value = '';
+            document.getElementById('dtValor').value = '';
+            renderizarTablaDatosTecnicos();
+        }
+
+        function borrarDatoTecnico(clave) {
+            delete datosTecnicosTemp[clave];
+            renderizarTablaDatosTecnicos();
+        }
+
+        // --- LÓGICA STOCK AUXILIAR ---
+        function abrirSubPopupStockAuxiliar() {
+            const jsonActual = document.getElementById('itemMantStockJSON').value;
+            stockAuxiliarTemp = jsonActual ? JSON.parse(jsonActual) : {};
+            
+            renderizarTablaStockAuxiliar();
+            abrirPopup('subPopupStockAuxiliar');
+        }
+
+        function renderizarTablaStockAuxiliar() {
+            const tbody = document.getElementById('tbodyStockAuxiliar');
+            tbody.innerHTML = '';
+            const keys = Object.keys(stockAuxiliarTemp);
+            
+            if (keys.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center text-slate-500 p-2 italic">No hay repuestos cargados.</td></tr>';
+            } else {
+                keys.forEach(elemento => {
+                    tbody.innerHTML += `
+                        <tr class="border-b border-slate-100">
+                            <td class="p-2 font-bold text-slate-700">${elemento}</td>
+                            <td class="p-2 text-slate-600">${stockAuxiliarTemp[elemento]}</td>
+                            <td class="p-2 text-right"><button type="button" onclick="borrarStockAuxiliar('${elemento}')" class="text-red-500 font-bold">✕</button></td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Actualizamos el contador en el formulario principal
+            const cant = keys.length;
+            document.getElementById('lblCantStockAuxiliar').innerText = cant === 0 ? '0 repuestos cargados' : `${cant} repuestos cargados`;
+            
+            // Sincronizamos el input oculto
+            document.getElementById('itemMantStockJSON').value = JSON.stringify(stockAuxiliarTemp);
+        }
+
+        function agregarStockAuxiliar(e) {
+            e.preventDefault();
+            const elemento = document.getElementById('saElemento').value.trim();
+            const cantidad = parseInt(document.getElementById('saCantidad').value);
+            if (!elemento || isNaN(cantidad)) return;
+
+            stockAuxiliarTemp[elemento] = cantidad;
+            document.getElementById('saElemento').value = '';
+            document.getElementById('saCantidad').value = '';
+            renderizarTablaStockAuxiliar();
+        }
+
+        function borrarStockAuxiliar(elemento) {
+            delete stockAuxiliarTemp[elemento];
+            renderizarTablaStockAuxiliar();
         }
     </script>
 </body>
