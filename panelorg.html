@@ -1091,6 +1091,89 @@ OCTYPE html>
             </div>
         </div>
     </div>
+        <!-- POPUP: EDITAR ORGANIZACIÓN -->
+    <div id="popupEditarOrganizacion" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupEditarOrganizacion')">
+        <div class="popup-caja popup-caja-grande">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupEditarOrganizacion')">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-4">🏛️ Datos de mi Organización</h2>
+                <form onsubmit="guardarOrganizacion(event)" class="space-y-3">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Nombre de la Empresa</label>
+                            <input type="text" id="orgNombre" readonly class="w-full px-3 py-2 border rounded-xl text-sm bg-gray-100">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">CUIT</label>
+                            <input type="text" id="orgCuit" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Teléfono</label>
+                            <input type="text" id="orgTelefono" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Sitio Web</label>
+                            <input type="text" id="orgWeb" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Dirección</label>
+                        <input type="text" id="orgDireccion" class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Descripción (¿Qué hace la organización?)</label>
+                        <textarea id="orgDescripcion" rows="3" class="w-full px-3 py-2 border rounded-xl text-sm"></textarea>
+                    </div>
+                    <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                        <button type="button" onclick="cerrarPopup('popupEditarOrganizacion')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
+                        <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Guardar Datos</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP: NUEVO MIEMBRO DEL EQUIPO -->
+    <div id="popupNuevoMiembroEquipo" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupNuevoMiembroEquipo')">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupNuevoMiembroEquipo')">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-4">👥 Nuevo Miembro del Equipo</h2>
+                <form onsubmit="guardarMiembroEquipo(event)" class="space-y-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Nombre Completo</label>
+                        <input type="text" id="eqNombre" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Rol / Puesto</label>
+                            <input type="text" id="eqRol" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Director">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Área</label>
+                            <input type="text" id="eqArea" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Comercial">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Email</label>
+                            <input type="email" id="eqEmail" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Teléfono</label>
+                            <input type="tel" id="eqTelefono" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                        <button type="button" onclick="cerrarPopup('popupNuevoMiembroEquipo')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
+                        <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Guardar Miembro</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <!-- ================= SCRIPT ================= -->
     <script>
         const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
@@ -1243,7 +1326,7 @@ OCTYPE html>
             const area = document.getElementById('areaTrabajo');
             const titulo = document.getElementById('tituloModulo');
             switch(modulo) {
-                case 'miOrganizacion': titulo.innerText = 'Mi Organización'; area.innerHTML = '<p class="text-slate-500">Módulo de Organización (Próximamente)</p>'; break;
+                case 'miOrganizacion': titulo.innerText = 'Mi Organización'; cargarMiOrganizacion(area); break;
                 case 'calendarios': titulo.innerText = 'Mis Calendarios'; area.innerHTML = '<p class="text-slate-500">Módulo de Calendarios (Próximamente)</p>'; break;
                 case 'agenda': titulo.innerText = 'Mi Agenda'; area.innerHTML = '<p class="text-slate-500">Módulo de Agenda (Próximamente)</p>'; break;
                 case 'feriaFisica': titulo.innerText = 'Mi Feria Física - ' + feriaSeleccionada.nombre; cargarFeriaFisica(area); break;
@@ -3104,6 +3187,176 @@ async function eliminarPabellon(pabellonId) {
         function borrarStockAuxiliar(elemento) {
             delete stockAuxiliarTemp[elemento];
             renderizarTablaStockAuxiliar();
+        }
+                // ==================== MÓDULO MI ORGANIZACIÓN ====================
+        async function cargarMiOrganizacion(area) {
+            area.innerHTML = '<div class="text-center mt-10"><div class="loader"></div></div>';
+            try {
+                // 1. Cargar datos de la organización (ya los tenemos en organizadorActual)
+                const { data: org, error: errorOrg } = await supabaseClient
+                    .from('organizadores')
+                    .select('*')
+                    .eq('id', organizadorActual.id)
+                    .single();
+                if (errorOrg) throw errorOrg;
+
+                // 2. Cargar el equipo de trabajo
+                const { data: equipo, error: errorEq } = await supabaseClient
+                    .from('equipo_organizador')
+                    .select('*')
+                    .eq('organizador_id', organizadorActual.id)
+                    .order('nombre');
+                if (errorEq) throw errorEq;
+
+                // 3. Armar la vista
+                let html = `
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-slate-800">🏛️ Mi Organización</h3>
+                        <button onclick="abrirPopupEditarOrganizacion()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow transition">✏️ Editar Datos</button>
+                    </div>
+
+                    <!-- Tarjeta de Datos de la Empresa -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-500 uppercase">Nombre</p>
+                                <p class="font-bold text-slate-800">${org.nombre_empresa || '---'}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-500 uppercase">CUIT</p>
+                                <p class="font-bold text-slate-800">${org.cuit || '---'}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-500 uppercase">Teléfono</p>
+                                <p class="font-bold text-slate-800">${org.telefono || '---'}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-500 uppercase">Sitio Web</p>
+                                <p class="font-bold text-slate-800">${org.web || '---'}</p>
+                            </div>
+                            <div class="md:col-span-2">
+                                <p class="text-[10px] font-bold text-gray-500 uppercase">Dirección</p>
+                                <p class="font-bold text-slate-800">${org.direccion || '---'}</p>
+                            </div>
+                            <div class="md:col-span-2">
+                                <p class="text-[10px] font-bold text-gray-500 uppercase">Descripción</p>
+                                <p class="text-sm text-slate-600">${org.descripcion || '---'}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de Equipo de Trabajo -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+                            <h3 class="font-bold text-slate-800 text-sm">👥 Equipo de Trabajo</h3>
+                            <button onclick="abrirPopupNuevoMiembroEquipo()" class="bg-verdeQR hover:bg-teal-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow transition">＋ Nuevo Miembro</button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-50 border-b border-slate-200">
+                                    <tr>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Nombre</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Rol</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Área</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Email</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase text-right">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodyEquipo">
+                                    <tr><td colspan="5" class="text-center py-4 text-slate-500 text-xs">Cargando...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                area.innerHTML = html;
+                renderizarTablaEquipo(equipo);
+            } catch (err) { area.innerHTML = `<p class="text-red-500">Error: ${err.message}</p>`; }
+        }
+
+        function renderizarTablaEquipo(equipo) {
+            const tbody = document.getElementById('tbodyEquipo');
+            tbody.innerHTML = '';
+            if (!equipo || equipo.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-slate-500 text-xs">No hay miembros cargados.</td></tr>';
+                return;
+            }
+            equipo.forEach(miembro => {
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                        <td class="px-4 py-3 font-bold text-slate-800 text-sm">${miembro.nombre}</td>
+                        <td class="px-4 py-3 text-slate-600 text-xs">${miembro.rol || '---'}</td>
+                        <td class="px-4 py-3 text-slate-600 text-xs">${miembro.area || '---'}</td>
+                        <td class="px-4 py-3 text-slate-600 text-xs">${miembro.email || '---'}</td>
+                        <td class="px-4 py-3 text-right space-x-1">
+                            <button onclick="eliminarMiembroEquipo('${miembro.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold py-1 px-2 rounded text-[10px]">Borrar</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function abrirPopupEditarOrganizacion() {
+            document.getElementById('orgNombre').value = organizadorActual.nombre_empresa || '';
+            document.getElementById('orgCuit').value = organizadorActual.cuit || '';
+            document.getElementById('orgTelefono').value = organizadorActual.telefono || '';
+            document.getElementById('orgWeb').value = organizadorActual.web || '';
+            document.getElementById('orgDireccion').value = organizadorActual.direccion || '';
+            document.getElementById('orgDescripcion').value = organizadorActual.descripcion || '';
+            abrirPopup('popupEditarOrganizacion');
+        }
+
+        async function guardarOrganizacion(e) {
+            e.preventDefault();
+            const payload = {
+                cuit: document.getElementById('orgCuit').value.trim(),
+                telefono: document.getElementById('orgTelefono').value.trim(),
+                web: document.getElementById('orgWeb').value.trim(),
+                direccion: document.getElementById('orgDireccion').value.trim(),
+                descripcion: document.getElementById('orgDescripcion').value.trim()
+            };
+            try {
+                const { error } = await supabaseClient.from('organizadores').update(payload).eq('id', organizadorActual.id);
+                if (error) throw error;
+                Object.assign(organizadorActual, payload); // Actualizamos la variable en memoria
+                cerrarPopup('popupEditarOrganizacion');
+                mostrarModulo('miOrganizacion'); // Recargamos la vista
+            } catch (err) { alert('Error al guardar: ' + err.message); }
+        }
+
+        function abrirPopupNuevoMiembroEquipo() {
+            document.getElementById('eqNombre').value = '';
+            document.getElementById('eqRol').value = '';
+            document.getElementById('eqArea').value = '';
+            document.getElementById('eqEmail').value = '';
+            document.getElementById('eqTelefono').value = '';
+            abrirPopup('popupNuevoMiembroEquipo');
+        }
+
+        async function guardarMiembroEquipo(e) {
+            e.preventDefault();
+            const payload = {
+                organizador_id: organizadorActual.id,
+                nombre: document.getElementById('eqNombre').value.trim(),
+                rol: document.getElementById('eqRol').value.trim(),
+                area: document.getElementById('eqArea').value.trim(),
+                email: document.getElementById('eqEmail').value.trim(),
+                telefono: document.getElementById('eqTelefono').value.trim()
+            };
+            try {
+                const { error } = await supabaseClient.from('equipo_organizador').insert([payload]);
+                if (error) throw error;
+                cerrarPopup('popupNuevoMiembroEquipo');
+                mostrarModulo('miOrganizacion'); // Recargamos la vista
+            } catch (err) { alert('Error al guardar: ' + err.message); }
+        }
+
+        async function eliminarMiembroEquipo(id) {
+            if (!confirm('¿Eliminar este miembro del equipo?')) return;
+            try {
+                await supabaseClient.from('equipo_organizador').delete().eq('id', id);
+                mostrarModulo('miOrganizacion');
+            } catch (err) { alert('Error: ' + err.message); }
         }
     </script>
 </body>
