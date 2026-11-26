@@ -1174,6 +1174,68 @@ DOCTYPE html>
             </div>
         </div>
     </div>
+        <!-- POPUP: NUEVO / EDITAR EVENTO DE CALENDARIO -->
+    <div id="popupEventoCalendario" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupEventoCalendario')">
+        <div class="popup-caja popup-caja-grande">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupEventoCalendario')">✕</button>
+            <div class="p-6">
+                <h2 id="tituloPopupEventoCal" class="text-xl font-extrabold text-slate-800 mb-4">📅 Nuevo Evento a Organizar</h2>
+                <form onsubmit="guardarEventoCalendario(event)" class="space-y-3">
+                    <input type="hidden" id="eventoCalId">
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Nombre del Evento</label>
+                        <input type="text" id="eventoCalNombre" required class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Expo Metal 2027">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Temática</label>
+                            <input type="text" id="eventoCalTematica" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Metalurgia">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Sector / Público</label>
+                            <input type="text" id="eventoCalSector" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Industrial">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Fecha Estimada</label>
+                            <input type="date" id="eventoCalFecha" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Días de Duración</label>
+                            <input type="number" id="eventoCalDias" class="w-full px-3 py-2 border rounded-xl text-sm" value="1">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Prioridad</label>
+                            <select id="eventoCalPrioridad" class="w-full px-3 py-2 border rounded-xl text-sm">
+                                <option value="Baja">Baja</option>
+                                <option value="Media">Media</option>
+                                <option value="Alta">Alta</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Estado</label>
+                            <select id="eventoCalEstado" class="w-full px-3 py-2 border rounded-xl text-sm">
+                                <option value="A realizar">A realizar</option>
+                                <option value="En curso">En curso</option>
+                                <option value="Realizado">Realizado</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Descripción / Objetivos</label>
+                        <textarea id="eventoCalDescripcion" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm"></textarea>
+                    </div>
+                    <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                        <button type="button" onclick="cerrarPopup('popupEventoCalendario')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
+                        <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Guardar Evento</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <!-- ================= SCRIPT ================= -->
     <script>
         const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
@@ -1327,7 +1389,7 @@ DOCTYPE html>
             const titulo = document.getElementById('tituloModulo');
             switch(modulo) {
                 case 'miOrganizacion': titulo.innerText = 'Mi Organización'; cargarMiOrganizacion(area); break;
-                case 'calendarios': titulo.innerText = 'Mis Calendarios'; area.innerHTML = '<p class="text-slate-500">Módulo de Calendarios (Próximamente)</p>'; break;
+                case 'calendarios': titulo.innerText = 'Mis Calendarios'; cargarModuloCalendarios(area); break;
                 case 'agenda': titulo.innerText = 'Mi Agenda'; area.innerHTML = '<p class="text-slate-500">Módulo de Agenda (Próximamente)</p>'; break;
                 case 'feriaFisica': titulo.innerText = 'Mi Feria Física - ' + feriaSeleccionada.nombre; cargarFeriaFisica(area); break;
                 case 'expositores': titulo.innerText = 'Expositores'; cargarModuloExpositores(area); break;
@@ -3356,6 +3418,153 @@ async function eliminarPabellon(pabellonId) {
             try {
                 await supabaseClient.from('equipo_organizador').delete().eq('id', id);
                 mostrarModulo('miOrganizacion');
+            } catch (err) { alert('Error: ' + err.message); }
+        }
+                // ==================== MÓDULO MIS CALENDARIOS ====================
+        async function cargarModuloCalendarios(area) {
+            area.innerHTML = '<div class="text-center mt-10"><div class="loader"></div></div>';
+            try {
+                const { data, error } = await supabaseClient
+                    .from('eventos_calendario')
+                    .select('*')
+                    .eq('organizador_id', organizadorActual.id)
+                    .order('fecha_estimada', { ascending: true });
+
+                if (error) throw error;
+
+                let html = `
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-slate-800">📅 Mis Calendarios de Eventos</h3>
+                        <button onclick="abrirPopupNuevoEventoCal()" class="bg-verdeQR hover:bg-teal-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2">
+                            <span style="font-size: 18px;">＋</span> Nuevo Evento
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-50 border-b border-slate-200">
+                                    <tr>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Fecha</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Evento</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Sector</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Prioridad</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Estado</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase text-right">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodyEventosCal">
+                                    <tr><td colspan="6" class="text-center py-4 text-slate-500 text-xs">Cargando...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                area.innerHTML = html;
+                renderizarTablaEventosCal(data);
+            } catch (err) { area.innerHTML = `<p class="text-red-500">Error: ${err.message}</p>`; }
+        }
+
+        function renderizarTablaEventosCal(eventos) {
+            const tbody = document.getElementById('tbodyEventosCal');
+            tbody.innerHTML = '';
+            if (!eventos || eventos.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-slate-500 text-xs">No hay eventos en el calendario.</td></tr>';
+                return;
+            }
+            eventos.forEach(ev => {
+                const fecha = ev.fecha_estimada ? new Date(ev.fecha_estimada + 'T00:00:00').toLocaleDateString('es-AR') : 'Sin fecha';
+                
+                let badgeEstado = 'bg-amber-100 text-amber-700';
+                if (ev.estado === 'En curso') badgeEstado = 'bg-blue-100 text-blue-700';
+                if (ev.estado === 'Realizado') badgeEstado = 'bg-emerald-100 text-emerald-700';
+
+                let badgePrioridad = ev.prioridad === 'Alta' ? 'text-red-600 font-bold' : 'text-slate-600';
+
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                        <td class="px-4 py-3 font-mono text-xs text-slate-600">${fecha}</td>
+                        <td class="px-4 py-3">
+                            <p class="font-bold text-slate-800 text-sm">${ev.nombre}</p>
+                            <p class="text-[10px] text-slate-500">${ev.tematica || ''}</p>
+                        </td>
+                        <td class="px-4 py-3 text-xs text-slate-600">${ev.sector || '---'}</td>
+                        <td class="px-4 py-3 text-xs ${badgePrioridad}">${ev.prioridad}</td>
+                        <td class="px-4 py-3"><span class="text-[10px] font-bold px-2 py-1 rounded-full ${badgeEstado}">${ev.estado}</span></td>
+                        <td class="px-4 py-3 text-right space-x-1">
+                            <button onclick="abrirPopupEditarEventoCal('${ev.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1 px-2 rounded text-[10px]">✏️</button>
+                            <button onclick="eliminarEventoCal('${ev.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold py-1 px-2 rounded text-[10px]">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function abrirPopupNuevoEventoCal() {
+            document.getElementById('eventoCalId').value = '';
+            document.getElementById('eventoCalNombre').value = '';
+            document.getElementById('eventoCalTematica').value = '';
+            document.getElementById('eventoCalSector').value = '';
+            document.getElementById('eventoCalFecha').value = '';
+            document.getElementById('eventoCalDias').value = '1';
+            document.getElementById('eventoCalPrioridad').value = 'Media';
+            document.getElementById('eventoCalEstado').value = 'A realizar';
+            document.getElementById('eventoCalDescripcion').value = '';
+            document.getElementById('tituloPopupEventoCal').innerText = '📅 Nuevo Evento a Organizar';
+            abrirPopup('popupEventoCalendario');
+        }
+
+        async function abrirPopupEditarEventoCal(id) {
+            try {
+                const { data, error } = await supabaseClient.from('eventos_calendario').select('*').eq('id', id).single();
+                if (error) throw error;
+
+                document.getElementById('eventoCalId').value = data.id;
+                document.getElementById('eventoCalNombre').value = data.nombre;
+                document.getElementById('eventoCalTematica').value = data.tematica || '';
+                document.getElementById('eventoCalSector').value = data.sector || '';
+                document.getElementById('eventoCalFecha').value = data.fecha_estimada || '';
+                document.getElementById('eventoCalDias').value = data.dias_duracion || 1;
+                document.getElementById('eventoCalPrioridad').value = data.prioridad || 'Media';
+                document.getElementById('eventoCalEstado').value = data.estado || 'A realizar';
+                document.getElementById('eventoCalDescripcion').value = data.descripcion || '';
+
+                document.getElementById('tituloPopupEventoCal').innerText = '✏️ Editar Evento';
+                abrirPopup('popupEventoCalendario');
+            } catch (err) { alert('Error al cargar: ' + err.message); }
+        }
+
+        async function guardarEventoCalendario(e) {
+            e.preventDefault();
+            const id = document.getElementById('eventoCalId').value;
+            const payload = {
+                organizador_id: organizadorActual.id,
+                nombre: document.getElementById('eventoCalNombre').value.trim(),
+                tematica: document.getElementById('eventoCalTematica').value.trim(),
+                sector: document.getElementById('eventoCalSector').value.trim(),
+                fecha_estimada: document.getElementById('eventoCalFecha').value,
+                dias_duracion: parseInt(document.getElementById('eventoCalDias').value),
+                prioridad: document.getElementById('eventoCalPrioridad').value,
+                estado: document.getElementById('eventoCalEstado').value,
+                descripcion: document.getElementById('eventoCalDescripcion').value.trim()
+            };
+            try {
+                if (id) {
+                    const { error } = await supabaseClient.from('eventos_calendario').update(payload).eq('id', id);
+                    if (error) throw error;
+                } else {
+                    const { error } = await supabaseClient.from('eventos_calendario').insert([payload]);
+                    if (error) throw error;
+                }
+                cerrarPopup('popupEventoCalendario');
+                mostrarModulo('calendarios');
+            } catch (err) { alert('Error al guardar: ' + err.message); }
+        }
+
+        async function eliminarEventoCal(id) {
+            if (!confirm('¿Eliminar este evento del calendario?')) return;
+            try {
+                await supabaseClient.from('eventos_calendario').delete().eq('id', id);
+                mostrarModulo('calendarios');
             } catch (err) { alert('Error: ' + err.message); }
         }
     </script>
