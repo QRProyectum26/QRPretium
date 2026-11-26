@@ -1236,6 +1236,112 @@ DOCTYPE html>
             </div>
         </div>
     </div>
+        <!-- POPUP: NUEVA / EDITAR TAREA DE AGENDA -->
+    <div id="popupTareaAgenda" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupTareaAgenda')">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupTareaAgenda')">✕</button>
+            <div class="p-6">
+                <h2 id="tituloPopupTareaAgenda" class="text-xl font-extrabold text-slate-800 mb-4">🗓️ Nueva Tarea de Agenda</h2>
+                <form onsubmit="guardarTareaAgenda(event)" class="space-y-3">
+                    <input type="hidden" id="tareaAgendaId">
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Tipo de Tarea</label>
+                        <select id="tareaTipo" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                            <option value="Tramite">Trámite</option>
+                            <option value="Reunion">Reunión</option>
+                            <option value="Evento">Evento</option>
+                            <option value="Curso">Curso</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Título de la Tarea</label>
+                        <input type="text" id="tareaTitulo" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Fecha y Hora</label>
+                            <input type="datetime-local" id="tareaFechaHora" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Prioridad</label>
+                            <select id="tareaPrioridad" class="w-full px-3 py-2 border rounded-xl text-sm">
+                                <option value="Baja">Baja</option>
+                                <option value="Media">Media</option>
+                                <option value="Alta">Alta</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Descripción / Notas</label>
+                        <textarea id="tareaDescripcion" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm"></textarea>
+                    </div>
+                    <div class="flex items-center gap-2 mt-2">
+                        <input type="checkbox" id="tareaAlarma" class="w-4 h-4">
+                        <label for="tareaAlarma" class="text-xs font-bold text-gray-700">Recibir aviso por WhatsApp</label>
+                    </div>
+                    <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                        <button type="button" onclick="cerrarPopup('popupTareaAgenda')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
+                        <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Guardar Tarea</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+        <!-- POPUP: NUEVO / EDITAR CONTACTO -->
+    <div id="popupContacto" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupContacto')">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupContacto')">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-4">📇 Nuevo Contacto</h2>
+                <form onsubmit="guardarContacto(event)" class="space-y-3">
+                    <input type="hidden" id="contactoId">
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Nombre Completo</label>
+                        <input type="text" id="contNombre" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Institución / Empresa</label>
+                            <input type="text" id="contInstitucion" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Tipo de Relación</label>
+                            <select id="contTipoRelacion" class="w-full px-3 py-2 border rounded-xl text-sm">
+                                <option value="Proveedor">Proveedor</option>
+                                <option value="Institucional">Institucional</option>
+                                <option value="Prensa">Prensa</option>
+                                <option value="Expositor">Expositor</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Teléfono</label>
+                            <input type="tel" id="contTelefono" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Email</label>
+                            <input type="email" id="contMail" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Dirección</label>
+                        <input type="text" id="contDireccion" class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Nota / Observación</label>
+                        <textarea id="contNota" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm"></textarea>
+                    </div>
+                    <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                        <button type="button" onclick="cerrarPopup('popupContacto')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
+                        <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Guardar Contacto</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <!-- ================= SCRIPT ================= -->
     <script>
         const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
@@ -1390,7 +1496,8 @@ DOCTYPE html>
             switch(modulo) {
                 case 'miOrganizacion': titulo.innerText = 'Mi Organización'; cargarMiOrganizacion(area); break;
                 case 'calendarios': titulo.innerText = 'Mis Calendarios'; cargarModuloCalendarios(area); break;
-                case 'agenda': titulo.innerText = 'Mi Agenda'; area.innerHTML = '<p class="text-slate-500">Módulo de Agenda (Próximamente)</p>'; break;
+                case 'agenda': titulo.innerText = 'Mi Agenda'; cargarModuloAgenda(area); break;
+                case 'contactos': titulo.innerText = 'Mis Contactos'; cargarModuloContactos(area); break;
                 case 'feriaFisica': titulo.innerText = 'Mi Feria Física - ' + feriaSeleccionada.nombre; cargarFeriaFisica(area); break;
                 case 'expositores': titulo.innerText = 'Expositores'; cargarModuloExpositores(area); break;
                 case 'actores': titulo.innerText = 'Actores'; cargarModuloActores(area); break;
@@ -3565,6 +3672,293 @@ async function eliminarPabellon(pabellonId) {
             try {
                 await supabaseClient.from('eventos_calendario').delete().eq('id', id);
                 mostrarModulo('calendarios');
+            } catch (err) { alert('Error: ' + err.message); }
+        }
+                        // ==================== MÓDULO MI AGENDA ====================
+        let agendaTabActual = 'Tramite'; // Solapa por defecto
+
+        async function cargarModuloAgenda(area) {
+            area.innerHTML = '<div class="text-center mt-10"><div class="loader"></div></div>';
+            
+            // Estructura de la vista con solapas
+            let html = `
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-slate-800">🗓️ Mi Agenda Personal</h3>
+                    <button onclick="abrirPopupNuevaTareaAgenda()" class="bg-verdeQR hover:bg-teal-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2">
+                        <span style="font-size: 18px;">＋</span> Nueva Tarea
+                    </button>
+                </div>
+
+                <!-- Solapas (Tabs) -->
+                <div class="flex gap-1 mb-4 border-b border-slate-200 overflow-x-auto pb-1">
+                    <button onclick="cambiarTabAgenda('Tramite')" id="tab-btn-Tramite" class="px-4 py-2 font-bold text-sm rounded-t-lg whitespace-nowrap transition">Trámites</button>
+                    <button onclick="cambiarTabAgenda('Reunion')" id="tab-btn-Reunion" class="px-4 py-2 font-bold text-sm rounded-t-lg whitespace-nowrap transition">Reuniones</button>
+                    <button onclick="cambiarTabAgenda('Evento')" id="tab-btn-Evento" class="px-4 py-2 font-bold text-sm rounded-t-lg whitespace-nowrap transition">Eventos</button>
+                    <button onclick="cambiarTabAgenda('Curso')" id="tab-btn-Curso" class="px-4 py-2 font-bold text-sm rounded-t-lg whitespace-nowrap transition">Cursos</button>
+                    <button onclick="cambiarTabAgenda('Otro')" id="tab-btn-Otro" class="px-4 py-2 font-bold text-sm rounded-t-lg whitespace-nowrap transition">Otros</button>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50 border-b border-slate-200">
+                                <tr>
+                                    <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Fecha/Hora</th>
+                                    <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Título</th>
+                                    <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Prioridad</th>
+                                    <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Estado</th>
+                                    <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase text-right">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyTareasAgenda">
+                                <tr><td colspan="5" class="text-center py-4 text-slate-500 text-xs">Cargando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            area.innerHTML = html;
+            
+            // Inicializamos las solapas y cargamos los datos
+            cambiarTabAgenda(agendaTabActual);
+        }
+
+        function cambiarTabAgenda(tipo) {
+            agendaTabActual = tipo;
+            
+            // Actualizamos el estilo visual de las solapas
+            const tipos = ['Tramite', 'Reunion', 'Evento', 'Curso', 'Otro'];
+            tipos.forEach(t => {
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if (t === tipo) {
+                    btn.className = "px-4 py-2 font-bold text-sm rounded-t-lg whitespace-nowrap transition bg-verdeQR text-white";
+                } else {
+                    btn.className = "px-4 py-2 font-bold text-sm rounded-t-lg whitespace-nowrap transition text-slate-500 hover:bg-slate-50";
+                }
+            });
+
+            cargarTareasAgenda(tipo);
+        }
+
+        async function cargarTareasAgenda(tipo) {
+            const tbody = document.getElementById('tbodyTareasAgenda');
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4"><div class="loader"></div></td></tr>';
+            try {
+                const { data, error } = await supabaseClient
+                    .from('agenda_tareas')
+                    .select('*')
+                    .eq('organizador_id', organizadorActual.id)
+                    .eq('tipo', tipo)
+                    .order('fecha_hora', { ascending: true });
+
+                if (error) throw error;
+                tbody.innerHTML = '';
+
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-slate-500 text-xs">No hay tareas en esta categoría.</td></tr>';
+                    return;
+                }
+
+                data.forEach(tarea => {
+                    const fecha = new Date(tarea.fecha_hora);
+                    const fechaStr = fecha.toLocaleDateString('es-AR') + ' ' + fecha.toLocaleTimeString('es-AR', {hour: '2-digit', minute:'2-digit'});
+                    
+                    let badgeEstado = tarea.estado === 'Completado' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700';
+                    let badgePrioridad = tarea.prioridad === 'Alta' ? 'text-red-600 font-bold' : 'text-slate-600';
+
+                    tbody.innerHTML += `
+                        <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                            <td class="px-4 py-3 font-mono text-xs text-slate-600">${fechaStr}</td>
+                            <td class="px-4 py-3">
+                                <p class="font-bold text-slate-800 text-sm">${tarea.titulo}</p>
+                                <p class="text-[10px] text-slate-500 truncate max-w-[200px]">${tarea.descripcion || ''}</p>
+                            </td>
+                            <td class="px-4 py-3 text-xs ${badgePrioridad}">${tarea.prioridad}</td>
+                            <td class="px-4 py-3"><span class="text-[10px] font-bold px-2 py-1 rounded-full ${badgeEstado}">${tarea.estado}</span></td>
+                            <td class="px-4 py-3 text-right space-x-1">
+                                <button onclick="abrirPopupEditarTareaAgenda('${tarea.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1 px-2 rounded text-[10px]">✏️</button>
+                                <button onclick="eliminarTareaAgenda('${tarea.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold py-1 px-2 rounded text-[10px]">🗑️</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (err) { tbody.innerHTML = `<tr><td colspan="5" class="text-red-500 text-xs">Error: ${err.message}</td></tr>`; }
+        }
+
+        function abrirPopupNuevaTareaAgenda() {
+            document.getElementById('tareaAgendaId').value = '';
+            document.getElementById('tareaTipo').value = agendaTabActual; // Preseleccionamos la solapa actual
+            document.getElementById('tareaTitulo').value = '';
+            document.getElementById('tareaFechaHora').value = '';
+            document.getElementById('tareaPrioridad').value = 'Media';
+            document.getElementById('tareaDescripcion').value = '';
+            document.getElementById('tareaAlarma').checked = false;
+            document.getElementById('tituloPopupTareaAgenda').innerText = '🗓️ Nueva Tarea de Agenda';
+            abrirPopup('popupTareaAgenda');
+        }
+
+        async function abrirPopupEditarTareaAgenda(id) {
+            try {
+                const { data, error } = await supabaseClient.from('agenda_tareas').select('*').eq('id', id).single();
+                if (error) throw error;
+
+                document.getElementById('tareaAgendaId').value = data.id;
+                document.getElementById('tareaTipo').value = data.tipo;
+                document.getElementById('tareaTitulo').value = data.titulo;
+                // Formateamos la fecha para datetime-local
+                if (data.fecha_hora) {
+                    const dt = new Date(data.fecha_hora);
+                    document.getElementById('tareaFechaHora').value = dt.toISOString().slice(0, 16);
+                }
+                document.getElementById('tareaPrioridad').value = data.prioridad;
+                document.getElementById('tareaDescripcion').value = data.descripcion || '';
+                document.getElementById('tareaAlarma').checked = data.alarma_whatsapp;
+                
+                document.getElementById('tituloPopupTareaAgenda').innerText = '✏️ Editar Tarea de Agenda';
+                abrirPopup('popupTareaAgenda');
+            } catch (err) { alert('Error al cargar: ' + err.message); }
+        }
+
+        async function guardarTareaAgenda(e) {
+            e.preventDefault();
+            const id = document.getElementById('tareaAgendaId').value;
+            const payload = {
+                organizador_id: organizadorActual.id,
+                tipo: document.getElementById('tareaTipo').value,
+                titulo: document.getElementById('tareaTitulo').value.trim(),
+                fecha_hora: document.getElementById('tareaFechaHora').value,
+                prioridad: document.getElementById('tareaPrioridad').value,
+                descripcion: document.getElementById('tareaDescripcion').value.trim(),
+                alarma_whatsapp: document.getElementById('tareaAlarma').checked
+            };
+            try {
+                if (id) {
+                    const { error } = await supabaseClient.from('agenda_tareas').update(payload).eq('id', id);
+                    if (error) throw error;
+                } else {
+                    const { error } = await supabaseClient.from('agenda_tareas').insert([payload]);
+                    if (error) throw error;
+                }
+                cerrarPopup('popupTareaAgenda');
+                cambiarTabAgenda(agendaTabActual); // Recargamos la tabla actual
+            } catch (err) { alert('Error al guardar: ' + err.message); }
+        }
+
+        async function eliminarTareaAgenda(id) {
+            if (!confirm('¿Eliminar esta tarea?')) return;
+            try {
+                await supabaseClient.from('agenda_tareas').delete().eq('id', id);
+                cambiarTabAgenda(agendaTabActual);
+            } catch (err) { alert('Error: ' + err.message); }
+        }
+                        // ==================== MÓDULO CONTACTOS ====================
+        async function cargarModuloContactos(area) {
+            area.innerHTML = '<div class="text-center mt-10"><div class="loader"></div></div>';
+            try {
+                const { data, error } = await supabaseClient
+                    .from('contactos')
+                    .select('*')
+                    .eq('organizador_id', organizadorActual.id)
+                    .order('nombre');
+
+                if (error) throw error;
+
+                let html = `
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-slate-800">📇 Mis Contactos</h3>
+                        <button onclick="abrirPopupNuevoContacto()" class="bg-verdeQR hover:bg-teal-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2">
+                            <span style="font-size: 18px;">＋</span> Nuevo Contacto
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-50 border-b border-slate-200">
+                                    <tr>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Nombre</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Institución</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Relación</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Contacto</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase text-right">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodyContactos">
+                                    <tr><td colspan="5" class="text-center py-4 text-slate-500 text-xs">Cargando...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                area.innerHTML = html;
+                renderizarTablaContactos(data);
+            } catch (err) { area.innerHTML = `<p class="text-red-500">Error: ${err.message}</p>`; }
+        }
+
+        function renderizarTablaContactos(contactos) {
+            const tbody = document.getElementById('tbodyContactos');
+            tbody.innerHTML = '';
+            if (!contactos || contactos.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-slate-500 text-xs">No hay contactos cargados.</td></tr>';
+                return;
+            }
+            contactos.forEach(cont => {
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                        <td class="px-4 py-3 font-bold text-slate-800 text-sm">${cont.nombre}</td>
+                        <td class="px-4 py-3 text-slate-600 text-xs">${cont.institucion || '---'}</td>
+                        <td class="px-4 py-3 text-slate-600 text-xs">${cont.tipo_relacion || '---'}</td>
+                        <td class="px-4 py-3 text-slate-600 text-xs">${cont.telefono || cont.mail || '---'}</td>
+                        <td class="px-4 py-3 text-right space-x-1">
+                            <button onclick="eliminarContacto('${cont.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold py-1 px-2 rounded text-[10px]">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function abrirPopupNuevoContacto() {
+            document.getElementById('contactoId').value = '';
+            document.getElementById('contNombre').value = '';
+            document.getElementById('contInstitucion').value = '';
+            document.getElementById('contTipoRelacion').value = 'Proveedor';
+            document.getElementById('contTelefono').value = '';
+            document.getElementById('contMail').value = '';
+            document.getElementById('contDireccion').value = '';
+            document.getElementById('contNota').value = '';
+            abrirPopup('popupContacto');
+        }
+
+        async function guardarContacto(e) {
+            e.preventDefault();
+            const id = document.getElementById('contactoId').value;
+            const payload = {
+                organizador_id: organizadorActual.id,
+                nombre: document.getElementById('contNombre').value.trim(),
+                institucion: document.getElementById('contInstitucion').value.trim(),
+                tipo_relacion: document.getElementById('contTipoRelacion').value,
+                telefono: document.getElementById('contTelefono').value.trim(),
+                mail: document.getElementById('contMail').value.trim(),
+                direccion: document.getElementById('contDireccion').value.trim(),
+                nota: document.getElementById('contNota').value.trim()
+            };
+            try {
+                if (id) {
+                    const { error } = await supabaseClient.from('contactos').update(payload).eq('id', id);
+                    if (error) throw error;
+                } else {
+                    const { error } = await supabaseClient.from('contactos').insert([payload]);
+                    if (error) throw error;
+                }
+                cerrarPopup('popupContacto');
+                mostrarModulo('contactos'); // Recargamos
+            } catch (err) { alert('Error al guardar: ' + err.message); }
+        }
+
+        async function eliminarContacto(id) {
+            if (!confirm('¿Eliminar este contacto?')) return;
+            try {
+                await supabaseClient.from('contactos').delete().eq('id', id);
+                mostrarModulo('contactos');
             } catch (err) { alert('Error: ' + err.message); }
         }
     </script>
