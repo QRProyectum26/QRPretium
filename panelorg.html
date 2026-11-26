@@ -3689,13 +3689,14 @@ async function eliminarPabellon(pabellonId) {
                     </button>
                 </div>
 
-                <!-- Solapas (Tabs) -->
+                               <!-- Solapas (Tabs) -->
                 <div class="flex gap-1 mb-4 border-b border-slate-200 overflow-x-auto pb-1">
                     <button onclick="cambiarTabAgenda('Tramite')" id="tab-btn-Tramite" class="px-4 py-2 font-bold text-sm rounded-t-lg whitespace-nowrap transition">Trámites</button>
                     <button onclick="cambiarTabAgenda('Reunion')" id="tab-btn-Reunion" class="px-4 py-2 font-bold text-sm rounded-t-lg whitespace-nowrap transition">Reuniones</button>
                     <button onclick="cambiarTabAgenda('Evento')" id="tab-btn-Evento" class="px-4 py-2 font-bold text-sm rounded-t-lg whitespace-nowrap transition">Eventos</button>
                     <button onclick="cambiarTabAgenda('Curso')" id="tab-btn-Curso" class="px-4 py-2 font-bold text-sm rounded-t-lg whitespace-nowrap transition">Cursos</button>
                     <button onclick="cambiarTabAgenda('Otro')" id="tab-btn-Otro" class="px-4 py-2 font-bold text-sm rounded-t-lg whitespace-nowrap transition">Otros</button>
+                    <button onclick="cambiarTabAgenda('Contacto')" id="tab-btn-Contacto" class="px-4 py-2 font-bold text-sm rounded-t-lg whitespace-nowrap transition">Contactos</button>
                 </div>
 
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
@@ -3723,23 +3724,43 @@ async function eliminarPabellon(pabellonId) {
             cambiarTabAgenda(agendaTabActual);
         }
 
-        function cambiarTabAgenda(tipo) {
+                 function cambiarTabAgenda(tipo) {
             agendaTabActual = tipo;
             
             // Actualizamos el estilo visual de las solapas
-            const tipos = ['Tramite', 'Reunion', 'Evento', 'Curso', 'Otro'];
+            const tipos = ['Tramite', 'Reunion', 'Evento', 'Curso', 'Otro', 'Contacto'];
             tipos.forEach(t => {
                 const btn = document.getElementById(`tab-btn-${t}`);
-                if (t === tipo) {
-                    btn.className = "px-4 py-2 font-bold text-sm rounded-t-lg whitespace-nowrap transition bg-verdeQR text-white";
-                } else {
-                    btn.className = "px-4 py-2 font-bold text-sm rounded-t-lg whitespace-nowrap transition text-slate-500 hover:bg-slate-50";
+                if (btn) {
+                    if (t === tipo) {
+                        btn.className = "px-4 py-2 font-bold text-sm rounded-t-lg whitespace-nowrap transition bg-verdeQR text-white";
+                    } else {
+                        btn.className = "px-4 py-2 font-bold text-sm rounded-t-lg whitespace-nowrap transition text-slate-500 hover:bg-slate-50";
+                    }
                 }
             });
 
-            cargarTareasAgenda(tipo);
-        }
+            // Si es Contacto, cargamos la tabla de contactos. Si no, la de tareas.
+            if (tipo === 'Contacto') {
+                cargarTablaContactosEnAgenda();
+            } else {
+                cargarTareasAgenda(tipo);
+            }
 
+            // 👇 ACÁ VA EL BLOQUE NUEVO 👇
+            // Cambiamos el texto del botón de acción según la solapa
+            const btnNuevaTarea = document.querySelector('button[onclick="abrirPopupNuevaTareaAgenda()"]');
+            if (btnNuevaTarea) { // Verificamos que el botón exista
+                if (tipo === 'Contacto') {
+                    btnNuevaTarea.innerHTML = '<span style="font-size: 18px;">＋</span> Nuevo Contacto';
+                    btnNuevaTarea.onclick = abrirPopupNuevoContacto; // Abre el popup de contactos
+                } else {
+                    btnNuevaTarea.innerHTML = '<span style="font-size: 18px;">＋</span> Nueva Tarea';
+                    btnNuevaTarea.onclick = abrirPopupNuevaTareaAgenda;
+                }
+            }
+            // 👆 FIN DEL BLOQUE NUEVO 👆
+        }
         async function cargarTareasAgenda(tipo) {
             const tbody = document.getElementById('tbodyTareasAgenda');
             tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4"><div class="loader"></div></td></tr>';
@@ -3778,6 +3799,42 @@ async function eliminarPabellon(pabellonId) {
                             <td class="px-4 py-3 text-right space-x-1">
                                 <button onclick="abrirPopupEditarTareaAgenda('${tarea.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1 px-2 rounded text-[10px]">✏️</button>
                                 <button onclick="eliminarTareaAgenda('${tarea.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold py-1 px-2 rounded text-[10px]">🗑️</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (err) { tbody.innerHTML = `<tr><td colspan="5" class="text-red-500 text-xs">Error: ${err.message}</td></tr>`; }
+        }
+                async function cargarTablaContactosEnAgenda() {
+            const tbody = document.getElementById('tbodyTareasAgenda'); // Reutilizamos el mismo tbody
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4"><div class="loader"></div></td></tr>';
+            try {
+                const { data, error } = await supabaseClient
+                    .from('contactos')
+                    .select('*')
+                    .eq('organizador_id', organizadorActual.id)
+                    .order('nombre');
+
+                if (error) throw error;
+                tbody.innerHTML = '';
+
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-slate-500 text-xs">No hay contactos cargados.</td></tr>';
+                    return;
+                }
+
+                // Adaptamos las columnas de la tabla para mostrar contactos
+                // Ocultamos o cambiamos los encabezados desde el HTML si quisiéramos, 
+                // pero acá forzamos los datos en las columnas existentes.
+                data.forEach(cont => {
+                    tbody.innerHTML += `
+                        <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                            <td class="px-4 py-3 font-bold text-slate-800 text-sm">${cont.nombre}</td>
+                            <td class="px-4 py-3 text-slate-600 text-xs">${cont.institucion || '---'}</td>
+                            <td class="px-4 py-3 text-slate-600 text-xs">${cont.telefono || '---'}</td>
+                            <td class="px-4 py-3 text-slate-600 text-xs">${cont.mail || '---'}</td>
+                            <td class="px-4 py-3 text-right space-x-1">
+                                <button onclick="eliminarContacto('${cont.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold py-1 px-2 rounded text-[10px]">🗑️</button>
                             </td>
                         </tr>
                     `;
