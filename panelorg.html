@@ -1775,7 +1775,7 @@ DOCTYPE html>
                 case 'expositores': titulo.innerText = 'Expositores'; cargarModuloExpositores(area); break;
                 case 'actores': titulo.innerText = 'Actores'; cargarModuloActores(area); break;
                 case 'operaciones': titulo.innerText = 'Operaciones y Tickets'; area.innerHTML = '<p class="text-slate-500">Módulo de Incidencias (Próximamente)</p>'; break;
-                case 'notificaciones': titulo.innerText = 'Notificaciones y Comunicaciones'; area.innerHTML = '<p class="text-slate-500">Módulo de Comunicaciones (Próximamente)</p>'; break;
+                case 'notificaciones': titulo.innerText = 'Comunicaciones'; cargarModuloComunicaciones(area); break;
                 case 'seguridad': titulo.innerText = 'Seguridad y Emergencias'; cargarModuloSeguridad(area); break;
                 case 'servicios': titulo.innerText = 'Mis Servicios'; cargarModuloServicios(area); break;
                 case 'mantenimiento': titulo.innerText = 'Mantenimiento e Instalaciones'; cargarModuloMantenimiento(area); break;
@@ -1783,7 +1783,7 @@ DOCTYPE html>
                 case 'documentacion': titulo.innerText = 'Mis Documentaciones'; cargarModuloDocumentacion(area); break;
                 case 'proveedores': titulo.innerText = 'Proveedores'; cargarModuloProveedores(area); break;
                 case 'sponsors': titulo.innerText = 'Sponsors'; cargarModuloSponsors(area); break;
-                case 'notificaciones': titulo.innerText = 'Comunicaciones'; cargarModuloComunicaciones(area); break;
+
                 
                 default: titulo.innerText = modulo; area.innerHTML = '<p class="text-slate-500">Módulo en construcción.</p>';
             }
