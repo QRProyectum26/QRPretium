@@ -1507,6 +1507,103 @@ DOCTYPE html>
             </div>
         </div>
     </div>
+        <!-- POPUP: NUEVO / EDITAR SPONSOR -->
+    <div id="popupSponsor" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupSponsor')">
+        <div class="popup-caja popup-caja-grande">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupSponsor')">✕</button>
+            <div class="p-6">
+                <h2 id="tituloPopupSponsor" class="text-xl font-extrabold text-slate-800 mb-4">🏷️ Nuevo Sponsor</h2>
+                <form onsubmit="guardarSponsor(event)" class="space-y-3">
+                    <input type="hidden" id="sponId">
+                    
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Nombre / Empresa *</label>
+                            <input type="text" id="sponNombre" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Nivel de Sponsor</label>
+                            <select id="sponNivel" class="w-full px-3 py-2 border rounded-xl text-sm">
+                                <option value="Platino">Platino</option>
+                                <option value="Oro">Oro</option>
+                                <option value="Plata">Plata</option>
+                                <option value="Bronce">Bronce</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Tipo de Entidad</label>
+                            <select id="sponTipo" class="w-full px-3 py-2 border rounded-xl text-sm">
+                                <option value="Privado">Privado</option>
+                                <option value="Público">Público</option>
+                                <option value="ONG">ONG</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">CUIT / ID Fiscal</label>
+                            <input type="text" id="sponCuit" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Dirección</label>
+                        <input type="text" id="sponDireccion" class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Contacto Directo (Nombre)</label>
+                            <input type="text" id="sponContacto" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Teléfono</label>
+                            <input type="tel" id="sponTelefono" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Email</label>
+                            <input type="email" id="sponMail" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Sitio Web</label>
+                            <input type="url" id="sponWeb" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Aporte (¿Qué da?)</label>
+                            <input type="text" id="sponAporte" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: $500.000, Bebidas, Medios">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Contraprestación (¿Qué recibe?)</label>
+                            <input type="text" id="sponContraprestacion" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Logo en escenario, Stand">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">URL del Contrato (PDF)</label>
+                        <input type="url" id="sponContrato" class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Notas</label>
+                        <textarea id="sponNotas" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm"></textarea>
+                    </div>
+
+                    <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                        <button type="button" onclick="cerrarPopup('popupSponsor')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
+                        <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Guardar Sponsor</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <!-- ================= SCRIPT ================= -->
     <script>
         const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
@@ -1685,6 +1782,7 @@ DOCTYPE html>
                 case 'actividades': titulo.innerText = 'Actividades y Eventos'; cargarModuloActividades(area); break;
                 case 'documentacion': titulo.innerText = 'Mis Documentaciones'; cargarModuloDocumentacion(area); break;
                 case 'proveedores': titulo.innerText = 'Proveedores'; cargarModuloProveedores(area); break;
+                case 'sponsors': titulo.innerText = 'Sponsors'; cargarModuloSponsors(area); break;
                 
                 default: titulo.innerText = modulo; area.innerHTML = '<p class="text-slate-500">Módulo en construcción.</p>';
             }
@@ -4620,6 +4718,198 @@ async function eliminarPabellon(pabellonId) {
             try {
                 await supabaseClient.from('proveedores_feria').delete().eq('id', id);
                 mostrarModulo('proveedores');
+            } catch (err) { alert('Error: ' + err.message); }
+        }
+                // ==================== MÓDULO SPONSORS ====================
+        async function cargarModuloSponsors(area) {
+            area.innerHTML = '<div class="text-center mt-10"><div class="loader"></div></div>';
+            try {
+                const { data, error } = await supabaseClient
+                    .from('sponsors_feria')
+                    .select('*')
+                    .eq('organizador_id', organizadorActual.id)
+                    .order('nivel_sponsor'); // Ordenamos por nivel (Platino primero)
+
+                if (error) throw error;
+
+                let html = `
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-slate-800">🏷️ Mis Sponsors</h3>
+                        <button onclick="abrirPopupNuevoSponsor()" class="bg-verdeQR hover:bg-teal-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2">
+                            <span style="font-size: 18px;">＋</span> Nuevo Sponsor
+                        </button>
+                    </div>
+
+                    <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-200 mb-4 flex gap-2 flex-wrap">
+                        <input type="text" id="buscarSponsor" oninput="filtrarSponsors()" placeholder="Buscar por nombre o aporte..." class="flex-1 min-w-[200px] px-3 py-2 border rounded-lg text-sm">
+                        <select id="filtroNivelSpon" onchange="filtrarSponsors()" class="px-3 py-2 border rounded-lg text-sm">
+                            <option value="">Todos los niveles</option>
+                            <option value="Platino">Platino</option>
+                            <option value="Oro">Oro</option>
+                            <option value="Plata">Plata</option>
+                            <option value="Bronce">Bronce</option>
+                        </select>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-50 border-b border-slate-200">
+                                    <tr>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Sponsor</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Nivel</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Aporte</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Contacto</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase text-right">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodySponsors">
+                                    <tr><td colspan="5" class="text-center py-4 text-slate-500 text-xs">Cargando...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                area.innerHTML = html;
+                
+                window.sponsorsLista = data; 
+                renderizarTablaSponsors(data);
+
+            } catch (err) { area.innerHTML = `<p class="text-red-500">Error: ${err.message}</p>`; }
+        }
+
+        function renderizarTablaSponsors(sponsors) {
+            const tbody = document.getElementById('tbodySponsors');
+            tbody.innerHTML = '';
+            if (!sponsors || sponsors.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-slate-500 text-xs">No hay sponsors cargados.</td></tr>';
+                return;
+            }
+            sponsors.forEach(spon => {
+                let badgeNivel = 'bg-slate-100 text-slate-700';
+                if (spon.nivel_sponsor === 'Platino') badgeNivel = 'bg-indigo-100 text-indigo-800 font-black';
+                if (spon.nivel_sponsor === 'Oro') badgeNivel = 'bg-yellow-100 text-yellow-800 font-black';
+                if (spon.nivel_sponsor === 'Plata') badgeNivel = 'bg-gray-200 text-gray-800 font-black';
+
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                        <td class="px-4 py-3">
+                            <p class="font-bold text-slate-800 text-sm">${spon.nombre}</p>
+                            <p class="text-[10px] text-slate-500">${spon.tipo_entidad}</p>
+                        </td>
+                        <td class="px-4 py-3"><span class="text-[10px] font-bold px-2 py-1 rounded-full ${badgeNivel}">${spon.nivel_sponsor}</span></td>
+                        <td class="px-4 py-3 text-slate-600 text-xs truncate max-w-[150px]">${spon.aporte || '---'}</td>
+                        <td class="px-4 py-3">
+                            <p class="text-slate-700 text-xs font-bold">${spon.contacto_directo || '---'}</p>
+                            <p class="text-[10px] text-slate-500">${spon.telefono || spon.mail || ''}</p>
+                        </td>
+                        <td class="px-4 py-3 text-right space-x-1">
+                            ${spon.contrato_url ? `<a href="${spon.contrato_url}" target="_blank" class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold py-1 px-2 rounded text-[10px]">📄</a>` : ''}
+                            <button onclick="abrirPopupEditarSponsor('${spon.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1 px-2 rounded text-[10px]">✏️</button>
+                            <button onclick="eliminarSponsor('${spon.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold py-1 px-2 rounded text-[10px]">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function filtrarSponsors() {
+            const busqueda = document.getElementById('buscarSponsor').value.toLowerCase();
+            const filtroNivel = document.getElementById('filtroNivelSpon').value;
+
+            const filtrados = window.sponsorsLista.filter(spon => {
+                const coincideBusqueda = spon.nombre.toLowerCase().includes(busqueda) || (spon.aporte && spon.aporte.toLowerCase().includes(busqueda));
+                const coincideNivel = !filtroNivel || spon.nivel_sponsor === filtroNivel;
+                return coincideBusqueda && coincideNivel;
+            });
+
+            renderizarTablaSponsors(filtrados);
+        }
+
+        function abrirPopupNuevoSponsor() {
+            document.getElementById('sponId').value = '';
+            document.getElementById('sponNombre').value = '';
+            document.getElementById('sponNivel').value = 'Oro';
+            document.getElementById('sponTipo').value = 'Privado';
+            document.getElementById('sponCuit').value = '';
+            document.getElementById('sponDireccion').value = '';
+            document.getElementById('sponContacto').value = '';
+            document.getElementById('sponTelefono').value = '';
+            document.getElementById('sponMail').value = '';
+            document.getElementById('sponWeb').value = '';
+            document.getElementById('sponAporte').value = '';
+            document.getElementById('sponContraprestacion').value = '';
+            document.getElementById('sponContrato').value = '';
+            document.getElementById('sponNotas').value = '';
+            
+            document.getElementById('tituloPopupSponsor').innerText = '🏷️ Nuevo Sponsor';
+            abrirPopup('popupSponsor');
+        }
+
+        async function abrirPopupEditarSponsor(id) {
+            try {
+                const { data, error } = await supabaseClient.from('sponsors_feria').select('*').eq('id', id).single();
+                if (error) throw error;
+
+                document.getElementById('sponId').value = data.id;
+                document.getElementById('sponNombre').value = data.nombre;
+                document.getElementById('sponNivel').value = data.nivel_sponsor || 'Oro';
+                document.getElementById('sponTipo').value = data.tipo_entidad || 'Privado';
+                document.getElementById('sponCuit').value = data.cuit_id_fiscal || '';
+                document.getElementById('sponDireccion').value = data.direccion || '';
+                document.getElementById('sponContacto').value = data.contacto_directo || '';
+                document.getElementById('sponTelefono').value = data.telefono || '';
+                document.getElementById('sponMail').value = data.mail || '';
+                document.getElementById('sponWeb').value = data.web || '';
+                document.getElementById('sponAporte').value = data.aporte || '';
+                document.getElementById('sponContraprestacion').value = data.contraprestacion || '';
+                document.getElementById('sponContrato').value = data.contrato_url || '';
+                document.getElementById('sponNotas').value = data.notas || '';
+
+                document.getElementById('tituloPopupSponsor').innerText = '✏️ Editar Sponsor';
+                abrirPopup('popupSponsor');
+            } catch (err) { alert('Error al cargar: ' + err.message); }
+        }
+
+        async function guardarSponsor(e) {
+            e.preventDefault();
+            const id = document.getElementById('sponId').value;
+            
+            const payload = {
+                organizador_id: organizadorActual.id,
+                nombre: document.getElementById('sponNombre').value.trim(),
+                nivel_sponsor: document.getElementById('sponNivel').value,
+                tipo_entidad: document.getElementById('sponTipo').value,
+                cuit_id_fiscal: document.getElementById('sponCuit').value.trim(),
+                direccion: document.getElementById('sponDireccion').value.trim(),
+                contacto_directo: document.getElementById('sponContacto').value.trim(),
+                telefono: document.getElementById('sponTelefono').value.trim(),
+                mail: document.getElementById('sponMail').value.trim(),
+                web: document.getElementById('sponWeb').value.trim(),
+                aporte: document.getElementById('sponAporte').value.trim(),
+                contraprestacion: document.getElementById('sponContraprestacion').value.trim(),
+                contrato_url: document.getElementById('sponContrato').value.trim(),
+                notas: document.getElementById('sponNotas').value.trim()
+            };
+
+            try {
+                if (id) {
+                    const { error } = await supabaseClient.from('sponsors_feria').update(payload).eq('id', id);
+                    if (error) throw error;
+                } else {
+                    const { error } = await supabaseClient.from('sponsors_feria').insert([payload]);
+                    if (error) throw error;
+                }
+                cerrarPopup('popupSponsor');
+                mostrarModulo('sponsors'); // Recargamos
+            } catch (err) { alert('Error al guardar: ' + err.message); }
+        }
+
+        async function eliminarSponsor(id) {
+            if (!confirm('¿Eliminar este sponsor?')) return;
+            try {
+                await supabaseClient.from('sponsors_feria').delete().eq('id', id);
+                mostrarModulo('sponsors');
             } catch (err) { alert('Error: ' + err.message); }
         }
     </script>
