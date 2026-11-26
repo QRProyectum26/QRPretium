@@ -5079,6 +5079,192 @@ async function eliminarPabellon(pabellonId) {
 
             } catch (err) { tbody.innerHTML = `<tr><td colspan="5" class="text-red-500">Error: ${err.message}</td></tr>`; }
         }
+                // --- FORMULARIO DE REDACCIÓN ---
+        function abrirFormularioRedactar() {
+            const area = document.getElementById('areaLecturaMensaje');
+            area.innerHTML = `
+                <div class="w-full h-full flex flex-col">
+                    <div class="flex justify-between items-center mb-4 border-b border-gray-200 pb-2">
+                        <h3 class="font-bold text-lg text-slate-800">✏️ Redactar Nuevo Mensaje</h3>
+                        <button onclick="cerrarFormularioRedactar()" class="text-slate-400 hover:text-slate-700 font-bold">✕ Cerrar</button>
+                    </div>
+
+                    <form onsubmit="guardarNuevoMensaje(event)" class="space-y-3 flex-1 overflow-y-auto pr-2">
+                        
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Tipo de Mensaje</label>
+                                <select id="comTipoMensaje" class="w-full px-3 py-2 border rounded-xl text-sm">
+                                    <option value="saliente">Saliente (Enviar)</option>
+                                    <option value="entrante">Entrante (Registrar recibido)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Semáforo (Importancia)</label>
+                                <select id="comSemaforo" class="w-full px-3 py-2 border rounded-xl text-sm font-bold">
+                                    <option value="verde" class="text-emerald-600">🟢 Verde (Informativo)</option>
+                                    <option value="amarillo" class="text-yellow-600">🟡 Amarillo (Seguimiento)</option>
+                                    <option value="rojo" class="text-red-600">🔴 Rojo (Crítico/Urgente)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Grupo Destinatario</label>
+                                <select id="comGrupo" class="w-full px-3 py-2 border rounded-xl text-sm">
+                                    <option value="Institucionales">Institucionales</option>
+                                    <option value="Expositores">Expositores</option>
+                                    <option value="RR.HH">RR.HH</option>
+                                    <option value="Proveedores">Proveedores</option>
+                                    <option value="De Feria">De Feria (General)</option>
+                                    <option value="Otros">Otros</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Canal de Envío</label>
+                                <select id="comCanal" class="w-full px-3 py-2 border rounded-xl text-sm">
+                                    <option value="interno">Interno (Panel)</option>
+                                    <option value="email">Email</option>
+                                    <option value="whatsapp">WhatsApp</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Destinatarios Manuales (Opcional - ej: mails separados por coma)</label>
+                            <input type="text" id="comDestinatarios" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: juan@mail.com, maria@mail.com">
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Asunto</label>
+                            <input type="text" id="comAsunto" required class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Información importante sobre el montaje">
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Mensaje</label>
+                            <textarea id="comCuerpo" rows="5" required class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Escribí tu mensaje aquí..."></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-600 uppercase mb-1">Adjuntar Documento (URL)</label>
+                            <input type="url" id="comAdjunto" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="https://...">
+                        </div>
+
+                        <div class="flex justify-end gap-2 pt-4 border-t border-slate-100 mt-4">
+                            <button type="button" onclick="cerrarFormularioRedactar()" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
+                            <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">📤 Registrar Mensaje</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+        }
+
+        function cerrarFormularioRedactar() {
+            const area = document.getElementById('areaLecturaMensaje');
+            area.innerHTML = `
+                <div class="h-full flex flex-col items-center justify-center text-slate-400">
+                    <span class="text-6xl mb-2">📬</span>
+                    <p class="font-bold">Seleccioná un mensaje o redactá uno nuevo.</p>
+                </div>
+            `;
+        }
+                // --- GUARDAR MENSAJE ---
+        async function guardarNuevoMensaje(e) {
+            e.preventDefault();
+            
+            const payload = {
+                organizador_id: organizadorActual.id,
+                feria_id: feriaSeleccionada ? feriaSeleccionada.id : null,
+                tipo_mensaje: document.getElementById('comTipoMensaje').value,
+                semaforo: document.getElementById('comSemaforo').value,
+                grupo_destinatario: document.getElementById('comGrupo').value,
+                tipo_canal: document.getElementById('comCanal').value,
+                destinatarios_manuales: document.getElementById('comDestinatarios').value.trim(),
+                asunto: document.getElementById('comAsunto').value.trim(),
+                cuerpo_mensaje: document.getElementById('comCuerpo').value.trim(),
+                adjunto_url: document.getElementById('comAdjunto').value.trim() || null,
+                leido: true // Como lo estamos creando nosotros, lo marcamos como leído
+            };
+
+            try {
+                const { error } = await supabaseClient.from('comunicaciones').insert([payload]);
+                if (error) throw error;
+
+                alert('✅ Mensaje registrado con éxito.');
+                
+                // Recargamos las listas y cerramos el formulario
+                cerrarFormularioRedactar();
+                await cargarListaMensajes();
+                await cargarHistorialRapido();
+                
+            } catch (err) { alert('Error al guardar: ' + err.message); }
+        }
+                // --- LEER MENSAJE ---
+        async function abrirMensaje(id) {
+            const area = document.getElementById('areaLecturaMensaje');
+            area.innerHTML = '<div class="text-center py-10"><div class="loader"></div></div>';
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('comunicaciones')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (error) throw error;
+
+                // Si no estaba leído, lo marcamos como leído en la BD
+                if (!data.leido) {
+                    await supabaseClient.from('comunicaciones').update({ leido: true }).eq('id', id);
+                    // Actualizamos la lista para que desaparezca el resaltado azul
+                    await cargarListaMensajes();
+                }
+
+                let colorSemaforo = 'bg-emerald-500 text-white';
+                let textoSemaforo = '🟢 Informativo';
+                if (data.semaforo === 'rojo') { colorSemaforo = 'bg-red-500 text-white'; textoSemaforo = '🔴 Crítico'; }
+                if (data.semaforo === 'amarillo') { colorSemaforo = 'bg-yellow-400 text-slate-800'; textoSemaforo = '🟡 Seguimiento'; }
+
+                const fecha = new Date(data.created_at).toLocaleString('es-AR');
+                
+                area.innerHTML = `
+                    <div class="w-full h-full flex flex-col">
+                        <div class="flex justify-between items-start mb-4 border-b border-gray-200 pb-3">
+                            <div>
+                                <h2 class="text-xl font-extrabold text-slate-800">${data.asunto}</h2>
+                                <p class="text-xs text-slate-500 mt-1">
+                                    ${data.tipo_mensaje === 'entrante' ? '📥 Entrante' : '📤 Saliente'} 
+                                    | Destinatario: <strong>${data.grupo_destinatario}</strong>
+                                    | Canal: ${data.tipo_canal}
+                                </p>
+                            </div>
+                            <div class="flex flex-col items-end gap-2">
+                                <span class="text-[10px] font-bold px-3 py-1 rounded-full ${colorSemaforo}">${textoSemaforo}</span>
+                                <span class="text-[10px] text-slate-400">${fecha}</span>
+                            </div>
+                        </div>
+
+                        <div class="flex-1 overflow-y-auto bg-slate-50 p-4 rounded-xl border border-slate-200 text-sm text-slate-700 leading-relaxed">
+                            ${data.cuerpo_mensaje.replace(/\n/g, '<br>')}
+                        </div>
+
+                        ${data.adjunto_url ? `
+                            <div class="mt-4">
+                                <a href="${data.adjunto_url}" target="_blank" class="inline-flex items-center gap-2 bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold px-4 py-2 rounded-xl text-sm transition">
+                                    📄 Ver Documento Adjunto
+                                </a>
+                            </div>
+                        ` : ''}
+
+                        <div class="mt-4 pt-4 border-t border-slate-100 flex justify-end">
+                            <button onclick="cerrarFormularioRedactar()" class="px-6 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cerrar</button>
+                        </div>
+                    </div>
+                `;
+
+            } catch (err) { area.innerHTML = `<p class="text-red-500 text-sm">Error al cargar mensaje: ${err.message}</p>`; }
+        }
     </script>
 </body>
 </html>
