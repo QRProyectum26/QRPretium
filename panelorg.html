@@ -1403,6 +1403,110 @@ DOCTYPE html>
             </div>
         </div>
     </div>
+        <!-- POPUP: NUEVO / EDITAR PROVEEDOR -->
+    <div id="popupProveedor" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupProveedor')">
+        <div class="popup-caja popup-caja-grande">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupProveedor')">✕</button>
+            <div class="p-6">
+                <h2 id="tituloPopupProveedor" class="text-xl font-extrabold text-slate-800 mb-4">🤝 Nuevo Proveedor</h2>
+                <form onsubmit="guardarProveedor(event)" class="space-y-3">
+                    <input type="hidden" id="provId">
+                    
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Nombre / Razón Social *</label>
+                            <input type="text" id="provNombre" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Tipo de Entidad</label>
+                            <select id="provTipo" class="w-full px-3 py-2 border rounded-xl text-sm">
+                                <option value="Privada">Privada</option>
+                                <option value="Pública">Pública</option>
+                                <option value="ONG">ONG</option>
+                                <option value="Otra">Otra</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">CUIT / ID Fiscal</label>
+                            <input type="text" id="provCuit" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Nacionalidad</label>
+                            <input type="text" id="provNacionalidad" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Dirección</label>
+                        <input type="text" id="provDireccion" class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Representante Legal</label>
+                            <input type="text" id="provRepresentante" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Contacto Directo (Nombre)</label>
+                            <input type="text" id="provContacto" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Teléfono Empresa</label>
+                            <input type="tel" id="provTelefono" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Email</label>
+                            <input type="email" id="provMail" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Sitio Web</label>
+                            <input type="url" id="provWeb" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Sector Económico</label>
+                            <input type="text" id="provSector" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Alimentación, Logística">
+                        </div>
+                    </div>
+
+                    <!-- Productos y Servicios -->
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Productos (Separados por coma)</label>
+                            <input type="text" id="provProductos" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Carne, Bebidas">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Servicios (Separados por coma)</label>
+                            <input type="text" id="provServicios" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Montaje, Catering">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">URL del Brochure (PDF)</label>
+                        <input type="url" id="provBrochure" class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Notas</label>
+                        <textarea id="provNotas" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm"></textarea>
+                    </div>
+
+                    <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                        <button type="button" onclick="cerrarPopup('popupProveedor')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
+                        <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Guardar Proveedor</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <!-- ================= SCRIPT ================= -->
     <script>
         const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
@@ -1580,6 +1684,7 @@ DOCTYPE html>
                 case 'mantenimiento': titulo.innerText = 'Mantenimiento e Instalaciones'; cargarModuloMantenimiento(area); break;
                 case 'actividades': titulo.innerText = 'Actividades y Eventos'; cargarModuloActividades(area); break;
                 case 'documentacion': titulo.innerText = 'Mis Documentaciones'; cargarModuloDocumentacion(area); break;
+                case 'proveedores': titulo.innerText = 'Proveedores'; cargarModuloProveedores(area); break;
                 
                 default: titulo.innerText = modulo; area.innerHTML = '<p class="text-slate-500">Módulo en construcción.</p>';
             }
@@ -4298,6 +4403,224 @@ async function eliminarPabellon(pabellonId) {
                 // Recargamos la tabla actual
                 cargarDocumentos(categoria, subcategoria);
             } catch (err) { alert('Error al guardar: ' + err.message); }
+        }
+                // ==================== MÓDULO PROVEEDORES ====================
+        async function cargarModuloProveedores(area) {
+            area.innerHTML = '<div class="text-center mt-10"><div class="loader"></div></div>';
+            try {
+                const { data, error } = await supabaseClient
+                    .from('proveedores_feria')
+                    .select('*')
+                    .eq('organizador_id', organizadorActual.id)
+                    .order('nombre');
+
+                if (error) throw error;
+
+                let html = `
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-slate-800">🤝 Mis Proveedores</h3>
+                        <button onclick="abrirPopupNuevoProveedor()" class="bg-verdeQR hover:bg-teal-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2">
+                            <span style="font-size: 18px;">＋</span> Nuevo Proveedor
+                        </button>
+                    </div>
+
+                    <!-- Barra de Búsqueda y Filtros -->
+                    <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-200 mb-4 flex gap-2 flex-wrap">
+                        <input type="text" id="buscarProveedor" oninput="filtrarProveedores()" placeholder="Buscar por nombre, producto o servicio..." class="flex-1 min-w-[200px] px-3 py-2 border rounded-lg text-sm">
+                        <select id="filtroSectorProv" onchange="filtrarProveedores()" class="px-3 py-2 border rounded-lg text-sm">
+                            <option value="">Todos los sectores</option>
+                        </select>
+                        <select id="filtroTipoProv" onchange="filtrarProveedores()" class="px-3 py-2 border rounded-lg text-sm">
+                            <option value="">Todos los tipos</option>
+                            <option value="Privada">Privada</option>
+                            <option value="Pública">Pública</option>
+                            <option value="ONG">ONG</option>
+                        </select>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-50 border-b border-slate-200">
+                                    <tr>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Nombre</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Sector</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Contacto</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Productos/Servicios</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase text-right">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodyProveedores">
+                                    <tr><td colspan="5" class="text-center py-4 text-slate-500 text-xs">Cargando...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                area.innerHTML = html;
+                
+                // Guardamos los datos en una variable global para filtrar sin consultar a la DB de nuevo
+                window.proveedoresLista = data; 
+                renderizarTablaProveedores(data);
+                cargarFiltrosProveedores(data);
+
+            } catch (err) { area.innerHTML = `<p class="text-red-500">Error: ${err.message}</p>`; }
+        }
+
+        function renderizarTablaProveedores(proveedores) {
+            const tbody = document.getElementById('tbodyProveedores');
+            tbody.innerHTML = '';
+            if (!proveedores || proveedores.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-slate-500 text-xs">No hay proveedores cargados.</td></tr>';
+                return;
+            }
+            proveedores.forEach(prov => {
+                // Unimos productos y servicios para mostrarlos
+                const prods = Array.isArray(prov.productos) ? prov.productos.join(', ') : '';
+                const servs = Array.isArray(prov.servicios) ? prov.servicios.join(', ') : '';
+                const prodsServs = [prods, servs].filter(Boolean).join(' | ') || '---';
+
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                        <td class="px-4 py-3">
+                            <p class="font-bold text-slate-800 text-sm">${prov.nombre}</p>
+                            <p class="text-[10px] text-slate-500">${prov.tipo_entidad}</p>
+                        </td>
+                        <td class="px-4 py-3 text-slate-600 text-xs">${prov.sector_economico || '---'}</td>
+                        <td class="px-4 py-3">
+                            <p class="text-slate-700 text-xs font-bold">${prov.contacto_directo || '---'}</p>
+                            <p class="text-[10px] text-slate-500">${prov.telefono || prov.mail || ''}</p>
+                        </td>
+                        <td class="px-4 py-3 text-slate-600 text-xs truncate max-w-[200px]" title="${prodsServs}">${prodsServs}</td>
+                        <td class="px-4 py-3 text-right space-x-1">
+                            ${prov.brochure_url ? `<a href="${prov.brochure_url}" target="_blank" class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold py-1 px-2 rounded text-[10px]">📄</a>` : ''}
+                            <button onclick="abrirPopupEditarProveedor('${prov.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1 px-2 rounded text-[10px]">✏️</button>
+                            <button onclick="eliminarProveedor('${prov.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold py-1 px-2 rounded text-[10px]">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function cargarFiltrosProveedores(proveedores) {
+            const selectSector = document.getElementById('filtroSectorProv');
+            const sectores = [...new Set(proveedores.map(p => p.sector_economico).filter(Boolean))].sort();
+            selectSector.innerHTML = '<option value="">Todos los sectores</option>';
+            sectores.forEach(s => { selectSector.innerHTML += `<option value="${s}">${s}</option>`; });
+        }
+
+        function filtrarProveedores() {
+            const busqueda = document.getElementById('buscarProveedor').value.toLowerCase();
+            const filtroSector = document.getElementById('filtroSectorProv').value;
+            const filtroTipo = document.getElementById('filtroTipoProv').value;
+
+            const filtrados = window.proveedoresLista.filter(prov => {
+                // Buscamos en nombre, productos y servicios
+                const textoProductos = Array.isArray(prov.productos) ? prov.productos.join(' ').toLowerCase() : '';
+                const textoServicios = Array.isArray(prov.servicios) ? prov.servicios.join(' ').toLowerCase() : '';
+                const textoNombre = prov.nombre.toLowerCase();
+                
+                const coincideBusqueda = textoNombre.includes(busqueda) || textoProductos.includes(busqueda) || textoServicios.includes(busqueda);
+                const coincideSector = !filtroSector || prov.sector_economico === filtroSector;
+                const coincideTipo = !filtroTipo || prov.tipo_entidad === filtroTipo;
+
+                return coincideBusqueda && coincideSector && coincideTipo;
+            });
+
+            renderizarTablaProveedores(filtrados);
+        }
+
+        function abrirPopupNuevoProveedor() {
+            document.getElementById('provId').value = '';
+            document.getElementById('provNombre').value = '';
+            document.getElementById('provTipo').value = 'Privada';
+            document.getElementById('provCuit').value = '';
+            document.getElementById('provNacionalidad').value = '';
+            document.getElementById('provDireccion').value = '';
+            document.getElementById('provRepresentante').value = '';
+            document.getElementById('provContacto').value = '';
+            document.getElementById('provTelefono').value = '';
+            document.getElementById('provMail').value = '';
+            document.getElementById('provWeb').value = '';
+            document.getElementById('provSector').value = '';
+            document.getElementById('provProductos').value = '';
+            document.getElementById('provServicios').value = '';
+            document.getElementById('provBrochure').value = '';
+            document.getElementById('provNotas').value = '';
+            
+            document.getElementById('tituloPopupProveedor').innerText = '🤝 Nuevo Proveedor';
+            abrirPopup('popupProveedor');
+        }
+
+        async function abrirPopupEditarProveedor(id) {
+            try {
+                const { data, error } = await supabaseClient.from('proveedores_feria').select('*').eq('id', id).single();
+                if (error) throw error;
+
+                document.getElementById('provId').value = data.id;
+                document.getElementById('provNombre').value = data.nombre;
+                document.getElementById('provTipo').value = data.tipo_entidad || 'Privada';
+                document.getElementById('provCuit').value = data.cuit_id_fiscal || '';
+                document.getElementById('provNacionalidad').value = data.nacionalidad || '';
+                document.getElementById('provDireccion').value = data.direccion || '';
+                document.getElementById('provRepresentante').value = data.representante || '';
+                document.getElementById('provContacto').value = data.contacto_directo || '';
+                document.getElementById('provTelefono').value = data.telefono || '';
+                document.getElementById('provMail').value = data.mail || '';
+                document.getElementById('provWeb').value = data.web || '';
+                document.getElementById('provSector').value = data.sector_economico || '';
+                document.getElementById('provProductos').value = Array.isArray(data.productos) ? data.productos.join(', ') : '';
+                document.getElementById('provServicios').value = Array.isArray(data.servicios) ? data.servicios.join(', ') : '';
+                document.getElementById('provBrochure').value = data.brochure_url || '';
+                document.getElementById('provNotas').value = data.notas || '';
+
+                document.getElementById('tituloPopupProveedor').innerText = '✏️ Editar Proveedor';
+                abrirPopup('popupProveedor');
+            } catch (err) { alert('Error al cargar: ' + err.message); }
+        }
+
+        async function guardarProveedor(e) {
+            e.preventDefault();
+            const id = document.getElementById('provId').value;
+            
+            const payload = {
+                organizador_id: organizadorActual.id,
+                nombre: document.getElementById('provNombre').value.trim(),
+                tipo_entidad: document.getElementById('provTipo').value,
+                cuit_id_fiscal: document.getElementById('provCuit').value.trim(),
+                nacionalidad: document.getElementById('provNacionalidad').value.trim(),
+                direccion: document.getElementById('provDireccion').value.trim(),
+                representante: document.getElementById('provRepresentante').value.trim(),
+                contacto_directo: document.getElementById('provContacto').value.trim(),
+                telefono: document.getElementById('provTelefono').value.trim(),
+                mail: document.getElementById('provMail').value.trim(),
+                web: document.getElementById('provWeb').value.trim(),
+                sector_economico: document.getElementById('provSector').value.trim(),
+                productos: document.getElementById('provProductos').value.split(',').map(s => s.trim()).filter(s => s),
+                servicios: document.getElementById('provServicios').value.split(',').map(s => s.trim()).filter(s => s),
+                brochure_url: document.getElementById('provBrochure').value.trim(),
+                notas: document.getElementById('provNotas').value.trim()
+            };
+
+            try {
+                if (id) {
+                    const { error } = await supabaseClient.from('proveedores_feria').update(payload).eq('id', id);
+                    if (error) throw error;
+                } else {
+                    const { error } = await supabaseClient.from('proveedores_feria').insert([payload]);
+                    if (error) throw error;
+                }
+                cerrarPopup('popupProveedor');
+                mostrarModulo('proveedores'); // Recargamos
+            } catch (err) { alert('Error al guardar: ' + err.message); }
+        }
+
+        async function eliminarProveedor(id) {
+            if (!confirm('¿Eliminar este proveedor?')) return;
+            try {
+                await supabaseClient.from('proveedores_feria').delete().eq('id', id);
+                mostrarModulo('proveedores');
+            } catch (err) { alert('Error: ' + err.message); }
         }
     </script>
 </body>
