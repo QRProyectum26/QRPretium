@@ -99,7 +99,7 @@ DOCTYPE html>
                 <button onclick="mostrarModulo('mantenimiento')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">⚙️ Mantenimiento e Instalaciones</button>
                 <button onclick="mostrarModulo('actividades')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🎉 Actividades y Eventos</button>
                 <button onclick="mostrarModulo('seguridad')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🛡️ Seguridad y Emergencias</button>
-                <button onclick="mostrarModulo('documentacion')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">📄 Documentaciones</button>
+                <button onclick="mostrarModulo('documentacion')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">📄 Mis Documentaciones</button>
                 <button onclick="mostrarModulo('proveedores')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🤝 Proveedores</button>
                 <button onclick="mostrarModulo('sponsors')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🏷️ Sponsors</button>
                 <button onclick="mostrarModulo('estadisticas')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">📊 Estadísticas</button>
@@ -1342,6 +1342,67 @@ DOCTYPE html>
             </div>
         </div>
     </div>
+        <!-- POPUP: NUEVO DOCUMENTO -->
+    <div id="popupNuevoDocumento" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupNuevoDocumento')">
+        <div class="popup-caja popup-caja-grande">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupNuevoDocumento')">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-4">📄 Subir Nuevo Documento</h2>
+                <form onsubmit="guardarDocumentoFeria(event)" class="space-y-3">
+                    <input type="hidden" id="docCat" value="">
+                    <input type="hidden" id="docSubcat" value="">
+                    
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Nombre del Documento</label>
+                        <input type="text" id="docNombre" required class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Habilitación Bomberos 2026">
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Estado</label>
+                            <select id="docEstado" class="w-full px-3 py-2 border rounded-xl text-sm">
+                                <option value="Vigente">Vigente</option>
+                                <option value="Vencido">Vencido</option>
+                                <option value="Modificado">Modificado</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Fecha de Vencimiento</label>
+                            <input type="date" id="docFechaVenc" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">URL del Documento (PDF/Word/Drive)</label>
+                        <input type="url" id="docUrl" required class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="https://...">
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Ferias Relacionadas (Opcional)</label>
+                        <select id="docFerias" multiple class="w-full px-3 py-2 border rounded-xl text-sm h-24">
+                            <!-- Se llena con JS -->
+                        </select>
+                        <p class="text-[10px] text-slate-500 mt-1">Mantené apretado Ctrl para seleccionar varias ferias.</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Notas</label>
+                        <textarea id="docNotas" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm"></textarea>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Otros Datos</label>
+                        <textarea id="docOtrosDatos" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm"></textarea>
+                    </div>
+
+                    <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                        <button type="button" onclick="cerrarPopup('popupNuevoDocumento')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
+                        <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Guardar Documento</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <!-- ================= SCRIPT ================= -->
     <script>
         const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
@@ -1377,6 +1438,17 @@ DOCTYPE html>
             const slug = nombre.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-');
             document.getElementById('feriaSlug').value = slug;
         }
+                // Estructura estática del árbol de documentación
+        const ARBOL_DOCUMENTACION = {
+            'Habilitaciones': ['Bomberos', 'Municipales', 'SADAIC', 'Policía', 'Otros'],
+            'Fiscales y Públicas': ['Impositivas', 'Autorizaciones', 'Ambientales', 'Bromatológicas'],
+            'Expositores': ['Contratos', 'Protocolos y Procedimientos', 'Otros'],
+            'Seguros': ['Responsabilidad Civil', 'Otros'],
+            'Personal': ['Contratos', 'Manuales de Procedimiento', 'Otros'],
+            'Legales': [],
+            'Proveedores': ['Contratos', 'Inscripción Fiscal', 'Otros'],
+            'Otros': []
+        };
   function abrirPopupNuevaFeria() {
             // Limpiamos todos los campos antes de abrir
             document.getElementById('feriaNombre').value = '';
@@ -1507,6 +1579,7 @@ DOCTYPE html>
                 case 'servicios': titulo.innerText = 'Mis Servicios'; cargarModuloServicios(area); break;
                 case 'mantenimiento': titulo.innerText = 'Mantenimiento e Instalaciones'; cargarModuloMantenimiento(area); break;
                 case 'actividades': titulo.innerText = 'Actividades y Eventos'; cargarModuloActividades(area); break;
+                case 'documentacion': titulo.innerText = 'Mis Documentaciones'; cargarModuloDocumentacion(area); break;
                 
                 default: titulo.innerText = modulo; area.innerHTML = '<p class="text-slate-500">Módulo en construcción.</p>';
             }
@@ -4017,6 +4090,214 @@ async function eliminarPabellon(pabellonId) {
                 await supabaseClient.from('contactos').delete().eq('id', id);
                 mostrarModulo('contactos');
             } catch (err) { alert('Error: ' + err.message); }
+        }
+                // ==================== MÓDULO DOCUMENTACIONES ====================
+        let subcategoriaDocumentoSeleccionada = null;
+
+        async function cargarModuloDocumentacion(area) {
+            area.innerHTML = `
+                <div class="flex h-full gap-4">
+                    <!-- Menú Lateral de Categorías -->
+                    <div class="w-1/4 bg-white rounded-2xl shadow-sm border border-gray-200 p-4 flex flex-col h-[calc(100vh-140px)]">
+                        <h3 class="text-sm font-bold text-slate-800 mb-4">Categorías</h3>
+                        <div id="listaDocumentacion" class="flex-1 overflow-y-auto space-y-1">
+                            <!-- Se genera con JS -->
+                        </div>
+                    </div>
+
+                    <!-- Área Central de Documentos -->
+                    <div class="flex-1 bg-white rounded-2xl shadow-sm border border-gray-200 p-6 overflow-y-auto h-[calc(100vh-140px)]">
+                        <div id="areaDocumentacionCentral">
+                            <div class="text-center mt-20 text-slate-400">
+                                <span class="text-6xl">📄</span>
+                                <p class="mt-4 font-bold">Seleccioná una subcategoría del menú izquierdo.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            renderizarArbolDocumentacion();
+        }
+
+        function renderizarArbolDocumentacion() {
+            const contenedor = document.getElementById('listaDocumentacion');
+            contenedor.innerHTML = '';
+
+            for (const [categoria, subcategorias] of Object.entries(ARBOL_DOCUMENTACION)) {
+                // Creamos el grupo de la categoría
+                let html = `
+                    <div class="mb-2">
+                        <button class="w-full text-left px-3 py-2 rounded-lg text-sm font-bold text-slate-700 hover:bg-slate-50" onclick="toggleSubcategoriasDoc('${categoria.replace(/\s+/g, '')}')">
+                            > ${categoria}
+                        </button>
+                        <div id="subcat-${categoria.replace(/\s+/g, '')}" class="hidden pl-4 mt-1 space-y-1">
+                `;
+                
+                // Agregamos las subcategorías
+                if (subcategorias.length > 0) {
+                    subcategorias.forEach(sub => {
+                        html += `
+                            <button onclick="seleccionarSubcategoriaDoc('${categoria}', '${sub}')" 
+                                class="w-full text-left px-3 py-1.5 rounded-lg text-xs text-slate-600 hover:bg-blue-50 hover:text-blue-700 transition">
+                                >> ${sub}
+                            </button>
+                        `;
+                    });
+                } else {
+                    // Si no tiene subcategorías, la categoría misma es clickeable
+                    html += `<button onclick="seleccionarSubcategoriaDoc('${categoria}', 'General')" class="w-full text-left px-3 py-1.5 rounded-lg text-xs text-slate-600 hover:bg-blue-50 hover:text-blue-700 transition">>> General</button>`;
+                }
+
+                html += `</div></div>`;
+                contenedor.innerHTML += html;
+            }
+        }
+
+        function toggleSubcategoriasDoc(idCategoria) {
+            const el = document.getElementById(`subcat-${idCategoria}`);
+            if (el) el.classList.toggle('hidden');
+        }
+
+        async function seleccionarSubcategoriaDoc(categoria, subcategoria) {
+            subcategoriaDocumentoSeleccionada = { categoria, subcategoria };
+            
+            const area = document.getElementById('areaDocumentacionCentral');
+            area.innerHTML = `
+                <div class="flex justify-between items-center mb-6 border-b border-slate-200 pb-2">
+                    <div>
+                        <h2 class="text-xl font-extrabold text-slate-800">${subcategoria}</h2>
+                        <p class="text-xs text-slate-500">Categoría: ${categoria}</p>
+                    </div>
+                    <button onclick="abrirPopupNuevoDocumento()" class="bg-verdeQR hover:bg-teal-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2">
+                        <span style="font-size: 18px;">＋</span> Subir Documento
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 border-b border-slate-200">
+                            <tr>
+                                <th class="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase">Documento</th>
+                                <th class="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase">Estado</th>
+                                <th class="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase">Vencimiento</th>
+                                <th class="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyDocumentos">
+                            <tr><td colspan="4" class="text-center py-4"><div class="loader"></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            cargarDocumentos(categoria, subcategoria);
+        }
+
+        async function cargarDocumentos(categoria, subcategoria) {
+            const tbody = document.getElementById('tbodyDocumentos');
+            try {
+                const { data, error } = await supabaseClient
+                    .from('documentos_feria')
+                    .select('*')
+                    .eq('organizador_id', organizadorActual.id)
+                    .eq('categoria', categoria)
+                    .eq('subcategoria', subcategoria)
+                    .order('nombre_documento');
+
+                if (error) throw error;
+                tbody.innerHTML = '';
+
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-slate-500 text-xs">No hay documentos subidos en esta categoría.</td></tr>';
+                    return;
+                }
+
+                data.forEach(doc => {
+                    let badgeEstado = 'bg-emerald-100 text-emerald-700';
+                    if (doc.estado === 'Vencido') badgeEstado = 'bg-red-100 text-red-700';
+                    if (doc.estado === 'Modificado') badgeEstado = 'bg-amber-100 text-amber-700';
+
+                    const fechaVenc = doc.fecha_vencimiento ? new Date(doc.fecha_vencimiento + 'T00:00:00').toLocaleDateString('es-AR') : '---';
+
+                    tbody.innerHTML += `
+                        <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                            <td class="px-3 py-2 font-bold text-slate-800 text-sm">${doc.nombre_documento}</td>
+                            <td class="px-3 py-2"><span class="text-[10px] font-bold px-2 py-1 rounded-full ${badgeEstado}">${doc.estado}</span></td>
+                            <td class="px-3 py-2 font-mono text-xs text-slate-600">${fechaVenc}</td>
+                            <td class="px-3 py-2 text-right space-x-1">
+                                <a href="${doc.archivo_url}" target="_blank" class="bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold py-1 px-2 rounded text-[10px]">👁️ Ver</a>
+                                <button onclick="eliminarDocumento('${doc.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold py-1 px-2 rounded text-[10px]">🗑️</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (err) { tbody.innerHTML = `<tr><td colspan="4" class="text-red-500 text-xs">Error: ${err.message}</td></tr>`; }
+        }
+
+        async function eliminarDocumento(id) {
+            if (!confirm('¿Eliminar este documento?')) return;
+            try {
+                await supabaseClient.from('documentos_feria').delete().eq('id', id);
+                if (subcategoriaDocumentoSeleccionada) {
+                    cargarDocumentos(subcategoriaDocumentoSeleccionada.categoria, subcategoriaDocumentoSeleccionada.subcategoria);
+                }
+            } catch (err) { alert('Error: ' + err.message); }
+        }
+                async function abrirPopupNuevoDocumento() {
+            if (!subcategoriaDocumentoSeleccionada) return;
+
+            document.getElementById('docCat').value = subcategoriaDocumentoSeleccionada.categoria;
+            document.getElementById('docSubcat').value = subcategoriaDocumentoSeleccionada.subcategoria;
+            
+            document.getElementById('docNombre').value = '';
+            document.getElementById('docEstado').value = 'Vigente';
+            document.getElementById('docFechaVenc').value = '';
+            document.getElementById('docUrl').value = '';
+            document.getElementById('docNotas').value = '';
+            document.getElementById('docOtrosDatos').value = '';
+
+            // Llenar el select de ferias
+            const selectFerias = document.getElementById('docFerias');
+            selectFerias.innerHTML = '';
+            if (feriasLista && feriasLista.length > 0) {
+                feriasLista.forEach(f => {
+                    selectFerias.innerHTML += `<option value="${f.id}">${f.nombre}</option>`;
+                });
+            }
+
+            abrirPopup('popupNuevoDocumento');
+        }
+
+        async function guardarDocumentoFeria(e) {
+            e.preventDefault();
+            const categoria = document.getElementById('docCat').value;
+            const subcategoria = document.getElementById('docSubcat').value;
+            
+            // Capturamos las ferias seleccionadas (múltiples)
+            const selectFerias = document.getElementById('docFerias');
+            const feriasSeleccionadas = Array.from(selectFerias.selectedOptions).map(opt => opt.value);
+
+            const payload = {
+                organizador_id: organizadorActual.id,
+                categoria: categoria,
+                subcategoria: subcategoria,
+                nombre_documento: document.getElementById('docNombre').value.trim(),
+                estado: document.getElementById('docEstado').value,
+                fecha_vencimiento: document.getElementById('docFechaVenc').value || null,
+                archivo_url: document.getElementById('docUrl').value.trim(),
+                notas: document.getElementById('docNotas').value.trim(),
+                otros_datos: document.getElementById('docOtrosDatos').value.trim(),
+                ferias_relacionadas: feriasSeleccionadas // Se guarda como JSONB
+            };
+
+            try {
+                const { error } = await supabaseClient.from('documentos_feria').insert([payload]);
+                if (error) throw error;
+                cerrarPopup('popupNuevoDocumento');
+                
+                // Recargamos la tabla actual
+                cargarDocumentos(categoria, subcategoria);
+            } catch (err) { alert('Error al guardar: ' + err.message); }
         }
     </script>
 </body>
