@@ -487,6 +487,10 @@ DOCTYPE html>
                             <input type="text" id="expRubro" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Metalurgia">
                         </div>
                     </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Productos / Servicios Principales</label>
+                        <input type="text" id="expProductos" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Válvulas, Caños, Servicios de Montaje">
+                    </div>
                     <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
                         <button type="button" onclick="cerrarPopup('popupNuevoExpositor')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
                         <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Guardar Expositor</button>
@@ -616,6 +620,34 @@ DOCTYPE html>
                             <input type="tel" id="actorWhatsapp" class="w-full px-3 py-2 border rounded-xl text-sm">
                         </div>
                     </div>
+                                        <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Nombre Contacto</label>
+                            <input type="text" id="actorContacto" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Provincia / Depto</label>
+                            <input type="text" id="actorProvincia" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">País</label>
+                            <input type="text" id="actorPais" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Sitio Web</label>
+                            <input type="url" id="actorWeb" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Dirección</label>
+                        <input type="text" id="actorDireccion" class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Productos / Servicios</label>
+                        <input type="text" id="actorProductos" class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
                     <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
                         <button type="button" onclick="cerrarPopup('popupNuevoActor')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
                         <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Guardar Actor</button>
@@ -740,6 +772,20 @@ DOCTYPE html>
                                 <option value="Malo">Malo</option>
                             </select>
                         </div>
+                    </div>
+                                        <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Responsable (Asignado / No asignado)</label>
+                            <input type="text" id="srvResponsable" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Juan Pérez">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Ubicación</label>
+                            <input type="text" id="srvUbicacion" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: A 20m a la derecha del Pabellón 2">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Notas</label>
+                        <textarea id="srvNotas" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm"></textarea>
                     </div>
                     <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
                         <button type="button" onclick="cerrarPopup('popupNuevoServicio')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
@@ -1165,6 +1211,21 @@ DOCTYPE html>
                             <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Teléfono</label>
                             <input type="tel" id="eqTelefono" class="w-full px-3 py-2 border rounded-xl text-sm">
                         </div>
+                    </div>
+                       <!-- 👇 CAMPOS NUEVOS 👇 -->
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Tipo de Contrato</label>
+                            <input type="text" id="eqTipoContrato" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Relación de dependencia">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Vencimiento Contrato</label>
+                            <input type="date" id="eqVencimiento" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Formación</label>
+                        <input type="text" id="eqFormacion" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Lic. en Administración">
                     </div>
                     <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
                         <button type="button" onclick="cerrarPopup('popupNuevoMiembroEquipo')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
@@ -1601,6 +1662,31 @@ DOCTYPE html>
                         <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Guardar Sponsor</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+        <!-- POPUP: GANTT DE EVENTO -->
+    <div id="popupGanttEvento" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupGanttEvento')">
+        <div class="popup-caja popup-caja-grande">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupGanttEvento')">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-2">📊 Tareas del Evento</h2>
+                <p class="text-sm text-slate-600 mb-4 font-bold" id="ganttEventoNombre"></p>
+                <input type="hidden" id="ganttEventoId">
+
+                <form onsubmit="guardarTareaEvento(event)" class="bg-slate-50 p-3 rounded-xl border border-slate-200 mb-4 grid grid-cols-4 gap-2">
+                    <input type="text" id="gtTarea" required placeholder="Tarea..." class="col-span-1 px-2 py-1.5 border rounded-lg text-xs">
+                    <input type="text" id="gtEntidad" placeholder="Entidad..." class="col-span-1 px-2 py-1.5 border rounded-lg text-xs">
+                    <input type="date" id="gtFecha" required class="col-span-1 px-2 py-1.5 border rounded-lg text-xs">
+                    <button type="submit" class="col-span-1 bg-verdeQR text-white font-bold rounded-lg text-xs">＋ Agregar</button>
+                </form>
+
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-slate-50 border-b border-slate-200">
+                        <tr><th class="p-2">Fecha</th><th class="p-2">Tarea</th><th class="p-2">Entidad</th><th class="p-2">Subestado</th><th class="p-2 text-right">Acción</th></tr>
+                    </thead>
+                    <tbody id="tbodyGanttTareas"></tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -2170,7 +2256,39 @@ async function eliminarPabellon(pabellonId) {
             try {
                 const { data, error } = await supabaseClient.from('standargentina').select(`*, stands!inner(numero, codigo_etiqueta)`).eq('feria_id', feriaSeleccionada.id).order('empresa_stand', { ascending: true });
                 if (error) throw error;
-                let html = `<div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-slate-800">Expositores de la Feria</h3><button onclick="abrirPopupNuevoExpositor()" class="bg-verdeQR hover:bg-teal-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2"><span style="font-size: 18px;">＋</span> Nuevo Expositor</button></div><div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-left"><thead class="bg-slate-50 border-b border-slate-200"><tr><th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Empresa</th><th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">CUIT/CUIL</th><th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Stand</th><th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Estado</th><th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase text-right">Acciones</th></tr></thead><tbody id="tbodyExpositores"><tr><td colspan="5" class="text-center py-4 text-slate-500 text-xs">Cargando...</td></tr></tbody></table></div></div>`;
+                let html = `
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-slate-800">Expositores de la Feria</h3>
+                        <button onclick="abrirPopupNuevoExpositor()" class="bg-verdeQR hover:bg-teal-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2">
+                            <span style="font-size: 18px;">＋</span> Nuevo Expositor
+                        </button>
+                    </div>
+
+                    <!-- 👇 BUSCADOR NUEVO 👇 -->
+                    <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-200 mb-4 flex gap-2">
+                        <input type="text" id="buscarExpositor" oninput="filtrarTablaExpositores()" placeholder="Buscar por nombre o rubro..." class="flex-1 px-3 py-2 border rounded-lg text-sm">
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-50 border-b border-slate-200">
+                                    <tr>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Empresa</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">CUIT/CUIL</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Stand</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Estado</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase text-right">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodyExpositores">
+                                    <tr><td colspan="5" class="text-center py-4 text-slate-500 text-xs">Cargando...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                
                 area.innerHTML = html;
                 renderizarTablaExpositores(data);
             } catch (err) { area.innerHTML = `<p class="text-red-500">Error al cargar expositores: ${err.message}</p>`; }
@@ -2259,7 +2377,7 @@ async function eliminarPabellon(pabellonId) {
 
         async function guardarNuevoExpositor(e) {
             e.preventDefault();
-            const payload = { feria_id: feriaSeleccionada.id, empresa_stand: document.getElementById('expNombre').value.trim(), cuit: document.getElementById('expCuit').value.trim(), mail: document.getElementById('expMail').value.trim(), rubro: document.getElementById('expRubro').value.trim(), stand_id: document.getElementById('expStandId').value, estado_registro: 'pendiente' };
+            const payload = { feria_id: feriaSeleccionada.id, empresa_stand: document.getElementById('expNombre').value.trim(), cuit: document.getElementById('expCuit').value.trim(), mail: document.getElementById('expMail').value.trim(), rubro: document.getElementById('expRubro').value.trim(),  productos_servicios: document.getElementById('expProductos').value.trim(), stand_id: document.getElementById('expStandId').value, estado_registro: 'pendiente' };
             try {
                 const { error } = await supabaseClient.from('standargentina').insert([payload]);
                 if (error) throw error;
@@ -2447,6 +2565,12 @@ async function eliminarPabellon(pabellonId) {
                 rubro_sector: document.getElementById('actorSector').value.trim(),
                 mail: document.getElementById('actorMail').value.trim(),
                 whatsapp: document.getElementById('actorWhatsapp').value.trim()
+                nombre_contacto: document.getElementById('actorContacto').value.trim(),
+                provincia_depto: document.getElementById('actorProvincia').value.trim(),
+                pais: document.getElementById('actorPais').value.trim(),
+                web: document.getElementById('actorWeb').value.trim(),
+                direccion: document.getElementById('actorDireccion').value.trim(),
+                productos_servicios: document.getElementById('actorProductos').value.trim()
             };
             try {
                 const { error } = await supabaseClient.from('actores').insert([payload]);
@@ -2841,6 +2965,9 @@ async function eliminarPabellon(pabellonId) {
                 descripcion: document.getElementById('srvDescripcion').value.trim(),
                 cantidad: parseInt(document.getElementById('srvCantidad').value),
                 estado: document.getElementById('srvEstado').value
+                responsable: document.getElementById('srvResponsable').value.trim(),
+                ubicacion: document.getElementById('srvUbicacion').value.trim(),
+                notas: document.getElementById('srvNotas').value.trim()
             };
             try {
                 const { error } = await supabaseClient.from('servicios_feria').insert([payload]);
@@ -3781,13 +3908,17 @@ async function eliminarPabellon(pabellonId) {
 
         async function guardarMiembroEquipo(e) {
             e.preventDefault();
-            const payload = {
+             const payload = {
                 organizador_id: organizadorActual.id,
                 nombre: document.getElementById('eqNombre').value.trim(),
                 rol: document.getElementById('eqRol').value.trim(),
                 area: document.getElementById('eqArea').value.trim(),
                 email: document.getElementById('eqEmail').value.trim(),
-                telefono: document.getElementById('eqTelefono').value.trim()
+                telefono: document.getElementById('eqTelefono').value.trim(),
+                // 👇 NUEVOS CAMPOS 👇
+                tipo_contrato: document.getElementById('eqTipoContrato').value.trim(),
+                fecha_vencimiento: document.getElementById('eqVencimiento').value || null,
+                formacion: document.getElementById('eqFormacion').value.trim()
             };
             try {
                 const { error } = await supabaseClient.from('equipo_organizador').insert([payload]);
@@ -3874,6 +4005,14 @@ async function eliminarPabellon(pabellonId) {
                         <td class="px-4 py-3 text-xs text-slate-600">${ev.sector || '---'}</td>
                         <td class="px-4 py-3 text-xs ${badgePrioridad}">${ev.prioridad}</td>
                         <td class="px-4 py-3"><span class="text-[10px] font-bold px-2 py-1 rounded-full ${badgeEstado}">${ev.estado}</span></td>
+                        <td class="px-4 py-3 text-center">
+                                <button onclick="abrirPopupGanttEvento('${ev.id}', '${ev.nombre}')" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 font-bold py-1 px-3 rounded text-[10px] transition">📊 Ver</button>
+                            </td>
+                        <td class="px-4 py-3 text-right space-x-1">
+                            <button onclick="abrirPopupGanttEvento('${ev.id}', '${ev.nombre}')" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 font-bold py-1 px-2 rounded text-[10px]">📊 Ver</button>
+                            <button onclick="abrirPopupEditarEventoCal('${ev.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1 px-2 rounded text-[10px]">✏️</button>
+                            <button onclick="eliminarEventoCal('${ev.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold py-1 px-2 rounded text-[10px]">🗑️</button>
+                        </td>
                         <td class="px-4 py-3 text-right space-x-1">
                             <button onclick="abrirPopupEditarEventoCal('${ev.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-1 px-2 rounded text-[10px]">✏️</button>
                             <button onclick="eliminarEventoCal('${ev.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold py-1 px-2 rounded text-[10px]">🗑️</button>
@@ -3985,6 +4124,7 @@ async function eliminarPabellon(pabellonId) {
                                     <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Título</th>
                                     <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Prioridad</th>
                                     <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Estado</th>
+                                    <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase text-center">Tareas</th>
                                     <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase text-right">Acciones</th>
                                 </tr>
                             </thead>
@@ -5264,6 +5404,80 @@ async function eliminarPabellon(pabellonId) {
                 `;
 
             } catch (err) { area.innerHTML = `<p class="text-red-500 text-sm">Error al cargar mensaje: ${err.message}</p>`; }
+        }
+                function filtrarTablaExpositores() {
+            const busqueda = document.getElementById('buscarExpositor').value.toLowerCase();
+            const filas = document.querySelectorAll('#tbodyExpositores tr');
+            
+            filas.forEach(fila => {
+                const textoFila = fila.innerText.toLowerCase();
+                fila.style.display = textoFila.includes(busqueda) ? '' : 'none';
+            });
+        }
+                async function abrirPopupGanttEvento(eventoId, nombreEvento) {
+            document.getElementById('ganttEventoId').value = eventoId;
+            document.getElementById('ganttEventoNombre').innerText = nombreEvento;
+            document.getElementById('gtTarea').value = '';
+            document.getElementById('gtEntidad').value = '';
+            document.getElementById('gtFecha').value = '';
+            await cargarTareasEvento(eventoId);
+            abrirPopup('popupGanttEvento');
+        }
+
+        async function cargarTareasEvento(eventoId) {
+            const tbody = document.getElementById('tbodyGanttTareas');
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center py-2"><div class="loader"></div></td></tr>';
+            try {
+                const { data, error } = await supabaseClient.from('tareas_evento').select('*').eq('evento_id', eventoId).order('fecha');
+                if (error) throw error;
+                tbody.innerHTML = '';
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-slate-500 text-xs py-2">No hay tareas cargadas.</td></tr>';
+                    return;
+                }
+                data.forEach(t => {
+                    const badge = t.subestado === 'completo' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700';
+                    tbody.innerHTML += `
+                        <tr class="border-b border-slate-100">
+                            <td class="p-2 font-mono text-xs">${t.fecha}</td>
+                            <td class="p-2 font-bold text-xs">${t.nombre_tarea}</td>
+                            <td class="p-2 text-xs">${t.entidad || '---'}</td>
+                            <td class="p-2"><span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full ${badge}">${t.subestado.toUpperCase()}</span></td>
+                            <td class="p-2 text-right">
+                                <button onclick="eliminarTareaEvento('${t.id}', '${eventoId}')" class="text-red-500 font-bold text-xs">🗑️</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (err) { tbody.innerHTML = `<tr><td colspan="5" class="text-red-500 text-xs">Error: ${err.message}</td></tr>`; }
+        }
+
+        async function guardarTareaEvento(e) {
+            e.preventDefault();
+            const eventoId = document.getElementById('ganttEventoId').value;
+            const payload = {
+                evento_id: eventoId,
+                nombre_tarea: document.getElementById('gtTarea').value.trim(),
+                entidad: document.getElementById('gtEntidad').value.trim(),
+                fecha: document.getElementById('gtFecha').value,
+                subestado: 'pendiente'
+            };
+            try {
+                const { error } = await supabaseClient.from('tareas_evento').insert([payload]);
+                if (error) throw error;
+                document.getElementById('gtTarea').value = '';
+                document.getElementById('gtEntidad').value = '';
+                document.getElementById('gtFecha').value = '';
+                await cargarTareasEvento(eventoId);
+            } catch (err) { alert('Error al guardar: ' + err.message); }
+        }
+
+        async function eliminarTareaEvento(id, eventoId) {
+            if (!confirm('¿Eliminar esta tarea?')) return;
+            try {
+                await supabaseClient.from('tareas_evento').delete().eq('id', id);
+                await cargarTareasEvento(eventoId);
+            } catch (err) { alert('Error: ' + err.message); }
         }
     </script>
 </body>
