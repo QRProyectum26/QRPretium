@@ -94,6 +94,7 @@ DOCTYPE html>
                 <button onclick="mostrarModulo('programa')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">📅 Programa</button>
                 <button onclick="mostrarModulo('expositores')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">👥 Expositores</button>
                 <button onclick="mostrarModulo('actores')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🎭 Actores</button>
+                <button onclick="mostrarModulo('rrhh')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">👥 RR.HH (Personal)</button>
                 <button onclick="mostrarModulo('operaciones')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🚨 Operaciones (Tickets)</button>
                 <button onclick="mostrarModulo('notificaciones')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">📢 Comunicaciones</button>
                 <button onclick="mostrarModulo('servicios')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🛠️ Mis Servicios </button>
@@ -1863,6 +1864,134 @@ DOCTYPE html>
             </div>
         </div>
     </div>
+        <!-- POPUP: NUEVO MIEMBRO DE RR.HH -->
+    <div id="popupNuevoPersonal" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupNuevoPersonal')">
+        <div class="popup-caja popup-caja-grande">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupNuevoPersonal')">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-4">👥 Ficha de Personal</h2>
+                <form onsubmit="guardarPersonal(event)" class="space-y-3">
+                    <input type="hidden" id="rrhhId">
+                    
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Nombre y Apellido *</label>
+                        <input type="text" id="rrhhNombre" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Tipo Doc.</label>
+                            <select id="rrhhTipoDoc" class="w-full px-3 py-2 border rounded-xl text-sm">
+                                <option value="DNI">DNI</option>
+                                <option value="Pasaporte">Pasaporte</option>
+                                <option value="CUIT">CUIT</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Nro Documento</label>
+                            <input type="text" id="rrhhNroDoc" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Edad</label>
+                            <input type="number" id="rrhhEdad" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Sexo</label>
+                            <select id="rrhhSexo" class="w-full px-3 py-2 border rounded-xl text-sm">
+                                <option value="Masculino">Masculino</option>
+                                <option value="Femenino">Femenino</option>
+                                <option value="No binario">No binario</option>
+                                <option value="Prefiero no decir">Prefiero no decir</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Discapacidad</label>
+                            <select id="rrhhDiscapacidad" class="w-full px-3 py-2 border rounded-xl text-sm">
+                                <option value="Ninguna">Ninguna</option>
+                                <option value="Motriz">Motriz</option>
+                                <option value="Visual">Visual</option>
+                                <option value="Auditiva">Auditiva</option>
+                                <option value="Intelectual">Intelectual</option>
+                                <option value="Otra">Otra</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Sector</label>
+                            <input type="text" id="rrhhSector" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Logística, Seguridad">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Categoría</label>
+                            <select id="rrhhCategoria" class="w-full px-3 py-2 border rounded-xl text-sm">
+                                <option value="Fijo">Fijo</option>
+                                <option value="Contratado">Contratado</option>
+                                <option value="Voluntario">Voluntario</option>
+                                <option value="Proveedor">Proveedor</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Formación</label>
+                            <input type="text" id="rrhhFormacion" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Lic. en Administración">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Competencias</label>
+                            <input type="text" id="rrhhCompetencias" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Liderazgo, Ventas">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Email</label>
+                            <input type="email" id="rrhhMail" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Teléfono</label>
+                            <input type="tel" id="rrhhTelefono" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Dirección</label>
+                        <input type="text" id="rrhhDireccion" class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Tipo de Contrato</label>
+                            <input type="text" id="rrhhTipoContrato" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Relación de dependencia">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Vencimiento Contrato</label>
+                            <input type="date" id="rrhhVencimiento" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Elemento Responsable</label>
+                        <input type="text" id="rrhhElemento" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Estacionamiento, Sanitarios, Boletería">
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Notas</label>
+                        <textarea id="rrhhNotas" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm"></textarea>
+                    </div>
+
+                    <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                        <button type="button" onclick="cerrarPopup('popupNuevoPersonal')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
+                        <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Guardar Ficha</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     
   <!-- ================= SCRIPT ================= -->
     <script>
@@ -2034,6 +2163,7 @@ DOCTYPE html>
                 case 'programa': titulo.innerText = 'Programa'; cargarModuloPrograma(area); break;
                 case 'expositores': titulo.innerText = 'Expositores'; cargarModuloExpositores(area); break;
                 case 'actores': titulo.innerText = 'Actores'; cargarModuloActores(area); break;
+                case 'rrhh': titulo.innerText = 'RR.HH (Personal)'; cargarModuloRRHH(area); break;
                 case 'notificaciones': titulo.innerText = 'Comunicaciones'; cargarModuloComunicaciones(area); break;
                 case 'servicios': titulo.innerText = 'Mis Servicios'; cargarModuloServicios(area); break;
                 case 'mantenimiento': titulo.innerText = 'Mantenimiento e Instalaciones'; cargarModuloMantenimiento(area); break;
@@ -5886,6 +6016,162 @@ DOCTYPE html>
             try {
                 await supabaseClient.from('sustentabilidad_feria').delete().eq('id', id);
                 mostrarModulo('sustentabilidad');
+            } catch (err) { alert('Error: ' + err.message); }
+        }
+                // ==================== MÓDULO RR.HH ====================
+        async function cargarModuloRRHH(area) {
+            area.innerHTML = '<div class="text-center mt-10"><div class="loader"></div></div>';
+            try {
+                const { data, error } = await supabaseClient
+                    .from('personal_feria')
+                    .select('*')
+                    .eq('feria_id', feriaSeleccionada.id)
+                    .order('nombre_apellido', { ascending: true });
+                if (error) throw error;
+
+                let html = `
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-slate-800">👥 Personal de la Feria</h3>
+                        <button onclick="abrirPopupNuevoPersonal()" class="bg-verdeQR hover:bg-teal-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2">
+                            <span style="font-size: 18px;">＋</span> Nuevo Personal
+                        </button>
+                    </div>
+
+                    <!-- Buscador y filtro por sector -->
+                    <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-200 mb-4 flex gap-2 flex-wrap">
+                        <input type="text" id="buscarPersonal" oninput="filtrarPersonal()" placeholder="Buscar por apellido o nombre..." class="flex-1 min-w-[200px] px-3 py-2 border rounded-lg text-sm">
+                        <select id="filtroSectorRRHH" onchange="filtrarPersonal()" class="px-3 py-2 border rounded-lg text-sm">
+                            <option value="">Todos los sectores</option>
+                        </select>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-50 border-b border-slate-200">
+                                    <tr>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Nombre</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Sector</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Categoría</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Contacto</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase text-right">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodyPersonal">
+                                    <tr><td colspan="5" class="text-center py-4 text-slate-500 text-xs">Cargando...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                area.innerHTML = html;
+                
+                window.personalLista = data || []; 
+                renderizarTablaPersonal(data);
+                cargarFiltrosPersonal(data);
+            } catch (err) { area.innerHTML = `<p class="text-red-500">Error: ${err.message}</p>`; }
+        }
+
+        function renderizarTablaPersonal(personal) {
+            const tbody = document.getElementById('tbodyPersonal');
+            tbody.innerHTML = '';
+            if (!personal || personal.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-slate-500 text-xs">No hay personal cargado.</td></tr>';
+                return;
+            }
+            personal.forEach(pers => {
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                        <td class="px-4 py-3">
+                            <p class="font-bold text-slate-800 text-sm">${pers.nombre_apellido}</p>
+                            <p class="text-[10px] text-slate-500">${pers.tipo_documento || ''} ${pers.nro_documento || ''}</p>
+                        </td>
+                        <td class="px-4 py-3 text-slate-600 text-xs">${pers.sector || '---'}</td>
+                        <td class="px-4 py-3 text-slate-600 text-xs">${pers.categoria || '---'}</td>
+                        <td class="px-4 py-3 text-slate-600 text-xs">${pers.telefono || pers.mail || '---'}</td>
+                        <td class="px-4 py-3 text-right space-x-1">
+                            <button onclick="eliminarPersonal('${pers.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold py-1 px-2 rounded text-[10px]">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function cargarFiltrosPersonal(personal) {
+            const selectSector = document.getElementById('filtroSectorRRHH');
+            const sectores = [...new Set(personal.map(p => p.sector).filter(Boolean))].sort();
+            selectSector.innerHTML = '<option value="">Todos los sectores</option>';
+            sectores.forEach(s => { selectSector.innerHTML += `<option value="${s}">${s}</option>`; });
+        }
+
+        function filtrarPersonal() {
+            const busqueda = document.getElementById('buscarPersonal').value.toLowerCase();
+            const filtroSector = document.getElementById('filtroSectorRRHH').value;
+            const filtrados = window.personalLista.filter(pers => {
+                const coincideBusqueda = pers.nombre_apellido.toLowerCase().includes(busqueda);
+                const coincideSector = !filtroSector || pers.sector === filtroSector;
+                return coincideBusqueda && coincideSector;
+            });
+            renderizarTablaPersonal(filtrados);
+        }
+
+        function abrirPopupNuevoPersonal() {
+            document.getElementById('rrhhId').value = '';
+            document.getElementById('rrhhNombre').value = '';
+            document.getElementById('rrhhTipoDoc').value = 'DNI';
+            document.getElementById('rrhhNroDoc').value = '';
+            document.getElementById('rrhhEdad').value = '';
+            document.getElementById('rrhhSexo').value = 'Masculino';
+            document.getElementById('rrhhDiscapacidad').value = 'Ninguna';
+            document.getElementById('rrhhSector').value = '';
+            document.getElementById('rrhhCategoria').value = 'Fijo';
+            document.getElementById('rrhhFormacion').value = '';
+            document.getElementById('rrhhCompetencias').value = '';
+            document.getElementById('rrhhMail').value = '';
+            document.getElementById('rrhhTelefono').value = '';
+            document.getElementById('rrhhDireccion').value = '';
+            document.getElementById('rrhhTipoContrato').value = '';
+            document.getElementById('rrhhVencimiento').value = '';
+            document.getElementById('rrhhElemento').value = '';
+            document.getElementById('rrhhNotas').value = '';
+            abrirPopup('popupNuevoPersonal');
+        }
+
+        async function guardarPersonal(e) {
+            e.preventDefault();
+            const payload = {
+                feria_id: feriaSeleccionada.id,
+                nombre_apellido: document.getElementById('rrhhNombre').value.trim(),
+                tipo_documento: document.getElementById('rrhhTipoDoc').value,
+                nro_documento: document.getElementById('rrhhNroDoc').value.trim(),
+                edad: parseInt(document.getElementById('rrhhEdad').value) || null,
+                sexo: document.getElementById('rrhhSexo').value,
+                discapacidad: document.getElementById('rrhhDiscapacidad').value,
+                sector: document.getElementById('rrhhSector').value.trim(),
+                categoria: document.getElementById('rrhhCategoria').value,
+                formacion: document.getElementById('rrhhFormacion').value.trim(),
+                competencias: document.getElementById('rrhhCompetencias').value.trim(),
+                mail: document.getElementById('rrhhMail').value.trim(),
+                telefono: document.getElementById('rrhhTelefono').value.trim(),
+                direccion: document.getElementById('rrhhDireccion').value.trim(),
+                tipo_contrato: document.getElementById('rrhhTipoContrato').value.trim(),
+                fecha_vencimiento_contrato: document.getElementById('rrhhVencimiento').value || null,
+                elemento_responsable: document.getElementById('rrhhElemento').value.trim(),
+                notas: document.getElementById('rrhhNotas').value.trim()
+            };
+            try {
+                const { error } = await supabaseClient.from('personal_feria').insert([payload]);
+                if (error) throw error;
+                cerrarPopup('popupNuevoPersonal');
+                mostrarModulo('rrhh');
+            } catch (err) { alert('Error al guardar: ' + err.message); }
+        }
+
+        async function eliminarPersonal(id) {
+            if (!confirm('¿Eliminar esta ficha de personal?')) return;
+            try {
+                await supabaseClient.from('personal_feria').delete().eq('id', id);
+                mostrarModulo('rrhh');
             } catch (err) { alert('Error: ' + err.message); }
         }
     </script>
