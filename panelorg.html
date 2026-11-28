@@ -91,6 +91,7 @@ DOCTYPE html>
                 <div class="px-4 py-2 text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-4">Configuración de Feria</div>
                 
                 <button onclick="mostrarModulo('feriaFisica')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🗺️ Mi Feria Física</button>
+                <button onclick="mostrarModulo('programa')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">📅 Programa</button>
                 <button onclick="mostrarModulo('expositores')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">👥 Expositores</button>
                 <button onclick="mostrarModulo('actores')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🎭 Actores</button>
                 <button onclick="mostrarModulo('operaciones')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🚨 Operaciones (Tickets)</button>
@@ -100,8 +101,10 @@ DOCTYPE html>
                 <button onclick="mostrarModulo('actividades')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🎉 Actividades y Eventos</button>
                 <button onclick="mostrarModulo('seguridad')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🛡️ Seguridad y Emergencias</button>
                 <button onclick="mostrarModulo('documentacion')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">📄 Mis Documentaciones</button>
+                <button onclick="mostrarModulo('sustentabilidad')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🌱 Sustentabilidad</button>
                 <button onclick="mostrarModulo('proveedores')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🤝 Proveedores</button>
                 <button onclick="mostrarModulo('sponsors')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🏷️ Sponsors</button>
+                <button onclick="mostrarModulo('incidencias')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">🚨 Mis Incidencias</button>
                 <button onclick="mostrarModulo('estadisticas')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">📊 Estadísticas</button>
                 <button onclick="mostrarModulo('informeEstado')" class="sidebar-item w-full text-left px-4 py-2 text-sm text-slate-300">📋 Informe de Estado</button>
             </nav>
@@ -1691,6 +1694,176 @@ DOCTYPE html>
             </div>
         </div>
     </div>
+        <!-- POPUP: NUEVA ACTIVIDAD DE PROGRAMA -->
+    <div id="popupNuevaActividadPrograma" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupNuevaActividadPrograma')">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupNuevaActividadPrograma')">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-4">📅 Nueva Actividad del Programa</h2>
+                <form onsubmit="guardarActividadPrograma(event)" class="space-y-3">
+                    <input type="hidden" id="progId">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Día del Evento</label>
+                            <input type="number" id="progDia" min="1" required class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: 1">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Tipo de Actividad</label>
+                            <select id="progTipo" class="w-full px-3 py-2 border rounded-xl text-sm">
+                                <option value="Charla">Charla</option>
+                                <option value="Taller">Taller</option>
+                                <option value="Show">Show</option>
+                                <option value="Sorteo">Sorteo</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Título</label>
+                        <input type="text" id="progTitulo" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Descripción</label>
+                        <textarea id="progDescripcion" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm"></textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Hora Inicio</label>
+                            <input type="time" id="progHoraInicio" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Hora Fin</label>
+                            <input type="time" id="progHoraFin" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Lugar</label>
+                            <input type="text" id="progLugar" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Auditorio Principal">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Disertante</label>
+                            <input type="text" id="progDisertante" class="w-full px-3 py-2 border rounded-xl text-sm">
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                        <button type="button" onclick="cerrarPopup('popupNuevaActividadPrograma')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
+                        <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Guardar Actividad</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+        <!-- POPUP: NUEVA INCIDENCIA -->
+    <div id="popupNuevaIncidencia" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupNuevaIncidencia')">
+        <div class="popup-caja popup-caja-grande">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupNuevaIncidencia')">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-4">🚨 Registrar Nueva Incidencia</h2>
+                <form onsubmit="guardarIncidencia(event)" class="space-y-3">
+                    <input type="hidden" id="incId">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Tipo de Incidencia</label>
+                            <select id="incTipo" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                                <option value="Positiva">Positiva</option>
+                                <option value="Negativa">Negativa</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Semáforo (Gravedad)</label>
+                            <select id="incSemaforo" class="w-full px-3 py-2 border rounded-xl text-sm font-bold">
+                                <option value="verde" class="text-emerald-600">🟢 Verde (Leve)</option>
+                                <option value="amarillo" class="text-yellow-600">🟡 Amarillo (Media)</option>
+                                <option value="rojo" class="text-red-600">🔴 Rojo (Grave)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Título</label>
+                        <input type="text" id="incTitulo" required class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Caída de un stand">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Descripción</label>
+                        <textarea id="incDescripcion" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm"></textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Sector</label>
+                            <input type="text" id="incSector" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Pabellón A">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Elemento</label>
+                            <input type="text" id="incElemento" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Stand 45">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Consecuencias</label>
+                        <textarea id="incConsecuencias" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Correcciones Futuras</label>
+                        <textarea id="incCorrecciones" rows="2" class="w-full px-3 py-2 border rounded-xl text-sm"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Fecha y Hora</label>
+                        <input type="datetime-local" id="incFechaHora" class="w-full px-3 py-2 border rounded-xl text-sm">
+                    </div>
+                    <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                        <button type="button" onclick="cerrarPopup('popupNuevaIncidencia')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
+                        <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Guardar Incidencia</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+        <!-- POPUP: NUEVA POLÍTICA DE SUSTENTABILIDAD -->
+    <div id="popupNuevaSustentabilidad" class="popup-overlay" onclick="if(event.target===this) cerrarPopup('popupNuevaSustentabilidad')">
+        <div class="popup-caja">
+            <button class="popup-cerrar" onclick="cerrarPopup('popupNuevaSustentabilidad')">✕</button>
+            <div class="p-6">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-4">🌱 Nueva Política de Sustentabilidad</h2>
+                <form onsubmit="guardarSustentabilidad(event)" class="space-y-3">
+                    <input type="hidden" id="sustId">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Categoría</label>
+                            <select id="sustCategoria" required class="w-full px-3 py-2 border rounded-xl text-sm">
+                                <option value="Ambiental">Ambiental</option>
+                                <option value="Social">Social</option>
+                                <option value="Económica">Económica</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Estado</label>
+                            <select id="sustEstado" class="w-full px-3 py-2 border rounded-xl text-sm">
+                                <option value="Implementado">Implementado</option>
+                                <option value="En Proceso">En Proceso</option>
+                                <option value="Planificado">Planificado</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Título</label>
+                        <input type="text" id="sustTitulo" required class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="Ej: Uso de energías renovables">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">Descripción</label>
+                        <textarea id="sustDescripcion" rows="3" class="w-full px-3 py-2 border rounded-xl text-sm"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-600 uppercase mb-1">URL del Documento (PDF/Drive)</label>
+                        <input type="url" id="sustDocumento" class="w-full px-3 py-2 border rounded-xl text-sm" placeholder="https://...">
+                    </div>
+                    <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                        <button type="button" onclick="cerrarPopup('popupNuevaSustentabilidad')" class="px-5 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-sm">Cancelar</button>
+                        <button type="submit" class="px-6 py-2 bg-verdeQR text-white font-bold rounded-xl text-sm">Guardar Política</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
   <!-- ================= SCRIPT ================= -->
     <script>
          const SUPABASE_URL = 'https://zbnuunaguciupyyzploq.supabase.co';
@@ -1858,6 +2031,7 @@ DOCTYPE html>
                 case 'agenda': titulo.innerText = 'Mi Agenda'; cargarModuloAgenda(area); break;
                 case 'contactos': titulo.innerText = 'Mis Contactos'; cargarModuloContactos(area); break;
                 case 'feriaFisica': titulo.innerText = 'Mi Feria Física - ' + feriaSeleccionada.nombre; cargarFeriaFisica(area); break;
+                case 'programa': titulo.innerText = 'Programa'; cargarModuloPrograma(area); break;
                 case 'expositores': titulo.innerText = 'Expositores'; cargarModuloExpositores(area); break;
                 case 'actores': titulo.innerText = 'Actores'; cargarModuloActores(area); break;
                 case 'notificaciones': titulo.innerText = 'Comunicaciones'; cargarModuloComunicaciones(area); break;
@@ -1866,8 +2040,10 @@ DOCTYPE html>
                 case 'actividades': titulo.innerText = 'Actividades y Eventos'; cargarModuloActividades(area); break;
                 case 'seguridad': titulo.innerText = 'Seguridad y Emergencias'; cargarModuloSeguridad(area); break;
                 case 'documentacion': titulo.innerText = 'Mis Documentaciones'; cargarModuloDocumentacion(area); break;
+                case 'sustentabilidad': titulo.innerText = 'Sustentabilidad'; cargarModuloSustentabilidad(area); break;
                 case 'proveedores': titulo.innerText = 'Proveedores'; cargarModuloProveedores(area); break;
                 case 'sponsors': titulo.innerText = 'Sponsors'; cargarModuloSponsors(area); break;
+                case 'incidencias': titulo.innerText = 'Mis Incidencias'; cargarModuloIncidencias(area); break;
                 default: titulo.innerText = modulo; area.innerHTML = '<p class="text-slate-500">Módulo en construcción.</p>'; break;
             }
         }
@@ -5331,6 +5507,385 @@ DOCTYPE html>
             try {
                 await supabaseClient.from('tareas_evento').delete().eq('id', id);
                 await cargarTareasEvento(eventoId);
+            } catch (err) { alert('Error: ' + err.message); }
+        }
+                // ==================== MÓDULO PROGRAMA ====================
+        let diaProgramaActual = 1;
+
+        async function cargarModuloPrograma(area) {
+            area.innerHTML = '<div class="text-center mt-10"><div class="loader"></div></div>';
+            try {
+                const { data, error } = await supabaseClient
+                    .from('programa_feria')
+                    .select('*')
+                    .eq('feria_id', feriaSeleccionada.id)
+                    .order('dia_numero', { ascending: true })
+                    .order('hora_inicio', { ascending: true });
+                if (error) throw error;
+
+                // Calcular la cantidad de días de la feria
+                const fechaInicio = new Date(feriaSeleccionada.fecha_inicio + 'T00:00:00');
+                const fechaFin = new Date(feriaSeleccionada.fecha_fin + 'T00:00:00');
+                const diffTime = Math.abs(fechaFin - fechaInicio);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+                let html = `
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-slate-800">📅 Programa de ${feriaSeleccionada.nombre}</h3>
+                        <button onclick="abrirPopupNuevaActividadPrograma()" class="bg-verdeQR hover:bg-teal-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2">
+                            <span style="font-size: 18px;">＋</span> Nueva Actividad
+                        </button>
+                    </div>
+                    
+                    <div class="flex gap-2 mb-4 border-b border-slate-200 pb-2 overflow-x-auto" id="tabsPrograma">
+                `;
+
+                // Generar solapas por día
+                for (let i = 1; i <= diffDays; i++) {
+                    const fechaDia = new Date(fechaInicio);
+                    fechaDia.setDate(fechaDia.getDate() + (i - 1));
+                    const diaStr = fechaDia.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'short' });
+                    html += `<button onclick="cambiarDiaPrograma(${i})" id="tab-prog-${i}" class="px-4 py-2 font-bold text-sm rounded-t-lg whitespace-nowrap transition">Día ${i} (${diaStr})</button>`;
+                }
+
+                html += `
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-50 border-b border-slate-200">
+                                    <tr>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Hora</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Actividad</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Lugar</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Disertante</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase text-right">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodyPrograma">
+                                    <tr><td colspan="5" class="text-center py-4"><div class="loader"></div></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                area.innerHTML = html;
+                
+                // Guardamos los datos en una variable global para filtrar sin consultar a la BD
+                window.programaLista = data || [];
+                cambiarDiaPrograma(1); // Por defecto mostramos el día 1
+
+            } catch (err) { area.innerHTML = `<p class="text-red-500">Error: ${err.message}</p>`; }
+        }
+
+        function cambiarDiaPrograma(dia) {
+            diaProgramaActual = dia;
+            
+            // Actualizamos el estilo de las solapas
+            const tabs = document.querySelectorAll('#tabsPrograma button');
+            tabs.forEach((btn, index) => {
+                if (index + 1 === dia) {
+                    btn.className = "px-4 py-2 font-bold text-sm rounded-t-lg whitespace-nowrap transition bg-verdeQR text-white";
+                } else {
+                    btn.className = "px-4 py-2 font-bold text-sm rounded-t-lg whitespace-nowrap transition text-slate-500 hover:bg-slate-50";
+                }
+            });
+
+            // Filtramos la tabla por el día seleccionado
+            const filtrados = window.programaLista.filter(p => p.dia_numero === dia);
+            renderizarTablaPrograma(filtrados);
+        }
+
+        function renderizarTablaPrograma(actividades) {
+            const tbody = document.getElementById('tbodyPrograma');
+            tbody.innerHTML = '';
+            if (!actividades || actividades.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-slate-500 text-xs">No hay actividades cargadas para este día.</td></tr>';
+                return;
+            }
+            actividades.forEach(act => {
+                const hora = act.hora_inicio ? act.hora_inicio.substring(0, 5) : '---';
+                const horaFin = act.hora_fin ? ' - ' + act.hora_fin.substring(0, 5) : '';
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                        <td class="px-4 py-3 font-mono font-bold text-slate-700 text-sm">${hora}${horaFin}</td>
+                        <td class="px-4 py-3">
+                            <p class="font-bold text-slate-800 text-sm">${act.titulo}</p>
+                            <p class="text-[10px] text-slate-500">${act.tipo_actividad || ''} - ${act.descripcion || ''}</p>
+                        </td>
+                        <td class="px-4 py-3 text-xs text-slate-600">${act.lugar || '---'}</td>
+                        <td class="px-4 py-3 text-xs text-slate-600">${act.disertante || '---'}</td>
+                        <td class="px-4 py-3 text-right space-x-1">
+                            <button onclick="eliminarActividadPrograma('${act.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold py-1 px-2 rounded text-[10px]">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function abrirPopupNuevaActividadPrograma() {
+            document.getElementById('progId').value = '';
+            document.getElementById('progDia').value = diaProgramaActual;
+            document.getElementById('progTipo').value = 'Charla';
+            document.getElementById('progTitulo').value = '';
+            document.getElementById('progDescripcion').value = '';
+            document.getElementById('progHoraInicio').value = '';
+            document.getElementById('progHoraFin').value = '';
+            document.getElementById('progLugar').value = '';
+            document.getElementById('progDisertante').value = '';
+            abrirPopup('popupNuevaActividadPrograma');
+        }
+
+        async function guardarActividadPrograma(e) {
+            e.preventDefault();
+            const payload = {
+                feria_id: feriaSeleccionada.id,
+                dia_numero: parseInt(document.getElementById('progDia').value),
+                tipo_actividad: document.getElementById('progTipo').value,
+                titulo: document.getElementById('progTitulo').value.trim(),
+                descripcion: document.getElementById('progDescripcion').value.trim(),
+                hora_inicio: document.getElementById('progHoraInicio').value,
+                hora_fin: document.getElementById('progHoraFin').value || null,
+                lugar: document.getElementById('progLugar').value.trim(),
+                disertante: document.getElementById('progDisertante').value.trim()
+            };
+            try {
+                const { error } = await supabaseClient.from('programa_feria').insert([payload]);
+                if (error) throw error;
+                cerrarPopup('popupNuevaActividadPrograma');
+                mostrarModulo('programa'); // Recargamos la vista
+            } catch (err) { alert('Error al guardar: ' + err.message); }
+        }
+
+        async function eliminarActividadPrograma(id) {
+            if (!confirm('¿Eliminar esta actividad del programa?')) return;
+            try {
+                await supabaseClient.from('programa_feria').delete().eq('id', id);
+                mostrarModulo('programa');
+            } catch (err) { alert('Error: ' + err.message); }
+        }
+                // ==================== MÓDULO INCIDENCIAS ====================
+        async function cargarModuloIncidencias(area) {
+            area.innerHTML = '<div class="text-center mt-10"><div class="loader"></div></div>';
+            try {
+                const { data, error } = await supabaseClient
+                    .from('incidencias_feria')
+                    .select('*')
+                    .eq('feria_id', feriaSeleccionada.id)
+                    .order('fecha_hora', { ascending: false });
+                if (error) throw error;
+
+                let html = `
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-slate-800">🚨 Mis Incidencias</h3>
+                        <button onclick="abrirPopupNuevaIncidencia()" class="bg-verdeQR hover:bg-teal-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2">
+                            <span style="font-size: 18px;">＋</span> Registrar Incidencia
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-50 border-b border-slate-200">
+                                    <tr>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Semáforo</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Fecha</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Título</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Sector</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Elemento</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase text-right">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodyIncidencias">
+                                    <tr><td colspan="6" class="text-center py-4 text-slate-500 text-xs">Cargando...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                area.innerHTML = html;
+                renderizarTablaIncidencias(data);
+            } catch (err) { area.innerHTML = `<p class="text-red-500">Error: ${err.message}</p>`; }
+        }
+
+        function renderizarTablaIncidencias(incidencias) {
+            const tbody = document.getElementById('tbodyIncidencias');
+            tbody.innerHTML = '';
+            if (!incidencias || incidencias.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-slate-500 text-xs">No hay incidencias registradas.</td></tr>';
+                return;
+            }
+            incidencias.forEach(inc => {
+                let colorSemaforo = 'bg-emerald-500';
+                if (inc.semaforo === 'rojo') colorSemaforo = 'bg-red-500';
+                if (inc.semaforo === 'amarillo') colorSemaforo = 'bg-yellow-400';
+                
+                const fecha = new Date(inc.fecha_hora).toLocaleString('es-AR');
+                const tipoBadge = inc.tipo === 'Positiva' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700';
+
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                        <td class="px-4 py-3"><div class="w-4 h-4 rounded-full ${colorSemaforo}"></div></td>
+                        <td class="px-4 py-3 font-mono text-xs text-slate-600">${fecha}</td>
+                        <td class="px-4 py-3">
+                            <p class="font-bold text-slate-800 text-sm">${inc.titulo}</p>
+                            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${tipoBadge}">${inc.tipo}</span>
+                        </td>
+                        <td class="px-4 py-3 text-xs text-slate-600">${inc.sector || '---'}</td>
+                        <td class="px-4 py-3 text-xs text-slate-600">${inc.elemento || '---'}</td>
+                        <td class="px-4 py-3 text-right space-x-1">
+                            <button onclick="eliminarIncidencia('${inc.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold py-1 px-2 rounded text-[10px]">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function abrirPopupNuevaIncidencia() {
+            document.getElementById('incId').value = '';
+            document.getElementById('incTipo').value = 'Positiva';
+            document.getElementById('incSemaforo').value = 'verde';
+            document.getElementById('incTitulo').value = '';
+            document.getElementById('incDescripcion').value = '';
+            document.getElementById('incSector').value = '';
+            document.getElementById('incElemento').value = '';
+            document.getElementById('incConsecuencias').value = '';
+            document.getElementById('incCorrecciones').value = '';
+            document.getElementById('incFechaHora').value = '';
+            abrirPopup('popupNuevaIncidencia');
+        }
+
+        async function guardarIncidencia(e) {
+            e.preventDefault();
+            const payload = {
+                feria_id: feriaSeleccionada.id,
+                tipo: document.getElementById('incTipo').value,
+                semaforo: document.getElementById('incSemaforo').value,
+                titulo: document.getElementById('incTitulo').value.trim(),
+                descripcion: document.getElementById('incDescripcion').value.trim(),
+                sector: document.getElementById('incSector').value.trim(),
+                elemento: document.getElementById('incElemento').value.trim(),
+                consecuencias: document.getElementById('incConsecuencias').value.trim(),
+                correcciones_futuras: document.getElementById('incCorrecciones').value.trim(),
+                fecha_hora: document.getElementById('incFechaHora').value || new Date().toISOString()
+            };
+            try {
+                const { error } = await supabaseClient.from('incidencias_feria').insert([payload]);
+                if (error) throw error;
+                cerrarPopup('popupNuevaIncidencia');
+                mostrarModulo('incidencias');
+            } catch (err) { alert('Error al guardar: ' + err.message); }
+        }
+
+        async function eliminarIncidencia(id) {
+            if (!confirm('¿Eliminar esta incidencia?')) return;
+            try {
+                await supabaseClient.from('incidencias_feria').delete().eq('id', id);
+                mostrarModulo('incidencias');
+            } catch (err) { alert('Error: ' + err.message); }
+        }
+                // ==================== MÓDULO SUSTENTABILIDAD ====================
+        async function cargarModuloSustentabilidad(area) {
+            area.innerHTML = '<div class="text-center mt-10"><div class="loader"></div></div>';
+            try {
+                const { data, error } = await supabaseClient
+                    .from('sustentabilidad_feria')
+                    .select('*')
+                    .eq('feria_id', feriaSeleccionada.id)
+                    .order('categoria', { ascending: true });
+                if (error) throw error;
+
+                let html = `
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-slate-800">🌱 Políticas de Sustentabilidad</h3>
+                        <button onclick="abrirPopupNuevaSustentabilidad()" class="bg-verdeQR hover:bg-teal-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm shadow transition flex items-center gap-2">
+                            <span style="font-size: 18px;">＋</span> Nueva Política
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-50 border-b border-slate-200">
+                                    <tr>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Categoría</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Título</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase">Estado</th>
+                                        <th class="px-4 py-3 text-[10px] font-bold text-slate-500 uppercase text-right">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodySustentabilidad">
+                                    <tr><td colspan="4" class="text-center py-4 text-slate-500 text-xs">Cargando...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                area.innerHTML = html;
+                renderizarTablaSustentabilidad(data);
+            } catch (err) { area.innerHTML = `<p class="text-red-500">Error: ${err.message}</p>`; }
+        }
+
+        function renderizarTablaSustentabilidad(politicas) {
+            const tbody = document.getElementById('tbodySustentabilidad');
+            tbody.innerHTML = '';
+            if (!politicas || politicas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-slate-500 text-xs">No hay políticas cargadas.</td></tr>';
+                return;
+            }
+            politicas.forEach(pol => {
+                let badgeEstado = 'bg-emerald-100 text-emerald-700';
+                if (pol.estado === 'En Proceso') badgeEstado = 'bg-amber-100 text-amber-700';
+                if (pol.estado === 'Planificado') badgeEstado = 'bg-blue-100 text-blue-700';
+
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                        <td class="px-4 py-3 font-bold text-slate-800 text-sm">${pol.categoria}</td>
+                        <td class="px-4 py-3">
+                            <p class="font-bold text-slate-800 text-sm">${pol.titulo}</p>
+                            <p class="text-[10px] text-slate-500 truncate max-w-[300px]">${pol.descripcion || ''}</p>
+                        </td>
+                        <td class="px-4 py-3"><span class="text-[10px] font-bold px-2 py-1 rounded-full ${badgeEstado}">${pol.estado}</span></td>
+                        <td class="px-4 py-3 text-right space-x-1">
+                            ${pol.documento_url ? `<a href="${pol.documento_url}" target="_blank" class="bg-blue-100 text-blue-700 font-bold py-1 px-2 rounded text-[10px]">📄</a>` : ''}
+                            <button onclick="eliminarSustentabilidad('${pol.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold py-1 px-2 rounded text-[10px]">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function abrirPopupNuevaSustentabilidad() {
+            document.getElementById('sustId').value = '';
+            document.getElementById('sustCategoria').value = 'Ambiental';
+            document.getElementById('sustEstado').value = 'Implementado';
+            document.getElementById('sustTitulo').value = '';
+            document.getElementById('sustDescripcion').value = '';
+            document.getElementById('sustDocumento').value = '';
+            abrirPopup('popupNuevaSustentabilidad');
+        }
+
+        async function guardarSustentabilidad(e) {
+            e.preventDefault();
+            const payload = {
+                feria_id: feriaSeleccionada.id,
+                categoria: document.getElementById('sustCategoria').value,
+                estado: document.getElementById('sustEstado').value,
+                titulo: document.getElementById('sustTitulo').value.trim(),
+                descripcion: document.getElementById('sustDescripcion').value.trim(),
+                documento_url: document.getElementById('sustDocumento').value.trim() || null
+            };
+            try {
+                const { error } = await supabaseClient.from('sustentabilidad_feria').insert([payload]);
+                if (error) throw error;
+                cerrarPopup('popupNuevaSustentabilidad');
+                mostrarModulo('sustentabilidad');
+            } catch (err) { alert('Error al guardar: ' + err.message); }
+        }
+
+        async function eliminarSustentabilidad(id) {
+            if (!confirm('¿Eliminar esta política?')) return;
+            try {
+                await supabaseClient.from('sustentabilidad_feria').delete().eq('id', id);
+                mostrarModulo('sustentabilidad');
             } catch (err) { alert('Error: ' + err.message); }
         }
     </script>
